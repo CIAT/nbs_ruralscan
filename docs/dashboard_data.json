@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-09T06:01:25.911957+00:00",
-  "git_commit": "8bd24541f3bb84812bab4c58a66ebce80e1a9197",
+  "timestamp": "2026-11-09T06:29:27.308355+00:00",
+  "git_commit": "6a67a0db899680ee96369d10789fa6cad4e8ae8f",
   "registers": {
     "SRC_source_register": [
       {
@@ -324143,7 +324143,6 @@
           "suitability_dimension": "biophysical_constraint",
           "relationship_type": "trapezoidal",
           "relationship_params": {
-            "opt_high": 0.25,
             "reviewed_adaptation": {
               "dataset_binding": {
                 "status": "requires_matching_input",
@@ -324153,16 +324152,190 @@
                 "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
                 "scope": "water_harvesting__runoff_catchment__drainage_density",
                 "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
+              },
+              "numerical_calibration": {
+                "status": "held",
+                "reason": "The shared upper optimum bound of 0.25 km/km² combines different purposes and stream networks. Singh places 0.25 in the second class of a catchment potential index. Karimi favors lower densities for potential harvesting sites, and Ettazarini favors higher densities for check dams.",
+                "scope": "water_harvesting__runoff_catchment__drainage_density",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_drainage_density_hold_20261109/user_decision.md",
+                "source_profiles_ref": "methodology/audits/t4_stream_order_hold_20261107/next_drainage_density_decision.json",
+                "held_relationship": {
+                  "type": "trapezoidal",
+                  "params": {
+                    "opt_high": 0.25
+                  },
+                  "uncertainty_pct": "60.0"
+                },
+                "retained_source_profiles": [
+                  {
+                    "source_id": "karimi_2019_runoff_map_rwh_zones",
+                    "evidence_id": "ev_wh_drainage_density_karimi19_1",
+                    "evidence_locator": "PDF page 19",
+                    "table_ref": "Table 6, PDF page 19",
+                    "source_model": "Farm-pond example in an AHP/WLC suitability map for rainwater harvesting sites in the Kakareza watershed, Iran. Authors recommend including system type in future work (PDF7).",
+                    "direction": "Lower drainage density preferred locally.",
+                    "unit": "km/km² (Fig. 11, caption PDF16, legend PDF17; discussion PDF6).",
+                    "classes": [
+                      {
+                        "density_km_per_km2": "<0.5",
+                        "rank": 1,
+                        "printed_normalized_feature_weight": 0.03
+                      },
+                      {
+                        "density_km_per_km2": "0.5–1",
+                        "rank": 2,
+                        "printed_normalized_feature_weight": 0.015
+                      },
+                      {
+                        "density_km_per_km2": ">1",
+                        "rank": 3,
+                        "printed_normalized_feature_weight": 0.008
+                      }
+                    ],
+                    "source_weight": {
+                      "criterion": 0.059,
+                      "five_criterion_weights": {
+                        "runoff": 0.427,
+                        "land_use": 0.26,
+                        "slope": 0.158,
+                        "hydrologic_soil_group": 0.096,
+                        "drainage_density": 0.059
+                      },
+                      "consistency_ratio": 0.03,
+                      "locator": "Table 6, PDF19. Feature weights in the table remain as printed."
+                    },
+                    "source_input": "100 × 100 m DEM derived from 1:50,000 topography, used for slope and drainage density in ArcGIS 10.3. Local stream delineation threshold and density support area unresolved in inspected methods. Grid size alone does not specify density support.",
+                    "boundaries_and_prose": "Table 6 and Figure 11 place strictly <0.5 in rank 1; 0.5–1 in rank 2. Discussion PDF6 describes most suitable mapped sites as having drainage density of 0.5, alongside other conditions. That map summary does not add a second numerical optimum. All three classes receive positive printed weights.",
+                    "lineage": "Authors attribute lower-density preference to Jha et al. (2014). Preserve local class table and expert AHP weights. Shared literature with Singh limits independent corroboration of mechanism, without demonstrating their class values are copied.",
+                    "evidence_comparison": "Current EV preserves ranks, decreasing direction, criterion weight and opt_high=0.5, while the three feature weights are in its registered Table 6 quote. Strict source boundary is <0.5."
+                  },
+                  {
+                    "source_id": "mahmoud_2016_mcda_gis_wh_recharge",
+                    "evidence_id": "ev_wh_drainage_density_singh17_1",
+                    "evidence_locator": "PDF page 3",
+                    "table_ref": "Table 3, PDF page 3",
+                    "source_model": "West Bengal, India. Three-theme RWH Potential Index preceding separate structure-specific Boolean siting for farm ponds, stream/ground percolation tanks and check dams.",
+                    "direction": "Higher local RWH potential rank at lower micro-watershed drainage density.",
+                    "unit": "km/km², Table 3/PDF3, Fig. 11/PDF13; length divided by micro-watershed area, PDF8.",
+                    "classes": [
+                      {
+                        "density_km_per_km2": "<0.25",
+                        "runoff_prospect": "Very High",
+                        "assigned": 8,
+                        "normalized": 0.327
+                      },
+                      {
+                        "density_km_per_km2": "0.25–0.50",
+                        "runoff_prospect": "High",
+                        "assigned": 7,
+                        "normalized": 0.286
+                      },
+                      {
+                        "density_km_per_km2": "0.50–0.75",
+                        "runoff_prospect": "Moderate",
+                        "assigned": 5,
+                        "normalized": 0.204
+                      },
+                      {
+                        "density_km_per_km2": "0.75–1.00",
+                        "runoff_prospect": "Low",
+                        "assigned": 3,
+                        "normalized": 0.122
+                      },
+                      {
+                        "density_km_per_km2": ">1.00",
+                        "runoff_prospect": "Very Low",
+                        "assigned": 1.5,
+                        "normalized": 0.061
+                      }
+                    ],
+                    "source_weight": {
+                      "theme_assigned": 6,
+                      "theme_normalized": 0.261,
+                      "criterion_set": {
+                        "runoff_coefficient": {
+                          "assigned": 9,
+                          "normalized": 0.391
+                        },
+                        "slope": {
+                          "assigned": 8,
+                          "normalized": 0.348
+                        },
+                        "drainage_density": {
+                          "assigned": 6,
+                          "normalized": 0.261
+                        }
+                      },
+                      "consistency": "Reported below 0.10, PDF15.",
+                      "locator": "Tables 1–3, PDF3"
+                    },
+                    "source_input": "ArcHydro drainage from SRTM DEM. Slope and drainage density layers use 90 m SRTM. Density computed from stream length / micro-watershed area and incorporated into a polygon-based WLC index. Local mapped range 0.01–4.86 km/km² (PDF14) describes the input. The 50 m stream-order corridor for installation sites is a different step.",
+                    "boundaries_and_prose": "Strict <0.25 is Very High; the row beginning at 0.25 is High. Adjacent closed-looking printed ranges share 0.50 and 0.75; authors report no exact tie convention there. Other classes, including Very Low, have positive feature weights. Table 3 prospect labels order suitability, whereas Fig. 11/PDF13 and PDF14 describe density magnitude itself in the opposite verbal order. The two scales agree.",
+                    "lineage": "Method section PDF8 cites Jha et al. (2014) for selection of themes. Local weights arise from expert judgments. No source establishes this particular class break as a universal requirement.",
+                    "evidence_comparison": "Corrected current EV already stores all five classes, both sets of weights and use limitation. The inherited scalar numerically matches this study’s first break. Origin of the historical weighted-median calculation has not been reconstructed."
+                  },
+                  {
+                    "source_id": "mahmoud_2021_checkdam_suitability_topo_drainage_morocco",
+                    "evidence_id": "ev_wh_drainage_density_mahmoud21_1",
+                    "evidence_locator": "PDF page 8",
+                    "table_ref": "Table 1, PDF page 6; Eq. 7, PDF page 7",
+                    "source_model": "Ettazarini (2021). Eight-factor AHP model for check-dam site selection in Khenifra province, Morocco, favouring surface-water accumulation.",
+                    "direction": "Higher drainage density receives higher suitability scores for check dams in this model.",
+                    "unit": "km/km², defined in PDF8 as total stream length divided by drainage area. Table 1 omits the unit in its factor label.",
+                    "classes": [
+                      {
+                        "density_km_per_km2": "<0.2",
+                        "score": 1,
+                        "label": "Low"
+                      },
+                      {
+                        "density_km_per_km2": "0.2–0.4",
+                        "score": 2,
+                        "label": "Medium"
+                      },
+                      {
+                        "density_km_per_km2": "0.4–0.6",
+                        "score": 3,
+                        "label": "High"
+                      },
+                      {
+                        "density_km_per_km2": ">0.6",
+                        "score": 4,
+                        "label": "Very high"
+                      }
+                    ],
+                    "source_weight": {
+                      "criterion": 0.07,
+                      "eight_factor_weights": {
+                        "slope": 0.32,
+                        "drainage_density": 0.07,
+                        "stream_order": 0.1,
+                        "stream_power_index": 0.25,
+                        "topographic_wetness_index": 0.05,
+                        "sediment_transport_index": 0.16,
+                        "terrain_roughness_index": 0.03,
+                        "topographic_position_index": 0.02
+                      },
+                      "consistency_ratio": 0.07,
+                      "locator": "Table 2 and Eq. 7, PDF7; CR PDF12."
+                    },
+                    "source_input": "ASTER-based 30 m DEM and flow-accumulation-derived streams. ArcGIS line density applied with a 500 m stream-length threshold for including streamlines. The 500 m criterion defines the stream network. Density neighborhood/search radius is unresolved in the cited text. Local maximum 1.94 km/km² describes the input.",
+                    "boundaries_and_prose": "Table 1/PDF6, discussion PDF8 and Figure 5B/PDF10 agree on increasing ranking. Middle ranges share 0.4 without a printed tie rule. Lowest category receives 1. Accuracy checks of the combined map against terrain depressions do not validate individual drainage-density breakpoints.",
+                    "lineage": "PDF8 cites Horton (1945) for runoff/infiltration interpretation and Rahmati et al. (2019) for dam-siting preference. Four class scores and 0.07 AHP weight are attributed to Ettazarini’s applied model.",
+                    "evidence_comparison": "Existing EV retains direction. Table 1 class boundaries/scores, scale-dependent network specification and Table 2 criterion weight are surfaced here pending evidence review."
+                  }
+                ]
               }
             }
           },
-          "uncertainty_pct": 60.0,
           "context_overrides": [],
           "is_scenario_candidate": false,
           "has_future_projection": false,
           "weight_default": 0.1111,
           "weight_adjustable": true,
-          "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': 0.25}; uncertainty ±60% from spread.  Approved dataset-binding hold (Peter, 2026-11-06): requires matching input; existing numeric values remain unapproved by this decision.",
+          "justification": "Peter approved holding the shared 0.25 km/km² drainage-density calibration on 9 November 2026. Retain the Karimi, Singh and Ettazarini profiles by mapping purpose, structure and network definition. Preserve each study’s full class table, source weights, units, network derivation, spatial support and transfer limits. Dataset binding unresolved; requires matching input: Basin polygons do not provide the required stream-length-per-area density. A compatible river network, area support and derivation must be specified. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
           "variable": "drainage_density",
           "suitability_family_id": "water_harvesting__runoff_catchment",
           "evidence_ids": [
@@ -402909,8 +403082,8 @@
       "source_id": "kadam2012_scscn_india_rwh",
       "page": "14",
       "mapping_id": "water_harvesting__runoff_catchment__catchment_area",
-      "reason": "Source checked; proposed HOLD (not applied). Kadam Table 6 (PDF14 / printed2550), adopted from IMSD (1995), assigns farm ponds 1–2 ha, check dams >25 ha and percolation tanks 25–40 ha; gully-plug area is unstated. Fig.8 maps potential sites. Current generic abs_min=1 combines distinct structure rules and loses applicability.",
-      "decision_needed": "Hold the pooled 1 ha minimum. Keep the full per-structure table, including missing gully-plug value, linked to slope/runoff/soil criteria. Separate structure-specific synthesis; no inferred universal catchment threshold. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Next mapping review. Kadam et al. (2012) use upstream contributing area to select sites by structure. Table 6 (PDF p. 14), adopted from IMSD (1995), gives 1–2 ha for farm ponds, strictly >25 ha for check dams, and 25–40 ha for percolation tanks. The gully-plug cell shows a dash. Each area condition is paired with stream order, slope, runoff, land use and soil.",
+      "decision_needed": "Should we hold the shared 1 ha minimum and retain the complete structure-specific table for synthesis? The 1 ha boundary belongs to the farm-pond range. Gully-plug area is unspecified. Applying the table would also require a compatible upstream contributing-area layer at the intended site scale. This decision concerns numerical calibration.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "6ff80ccd9eb2fd7bfc05b75ff71dcb7b31e4caaef975a866a77afc2977ed7924",
@@ -403005,8 +403178,8 @@
       "source_id": "karimi_2019_runoff_map_rwh_zones",
       "page": "19",
       "mapping_id": "water_harvesting__runoff_catchment__drainage_density",
-      "reason": "Next mapping review. Karimi and Zeinivand ranked farm-pond sites on a 100 m grid. Table 6 ranks <0.5, 0.5–1 and >1 km/km² first through third, favoring lower density. The printed class weights are 0.030, 0.015 and 0.008. Drainage density has a criterion weight of 0.059.",
-      "decision_needed": "Should we hold the shared drainage-density rule that sets 0.25 km/km² as the upper edge of the optimum range, keeping all three quantitative profiles for synthesis by purpose, structure and stream-network definition? Farm-pond and check-dam rankings run in opposite directions. The existing dataset hold is already applied.",
+      "reason": "Shared 0.25 km/km² drainage-density calibration hold applied, 9 November 2026. Karimi & Zeinivand (2019) use lower drainage density for RWH sites such as farm ponds. Table 6 ranks <0.5, 0.5–1 and >1 km/km² first to third, with printed feature weights 0.030, 0.015 and 0.008. Criterion weight 0.059. The study derives drainage from a 100 m DEM. Its first class extends above the shared 0.25 break.",
+      "decision_needed": "Pete approved keeping this quantitative profile by purpose, structure and stream-network definition. The shared 0.25 km/km² rule is held. Future scoring requires a compatible profile and network.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "4086574dc3e883878084c4fd7d9a8feef206619c3553fd02aa8936d2bc849149",
@@ -403053,8 +403226,8 @@
       "source_id": "mahmoud_2016_mcda_gis_wh_recharge",
       "page": "3",
       "mapping_id": "water_harvesting__runoff_catchment__drainage_density",
-      "reason": "Next mapping review. Singh et al., Table 3, rank micro-watersheds for rainwater-harvesting potential. The five drainage-density classes in km/km² are <0.25 (very high), 0.25–0.50 (high), 0.50–0.75 (moderate), 0.75–1.00 (low) and >1.00 (very low). The class starting at 0.25 is high. The normalized theme weight is 0.261. The paper later selects individual structures using separate criteria.",
-      "decision_needed": "Should we hold the shared drainage-density rule that sets 0.25 km/km² as the upper edge of the optimum range, keeping all three quantitative profiles for synthesis by purpose, structure and stream-network definition? Farm-pond and check-dam rankings run in opposite directions. The existing dataset hold is already applied.",
+      "reason": "Shared 0.25 km/km² drainage-density calibration hold applied, 9 November 2026. Singh et al. (2017) use stream length per micro-watershed area. Table 3 ranks <0.25, 0.25–0.50, 0.50–0.75, 0.75–1.00 and >1.00 km/km² from very high to very low. Exactly 0.25 starts the second class. Theme weight 0.261 and all five positive feature weights belong to the RWH potential index. Structure siting comes later in a Boolean analysis.",
+      "decision_needed": "Pete approved keeping this quantitative profile by purpose, structure and stream-network definition. The shared 0.25 km/km² rule is held. Future scoring requires a compatible profile and network.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "c32d2338ccb03b656cb34f15249e91980c9b7d1fdba393c583e3a5b4bd3bee57",
@@ -403117,8 +403290,8 @@
       "source_id": "mahmoud_2021_checkdam_suitability_topo_drainage_morocco",
       "page": "8",
       "mapping_id": "water_harvesting__runoff_catchment__drainage_density",
-      "reason": "Next mapping review. Ettazarini mapped check-dam sites. Table 1 assigns increasing scores 1, 2, 3 and 4 to <0.2, 0.2–0.4, 0.4–0.6 and >0.6 km/km². The source uses a 30 m DEM, a 500 m minimum stream length and a drainage-density criterion weight of 0.07. The evidence row captures the direction. The source review also retains the four printed classes.",
-      "decision_needed": "Should we hold the shared drainage-density rule that sets 0.25 km/km² as the upper edge of the optimum range, keeping all three quantitative profiles for synthesis by purpose, structure and stream-network definition? Farm-pond and check-dam rankings run in opposite directions. The existing dataset hold is already applied.",
+      "reason": "Shared 0.25 km/km² drainage-density calibration hold applied, 9 November 2026. Ettazarini (2021) gives higher drainage density higher check-dam suitability in Morocco. Table 1 scores <0.2, 0.2–0.4, 0.4–0.6 and >0.6 km/km² as 1, 2, 3 and 4. Eq. 7 gives criterion weight 0.07. The 30 m DEM network uses a 500 m minimum stream length. The EV currently records direction only.",
+      "decision_needed": "Pete approved keeping this quantitative profile by purpose, structure and stream-network definition. The shared 0.25 km/km² rule is held. Future scoring requires a compatible profile and network.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "62b4b444d2d81da6bcef0193fed68062184c4a3d5d1598a15bfd2ef33e0bd153",
@@ -702489,7 +702662,7 @@
         "aggregate": null,
         "aggregate_status": "unavailable",
         "aggregate_note": "Source claims remain available. The current recipe has not passed the aggregate rebuild check.",
-        "rebuild_detail": "Reviewed corpus does not reproduce the audited live T4 recipe: water_harvesting__in_situ__annual_precipitation, water_harvesting__in_situ__aridity_index, water_harvesting__in_situ__clay_content, water_harvesting__in_situ__slope, water_harvesting__in_situ__soil_depth_to_bedrock, water_harvesting__micro_catchment__annual_precipitation, water_harvesting__micro_catchment__slope, water_harvesting__micro_catchment__soil_depth_to_bedrock, water_harvesting__rooftop__annual_precipitation, water_harvesting__runoff_catchment__annual_precipitation, water_harvesting__runoff_catchment__aridity_index, water_harvesting__runoff_catchment__catchment_area, water_harvesting__runoff_catchment__clay_content, water_harvesting__runoff_catchment__drainage_density, water_harvesting__runoff_catchment__runoff_potential_index, water_harvesting__runoff_catchment__slope, water_harvesting__runoff_catchment__soil_permeability, water_harvesting__spate__annual_precipitation, water_harvesting__spate__slope, water_harvesting__terracing__annual_precipitation, water_harvesting__terracing__clay_content, water_harvesting__terracing__slope, water_harvesting__terracing__soil_depth_to_bedrock. Run scripts/synthesise-recipe.py water_harvesting_conservation --output-dir <trial-directory>, review the changes, regenerate the audited recipe and its JSON, then rebuild the developer package."
+        "rebuild_detail": "Reviewed corpus does not reproduce the audited live T4 recipe: water_harvesting__in_situ__annual_precipitation, water_harvesting__in_situ__aridity_index, water_harvesting__in_situ__clay_content, water_harvesting__in_situ__slope, water_harvesting__in_situ__soil_depth_to_bedrock, water_harvesting__micro_catchment__annual_precipitation, water_harvesting__micro_catchment__slope, water_harvesting__micro_catchment__soil_depth_to_bedrock, water_harvesting__rooftop__annual_precipitation, water_harvesting__runoff_catchment__annual_precipitation, water_harvesting__runoff_catchment__aridity_index, water_harvesting__runoff_catchment__catchment_area, water_harvesting__runoff_catchment__clay_content, water_harvesting__runoff_catchment__runoff_potential_index, water_harvesting__runoff_catchment__slope, water_harvesting__runoff_catchment__soil_permeability, water_harvesting__spate__annual_precipitation, water_harvesting__spate__slope, water_harvesting__terracing__annual_precipitation, water_harvesting__terracing__clay_content, water_harvesting__terracing__slope, water_harvesting__terracing__soil_depth_to_bedrock. Run scripts/synthesise-recipe.py water_harvesting_conservation --output-dir <trial-directory>, review the changes, regenerate the audited recipe and its JSON, then rebuild the developer package."
       },
       "wetland_management": {
         "catalogue": {
@@ -704353,19 +704526,11 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "d7e835455079",
-    "data_id": "117286d8633a",
+    "data_id": "a81b2369b07e",
     "count_definition_version": "4",
-    "built_at": "2026-11-09T06:01:25.911957+00:00",
-    "source_commit": "8bd24541f3bb84812bab4c58a66ebce80e1a9197",
+    "built_at": "2026-11-09T06:29:27.308355+00:00",
+    "source_commit": "6a67a0db899680ee96369d10789fa6cad4e8ae8f",
     "history": [
-      {
-        "release": "1.3.2",
-        "ui_id": "3344169a869e",
-        "data_id": "94c788c94135",
-        "count_definition_version": "4",
-        "built_at": "2026-11-05T05:24:31.644422+00:00",
-        "source_commit": "72386b2a548481580ef72c661134d820907a923e"
-      },
       {
         "release": "1.4.0",
         "ui_id": "7bbdcc27d481",
@@ -704757,6 +704922,14 @@
         "count_definition_version": "4",
         "built_at": "2026-11-09T06:01:25.911957+00:00",
         "source_commit": "8bd24541f3bb84812bab4c58a66ebce80e1a9197"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "d7e835455079",
+        "data_id": "a81b2369b07e",
+        "count_definition_version": "4",
+        "built_at": "2026-11-09T06:29:27.308355+00:00",
+        "source_commit": "6a67a0db899680ee96369d10789fa6cad4e8ae8f"
       }
     ]
   }
