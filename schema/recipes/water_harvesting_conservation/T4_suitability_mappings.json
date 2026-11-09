@@ -1186,6 +1186,411 @@
     "n_sources": 5
   },
   {
+    "mapping_id": "water_harvesting__runoff_catchment__slope",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "srtm_dem_30m",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "scope": "water_harvesting__runoff_catchment__slope",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "status": "held",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/runoff_slope.md",
+          "reason": "Keep all eight slope profiles by structure and purpose. The Karimi text and weighted table disagree. Ngugi compares a historical catchment-slope guideline with field observations. No shared cutoff or numerical score is approved.",
+          "retained_source_profiles": [
+            {
+              "evidence_id": "ev_wh_slope_kadam12_1",
+              "source_id": "kadam2012_scscn_india_rwh",
+              "evidence_sha256": "7a6774afe99aa717cf7be23bcd14045f58089b229630a627357ca1022db892c3",
+              "source_artifact_sha256": "c016266f64ff42c983590109f98b24a3945add0b43f27c319003f3cebf496b66",
+              "locator": "PDF p. 14, printed p. 2550, Table 6 (IMSD, 1995).",
+              "source_quote": "Table 6 Adopted specifications for potential rainwater harvesting structures\nStructure\n% Slope Runoff potential Landuse/landcover\nStream order Catchment\narea (ha)\nSoil type\nFarm pond\n0–5\nModerate/High\nScrub land\n1\n1 to 2\nSandy clay loam\nCheck dam <15\nModerate/High\nScrub land/River bed 1 to 4\n> 25\nSandy clay loam\nPercolation\ntank\n<10\nLow\nScrub land\n1 to 4\n25–40\nClay\nGully plug\n15–20\nHigh\nScrub land\n1\n–\nSandy clay\nloam/clay\nIMSD (1995)",
+              "structure": "Farm ponds, check dams, percolation tanks and gully plugs, Upper Karha watershed, India",
+              "unit": "percent grade",
+              "published_profile": {
+                "unit": "percent grade",
+                "role": "structure-specific siting criteria",
+                "lineage": "IMSD (1995), as adopted by Kadam et al.",
+                "criteria": [
+                  {
+                    "structure": "farm pond",
+                    "slope_as_printed": "0–5",
+                    "runoff_potential": "moderate/high",
+                    "land_use": "scrub land",
+                    "stream_order": "1",
+                    "catchment_area_ha_as_printed": "1–2",
+                    "soil": "sandy clay loam"
+                  },
+                  {
+                    "structure": "check dam",
+                    "slope_as_printed": "<15",
+                    "runoff_potential": "moderate/high",
+                    "land_use": "scrub land/river bed",
+                    "stream_order": "1–4",
+                    "catchment_area_ha_as_printed": ">25",
+                    "soil": "sandy clay loam"
+                  },
+                  {
+                    "structure": "percolation tank",
+                    "slope_as_printed": "<10",
+                    "runoff_potential": "low",
+                    "land_use": "scrub land",
+                    "stream_order": "1–4",
+                    "catchment_area_ha_as_printed": "25–40",
+                    "soil": "clay"
+                  },
+                  {
+                    "structure": "gully plug",
+                    "slope_as_printed": "15–20",
+                    "runoff_potential": "high",
+                    "land_use": "scrub land",
+                    "stream_order": "1",
+                    "catchment_area_ha_as_printed": null,
+                    "soil": "sandy clay loam/clay"
+                  }
+                ]
+              },
+              "interpretation": "Keep IMSD criteria as used by Kadam, by structure. Farm ponds 0–5%, check dams <15%, percolation tanks <10%, gully plugs 15–20%, each with its own runoff, land, soil, drainage and catchment conditions.",
+              "disposition": "Adopted IMSD siting criteria for farm ponds, check dams, percolation tanks and gully plugs. Read each slope entry with its structure and associated site criteria."
+            },
+            {
+              "evidence_id": "ev_wh_slope_singh17_2",
+              "source_id": "mahmoud_2016_mcda_gis_wh_recharge",
+              "evidence_sha256": "41bb9250a849ccbb10fbfa7c70037345b0fee58184613be5251b2b61335eb7c8",
+              "source_artifact_sha256": "5c2b6373e271890a13cf34ddedba1848cf64d6d9ac298f1302395fca3acada2d",
+              "locator": "PDF p. 3, Tables 1–3 (Table 3 slope classes); PDF p. 11, §3.4.",
+              "source_quote": "Slope\n8\n0.348\n0e1% (Nearly level)\nVery High\n8\n0.348\n1e3% (Gentle)\nHigh\n7\n0.304\n3e5% (Moderate gentle)\nModerate\n5\n0.217\n5e10% (Steep)\nLow\n3\n0.131",
+              "structure": "Regional harvesting potential in the Damodar Canal Command, West Bengal, India",
+              "unit": "percent grade",
+              "published_profile": {
+                "unit": "percent grade",
+                "role": "regional harvesting potential before structure-specific siting",
+                "theme_assigned_weight": 8,
+                "theme_normalized_weight": 0.348,
+                "classes": [
+                  {
+                    "range_as_printed": "0-1",
+                    "runoff_prospect": "Very High",
+                    "source_assigned_weight": 8,
+                    "source_normalized_weight": 0.348
+                  },
+                  {
+                    "range_as_printed": "1-3",
+                    "runoff_prospect": "High",
+                    "source_assigned_weight": 7,
+                    "source_normalized_weight": 0.304
+                  },
+                  {
+                    "range_as_printed": "3-5",
+                    "runoff_prospect": "Moderate",
+                    "source_assigned_weight": 5,
+                    "source_normalized_weight": 0.217
+                  },
+                  {
+                    "range_as_printed": "5-10",
+                    "runoff_prospect": "Low",
+                    "source_assigned_weight": 3,
+                    "source_normalized_weight": 0.131
+                  }
+                ],
+                "above_10_pct": "Unreported.",
+                "endpoint_convention": "Assignment at shared endpoints unresolved."
+              },
+              "interpretation": "decreasing",
+              "disposition": "Regional prospect classes for rainwater harvesting before structure-specific site screening."
+            },
+            {
+              "evidence_id": "ev_wh_slope_ryan20_1",
+              "source_id": "sanddam_siting_guidelines_kenya_2020",
+              "evidence_sha256": "6befa2c24e93840321e9f6f5a9706695bef2fba4dca0ba026843a04c4435dbf3",
+              "source_artifact_sha256": "a31e97eeb33847d34b5108fd095b2ed8c744e463547dde94b9c97d7d70920ecf",
+              "locator": "PDF p. 9, Table 3 (siting guidance); PDF pp. 21–22, Figure 11 and Table 9; p. 23, Topography discussion.",
+              "source_quote": "Indicators considered \nwhen siting sand dams\nFactors\nStandard guidelines\nSource\n1\nSoil type\nHigh in sand content\n(Based on guidelines by FAO (2006) (Sand; \n0.063–2 mm, Silt; 0.002–0.063 mm, \nclay, < 0.002 mm)\nSurvey of Kenya\n2\nRainfall amount\nMedium to high ≥ 200 mm\nRCMRD\n3\nTopography\nCatchment slope 2–4%\nDEM from RCMRD\n4\nGeology/Lithology\nImpermeable riverbeds\nRCMRD\n5\nRock outcrop\nPresence of rock outcrops",
+              "structure": "Sand dams, Tiva catchment, Kitui, Kenya",
+              "unit": "percent grade",
+              "published_profile": {
+                "unit": "percent grade",
+                "role": "historical siting guideline evaluated against observed water presence",
+                "slope_measure": "catchment slope",
+                "historical_siting_guideline_pct": [
+                  2,
+                  4
+                ],
+                "field_results": [
+                  {
+                    "catchment_slope_as_printed": "≤1",
+                    "with_water": 36,
+                    "without_water": 35
+                  },
+                  {
+                    "catchment_slope_as_printed": "1–2",
+                    "with_water": 4,
+                    "without_water": 5
+                  },
+                  {
+                    "catchment_slope_as_printed": "2–5",
+                    "with_water": 1,
+                    "without_water": 8
+                  },
+                  {
+                    "catchment_slope_as_printed": "5–10",
+                    "with_water": 0,
+                    "without_water": 0
+                  },
+                  {
+                    "catchment_slope_as_printed": "10–20",
+                    "with_water": 0,
+                    "without_water": 0
+                  }
+                ],
+                "field_result_scope": "Presence of water at assessment. Authors found no clear slope-performance pattern. No sampled dams in the two steepest classes.",
+                "riverbed_gradient": "Separate measure; guidance and field results here concern the catchment."
+              },
+              "interpretation": "Keep historical 2–4% catchment slope guidance together with field results. Eight of nine dams on 2–5% catchment slopes were dry at assessment. Authors found no clear slope pattern. Leave optimum unresolved.",
+              "disposition": "Historical catchment-slope siting guideline for sand dams and an empirical water-availability check in a differently bounded interval."
+            },
+            {
+              "evidence_id": "ev_wh_slope_alabadi17_1",
+              "source_id": "fuzzy_ahp_2017_wh_zones",
+              "evidence_sha256": "a3ef21932d2f1d8b9c20f23ecbb5f3c2e5a5ae96c5a09790a643c9e77d7c9b48",
+              "source_artifact_sha256": "07f96426d2108f87ff4d492c98ae15e6954594d13924944c99d467cde563cadb",
+              "locator": "PDF p. 5, slope classification and Fig. 3a; PDF p. 11, Table 4, Figure 10 and mapped results.",
+              "source_quote": "Table 4 Factor weights by using AHP\nFactor\nRunoff\ndepth (mm)\nHSG\nLand\ncover\nSlope (%)\nDistance to\nstreams\nWeight\n0.368\n0.248\n0.117\n0.069\n0.198\nConsistency\nratio\n0.02\nDewereg Dam\nLow infiltration rate soil (HSG = C @ D), flat slope, \nand Barren land cover) appropriate area for check \ndams",
+              "structure": "Check dams and percolation ponds, Maysan Governorate, Iraq",
+              "unit": "percent grade",
+              "published_profile": {
+                "unit": "percent grade",
+                "role": "regional multicriteria model",
+                "terrain_legend": {
+                  "flat": "<2",
+                  "undulating": "2–8",
+                  "rolling": "8–15",
+                  "hilly": "15–30"
+                },
+                "structure_criteria": {
+                  "check dams": {
+                    "terrain": [
+                      "flat"
+                    ],
+                    "soil": "low infiltration (hydrologic soil groups C or D)",
+                    "land_cover": "barren"
+                  },
+                  "percolation ponds": {
+                    "terrain": [
+                      "undulating",
+                      "rolling"
+                    ],
+                    "soil": "moderate infiltration (hydrologic soil groups B or C)",
+                    "land_cover": "exposed rocks and barren land"
+                  }
+                },
+                "criterion_weight": 0.069,
+                "consistency_ratio": 0.02,
+                "output_description": "Good/excellent mapped water-harvesting zones described as flat, undulating (2–8%) in results."
+              },
+              "interpretation": "Keep the local check-dam flat-terrain and percolation-pond undulating/rolling profiles with soil and land cover. Slope criterion weight 0.069 is study-specific. The 2–8% description is a mapped result.",
+              "disposition": "Check-dam and percolation-pond terrain classes conditional on soil and land cover. Reported map outcomes and model criterion weight serve separate roles."
+            },
+            {
+              "evidence_id": "ev_wh_slope_karimi19_1",
+              "source_id": "karimi_2019_runoff_map_rwh_zones",
+              "evidence_sha256": "22f172f83eb08e1bbf1492952ec19cf5cfb7de31b2080a4b15c9c9d6ce30e97b",
+              "source_artifact_sha256": "305ea812cfbae5c78718492d6d3edf18a32af528820473346828a85d2ab8f901",
+              "locator": "PDF p. 6, slope discussion; PDF p. 19, Table 6, slope criterion and class weights.",
+              "source_quote": "Table 6 Weights of the thematic layers and runoff map with their assigned weights \nCriteria \nFeatures \nRank Code \nAssigned weights \nNormalized \nweights \nRunoff \n \n \n0.427 \n \n \n>200 (High) \n100-200 (Moderate) \n1 \n2 \n \n0.22 \n0.122 \n \n<100 (Low) \n3 \n \n0.067 \nLand use \n \n \n0.26 \n \n \nShrubland \n1 \n \n0.135 \n \nSavana \n2 \n \n0.061 \n \nForest \n3 \n \n0.039 \n \nCrop Land \n4 \n \n0.022 \n \nResidential \n5 \n \n0.016 \nSlope \n \n \n0.158 \n \n \n0-5 (Nearly level) \n1 \n \n0.082 \n \n5-10 (Moderate) \n2 \n \n0.043 \n \n10-15 (Strong) \n3 \n \n0.034 \n \n15-30 (Moderate \nsteep) \n4 \n \n0.016 \n \n>30 (Very steep) \n5 \n \n0.006 \nHSG \n \n \n0.096 \n \n \nD \n1 \n \n0.050 \n \nC \n2 \n \n0.019 \n \nB \n3 \n \n0.011 \nDrainage density \n \n \n0.059 \n \n \n<0.5 \n1 \n \n0.03 \n \n0.5-1 \n2 \n \n0.015 \n \n>1 \n3 \n \n0.008",
+              "structure": "Farm pond targeting, Kakareza watershed, Iran",
+              "unit": "percent grade",
+              "published_profile": {
+                "unit": "percent grade",
+                "role": "regional farm-pond siting model",
+                "criterion_weight": 0.158,
+                "rank_1_is": "best",
+                "construction_text": "The discussion cites Critchley et al. (1991) and Napoli et al. (2014) for unsuitability above 5% and uses this to justify the greatest weight for the lowest slope class.",
+                "classes": [
+                  {
+                    "slope_as_printed": "0–5",
+                    "rank": 1,
+                    "normalized_feature_weight": 0.082
+                  },
+                  {
+                    "slope_as_printed": "5–10",
+                    "rank": 2,
+                    "normalized_feature_weight": 0.043
+                  },
+                  {
+                    "slope_as_printed": "10–15",
+                    "rank": 3,
+                    "normalized_feature_weight": 0.034
+                  },
+                  {
+                    "slope_as_printed": "15–30",
+                    "rank": 4,
+                    "normalized_feature_weight": 0.016
+                  },
+                  {
+                    "slope_as_printed": ">30",
+                    "rank": 5,
+                    "normalized_feature_weight": 0.006
+                  }
+                ],
+                "interpretation": "The implemented table assigns positive weights above 5%. Preserve both source statements without inferring a hard cutoff."
+              },
+              "interpretation": "Keep the construction text calling slopes above 5% unsuitable and the model table assigning positive weights to every class, including >30%. Retain the five ranks and 0.158 within-study criterion weight.",
+              "disposition": "Farm-pond model class weights and conflicting cited construction guidance. All five model bands receive positive weight."
+            },
+            {
+              "evidence_id": "ev_wh_slope_vema19_1",
+              "source_id": "singh_2019_fuzzy_wh_structure_rainfed",
+              "evidence_sha256": "0d014d7de408ab97035a192c84f92aeb4c91865eedf5a2f5ec2fb78175cbf352",
+              "source_artifact_sha256": "d840c4b5058a1bda4a71ea47ab002ae874356b525198cc7505a8145d5aed1b8e",
+              "locator": "PDF pp. 3–4, membership example, Table 2, Figure 1 and §3.3.1; p. 6, Figure 4b and mapped terrain.",
+              "source_quote": "Table 2\nFuzzy Membership Function Parameters.\nLow\nMedium\nHigh\na\nb\nc\nd\na\nb\nc\nd\na\nb\nc\nd\nSlope (%)\n0\n0\n5\n10\n5\n10\n20\n30\n20\n30\n100\n100\nSoil Permeability (cm/day)\n0\n0\n12\n48\n12\n48\n151\n305\n151\n305\n900\n1000\nRunoﬀPotential (CN)\n0\n35\n55\n60\n55\n60\n75\n80\n75\n80\n100\n100\n",
+              "structure": "Joint siting model for check dams, farm ponds and percolation tanks, Kondepi, India",
+              "unit": "percent grade",
+              "published_profile": {
+                "unit": "percent grade",
+                "role": "fuzzy model input classes",
+                "parameter_order": [
+                  "a",
+                  "b",
+                  "c",
+                  "d"
+                ],
+                "input_membership_function": "trapezoidal",
+                "classes": {
+                  "low": [
+                    0,
+                    0,
+                    5,
+                    10
+                  ],
+                  "medium": [
+                    5,
+                    10,
+                    20,
+                    30
+                  ],
+                  "high": [
+                    20,
+                    30,
+                    100,
+                    100
+                  ]
+                },
+                "inputs": [
+                  "slope",
+                  "soil permeability",
+                  "runoff potential"
+                ],
+                "rule_count": 27,
+                "mapped_slope_range_pct": [
+                  0,
+                  11.97
+                ],
+                "example": {
+                  "soil_permeability": "low",
+                  "slope": "high",
+                  "runoff_potential": "low",
+                  "check_dam": "low",
+                  "farm_pond": "not suitable",
+                  "percolation_tank": "medium"
+                },
+                "source_lineage": "Rule base uses prior studies including Kadam et al. (2012) and expert knowledge.",
+                "source_ambiguity": "PDF p3 worked 8% slope example gives low/medium memberships 0.2/0.8, inconsistent with Table 2 trapezoids (0.4/0.6). Table values retained literally; no repair inferred."
+              },
+              "interpretation": "decreasing",
+              "disposition": "Fuzzy slope input classes used jointly with soil permeability and runoff potential to assess surface storage and recharge structures.",
+              "source_internal_ambiguity": "PDF p3 worked 8% slope example gives low/medium memberships 0.2/0.8, inconsistent with Table 2 trapezoids (0.4/0.6). Table values retained literally; no repair inferred."
+            },
+            {
+              "evidence_id": "ev_wh_slope_critchley91_trapezoidal",
+              "source_id": "fao_critchley_wh_manual_1991",
+              "evidence_sha256": "e3f17011a603bdcdadb849bddbe72fa5501daf8373da51fe1c8a43b16c78e740",
+              "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+              "locator": "FAO manual §5.6.2, Suitability and Limitations.",
+              "source_quote": "Suitability Trapezoidal bunds can be used for growing crops, trees and grass. Their most common application is for crop production under the following site conditions: Rainfall: 250 mm - 500 mm; arid to semi-arid areas. Soils: agricultural soils with good constructional properties i.e. significant (non-cracking) clay content. Slopes: from 0.25% - 1.5%, but most suitable below 0.5%.",
+              "structure": "Trapezoidal bunds for crop production",
+              "unit": "percent grade",
+              "published_profile": {
+                "unit": "percent grade",
+                "role": "implementation recommendation",
+                "slope_interval_as_printed": "0.25–1.5",
+                "most_suitable_as_printed": "<0.5",
+                "terrain": "even enclosed area",
+                "construction_above_1_5_pct": "Technically feasible; prohibitively large quantities of earthwork.",
+                "rainfall_mm_per_year": [
+                  250,
+                  500
+                ],
+                "soil": "Agricultural soil with significant non-cracking clay suitable for bund construction."
+              },
+              "interpretation": "Keep 0.25–1.5% guidance for crop-producing trapezoidal bunds, preferably below 0.5%, with even ground inside. Above 1.5% is technically feasible but needs prohibitively large earthworks.",
+              "disposition": "Construction recommendation for crop-producing trapezoidal bunds, including preference and earthworks constraint."
+            },
+            {
+              "evidence_id": "ev_wh_slope_wocatgl13_tanks",
+              "source_id": "wocat_wh_guidelines_2013",
+              "evidence_sha256": "2ede6cffacb97c5e9508c344c3dd779d39c1eb7b61189468adf70be2f19f305f",
+              "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+              "locator": "PDF p. 88, printed p. 75, cultivated reservoirs / tanks paragraph.",
+              "source_quote": "Cultivated reservoirs / tanks are above ground earthen water retention struc- tures. Tanks are constructed on gentile slopes (1 – 10%)",
+              "structure": "Cultivated above-ground earthen reservoirs and tanks",
+              "unit": "percent grade",
+              "published_profile": {
+                "unit": "percent grade",
+                "role": "design-specific construction guidance",
+                "slope_interval_as_printed": "1–10",
+                "rainfall_mm_per_year": [
+                  150,
+                  600
+                ],
+                "storage": "Above-ground earthen water retention by excavation and/or bund construction.",
+                "cultivation": "After stored water is used, residual moisture supports cropping of the tank bed."
+              },
+              "interpretation": "Keep the 1–10% construction range for cultivated above-ground tanks, paired with 150–600 mm annual rainfall. The drained reservoir bed can be cultivated on residual moisture. Other excavated ponds have separate guidance.",
+              "disposition": "Construction conditions for cultivated reservoirs and tanks storing runoff above ground."
+            }
+          ],
+          "spatial_input": "SRTM provides local terrain slope in degrees, derived before aggregation. To compare local terrain with a percent-grade source, convert as 100 × tan(angle in radians) at the derivative scale. For a catchment slope require the matching catchment boundaries and summary statistic. A terrain cell or riverbed gradient cannot substitute for the sand-dam catchment measure.",
+          "source_count_basis": "Eight distinct publications retain slope-use evidence. Cited guidance and study weights remain attached to their sources. This count does not establish eight independent validations of a common threshold.",
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "type": "trapezoidal",
+            "params": {
+              "abs_min": 0.1,
+              "opt_low": 0.0,
+              "opt_high": 2.3,
+              "abs_max": 5.7
+            },
+            "uncertainty_pct": "60.0"
+          }
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.1111,
+    "weight_adjustable": true,
+    "justification": "Keep all eight slope profiles by structure and purpose. The Karimi text and weighted table disagree. Ngugi compares a historical catchment-slope guideline with field observations. No shared cutoff or numerical score is approved. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "variable": "slope",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": [
+      "ev_wh_slope_kadam12_1",
+      "ev_wh_slope_singh17_2",
+      "ev_wh_slope_ryan20_1",
+      "ev_wh_slope_alabadi17_1",
+      "ev_wh_slope_karimi19_1",
+      "ev_wh_slope_vema19_1",
+      "ev_wh_slope_critchley91_trapezoidal",
+      "ev_wh_slope_wocatgl13_tanks"
+    ],
+    "n_sources": 8
+  },
+  {
     "mapping_id": "water_harvesting__runoff_catchment__stream_order",
     "nbs_id": "water_harvesting_conservation",
     "suitability_dimension": "biophysical_constraint",
