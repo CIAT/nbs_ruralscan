@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-09T07:01:07.152267+00:00",
-  "git_commit": "5a7b2ccc254309480533c10aea0ca24d0c639654",
+  "timestamp": "2026-11-09T07:17:40.720286+00:00",
+  "git_commit": "461b31ab8db2cf9107f6c654f70f221dfeabf521",
   "registers": {
     "SRC_source_register": [
       {
@@ -32098,9 +32098,67 @@
         "relationship": {
           "opt_low": 15,
           "opt_high": 35,
-          "abs_max": 55,
+          "abs_max": null,
           "unit": "percent",
-          "direction": "clay content 15-35% is optimal, 6-15% and 35-55% still workable, 0-6% marginal and above 55% not suitable — both too sandy and too heavy fail"
+          "direction": "For terraces and bunds the 15–35% class ranks highest. Below that band the 6–15% class ranks higher than the 35–55% band. Above 55% is labelled Not suitable (1). Restricted (0) has no clay range.",
+          "source_classes": [
+            {
+              "clay_percent_printed": "15–35",
+              "source_label": "Optimally suitable",
+              "source_score": 9
+            },
+            {
+              "clay_percent_printed": "6–15",
+              "source_label": "Highly suitable",
+              "source_score": 7
+            },
+            {
+              "clay_percent_printed": "35–55",
+              "source_label": "Moderately suitable",
+              "source_score": 5
+            },
+            {
+              "clay_percent_printed": "0–6",
+              "source_label": "Marginally suitable",
+              "source_score": 3
+            },
+            {
+              "clay_percent_printed": ">55",
+              "source_label": "Not suitable",
+              "source_score": 1
+            },
+            {
+              "clay_percent_printed": "—",
+              "source_label": "Restricted",
+              "source_score": 0
+            }
+          ],
+          "scale": "Source preference scale 1 (Not suitable) to 9 (Optimally suitable). A separate Restricted category is 0."
+        },
+        "context": {
+          "model_use": {
+            "purpose": "Ronquillo watershed, northern Peru. Krois & Schulte rank potential sites for terraces and bunds. Table 4 applies the same clay classes to both structures. Existing mapping is terracing.",
+            "weights": {
+              "type": "Table 5 AHP relative importance weights",
+              "six_criteria": {
+                "rainfall": 0.04,
+                "runoff_coefficient": 0.14,
+                "slope": 0.39,
+                "land_use": 0.14,
+                "soil_texture": 0.15,
+                "soil_depth": 0.14
+              },
+              "consistency_ratio": 0.008,
+              "locator": "Table 5, PDF10 / printed p140. The 0.15 soil-texture criterion weight is distinct from class scores."
+            }
+          },
+          "source_table": {
+            "locator": "Table 4/Fig. 8, PDF9 / printed p139. Site-selection purpose PDF1. Same rating across terraces and bunds except slope PDF7. Table 5 and discussion PDF10.",
+            "source_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd",
+            "measurement_context": "Six-criterion GIS/AHP weighted overlay. Classes collectively derive from reviewed SWC manuals/studies. Authors report expert preferences for suitability levels and weights. Model uses 30 m cells (PDF4).",
+            "interpretation": "Source explicitly labels >55% “Not suitable” and scores it 1. No clay range appears in the distinct Restricted/0 column. Exactly 55 belongs to the printed 35–55 interval; >55 is strict. Shared boundaries at 6, 15 and 35 have no stated tie convention. Preserve 1 versus 0, asymmetric rankings, and the literal intervals before any decision about runtime class scores or a mask.",
+            "applicable_column": "soil texture (% clay content), terraces and bunds"
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -33087,9 +33145,9 @@
         "relationship": {
           "opt_low": 15.1,
           "opt_high": 35,
-          "abs_max": 55,
+          "abs_max": null,
           "unit": "percent",
-          "scale": "suitability rank 1 (least) to 5 (most); IRWH = in-field RWH, XRWH = ex-field (external catchment) RWH",
+          "scale": "5 most suitable, 1 least suitable. Table 4 does not define a zero or excluded clay class.",
           "irwh_ranks": {
             "0-6": "2-1",
             "6.1-15": 4,
@@ -33098,7 +33156,78 @@
             "35.1-55": 3,
             ">55": 1
           },
-          "direction": "in-field RWH is best on sandy clay loam, 15.1-35% clay; sands and heavy clays (>55%) are least suited"
+          "direction": "In-field harvesting ranks the two 15.1–35% classes highest. Above 55% has the least-suitable rank (1). The 0–6% class carries the printed 2–1 rank.",
+          "source_classes": [
+            {
+              "clay_class": "C1",
+              "clay_percent_printed": "0–6",
+              "texture": "Loamy sands to sands",
+              "irwh_rank_printed": "2–1",
+              "xrwh_rank_printed": "2–1"
+            },
+            {
+              "clay_class": "C2",
+              "clay_percent_printed": "6.1–15",
+              "texture": "Sandy loams",
+              "irwh_rank_printed": 4,
+              "xrwh_rank_printed": 3
+            },
+            {
+              "clay_class": "C3",
+              "clay_percent_printed": "15.1–25",
+              "texture": "Sandy clay loam",
+              "irwh_rank_printed": 5,
+              "xrwh_rank_printed": 4
+            },
+            {
+              "clay_class": "C4",
+              "clay_percent_printed": "25.1–35",
+              "texture": "Sandy clay loam",
+              "irwh_rank_printed": 5,
+              "xrwh_rank_printed": 4
+            },
+            {
+              "clay_class": "C5",
+              "clay_percent_printed": "35.1–55",
+              "texture": "Sandy clays",
+              "irwh_rank_printed": 3,
+              "xrwh_rank_printed": 5
+            },
+            {
+              "clay_class": "C6",
+              "clay_percent_printed": ">55",
+              "texture": "Clays",
+              "irwh_rank_printed": 1,
+              "xrwh_rank_printed": 3
+            }
+          ]
+        },
+        "context": {
+          "model_use": {
+            "purpose": "South Africa RWH suitability mapping. In-field RWH (IRWH) is the applicable source column for this in-situ row. Ex-field RWH (XRWH) uses an external catchment. The second column is preserved as source context.",
+            "weights": {
+              "type": "weights used in the physical models, not class ranks",
+              "IRWH": {
+                "aridity_zones": 0.33,
+                "land_cover": 0.33,
+                "soil_depth": 0.17,
+                "soil_texture": 0.17
+              },
+              "XRWH": {
+                "aridity_zones": 0.34,
+                "land_cover": 0.33,
+                "soil_texture": 0.33
+              },
+              "locator": "§2.3.1.1, PDF4–5; Figs. 4 and 5, PDF5. Physical model component of wider suitability assessment."
+            }
+          },
+          "source_table": {
+            "locator": "Table 4, PDF3 / printed p790. Methods §2.2.1.4 on same page. Scale PDF2. Physical model weights PDF4–5.",
+            "source_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+            "measurement_context": "ARC land-type dataset with six clay classes. Authors assume about 10% silt in most South African soils (Schulze 2006 citing Hutson 1984), then use FAO 2003 texture triangle for runoff/catchment vs runon/crop basin. This assumption matters when reusing clay-% alone. Selected mapping grid 100 × 100 m (PDF3).",
+            "interpretation": "The C1 rank is printed 2–1 for loamy sands to sands, without a clay-percentage subdivision. Retain that ambiguity. Printed 0/6.1/15.1/etc. encode source classes at the displayed precision; continuous values between printed endpoints have no stated assignment. No zeroing above 55%, no universal hard bound, interpolation or normalized score follows from these ranks.",
+            "applicable_column": "IRWH; XRWH is a separate external-catchment use"
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -370063,9 +370192,9 @@
     }
   ],
   "qaqc_stats": {
-    "total_reviews": 2456,
+    "total_reviews": 2458,
     "queried": 211,
-    "n_reviewers": 23,
+    "n_reviewers": 24,
     "by_reviewer": {
       "ai_mechanism_rule": 727,
       "orchestrator": 466,
@@ -370088,12 +370217,13 @@
       "ai_supersede_check": 4,
       "Codex source recovery": 3,
       "ai_scope_classifier_repair": 2,
+      "ai_t4_clay_source_check": 2,
       "Namita-J,peetmate": 1,
       "ai_retro_2026-10-29": 1
     },
     "by_decision": {
       "drop": 1541,
-      "ok": 592,
+      "ok": 594,
       "flag": 210,
       "reclassify": 18,
       "retag": 4,
@@ -370103,7 +370233,7 @@
     },
     "by_reason": {
       "insufficient_context": 695,
-      "accepted_correction": 558,
+      "accepted_correction": 560,
       "unspecified": 312,
       "other": 270,
       "wrong_practice": 167,
@@ -370139,7 +370269,7 @@
       "routing_ruling": 3,
       "variable_ruling": 31,
       "direction_audit": 122,
-      "unit_correction": 81
+      "unit_correction": 83
     },
     "flag_eval": {
       "tp": 64,
@@ -370150,10 +370280,10 @@
       "tp_corrected": 26
     },
     "pass_eval": {
-      "tn": 564,
+      "tn": 566,
       "fn": 10,
       "out_of_remit": 1493,
-      "checked": 2067,
+      "checked": 2069,
       "fn_rate_pct": 1.7
     },
     "recall_est_pct": 86.5,
@@ -402309,6 +402439,26 @@
       "reason": "other",
       "note": "superseded_by=ev_sediment_retention_fien05_1 (#32); verdict faithful on direction and numbers with minor drift: pond volume is 30-260 m3 per ha of watershed, the 22 ha are four watersheds, 54-85% was measured in 1993 only (long-term about 50-80%), mulch tillage above the ponds omitted",
       "reviewer": "orchestrator"
+    },
+    {
+      "date": "2026-11-09",
+      "evidence_id": "ev_wh_soil_texture_krois14_1",
+      "source_id": "gismcda_swc_siting_2014",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.model_use, context.source_table, relationship.abs_max, relationship.direction, relationship.scale, relationship.source_classes: Record the complete verified clay Table 4 and model weights. The >55% class carries a source score; the former absolute-maximum field misrepresented its meaning. Optimum fields summarize the highest printed class. Preserve the original scope, page, quote and human review state.",
+      "reviewer": "ai_t4_clay_source_check"
+    },
+    {
+      "date": "2026-11-09",
+      "evidence_id": "ev_wh_clay_content_kahinda08_1",
+      "source_id": "kahinda2008_sa_rwh_suitability",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.model_use, context.source_table, relationship.abs_max, relationship.direction, relationship.scale, relationship.source_classes: Record the complete verified clay Table 4 and model weights. The >55% class carries a source score; the former absolute-maximum field misrepresented its meaning. Optimum fields summarize the highest printed class. Preserve the original scope, page, quote and human review state.",
+      "reviewer": "ai_t4_clay_source_check"
     }
   ],
   "family_presentation": {
@@ -402926,11 +403076,11 @@
       "source_id": "kahinda2008_sa_rwh_suitability",
       "page": "3",
       "mapping_id": "water_harvesting__in_situ__clay_content",
-      "reason": "Source checked; proposed HOLD (not applied). Table 4 (PDF3) ranks 15.1–35% clay highest for in-field harvesting; >55% clay still has rank 1. The 0–6% class carries an unresolved 2–1 rank, and 0.1-point gaps reflect published class notation rather than demonstrated ecological discontinuities. Texture conversion assumes about 10% silt in South African soils. Current abs_max=55 is stronger than the table.",
-      "decision_needed": "Hold current >55% exclusion. Retain complete in-field clay classes for synthesis, preserving the 2–1 ambiguity, class-boundary gaps and texture/silt assumptions; no silent interpolation. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source evidence corrected, 9 November 2026. Kahinda Table 4, PDF p. 3. In-field harvesting peaks at ranks 5 in 15.1–25% and 25.1–35% clay. Above 55% is least suitable (1 of 5). The 0–6% class prints 2–1. The external-catchment column has its own ranks and application. In-field soil texture carries weight 0.17 in the physical model.",
+      "decision_needed": "Compare the two studies on a common five-rank scale with equal weight per paper. At 10%, 20%, 50% and 56% clay their mean ranks are 4, 5, 3 and 1. Preserve the original practice contexts, source labels, low-clay ambiguity and unresolved endpoints when using this comparison in family synthesis. The current recipe still carries its legacy 55% bound.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "ef900b35a8e36b59c3d895774ba190e0b6d9b40c470d6c35c3101f04409aa646",
+      "evidence_sha256": "e04c38b512bb007be901ec4b0b065cd09d49456eee71454df9e51d2445cb5e38",
       "source_locator": "",
       "context_changed": false
     },
@@ -403630,11 +403780,11 @@
       "source_id": "gismcda_swc_siting_2014",
       "page": "9",
       "mapping_id": "water_harvesting__terracing__clay_content",
-      "reason": "Source checked; proposed HOLD (not applied). Table 4 ranks clay 15–35% optimal, 6–15 high, 35–55 moderate, 0–6 marginal, >55 not suitable (score 1). Current relationship collapses this to optimum and abs_max=55, losing intermediate classes and nonzero source score.",
-      "decision_needed": "Hold incomplete scalar encoding; keep full clay-percentage table with unequal rankings either side of optimum. Approve source profile only; harmonised scores and exclusion meanings remain separate. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source evidence corrected, 9 November 2026. Krois Table 4, PDF p. 9. Terraces and bunds use 0–6% marginal (3), 6–15% high (7), 15–35% optimal (9), 35–55% moderate (5), >55% not suitable (1). The restricted score 0 has a dash for clay. Soil texture carries AHP weight 0.15 (Table 5).",
+      "decision_needed": "Compare the two studies on a common five-rank scale with equal weight per paper. At 10%, 20%, 50% and 56% clay their mean ranks are 4, 5, 3 and 1. Preserve the original practice contexts, source labels, low-clay ambiguity and unresolved endpoints when using this comparison in family synthesis. The current recipe still carries its legacy 55% bound.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "f388b02208442764867058e2a586a7136e4e72313e21839efe7cbabf7a5025b1",
+      "evidence_sha256": "06411677b369801213c9f1a6c1714572e140cebe467ba11bf15f141dfe6bcabb",
       "source_locator": "",
       "context_changed": false
     },
@@ -431642,7 +431792,9 @@
         ],
         "dropped_evidence_ids": [],
         "approved_evidence_ids": [],
-        "reviewed_evidence_ids": [],
+        "reviewed_evidence_ids": [
+          "ev_wh_soil_texture_krois14_1"
+        ],
         "extraction_counts": {
           "T4": 7,
           "effects": 0,
@@ -436539,7 +436691,9 @@
         ],
         "dropped_evidence_ids": [],
         "approved_evidence_ids": [],
-        "reviewed_evidence_ids": [],
+        "reviewed_evidence_ids": [
+          "ev_wh_clay_content_kahinda08_1"
+        ],
         "extraction_counts": {
           "T4": 11,
           "effects": 0,
@@ -493440,19 +493594,19 @@
       "extracted_sources": 713,
       "reviewed_sources": 160,
       "fully_reviewed_sources": 61,
-      "sources_with_reviewed_excerpts": 388,
+      "sources_with_reviewed_excerpts": 390,
       "sources_with_approved_excerpts": 160,
       "active_excerpts": 4913,
       "retained_excerpts": 4913,
       "all_excerpts": 6447,
-      "reviewed_excerpts": 2131,
-      "unreviewed_excerpts": 4316,
+      "reviewed_excerpts": 2133,
+      "unreviewed_excerpts": 4314,
       "reviewed_pct": 33.1,
       "approved_excerpts": 414,
       "approved_pct": 19.4,
-      "reviewed_active_excerpts": 602,
+      "reviewed_active_excerpts": 604,
       "reviewed_dropped_excerpts": 1529,
-      "reviewed_unresolved_excerpts": 188,
+      "reviewed_unresolved_excerpts": 190,
       "dropped_excerpts": 1534,
       "t4_relationships": 57,
       "t4_operational_relationships": 8,
@@ -520632,19 +520786,19 @@
           "extracted_sources": 196,
           "reviewed_sources": 20,
           "fully_reviewed_sources": 3,
-          "sources_with_reviewed_excerpts": 134,
+          "sources_with_reviewed_excerpts": 136,
           "sources_with_approved_excerpts": 20,
           "active_excerpts": 1724,
           "retained_excerpts": 1724,
           "all_excerpts": 2629,
-          "reviewed_excerpts": 1025,
-          "unreviewed_excerpts": 1604,
-          "reviewed_pct": 39.0,
+          "reviewed_excerpts": 1027,
+          "unreviewed_excerpts": 1602,
+          "reviewed_pct": 39.1,
           "approved_excerpts": 40,
           "approved_pct": 3.9,
-          "reviewed_active_excerpts": 121,
+          "reviewed_active_excerpts": 123,
           "reviewed_dropped_excerpts": 904,
-          "reviewed_unresolved_excerpts": 81,
+          "reviewed_unresolved_excerpts": 83,
           "dropped_excerpts": 905,
           "t4_relationships": 25,
           "t4_operational_relationships": 0,
@@ -521794,19 +521948,19 @@
               "extracted_sources": 60,
               "reviewed_sources": 6,
               "fully_reviewed_sources": 1,
-              "sources_with_reviewed_excerpts": 45,
+              "sources_with_reviewed_excerpts": 46,
               "sources_with_approved_excerpts": 6,
               "active_excerpts": 361,
               "retained_excerpts": 361,
               "all_excerpts": 613,
-              "reviewed_excerpts": 287,
-              "unreviewed_excerpts": 326,
-              "reviewed_pct": 46.8,
+              "reviewed_excerpts": 288,
+              "unreviewed_excerpts": 325,
+              "reviewed_pct": 47.0,
               "approved_excerpts": 12,
               "approved_pct": 4.2,
-              "reviewed_active_excerpts": 35,
+              "reviewed_active_excerpts": 36,
               "reviewed_dropped_excerpts": 252,
-              "reviewed_unresolved_excerpts": 23,
+              "reviewed_unresolved_excerpts": 24,
               "dropped_excerpts": 252,
               "t4_relationships": 5,
               "t4_operational_relationships": 0,
@@ -524279,19 +524433,19 @@
               "extracted_sources": 64,
               "reviewed_sources": 6,
               "fully_reviewed_sources": 2,
-              "sources_with_reviewed_excerpts": 36,
+              "sources_with_reviewed_excerpts": 37,
               "sources_with_approved_excerpts": 6,
               "active_excerpts": 421,
               "retained_excerpts": 421,
               "all_excerpts": 673,
-              "reviewed_excerpts": 275,
-              "unreviewed_excerpts": 398,
-              "reviewed_pct": 40.9,
+              "reviewed_excerpts": 276,
+              "unreviewed_excerpts": 397,
+              "reviewed_pct": 41.0,
               "approved_excerpts": 12,
-              "approved_pct": 4.4,
-              "reviewed_active_excerpts": 23,
+              "approved_pct": 4.3,
+              "reviewed_active_excerpts": 24,
               "reviewed_dropped_excerpts": 252,
-              "reviewed_unresolved_excerpts": 11,
+              "reviewed_unresolved_excerpts": 12,
               "dropped_excerpts": 252,
               "t4_relationships": 5,
               "t4_operational_relationships": 0,
@@ -575154,19 +575308,19 @@
           "extracted_sources": 197,
           "reviewed_sources": 60,
           "fully_reviewed_sources": 54,
-          "sources_with_reviewed_excerpts": 75,
+          "sources_with_reviewed_excerpts": 77,
           "sources_with_approved_excerpts": 60,
           "active_excerpts": 851,
           "retained_excerpts": 851,
           "all_excerpts": 1070,
-          "reviewed_excerpts": 433,
-          "unreviewed_excerpts": 637,
-          "reviewed_pct": 40.5,
+          "reviewed_excerpts": 435,
+          "unreviewed_excerpts": 635,
+          "reviewed_pct": 40.7,
           "approved_excerpts": 215,
-          "approved_pct": 49.7,
-          "reviewed_active_excerpts": 216,
+          "approved_pct": 49.4,
+          "reviewed_active_excerpts": 218,
           "reviewed_dropped_excerpts": 217,
-          "reviewed_unresolved_excerpts": 1,
+          "reviewed_unresolved_excerpts": 3,
           "dropped_excerpts": 219,
           "t4_relationships": 49,
           "t4_operational_relationships": 0,
@@ -579789,19 +579943,19 @@
               "extracted_sources": 71,
               "reviewed_sources": 2,
               "fully_reviewed_sources": 2,
-              "sources_with_reviewed_excerpts": 5,
+              "sources_with_reviewed_excerpts": 7,
               "sources_with_approved_excerpts": 2,
               "active_excerpts": 367,
               "retained_excerpts": 367,
               "all_excerpts": 382,
-              "reviewed_excerpts": 20,
-              "unreviewed_excerpts": 362,
-              "reviewed_pct": 5.2,
+              "reviewed_excerpts": 22,
+              "unreviewed_excerpts": 360,
+              "reviewed_pct": 5.8,
               "approved_excerpts": 5,
-              "approved_pct": 25.0,
-              "reviewed_active_excerpts": 5,
+              "approved_pct": 22.7,
+              "reviewed_active_excerpts": 7,
               "reviewed_dropped_excerpts": 15,
-              "reviewed_unresolved_excerpts": 0,
+              "reviewed_unresolved_excerpts": 2,
               "dropped_excerpts": 15,
               "t4_relationships": 25,
               "t4_operational_relationships": 0,
@@ -580035,19 +580189,19 @@
                   "extracted_sources": 12,
                   "reviewed_sources": 1,
                   "fully_reviewed_sources": 1,
-                  "sources_with_reviewed_excerpts": 4,
+                  "sources_with_reviewed_excerpts": 5,
                   "sources_with_approved_excerpts": 1,
                   "active_excerpts": 48,
                   "retained_excerpts": 48,
                   "all_excerpts": 63,
-                  "reviewed_excerpts": 18,
-                  "unreviewed_excerpts": 45,
-                  "reviewed_pct": 28.6,
+                  "reviewed_excerpts": 19,
+                  "unreviewed_excerpts": 44,
+                  "reviewed_pct": 30.2,
                   "approved_excerpts": 3,
-                  "approved_pct": 16.7,
-                  "reviewed_active_excerpts": 3,
+                  "approved_pct": 15.8,
+                  "reviewed_active_excerpts": 4,
                   "reviewed_dropped_excerpts": 15,
-                  "reviewed_unresolved_excerpts": 0,
+                  "reviewed_unresolved_excerpts": 1,
                   "dropped_excerpts": 15,
                   "t4_relationships": 5,
                   "t4_operational_relationships": 0,
@@ -580872,19 +581026,19 @@
                   "extracted_sources": 22,
                   "reviewed_sources": 2,
                   "fully_reviewed_sources": 2,
-                  "sources_with_reviewed_excerpts": 2,
+                  "sources_with_reviewed_excerpts": 3,
                   "sources_with_approved_excerpts": 2,
                   "active_excerpts": 76,
                   "retained_excerpts": 76,
                   "all_excerpts": 76,
-                  "reviewed_excerpts": 2,
-                  "unreviewed_excerpts": 74,
-                  "reviewed_pct": 2.6,
+                  "reviewed_excerpts": 3,
+                  "unreviewed_excerpts": 73,
+                  "reviewed_pct": 3.9,
                   "approved_excerpts": 2,
-                  "approved_pct": 100.0,
-                  "reviewed_active_excerpts": 2,
+                  "approved_pct": 66.7,
+                  "reviewed_active_excerpts": 3,
                   "reviewed_dropped_excerpts": 0,
-                  "reviewed_unresolved_excerpts": 0,
+                  "reviewed_unresolved_excerpts": 1,
                   "dropped_excerpts": 0,
                   "t4_relationships": 5,
                   "t4_operational_relationships": 0,
@@ -687653,11 +687807,68 @@
               "relationship": {
                 "opt_low": 15,
                 "opt_high": 35,
-                "abs_max": 55,
+                "abs_max": null,
                 "unit": "percent",
-                "direction": "clay content 15-35% is optimal, 6-15% and 35-55% still workable, 0-6% marginal and above 55% not suitable — both too sandy and too heavy fail"
+                "direction": "For terraces and bunds the 15–35% class ranks highest. Below that band the 6–15% class ranks higher than the 35–55% band. Above 55% is labelled Not suitable (1). Restricted (0) has no clay range.",
+                "source_classes": [
+                  {
+                    "clay_percent_printed": "15–35",
+                    "source_label": "Optimally suitable",
+                    "source_score": 9
+                  },
+                  {
+                    "clay_percent_printed": "6–15",
+                    "source_label": "Highly suitable",
+                    "source_score": 7
+                  },
+                  {
+                    "clay_percent_printed": "35–55",
+                    "source_label": "Moderately suitable",
+                    "source_score": 5
+                  },
+                  {
+                    "clay_percent_printed": "0–6",
+                    "source_label": "Marginally suitable",
+                    "source_score": 3
+                  },
+                  {
+                    "clay_percent_printed": ">55",
+                    "source_label": "Not suitable",
+                    "source_score": 1
+                  },
+                  {
+                    "clay_percent_printed": "—",
+                    "source_label": "Restricted",
+                    "source_score": 0
+                  }
+                ],
+                "scale": "Source preference scale 1 (Not suitable) to 9 (Optimally suitable). A separate Restricted category is 0."
               },
-              "context": "",
+              "context": {
+                "model_use": {
+                  "purpose": "Ronquillo watershed, northern Peru. Krois & Schulte rank potential sites for terraces and bunds. Table 4 applies the same clay classes to both structures. Existing mapping is terracing.",
+                  "weights": {
+                    "type": "Table 5 AHP relative importance weights",
+                    "six_criteria": {
+                      "rainfall": 0.04,
+                      "runoff_coefficient": 0.14,
+                      "slope": 0.39,
+                      "land_use": 0.14,
+                      "soil_texture": 0.15,
+                      "soil_depth": 0.14
+                    },
+                    "consistency_ratio": 0.008,
+                    "locator": "Table 5, PDF10 / printed p140. The 0.15 soil-texture criterion weight is distinct from class scores."
+                  }
+                },
+                "source_table": {
+                  "locator": "Table 4/Fig. 8, PDF9 / printed p139. Site-selection purpose PDF1. Same rating across terraces and bunds except slope PDF7. Table 5 and discussion PDF10.",
+                  "source_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd",
+                  "measurement_context": "Six-criterion GIS/AHP weighted overlay. Classes collectively derive from reviewed SWC manuals/studies. Authors report expert preferences for suitability levels and weights. Model uses 30 m cells (PDF4).",
+                  "interpretation": "Source explicitly labels >55% “Not suitable” and scores it 1. No clay range appears in the distinct Restricted/0 column. Exactly 55 belongs to the printed 35–55 interval; >55 is strict. Shared boundaries at 6, 15 and 35 have no stated tie convention. Preserve 1 versus 0, asymmetric rankings, and the literal intervals before any decision about runtime class scores or a mask.",
+                  "applicable_column": "soil texture (% clay content), terraces and bunds"
+                }
+              },
               "quote": "Table 4\nSuitability levels for SWCTs (terraces and bunds).\nSuitability rating\nOptimally suitable\nHighly suitable\nModerately suitable\nMarginally suitable\nNot suitable\nRestricted\nSuitability level\n9\n7\n5\n3\n1\n0\nRainfall (mm)\n400e600\n200e400\n600e800\n800e1000\n100e200\n1000e1200\n0e100\n>1200\ne\nRunoff coefﬁcient\n>0.9\n0.6e0.9\n0.3e0.6\n0e0.3\ne\ne\nSlope e terraces (\u0006)\n18e30\n10e18 > 30\n5e10\n2e5\n0e2\ne\nSlope e bunds (\u0006)\n<2e5\n5e10\n10e18\n18e30\n>30\ne\nSoil depth (m)\n>1.0\n0.5e1.0\n0.3e0.5\n0.2e0.3\n<0.2\ne\nSoil texture (% clay content)\n15e35\n6e15\n35e55\n0e6\n>55\ne\nLand use\nAgriculture\nMeadows, Shrub land,\nScarce vegetation\nGrassland\nForest\ne\nInfrastructure,\nWater bodies",
               "page": 9,
               "locator_type": "page",
@@ -687666,9 +687877,9 @@
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "clay content 15-35% is optimal, 6-15% and 35-55% still workable, 0-6% marginal and above 55% not suitable — both too sandy and too heavy fail",
+              "source_direction": "For terraces and bunds the 15–35% class ranks highest. Below that band the 6–15% class ranks higher than the 35–55% band. Above 55% is labelled Not suitable (1). Restricted (0) has no clay range.",
               "has_stated_direction": true,
-              "has_source_classes": false,
+              "has_source_classes": true,
               "source_shape": "",
               "compilation_disposition": "not_accounted",
               "linked_mapping_ids": [
@@ -688944,9 +689155,9 @@
               "relationship": {
                 "opt_low": 15.1,
                 "opt_high": 35,
-                "abs_max": 55,
+                "abs_max": null,
                 "unit": "percent",
-                "scale": "suitability rank 1 (least) to 5 (most); IRWH = in-field RWH, XRWH = ex-field (external catchment) RWH",
+                "scale": "5 most suitable, 1 least suitable. Table 4 does not define a zero or excluded clay class.",
                 "irwh_ranks": {
                   "0-6": "2-1",
                   "6.1-15": 4,
@@ -688955,9 +689166,79 @@
                   "35.1-55": 3,
                   ">55": 1
                 },
-                "direction": "in-field RWH is best on sandy clay loam, 15.1-35% clay; sands and heavy clays (>55%) are least suited"
+                "direction": "In-field harvesting ranks the two 15.1–35% classes highest. Above 55% has the least-suitable rank (1). The 0–6% class carries the printed 2–1 rank.",
+                "source_classes": [
+                  {
+                    "clay_class": "C1",
+                    "clay_percent_printed": "0–6",
+                    "texture": "Loamy sands to sands",
+                    "irwh_rank_printed": "2–1",
+                    "xrwh_rank_printed": "2–1"
+                  },
+                  {
+                    "clay_class": "C2",
+                    "clay_percent_printed": "6.1–15",
+                    "texture": "Sandy loams",
+                    "irwh_rank_printed": 4,
+                    "xrwh_rank_printed": 3
+                  },
+                  {
+                    "clay_class": "C3",
+                    "clay_percent_printed": "15.1–25",
+                    "texture": "Sandy clay loam",
+                    "irwh_rank_printed": 5,
+                    "xrwh_rank_printed": 4
+                  },
+                  {
+                    "clay_class": "C4",
+                    "clay_percent_printed": "25.1–35",
+                    "texture": "Sandy clay loam",
+                    "irwh_rank_printed": 5,
+                    "xrwh_rank_printed": 4
+                  },
+                  {
+                    "clay_class": "C5",
+                    "clay_percent_printed": "35.1–55",
+                    "texture": "Sandy clays",
+                    "irwh_rank_printed": 3,
+                    "xrwh_rank_printed": 5
+                  },
+                  {
+                    "clay_class": "C6",
+                    "clay_percent_printed": ">55",
+                    "texture": "Clays",
+                    "irwh_rank_printed": 1,
+                    "xrwh_rank_printed": 3
+                  }
+                ]
               },
-              "context": "",
+              "context": {
+                "model_use": {
+                  "purpose": "South Africa RWH suitability mapping. In-field RWH (IRWH) is the applicable source column for this in-situ row. Ex-field RWH (XRWH) uses an external catchment. The second column is preserved as source context.",
+                  "weights": {
+                    "type": "weights used in the physical models, not class ranks",
+                    "IRWH": {
+                      "aridity_zones": 0.33,
+                      "land_cover": 0.33,
+                      "soil_depth": 0.17,
+                      "soil_texture": 0.17
+                    },
+                    "XRWH": {
+                      "aridity_zones": 0.34,
+                      "land_cover": 0.33,
+                      "soil_texture": 0.33
+                    },
+                    "locator": "§2.3.1.1, PDF4–5; Figs. 4 and 5, PDF5. Physical model component of wider suitability assessment."
+                  }
+                },
+                "source_table": {
+                  "locator": "Table 4, PDF3 / printed p790. Methods §2.2.1.4 on same page. Scale PDF2. Physical model weights PDF4–5.",
+                  "source_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+                  "measurement_context": "ARC land-type dataset with six clay classes. Authors assume about 10% silt in most South African soils (Schulze 2006 citing Hutson 1984), then use FAO 2003 texture triangle for runoff/catchment vs runon/crop basin. This assumption matters when reusing clay-% alone. Selected mapping grid 100 × 100 m (PDF3).",
+                  "interpretation": "The C1 rank is printed 2–1 for loamy sands to sands, without a clay-percentage subdivision. Retain that ambiguity. Printed 0/6.1/15.1/etc. encode source classes at the displayed precision; continuous values between printed endpoints have no stated assignment. No zeroing above 55%, no universal hard bound, interpolation or normalized score follows from these ranks.",
+                  "applicable_column": "IRWH; XRWH is a separate external-catchment use"
+                }
+              },
               "quote": "Table 4\nSoil texture classes per clay class and suitability ranking\nClay\nclass\n% Clay\ncontent\nSoil texture classes\nIRWH\nsuitability\nXRWH\nsuitability\nC1\n0–6\nLoamy sands to\nsands\n2–1\n2–1\nC2\n6.1–15\nSandy loams\n4\n3\nC3\n15.1–25\nSandy clay loam\n5\n4\nC4\n25.1–35\nSandy clay loam\n5\n4\nC5\n35.1–55\nSandy clays\n3\n5\nC6\n>55\nClays\n1\n3",
               "page": 3,
               "locator_type": "page",
@@ -688966,9 +689247,9 @@
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "in-field RWH is best on sandy clay loam, 15.1-35% clay; sands and heavy clays (>55%) are least suited",
+              "source_direction": "In-field harvesting ranks the two 15.1–35% classes highest. Above 55% has the least-suitable rank (1). The 0–6% class carries the printed 2–1 rank.",
               "has_stated_direction": true,
-              "has_source_classes": false,
+              "has_source_classes": true,
               "source_shape": "",
               "compilation_disposition": "not_accounted",
               "linked_mapping_ids": [
@@ -704594,19 +704875,11 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "d7e835455079",
-    "data_id": "8d5a979433ff",
+    "data_id": "fdff589452b5",
     "count_definition_version": "4",
-    "built_at": "2026-11-09T07:01:07.152267+00:00",
-    "source_commit": "5a7b2ccc254309480533c10aea0ca24d0c639654",
+    "built_at": "2026-11-09T07:17:40.720286+00:00",
+    "source_commit": "461b31ab8db2cf9107f6c654f70f221dfeabf521",
     "history": [
-      {
-        "release": "1.4.0",
-        "ui_id": "316de6a994c8",
-        "data_id": "0edfa7d232ba",
-        "count_definition_version": "4",
-        "built_at": "2026-11-05T06:34:57.368555+00:00",
-        "source_commit": "ae7b538daf5ea3418499f4cc6769a3457674d7b5"
-      },
       {
         "release": "1.4.0",
         "ui_id": "316de6a994c8",
@@ -704998,6 +705271,14 @@
         "count_definition_version": "4",
         "built_at": "2026-11-09T07:01:07.152267+00:00",
         "source_commit": "5a7b2ccc254309480533c10aea0ca24d0c639654"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "d7e835455079",
+        "data_id": "fdff589452b5",
+        "count_definition_version": "4",
+        "built_at": "2026-11-09T07:17:40.720286+00:00",
+        "source_commit": "461b31ab8db2cf9107f6c654f70f221dfeabf521"
       }
     ]
   }
