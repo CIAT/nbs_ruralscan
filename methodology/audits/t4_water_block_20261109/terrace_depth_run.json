@@ -1,0 +1,90 @@
+{
+  "decision_date": "2026-11-09",
+  "decision_ref": "terrace_depth.md",
+  "reviewer": "Pete",
+  "input_revision": "565c2566db60eab7ca3c9d8f4e0c1b11e09aa029",
+  "legacy_curve_reference": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+  "baseline": "Ten accepted water-harvesting mappings. No terrace depth mapping before this decision. Held historical parameters are from legacy_curve_reference.",
+  "agents": [
+    {
+      "role": "Codex /root – source verification, dashboard, provenance, release validation",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "settings_source": "Codex turn_context.model and turn_context.effort",
+      "prompt": "ok keep all three by terrace design. keep Krois’s full table and 0.14 study weight, Chen’s >15 cm minimum and slope condition for zig terraces, and FAO’s shallow-soil warning for bench terraces. no shared depth cutoff. next"
+    },
+    {
+      "role": "Codex /root/terrace_depth_write – declared decision and compiler replay",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "settings_source": "Codex turn_context.model and turn_context.effort",
+      "prompt": "Apply approved terrace-depth profiles by design, no shared cutoff, in current /Users/pstewarda/.codex/worktrees/t4-riparian-recovery/nbs_ruralscan (PR642 branch). Own authored CSV settings/holds and compiler generation for resulting T4 CSV/family JSON. Use T4 synthesis skill. Check actual native pages and record all five Krois depth classes and native scores, dash in restricted 0, criterion AHP 0.14 distinct from runtime, Chen strict >15 cm plus exact slope language and unit/design, FAO bench terrace shallow soil and landslide warning with no depth. No dataset default if an incompatible bedrock layer; avoid asserting universal depth definitions. Preserve ten prior rows; link methodology/audits/t4_water_block_20261109/terrace_depth.md. Verify independent approved-only replay, runtime, developer rejection and unchanged others. No general generation, no commit, no dashboard edits. Notify when recipe ready."
+    },
+    {
+      "role": "Codex /root/next_terrace – read-only review of the next decision block",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "settings_source": "Codex turn_context.model and turn_context.effort",
+      "prompt": "Read-only next block for user after approval of 3 terrace soil-depth claims. Check priority cards + native PDFs/manual, prefer next coherent terrace slope (all pending sources if possible) or coherent scoped subset based on review state. Inspect prior approvals to avoid reopening. Provide precise, readable block recommendation, site example and locator/IDs. Flag comparator/units/citations/table errors; distinguish author guidance vs model, slopes ° vs %. Worktree /Users/pstewarda/.codex/worktrees/t4-riparian-recovery/nbs_ruralscan, no edits/approval."
+    }
+  ],
+  "replay": {
+    "file_sha256": {
+      "AGENTS.md": "6d32ed199cf4ce3c262b50804dd5dc3a7eaf5d1c5a8fd8eba736ba80a4794c57",
+      ".agents/skills/source-command-t4-synthesise/SKILL.md": "a87b41ea4a9ef9c25c21b8260f3d15f62d016c514ff6b170453676dc9fd694ff",
+      ".agents/skills/extraction_contracts/T4_review_contract.md": "86ca001a35d80214f53362fa2f99293524615afb299f509782491688da024542",
+      "methodology/T4_generation_method.md": "2c5c177001b212a2f5d03730e3a5dfe10547926a095bc90658f350ed2a127818",
+      "schema/lookups/crop_scope_policy.csv": "62f6bf68b618116e63d4bee57d7b01c6710b4a2ba62b4405bf7daf1662f9a5b4",
+      "schema/lookups/t4_numeric_compilation_policy.csv": "e3af05d083e8ae3f17cb3a69995591f8c80df9f3e1b0c87aad023357ab96e3dd",
+      "schema/T1_data_registry.csv": "1746c118f1c13594e18baf884238718e67d8f528d2c1ac25d2c6d0ca2e55e5b0",
+      "schema/registers/BIND_dataset_binding.csv": "6aeb5481a121cca768efd69ebe277b95a85e2c7f1ef9941e9cc74536c9bcfa35",
+      "schema/registers/EV_evidence_register.csv": "a1187c19ba8ecfe6dbcae8a097bda1af078691452d7a607140070d9b04b8af44",
+      "schema/registers/SRC_source_register.csv": "d1a6743c8cf64524619895c36cf5d48e6821b52cb984594fe560325dfeb501ed",
+      "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
+      "schema/registers/VONT_variable_ontology.csv": "5c53fb4873449ce787052b0f0b3effe8070d7ebfc8dd34920c211f4a522736ea",
+      "schema/recipe_inputs/t4/water_harvesting_conservation/review_holds.csv": "9e64357fddfe76824c811a72d729efecf4eb2f351f3886753403bbe7ef11ff6b",
+      "schema/recipe_inputs/t4/water_harvesting_conservation/mapping_settings.csv": "7722c1a0209b252eb0ba2b4dc233f8b22650cfceaa1925f229ccf2c5d886d9e8"
+    },
+    "compiler": "scripts/synthesise-recipe.py and src/nbs_ruralscan/recipe/t4_build.py at input_revision",
+    "command": "candidate=$(mktemp -d) && PYTHONPATH=src python scripts/synthesise-recipe.py water_harvesting_conservation --output-dir \"$candidate\"",
+    "row_hash_convention": "SHA-256 over all CSV fields keyed by column name, serialized as UTF-8 JSON with sorted keys, compact separators and unescaped Unicode.",
+    "mapping_csv": "schema/recipes/water_harvesting_conservation/T4_suitability_mappings.csv"
+  },
+  "decisions": [
+    {
+      "mapping_id": "water_harvesting__terracing__soil_depth_to_bedrock",
+      "result_sha256": "843d95e0789663d6c35930ca3f4464fc65d7ffc4eeb183e583a8ea96c3a379ed",
+      "dataset_id": null,
+      "disposition": "Retain the local terrace/bund ranking, zig-terrace depth and slope guidance, and qualitative bench-terrace warning by design. Their different practices and meanings do not support a shared terrace depth cutoff.",
+      "source_profiles": [
+        {
+          "source_id": "gismcda_swc_siting_2014",
+          "evidence_id": "ev_wh_soil_depth_krois14_1",
+          "evidence_sha256": "fc653c7d425eb783a125d3bdc7e07df69ecdaa9930336f812b69646576efb4a5",
+          "source_artifact_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd",
+          "locator": "PDF p. 9 (printed p. 139) Table 4, soil depth; PDF p. 10 (printed p. 140) Table 5, soil depth eigenvalue.",
+          "extraction_ruleset": "v1.5.1"
+        },
+        {
+          "source_id": "terracing_water_erosion_metaanalysis_china_2017",
+          "evidence_id": "ev_wh_soil_depth_chen17_1",
+          "evidence_sha256": "1f44931046cf3028af5c5ce62c9780d78407f9bf41fbb8d0c36d6bbc383dd72a",
+          "source_artifact_sha256": "00e0131089d16f5ece432390aae8681f967dbd511b4b77555b23ce9f1e74b80d",
+          "locator": "PDF p. 4 (printed p. 112), Table 1, zig terrace, scope of application.",
+          "extraction_ruleset": "v1.5.1"
+        },
+        {
+          "source_id": "fao_slm_in_practice_2011",
+          "evidence_id": "ev_wh_soildepth_slm11_terraces",
+          "evidence_sha256": "5b26d5ed99da58e458137149f78ceab3729fd46cb203b88674873706360ef1b8",
+          "source_artifact_sha256": "a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3",
+          "locator": "PDF p. 113 (printed p. 116), Cross-slope barriers, Applicability, Soils.",
+          "extraction_ruleset": "v1.6.0"
+        }
+      ]
+    }
+  ]
+}
