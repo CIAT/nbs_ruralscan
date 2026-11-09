@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-09T09:36:37.738455+00:00",
-  "git_commit": "565c2566db60eab7ca3c9d8f4e0c1b11e09aa029",
+  "timestamp": "2026-11-09T10:39:16.169481+00:00",
+  "git_commit": "7c74a43dfd71acb604862813e0b44de93c0d6c17",
   "registers": {
     "SRC_source_register": [
       {
@@ -31998,10 +31998,59 @@
         "relationship": {
           "opt_low": 18,
           "opt_high": 30,
-          "abs_min": 2,
-          "abs_max": 30,
+          "abs_min": null,
+          "abs_max": null,
           "unit": "degrees",
-          "direction": "terraces are OPTIMALLY suited at 18-30 degrees, highly suitable at 10-18 and above 30, and only marginally suitable on gentle ground (2-5); below 2 degrees terracing is not suitable — the practice needs the slope that makes it necessary"
+          "direction": "Peak source class at 18–30°. Above 30° is highly suitable (7). The 0–2° class is labelled Not suitable (1). Restricted (0) has no slope band. Adjacent printed classes share endpoints.",
+          "source_classes": [
+            {
+              "slope_degrees_printed": "0–2",
+              "class": "Not suitable",
+              "source_score": 1
+            },
+            {
+              "slope_degrees_printed": "2–5",
+              "class": "Marginally suitable",
+              "source_score": 3
+            },
+            {
+              "slope_degrees_printed": "5–10",
+              "class": "Moderately suitable",
+              "source_score": 5
+            },
+            {
+              "slope_degrees_printed": "10–18",
+              "class": "Highly suitable",
+              "source_score": 7
+            },
+            {
+              "slope_degrees_printed": "18–30",
+              "class": "Optimally suitable",
+              "source_score": 9
+            },
+            {
+              "slope_degrees_printed": ">30",
+              "class": "Highly suitable",
+              "source_score": 7
+            },
+            {
+              "slope_degrees_printed": "—",
+              "class": "Restricted",
+              "source_score": 0
+            }
+          ]
+        },
+        "context": {
+          "model_use": {
+            "criterion": "slope",
+            "source_weight": 0.39,
+            "weight_table": "Table 5, PDF p. 10",
+            "method": "within-study AHP criterion weight"
+          },
+          "source_table": {
+            "locator": "PDF p. 9, Table 4, slope – terraces row",
+            "source_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd"
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -32736,7 +32785,7 @@
         "suitability_family_id": "water_harvesting__terracing",
         "variable": "slope",
         "relationship": {
-          "abs_max": 30,
+          "abs_max": null,
           "unit": "degrees",
           "level_terrace_max": 25,
           "zig_terrace_max": 30,
@@ -32744,7 +32793,41 @@
             15,
             20
           ],
-          "direction": "terrace TYPE is chosen by slope: level terraces below 25 degrees, zig terraces on fairly uniform slopes generally below 30 degrees, slope-separated terraces specifically at 15-20 degrees — above about 30 degrees none of the types is specified"
+          "direction": "Table 1 reports site conditions by terrace design. The generally <30° field-slope condition belongs to zig terraces.",
+          "source_classes": [
+            {
+              "design": "Level terrace",
+              "site_conditions": "Sloped land <25° for rice, drought-tolerant crops and orchards."
+            },
+            {
+              "design": "Zig terrace",
+              "site_conditions": "Soil deeper than 15 cm and fairly uniform field slopes, generally <30°."
+            },
+            {
+              "design": "Slope-separated terrace",
+              "site_conditions": "Low rainfall areas with permeable soils and slopes between 15° and 20°."
+            },
+            {
+              "design": "Slope terrace",
+              "site_conditions": "Thin soil cover and gentle slopes <7°."
+            },
+            {
+              "design": "Fanya juu terrace",
+              "site_conditions": "Thick soil cover and steep, uneven slopes where benching is unsuitable."
+            },
+            {
+              "design": "Half-moon terrace / fish-scale pit",
+              "site_conditions": "Steep slopes with shallow stony soils and short steep slopes for tree survival."
+            }
+          ]
+        },
+        "context": {
+          "source_table": {
+            "locator": "PDF p. 4, Table 1, Scope of application column",
+            "source_sha256": "00e0131089d16f5ece432390aae8681f967dbd511b4b77555b23ce9f1e74b80d",
+            "slope_unit": "degrees",
+            "eligible_use": "design-specific guidance"
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -324812,6 +324895,208 @@
           "n_sources": 1
         },
         {
+          "mapping_id": "water_harvesting__terracing__slope",
+          "nbs_id": "water_harvesting_conservation",
+          "dataset_id": "srtm_dem_30m",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "trapezoidal",
+          "relationship_params": {
+            "reviewed_adaptation": {
+              "numerical_calibration": {
+                "scope": "water_harvesting__terracing__slope",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_water_block_20261109/terrace_slope.md",
+                "status": "held",
+                "reason": "Retain slope evidence by terrace design in the published units. The stone-line preference applies to a separate water-harvesting technique. The source profiles do not support a shared terrace slope maximum.",
+                "retained_source_profiles": [
+                  {
+                    "structure": "Terraces in the Ronquillo watershed, Peru",
+                    "locator": "PDF p. 9 Table 4, slope – terraces; PDF p. 10 Table 5, slope criterion eigenvalue.",
+                    "unit": "degrees",
+                    "published_classes": [
+                      {
+                        "terrain_slope_degrees": "18–30",
+                        "label": "Optimally suitable",
+                        "source_score": 9
+                      },
+                      {
+                        "terrain_slope_degrees": "10–18 and >30",
+                        "label": "Highly suitable",
+                        "source_score": 7
+                      },
+                      {
+                        "terrain_slope_degrees": "5–10",
+                        "label": "Moderately suitable",
+                        "source_score": 5
+                      },
+                      {
+                        "terrain_slope_degrees": "2–5",
+                        "label": "Marginally suitable",
+                        "source_score": 3
+                      },
+                      {
+                        "terrain_slope_degrees": "0–2",
+                        "label": "Not suitable",
+                        "source_score": 1
+                      },
+                      {
+                        "terrain_slope_degrees": null,
+                        "printed_assignment": "—",
+                        "label": "Restricted",
+                        "source_score": 0
+                      }
+                    ],
+                    "source_criterion_weight": {
+                      "criterion": "slope",
+                      "value": 0.39,
+                      "method": "AHP relative importance within the study model",
+                      "locator": "Table 5",
+                      "source_row_quote": "Slope\n7\n3\n1\n3\n3\n3\n0.39"
+                    },
+                    "interpretation": "Keep the printed bands and their overlapping internal endpoints. Exactly 30° is in the 18–30° class; slopes above 30° are highly suitable in this model. The source has separate slope rows for terraces and bunds.",
+                    "evidence_id": "ev_wh_slope_krois14_terraces",
+                    "source_id": "gismcda_swc_siting_2014",
+                    "evidence_sha256": "390d221a415f41474e48efbfd0681b4727fc86870e62d074f015420540e76120",
+                    "source_artifact_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd",
+                    "source_quote": "Table 4\nSuitability levels for SWCTs (terraces and bunds).\nSuitability rating\nOptimally suitable\nHighly suitable\nModerately suitable\nMarginally suitable\nNot suitable\nRestricted\nSuitability level\n9\n7\n5\n3\n1\n0\nRainfall (mm)\n400e600\n200e400\n600e800\n800e1000\n100e200\n1000e1200\n0e100\n>1200\ne\nRunoff coefﬁcient\n>0.9\n0.6e0.9\n0.3e0.6\n0e0.3\ne\ne\nSlope e terraces (\u0006)\n18e30\n10e18 > 30\n5e10\n2e5\n0e2\ne\nSlope e bunds (\u0006)\n<2e5\n5e10\n10e18\n18e30\n>30\ne\nSoil depth (m)\n>1.0\n0.5e1.0\n0.3e0.5\n0.2e0.3\n<0.2\ne\nSoil texture (% clay content)\n15e35\n6e15\n35e55\n0e6\n>55\ne\nLand use\nAgriculture\nMeadows, Shrub land,\nScarce vegetation\nGrassland\nForest\ne\nInfrastructure,\nWater bodies",
+                    "disposition": "terrace_design_specific_evidence"
+                  },
+                  {
+                    "structure": "Six terrace designs in the Chinese plot database",
+                    "locator": "PDF p. 4 (printed p. 112), Table 1, scope of application by terrace type.",
+                    "unit": "degrees",
+                    "design_conditions": [
+                      {
+                        "design": "Level terrace",
+                        "field_slope": "<25°",
+                        "conditions": "Sloped land planted with rice, drought-tolerant crops or orchards."
+                      },
+                      {
+                        "design": "Zig terrace",
+                        "field_slope": "Generally <30°",
+                        "conditions": "Fairly uniform slopes and soil deeper than 15 cm."
+                      },
+                      {
+                        "design": "Slope-separated terrace",
+                        "field_slope": "Between 15° and 20°",
+                        "conditions": "Recommended in low-rainfall areas with permeable soils."
+                      },
+                      {
+                        "design": "Slope terrace",
+                        "field_slope": "<7°",
+                        "conditions": "Gentle slopes with thin soil cover."
+                      },
+                      {
+                        "design": "Fanya juu terrace",
+                        "field_slope": "Steep and uneven",
+                        "conditions": "Thick soil cover where benching is unsuitable. No numeric field-slope interval supplied."
+                      },
+                      {
+                        "design": "Half-moon terrace",
+                        "field_slope": "Steep",
+                        "conditions": "Shallow stony soils and short steep slopes to improve tree survival. No numeric field-slope interval supplied."
+                      }
+                    ],
+                    "interpretation": "The terrain slope is the scope-of-application column. Ridge, ditch and platform geometry have separate meanings.",
+                    "evidence_id": "ev_wh_slope_chen17_1",
+                    "source_id": "terracing_water_erosion_metaanalysis_china_2017",
+                    "evidence_sha256": "7bd3aa381b97c13c169c88742d5061df9013486c9e5760d902bb598ce7667ef3",
+                    "source_artifact_sha256": "00e0131089d16f5ece432390aae8681f967dbd511b4b77555b23ce9f1e74b80d",
+                    "source_quote": "Table 1\nTypes of terraces considered in the plot database.\nType\nStructural features\nScope of application\nSize\nLevel terrace\nConsists of a series of level platforms constructed\nalong the contour lines of a terraced slope\nConstructed on sloped land (< 25°),\nplanted rice, drought tolerant crops and\norchards\nThe width of the platform is > 8 m, while the width of\nthe mechanized terrace is > 10 m; the height of the\nridge is approximately 0.3 m, and the gradient of the\nridge is between 71° and 76°\nZig terrace\nPlatforms tilt toward the inside to increase water\nstorage, and the inclination of the adverse slope is\nbetween 10° and 15°\nFields with soils deeper than 15 cm and\nfairly uniform slopes that are not too\nsteep (generally < 30°)\nThe width of the zig terrace is only 2–6 m; the vertical\ndistance of adjoining platforms is approximately 2–3 m\nSlope-separated\nterrace\nA slope in the midst of two adjacent horizontal\nplatforms\nRecommended for low rainfall areas with\npermeable soils and slopes between 15°\nand 20°",
+                    "disposition": "terrace_design_specific_evidence"
+                  },
+                  {
+                    "structure": "Water-harvesting contour stone lines for crop production",
+                    "locator": "FAO manual §5.7.1 Background and §5.7.2 Technical details, i. Suitability.",
+                    "unit": "percent_grade",
+                    "slope_guidance": {
+                      "qualifier": "preferably",
+                      "relation": "<",
+                      "value": 2
+                    },
+                    "conditions": "Arid to semi-arid sites with 200–750 mm rainfall, agricultural soils and good local stone supply. Ground may be uneven.",
+                    "interpretation": "The guide distinguishes this technique from hillside terracing. Retain as stone-line evidence only. Exclude from terrace slope support and scoring.",
+                    "evidence_id": "ev_wh_slope_critchley91_stonebunds",
+                    "source_id": "fao_critchley_wh_manual_1991",
+                    "evidence_sha256": "05966d5d66341509ce869bbffb748e0486057bc474061e5fba3915b4406d5d02",
+                    "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+                    "source_quote": "Suitability Stone bunds for crop production can be used under the following conditions: Rainfall: 200 mm - 750 mm; from arid to semi-arid areas. Soils: agricultural soils. Slopes: preferably below 2%.",
+                    "disposition": "context_only_excluded_from_terrace_scoring"
+                  },
+                  {
+                    "structure": "Fanya juu and Fanya chini terraces",
+                    "locator": "PDF p. 113 (printed p. 116), Cross-slope barriers, Applicability, ecological conditions and terrain.",
+                    "unit": "percent_grade",
+                    "design_conditions": [
+                      {
+                        "design": "Fanya juu",
+                        "field_slope": "moderate to steep, up to 50%",
+                        "conditions": "In dry areas suitable only when used for rainwater harvesting."
+                      },
+                      {
+                        "design": "Fanya chini",
+                        "field_slope": "moderate to hilly, up to 35%"
+                      }
+                    ],
+                    "evidence_id": "ev_wh_slope_slm11_fanyajuu",
+                    "source_id": "fao_slm_in_practice_2011",
+                    "evidence_sha256": "773ef671b099b735a876606a5cf4fcdd2c9fdd2900180e4140fdb5a752f3f54b",
+                    "source_artifact_sha256": "a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3",
+                    "source_quote": "Terrain and landscape: Bench terraces: moderate to very steep slopes; Earth bunds: gentle to moderate slopes; Stone bunds: gentle to steep slopes; Fanya juu terraces: moderate to steep slopes (up to 50%);",
+                    "disposition": "terrace_design_specific_evidence"
+                  },
+                  {
+                    "structure": "Contour forward-sloping bench terraces",
+                    "locator": "PDF p. 129 (printed p. 116), paragraph on contour forward-sloping bench terraces.",
+                    "unit": "percent_grade",
+                    "slope_guidance": {
+                      "qualifier": "up to",
+                      "value": 60
+                    },
+                    "conditions": "Used with 200–600 mm annual rainfall, mainly for trees and bushes and less for field crops. Runoff comes from uncropped sloping land between terraces.",
+                    "evidence_id": "ev_wh_slope_wocatgl13_benchterraces",
+                    "source_id": "wocat_wh_guidelines_2013",
+                    "evidence_sha256": "1c15c96436366c341a01ec7188d577b0097cce0cb968d10212e5604cf3d84619",
+                    "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+                    "source_quote": "Contour forward sloping bench terraces are constructed or develop over time from vegetative strips, contour earth bunds and stone bunds on steeper slopes (up to 60%).",
+                    "disposition": "terrace_design_specific_evidence"
+                  }
+                ],
+                "excluded_from_terrace_scoring": [
+                  "ev_wh_slope_critchley91_stonebunds"
+                ],
+                "held_relationship": {
+                  "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+                  "type": "trapezoidal",
+                  "params": {
+                    "abs_min": 2.0,
+                    "opt_low": 18.0,
+                    "opt_high": 30.0,
+                    "abs_max": 30.0
+                  },
+                  "uncertainty_pct": "60.0"
+                }
+              }
+            }
+          },
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.2,
+          "weight_adjustable": true,
+          "justification": "Retain slope evidence by terrace design in the published units. The stone-line preference applies to a separate water-harvesting technique. The source profiles do not support a shared terrace slope maximum. Retained approved calibration hold; no new numeric synthesis or approval.",
+          "variable": "slope",
+          "suitability_family_id": "water_harvesting__terracing",
+          "evidence_ids": [
+            "ev_wh_slope_krois14_terraces",
+            "ev_wh_slope_chen17_1",
+            "ev_wh_slope_slm11_fanyajuu",
+            "ev_wh_slope_wocatgl13_benchterraces"
+          ],
+          "n_sources": 4
+        },
+        {
           "mapping_id": "water_harvesting__terracing__soil_depth_to_bedrock",
           "nbs_id": "water_harvesting_conservation",
           "suitability_dimension": "biophysical_constraint",
@@ -370261,9 +370546,9 @@
     }
   ],
   "qaqc_stats": {
-    "total_reviews": 2458,
+    "total_reviews": 2460,
     "queried": 211,
-    "n_reviewers": 24,
+    "n_reviewers": 25,
     "by_reviewer": {
       "ai_mechanism_rule": 727,
       "orchestrator": 466,
@@ -370287,12 +370572,13 @@
       "Codex source recovery": 3,
       "ai_scope_classifier_repair": 2,
       "ai_t4_clay_source_check": 2,
+      "ai_t4_terrace_slope_check": 2,
       "Namita-J,peetmate": 1,
       "ai_retro_2026-10-29": 1
     },
     "by_decision": {
       "drop": 1541,
-      "ok": 594,
+      "ok": 596,
       "flag": 210,
       "reclassify": 18,
       "retag": 4,
@@ -370302,7 +370588,7 @@
     },
     "by_reason": {
       "insufficient_context": 695,
-      "accepted_correction": 560,
+      "accepted_correction": 562,
       "unspecified": 312,
       "other": 270,
       "wrong_practice": 167,
@@ -370338,7 +370624,7 @@
       "routing_ruling": 3,
       "variable_ruling": 31,
       "direction_audit": 122,
-      "unit_correction": 83
+      "unit_correction": 85
     },
     "flag_eval": {
       "tp": 64,
@@ -370349,10 +370635,10 @@
       "tp_corrected": 26
     },
     "pass_eval": {
-      "tn": 566,
+      "tn": 568,
       "fn": 10,
       "out_of_remit": 1493,
-      "checked": 2069,
+      "checked": 2071,
       "fn_rate_pct": 1.7
     },
     "recall_est_pct": 86.5,
@@ -402528,6 +402814,26 @@
       "reason": "accepted_correction",
       "note": "context.model_use, context.source_table, relationship.abs_max, relationship.direction, relationship.scale, relationship.source_classes: Record the complete verified clay Table 4 and model weights. The >55% class carries a source score; the former absolute-maximum field misrepresented its meaning. Optimum fields summarize the highest printed class. Preserve the original scope, page, quote and human review state.",
       "reviewer": "ai_t4_clay_source_check"
+    },
+    {
+      "date": "2026-11-09",
+      "evidence_id": "ev_wh_slope_krois14_terraces",
+      "source_id": "gismcda_swc_siting_2014",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.model_use, context.source_table, relationship.abs_max, relationship.abs_min, relationship.direction, relationship.source_classes: Transcribe the terrace slope row including its high-rated >30° tail. Replace inferred hard limits with the actual classes, scores and weight.",
+      "reviewer": "ai_t4_terrace_slope_check"
+    },
+    {
+      "date": "2026-11-09",
+      "evidence_id": "ev_wh_slope_chen17_1",
+      "source_id": "terracing_water_erosion_metaanalysis_china_2017",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.source_table, relationship.abs_max, relationship.direction, relationship.source_classes: The 30° condition is qualified and specific to zig terraces. Record all six application contexts; remove the inferred shared maximum.",
+      "reviewer": "ai_t4_terrace_slope_check"
     }
   ],
   "family_presentation": {
@@ -403737,8 +404043,8 @@
       "source_id": "fao_critchley_wh_manual_1991",
       "page": "",
       "mapping_id": "water_harvesting__terracing__slope",
-      "reason": "Source checked; proposed HOLD (not applied). §5.7.2 states preferably below 2% slope, not an absolute maximum for contour stone bunds used in crop-water harvesting. Preceding paragraph explicitly distinguishes this technique from stone bunding for hillside terracing. Current record is assigned to terracing.",
-      "decision_needed": "Hold family assignment for review; keep the full source recommendation and distinguish permeable contour stone lines/bunds from hillside terrace construction. No automatic reassignment or deletion. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. FAO §5.7 distinguishes contour stone lines for harvesting crop water from stonework used for hillside terracing. For the harvesting technique, slopes are preferably below 2% grade.",
+      "decision_needed": "Approved, 9 November 2026. Retain the stone-line evidence. Exclude this profile from terrace scoring and terrace source support. No shared terrace slope maximum.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "05966d5d66341509ce869bbffb748e0486057bc474061e5fba3915b4406d5d02",
@@ -403753,8 +404059,8 @@
       "source_id": "fao_slm_in_practice_2011",
       "page": "113",
       "mapping_id": "water_harvesting__terracing__slope",
-      "reason": "Source checked; proposed HOLD (not applied). Cross-slope-barriers Applicability, PDF113 / printed116, recommends Fanya juu for moderate to steep slopes up to 50%; Fanya chini has a separate up-to-35% statement. Dry-area applicability is conditional on rainwater harvesting. These are technique-specific recommendations, not a universal terrace curve.",
-      "decision_needed": "Keep complete Fanya juu up-to-50% recommendation with climate/harvesting conditions. Hold generic hard exclusion or transfer to bench/Fanya chini terraces; retain the numeric recommendation for synthesis. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. FAO gives Fanya juu up to 50% grade and Fanya chini up to 35%. Fanya juu in dry areas requires rainwater harvesting.",
+      "decision_needed": "Approved, 9 November 2026. Retain both design-specific grade limits and the dry-area condition. No shared terrace slope maximum.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "773ef671b099b735a876606a5cf4fcdd2c9fdd2900180e4140fdb5a752f3f54b",
@@ -403817,11 +404123,11 @@
       "source_id": "gismcda_swc_siting_2014",
       "page": "9",
       "mapping_id": "water_harvesting__terracing__slope",
-      "reason": "Source checked; proposed HOLD (not applied). Table 4 explicitly ranks terrace slope 18–30° optimal, 10–18° AND >30° highly suitable, 5–10° moderate, 2–5° marginal, 0–2° not suitable. Stored abs_max=30 directly contradicts the highly suitable >30° class.",
-      "decision_needed": "Hold erroneous absolute maximum; retain the complete terrace-specific table including >30° high suitability. Correct numerical encoding before this evidence can set a compiled bound; no invented upper tail. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. Krois Table 4 terrace row gives slopes 0–2°, 2–5°, 5–10°, 10–18°, 18–30° and >30° source scores 1, 3, 5, 7, 9 and 7. Restricted (0) has no slope band. Table 5 gives slope a within-model weight of 0.39.",
+      "decision_needed": "Approved, 9 November 2026. Retain the full native terrace table, scores and 0.39 study weight. No shared terrace slope maximum.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "bcdeeedc732ded23d6139c4c3a32bc3e4ce9207ec75f7b3f366e2da7b013fbf6",
+      "evidence_sha256": "390d221a415f41474e48efbfd0681b4727fc86870e62d074f015420540e76120",
       "source_locator": "",
       "context_changed": false
     },
@@ -403865,11 +404171,11 @@
       "source_id": "terracing_water_erosion_metaanalysis_china_2017",
       "page": "4",
       "mapping_id": "water_harvesting__terracing__slope",
-      "reason": "Source checked; proposed HOLD (not applied). Chen et al. Table 1 provides implementation scope by terrace type: level<25°, zig generally<30°, slope-separated 15–20° with permeable soils/low rainfall, slope terraces<7°, fanya juu on steep uneven slopes and half-moon terraces on steep shallow/stony slopes. Stored abs_max 30 and claim no type above 30 are unsupported.",
-      "decision_needed": "Hold generic 30° maximum; retain complete subtype-specific application table and qualifiers for synthesis. Do not derive a universal cap from three selected rows or confuse degrees with percent. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. Chen Table 1 gives site slope by design: level <25°, zig generally <30° on fairly uniform land with soil >15 cm, slope-separated 15–20° with permeable soil and low rain, and slope terraces <7° with thin soil cover. Fanya juu and half-moon descriptions are qualitative.",
+      "decision_needed": "Approved, 9 November 2026. Retain all six design profiles, distinguishing field slope from constructed platform geometry. No shared terrace slope maximum.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "1bf22c7913b72ae08dd356f2f41c77eddf933c67331ad5fedae36be8efae6647",
+      "evidence_sha256": "7bd3aa381b97c13c169c88742d5061df9013486c9e5760d902bb598ce7667ef3",
       "source_locator": "",
       "context_changed": false
     },
@@ -403913,8 +404219,8 @@
       "source_id": "wocat_wh_guidelines_2013",
       "page": "129",
       "mapping_id": "water_harvesting__terracing__slope",
-      "reason": "Source checked; proposed HOLD (not applied). PDF129 / printed116 describes forward-sloping bench terraces on steeper slopes up to 60%, developed from vegetation, earth or stone barriers and harvesting runoff between terraces. Numeric upper guidance is explicit; it is neither a general terrace optimum nor a statement of absolute failure above 60%.",
-      "decision_needed": "Keep full up-to-60% recommendation for this terrace type. Hold automatic global exclusion above 60% and retain rainfall/runoff and construction context for synthesis. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. WOCAT describes contour forward-sloping benches up to 60% grade, usually for trees or bushes, with 200–600 mm/year and runoff from uncropped areas between terraces.",
+      "decision_needed": "Approved, 9 November 2026. Retain this specific system in its original percent grade. No shared terrace slope maximum.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "1c15c96436366c341a01ec7188d577b0097cce0cb968d10212e5604cf3d84619",
@@ -429390,6 +429696,7 @@
         "contributions": {
           "T4": [
             "ev_wh_aridity_slm11_ca",
+            "ev_wh_slope_slm11_fanyajuu",
             "ev_wh_soildepth_slm11_terraces"
           ],
           "T3": [],
@@ -431848,6 +432155,7 @@
         "dropped_evidence_ids": [],
         "approved_evidence_ids": [],
         "reviewed_evidence_ids": [
+          "ev_wh_slope_krois14_terraces",
           "ev_wh_soil_texture_krois14_1"
         ],
         "extraction_counts": {
@@ -431859,6 +432167,7 @@
         "contributions": {
           "T4": [
             "ev_wh_runoff_potential_index_krois14_1",
+            "ev_wh_slope_krois14_terraces",
             "ev_wh_soil_depth_krois14_1"
           ],
           "T3": [],
@@ -455530,7 +455839,9 @@
         ],
         "dropped_evidence_ids": [],
         "approved_evidence_ids": [],
-        "reviewed_evidence_ids": [],
+        "reviewed_evidence_ids": [
+          "ev_wh_slope_chen17_1"
+        ],
         "extraction_counts": {
           "T4": 3,
           "effects": 0,
@@ -455539,6 +455850,7 @@
         },
         "contributions": {
           "T4": [
+            "ev_wh_slope_chen17_1",
             "ev_wh_soil_depth_chen17_1"
           ],
           "T3": [],
@@ -470702,6 +471014,7 @@
         "contributions": {
           "T4": [
             "ev_wh_precip_wocatgl13_trapezoidal",
+            "ev_wh_slope_wocatgl13_benchterraces",
             "ev_wh_soildepth_wocatgl13_strips"
           ],
           "T3": [],
@@ -486213,7 +486526,7 @@
       }
     ],
     "totals": {
-      "compiled_outputs": 726,
+      "compiled_outputs": 727,
       "evidence_ids": [
         "EV_binam_2017_007",
         "EV_chomba_2020_001",
@@ -492663,7 +492976,7 @@
         "ev_yield_stability_sileshi12_3",
         "ev_yield_stability_silv26_1"
       ],
-      "contributing_excerpts": 3073,
+      "contributing_excerpts": 3077,
       "contributing_sources": 565,
       "known_sources": 946,
       "source_keys": [
@@ -493617,24 +493930,24 @@
       "extracted_sources": 713,
       "reviewed_sources": 160,
       "fully_reviewed_sources": 61,
-      "sources_with_reviewed_excerpts": 390,
+      "sources_with_reviewed_excerpts": 391,
       "sources_with_approved_excerpts": 160,
       "active_excerpts": 4913,
       "retained_excerpts": 4913,
       "all_excerpts": 6447,
-      "reviewed_excerpts": 2133,
-      "unreviewed_excerpts": 4314,
+      "reviewed_excerpts": 2135,
+      "unreviewed_excerpts": 4312,
       "reviewed_pct": 33.1,
       "approved_excerpts": 414,
       "approved_pct": 19.4,
-      "reviewed_active_excerpts": 604,
+      "reviewed_active_excerpts": 606,
       "reviewed_dropped_excerpts": 1529,
-      "reviewed_unresolved_excerpts": 190,
+      "reviewed_unresolved_excerpts": 192,
       "dropped_excerpts": 1534,
-      "t4_relationships": 41,
+      "t4_relationships": 42,
       "t4_operational_relationships": 8,
-      "t4_structural_relationships": 33,
-      "t4_evidence_backed_relationships": 32,
+      "t4_structural_relationships": 34,
+      "t4_evidence_backed_relationships": 33,
       "t4_contributing_sources": 27,
       "source_mix": {
         "literature": 582,
@@ -517851,7 +518164,7 @@
         "nbs_id": "water_harvesting_conservation",
         "name": "Water harvesting conservation",
         "metrics": {
-          "compiled_outputs": 214,
+          "compiled_outputs": 215,
           "evidence_ids": [
             "ev_accessibility_travel_time_schmidt12_11",
             "ev_accessibility_travel_time_wei16_1_op",
@@ -520483,7 +520796,7 @@
             "ev_yield_stability_seti18_3",
             "ev_yield_stability_silv26_1"
           ],
-          "contributing_excerpts": 1072,
+          "contributing_excerpts": 1076,
           "contributing_sources": 172,
           "known_sources": 259,
           "source_keys": [
@@ -520750,24 +521063,24 @@
           "extracted_sources": 196,
           "reviewed_sources": 20,
           "fully_reviewed_sources": 3,
-          "sources_with_reviewed_excerpts": 136,
+          "sources_with_reviewed_excerpts": 137,
           "sources_with_approved_excerpts": 20,
           "active_excerpts": 1724,
           "retained_excerpts": 1724,
           "all_excerpts": 2629,
-          "reviewed_excerpts": 1027,
-          "unreviewed_excerpts": 1602,
+          "reviewed_excerpts": 1029,
+          "unreviewed_excerpts": 1600,
           "reviewed_pct": 39.1,
           "approved_excerpts": 40,
           "approved_pct": 3.9,
-          "reviewed_active_excerpts": 123,
+          "reviewed_active_excerpts": 125,
           "reviewed_dropped_excerpts": 904,
-          "reviewed_unresolved_excerpts": 83,
+          "reviewed_unresolved_excerpts": 85,
           "dropped_excerpts": 905,
-          "t4_relationships": 11,
+          "t4_relationships": 12,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 11,
-          "t4_evidence_backed_relationships": 11,
+          "t4_structural_relationships": 12,
+          "t4_evidence_backed_relationships": 12,
           "t4_contributing_sources": 14,
           "source_mix": {
             "literature": 137,
@@ -523631,7 +523944,7 @@
             "scope_kind": "family",
             "scope_definition": "Level or near-level steps cut into a slope to hold water and soil.",
             "metrics": {
-              "compiled_outputs": 24,
+              "compiled_outputs": 25,
               "evidence_ids": [
                 "ev_accessibility_travel_time_wei16_1_op",
                 "ev_adoption_rate_fao13c_1",
@@ -524307,8 +524620,8 @@
                 "ev_yield_stability_kato11_6",
                 "ev_yield_stability_kato11_7"
               ],
-              "contributing_excerpts": 276,
-              "contributing_sources": 56,
+              "contributing_excerpts": 280,
+              "contributing_sources": 57,
               "known_sources": 82,
               "source_keys": [
                 "abate_2021_ifpri_dp2069_cbinremp",
@@ -524397,25 +524710,25 @@
               "extracted_sources": 64,
               "reviewed_sources": 6,
               "fully_reviewed_sources": 2,
-              "sources_with_reviewed_excerpts": 37,
+              "sources_with_reviewed_excerpts": 38,
               "sources_with_approved_excerpts": 6,
               "active_excerpts": 421,
               "retained_excerpts": 421,
               "all_excerpts": 673,
-              "reviewed_excerpts": 276,
-              "unreviewed_excerpts": 397,
-              "reviewed_pct": 41.0,
+              "reviewed_excerpts": 278,
+              "unreviewed_excerpts": 395,
+              "reviewed_pct": 41.3,
               "approved_excerpts": 12,
               "approved_pct": 4.3,
-              "reviewed_active_excerpts": 24,
+              "reviewed_active_excerpts": 26,
               "reviewed_dropped_excerpts": 252,
-              "reviewed_unresolved_excerpts": 12,
+              "reviewed_unresolved_excerpts": 14,
               "dropped_excerpts": 252,
-              "t4_relationships": 2,
+              "t4_relationships": 3,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 2,
-              "t4_evidence_backed_relationships": 2,
-              "t4_contributing_sources": 3,
+              "t4_structural_relationships": 3,
+              "t4_evidence_backed_relationships": 3,
+              "t4_contributing_sources": 4,
               "source_mix": {
                 "literature": 43,
                 "grey": 34,
@@ -528205,9 +528518,9 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 11,
-            "evidence_backed_outputs": 11,
-            "contributing_excerpts": 28,
+            "output_count": 12,
+            "evidence_backed_outputs": 12,
+            "contributing_excerpts": 32,
             "contributing_sources": 14,
             "evidence_ids": [
               "ev_wh_annual_precipitation_kahinda08_3",
@@ -528228,6 +528541,10 @@
               "ev_wh_runoff_potential_index_krois14_1",
               "ev_wh_runoff_potential_index_singh17_1",
               "ev_wh_runoff_potential_index_vema19_1",
+              "ev_wh_slope_chen17_1",
+              "ev_wh_slope_krois14_terraces",
+              "ev_wh_slope_slm11_fanyajuu",
+              "ev_wh_slope_wocatgl13_benchterraces",
               "ev_wh_soil_depth_chen17_1",
               "ev_wh_soil_depth_kahinda08_1",
               "ev_wh_soil_depth_krois14_1",
@@ -528464,6 +528781,30 @@
                 ],
                 "source_keys": [
                   "gismcda_swc_siting_2014"
+                ]
+              },
+              {
+                "id": "water_harvesting__terracing__slope",
+                "label": "water harvesting  terracing  slope · Terracing",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__terracing"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_slope_chen17_1",
+                  "ev_wh_slope_krois14_terraces",
+                  "ev_wh_slope_slm11_fanyajuu",
+                  "ev_wh_slope_wocatgl13_benchterraces"
+                ],
+                "source_keys": [
+                  "fao_slm_in_practice_2011",
+                  "gismcda_swc_siting_2014",
+                  "terracing_water_erosion_metaanalysis_china_2017",
+                  "wocat_wh_guidelines_2013"
                 ]
               },
               {
@@ -573655,7 +573996,7 @@
         "project_level": false,
         "evidence_tracking": "routed",
         "totals": {
-          "compiled_outputs": 33,
+          "compiled_outputs": 34,
           "evidence_ids": [
             "EV_chomba_2020_001",
             "EV_chomba_2020_002",
@@ -574728,7 +575069,7 @@
             "ev_wh_watertable_wocat7777_1",
             "ev_wh_watertable_wocat7778_1"
           ],
-          "contributing_excerpts": 54,
+          "contributing_excerpts": 58,
           "contributing_sources": 27,
           "known_sources": 210,
           "source_keys": [
@@ -574946,24 +575287,24 @@
           "extracted_sources": 197,
           "reviewed_sources": 60,
           "fully_reviewed_sources": 54,
-          "sources_with_reviewed_excerpts": 77,
+          "sources_with_reviewed_excerpts": 78,
           "sources_with_approved_excerpts": 60,
           "active_excerpts": 851,
           "retained_excerpts": 851,
           "all_excerpts": 1070,
-          "reviewed_excerpts": 435,
-          "unreviewed_excerpts": 635,
-          "reviewed_pct": 40.7,
+          "reviewed_excerpts": 437,
+          "unreviewed_excerpts": 633,
+          "reviewed_pct": 40.8,
           "approved_excerpts": 215,
-          "approved_pct": 49.4,
-          "reviewed_active_excerpts": 218,
+          "approved_pct": 49.2,
+          "reviewed_active_excerpts": 220,
           "reviewed_dropped_excerpts": 217,
-          "reviewed_unresolved_excerpts": 3,
+          "reviewed_unresolved_excerpts": 5,
           "dropped_excerpts": 219,
-          "t4_relationships": 33,
+          "t4_relationships": 34,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 33,
-          "t4_evidence_backed_relationships": 32,
+          "t4_structural_relationships": 34,
+          "t4_evidence_backed_relationships": 33,
           "t4_contributing_sources": 27,
           "source_mix": {
             "literature": 106,
@@ -579055,7 +579396,7 @@
             "nbs_id": "water_harvesting_conservation",
             "name": "Water harvesting conservation",
             "metrics": {
-              "compiled_outputs": 11,
+              "compiled_outputs": 12,
               "evidence_ids": [
                 "ev_wh5_adham_2018_clay_content",
                 "ev_wh5_adham_2018_land_cover",
@@ -579440,7 +579781,7 @@
                 "ev_wh_watertable_wocat7777_1",
                 "ev_wh_watertable_wocat7778_1"
               ],
-              "contributing_excerpts": 28,
+              "contributing_excerpts": 32,
               "contributing_sources": 14,
               "known_sources": 74,
               "source_keys": [
@@ -579522,24 +579863,24 @@
               "extracted_sources": 71,
               "reviewed_sources": 2,
               "fully_reviewed_sources": 2,
-              "sources_with_reviewed_excerpts": 7,
+              "sources_with_reviewed_excerpts": 8,
               "sources_with_approved_excerpts": 2,
               "active_excerpts": 367,
               "retained_excerpts": 367,
               "all_excerpts": 382,
-              "reviewed_excerpts": 22,
-              "unreviewed_excerpts": 360,
-              "reviewed_pct": 5.8,
+              "reviewed_excerpts": 24,
+              "unreviewed_excerpts": 358,
+              "reviewed_pct": 6.3,
               "approved_excerpts": 5,
-              "approved_pct": 22.7,
-              "reviewed_active_excerpts": 7,
+              "approved_pct": 20.8,
+              "reviewed_active_excerpts": 9,
               "reviewed_dropped_excerpts": 15,
-              "reviewed_unresolved_excerpts": 2,
+              "reviewed_unresolved_excerpts": 4,
               "dropped_excerpts": 15,
-              "t4_relationships": 11,
+              "t4_relationships": 12,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 11,
-              "t4_evidence_backed_relationships": 11,
+              "t4_structural_relationships": 12,
+              "t4_evidence_backed_relationships": 12,
               "t4_contributing_sources": 14,
               "source_mix": {
                 "literature": 19,
@@ -580496,7 +580837,7 @@
                 "scope_kind": "family",
                 "scope_definition": "Level or near-level steps cut into a slope to hold water and soil.",
                 "metrics": {
-                  "compiled_outputs": 2,
+                  "compiled_outputs": 3,
                   "evidence_ids": [
                     "ev_wh_annual_precipitation_krois14_1",
                     "ev_wh_aridity_wocat1506_1",
@@ -580575,8 +580916,8 @@
                     "ev_wh_watertable_wocat6610_1",
                     "ev_wh_watertable_wocat7553_1"
                   ],
-                  "contributing_excerpts": 4,
-                  "contributing_sources": 3,
+                  "contributing_excerpts": 8,
+                  "contributing_sources": 4,
                   "known_sources": 22,
                   "source_keys": [
                     "fao_critchley_wh_manual_1991",
@@ -580605,25 +580946,25 @@
                   "extracted_sources": 22,
                   "reviewed_sources": 2,
                   "fully_reviewed_sources": 2,
-                  "sources_with_reviewed_excerpts": 3,
+                  "sources_with_reviewed_excerpts": 4,
                   "sources_with_approved_excerpts": 2,
                   "active_excerpts": 76,
                   "retained_excerpts": 76,
                   "all_excerpts": 76,
-                  "reviewed_excerpts": 3,
-                  "unreviewed_excerpts": 73,
-                  "reviewed_pct": 3.9,
+                  "reviewed_excerpts": 5,
+                  "unreviewed_excerpts": 71,
+                  "reviewed_pct": 6.6,
                   "approved_excerpts": 2,
-                  "approved_pct": 66.7,
-                  "reviewed_active_excerpts": 3,
+                  "approved_pct": 40.0,
+                  "reviewed_active_excerpts": 5,
                   "reviewed_dropped_excerpts": 0,
-                  "reviewed_unresolved_excerpts": 1,
+                  "reviewed_unresolved_excerpts": 3,
                   "dropped_excerpts": 0,
-                  "t4_relationships": 2,
+                  "t4_relationships": 3,
                   "t4_operational_relationships": 0,
-                  "t4_structural_relationships": 2,
-                  "t4_evidence_backed_relationships": 2,
-                  "t4_contributing_sources": 3,
+                  "t4_structural_relationships": 3,
+                  "t4_evidence_backed_relationships": 3,
+                  "t4_contributing_sources": 4,
                   "source_mix": {
                     "literature": 3,
                     "grey": 19,
@@ -580738,9 +581079,9 @@
                 "label": "Suitability",
                 "unit": "suitability rules",
                 "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-                "output_count": 11,
-                "evidence_backed_outputs": 11,
-                "contributing_excerpts": 28,
+                "output_count": 12,
+                "evidence_backed_outputs": 12,
+                "contributing_excerpts": 32,
                 "contributing_sources": 14,
                 "evidence_ids": [
                   "ev_wh_annual_precipitation_kahinda08_3",
@@ -580761,6 +581102,10 @@
                   "ev_wh_runoff_potential_index_krois14_1",
                   "ev_wh_runoff_potential_index_singh17_1",
                   "ev_wh_runoff_potential_index_vema19_1",
+                  "ev_wh_slope_chen17_1",
+                  "ev_wh_slope_krois14_terraces",
+                  "ev_wh_slope_slm11_fanyajuu",
+                  "ev_wh_slope_wocatgl13_benchterraces",
                   "ev_wh_soil_depth_chen17_1",
                   "ev_wh_soil_depth_kahinda08_1",
                   "ev_wh_soil_depth_krois14_1",
@@ -580997,6 +581342,30 @@
                     ],
                     "source_keys": [
                       "gismcda_swc_siting_2014"
+                    ]
+                  },
+                  {
+                    "id": "water_harvesting__terracing__slope",
+                    "label": "water harvesting  terracing  slope · Terracing",
+                    "nbs_id": "water_harvesting_conservation",
+                    "family_ids": [
+                      "water_harvesting__terracing"
+                    ],
+                    "farming_system": "",
+                    "scope_type": "",
+                    "scope_id": "",
+                    "risk_role": "",
+                    "evidence_ids": [
+                      "ev_wh_slope_chen17_1",
+                      "ev_wh_slope_krois14_terraces",
+                      "ev_wh_slope_slm11_fanyajuu",
+                      "ev_wh_slope_wocatgl13_benchterraces"
+                    ],
+                    "source_keys": [
+                      "fao_slm_in_practice_2011",
+                      "gismcda_swc_siting_2014",
+                      "terracing_water_erosion_metaanalysis_china_2017",
+                      "wocat_wh_guidelines_2013"
                     ]
                   },
                   {
@@ -581806,9 +582175,9 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 33,
-            "evidence_backed_outputs": 32,
-            "contributing_excerpts": 54,
+            "output_count": 34,
+            "evidence_backed_outputs": 33,
+            "contributing_excerpts": 58,
             "contributing_sources": 27,
             "evidence_ids": [
               "EV_wocat_507_2019_008",
@@ -581855,6 +582224,10 @@
               "ev_wh_runoff_potential_index_krois14_1",
               "ev_wh_runoff_potential_index_singh17_1",
               "ev_wh_runoff_potential_index_vema19_1",
+              "ev_wh_slope_chen17_1",
+              "ev_wh_slope_krois14_terraces",
+              "ev_wh_slope_slm11_fanyajuu",
+              "ev_wh_slope_wocatgl13_benchterraces",
               "ev_wh_soil_depth_chen17_1",
               "ev_wh_soil_depth_kahinda08_1",
               "ev_wh_soil_depth_krois14_1",
@@ -582437,6 +582810,30 @@
                 ],
                 "source_keys": [
                   "gismcda_swc_siting_2014"
+                ]
+              },
+              {
+                "id": "water_harvesting__terracing__slope",
+                "label": "water harvesting  terracing  slope · Terracing",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__terracing"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_slope_chen17_1",
+                  "ev_wh_slope_krois14_terraces",
+                  "ev_wh_slope_slm11_fanyajuu",
+                  "ev_wh_slope_wocatgl13_benchterraces"
+                ],
+                "source_keys": [
+                  "fao_slm_in_practice_2011",
+                  "gismcda_swc_siting_2014",
+                  "terracing_water_erosion_metaanalysis_china_2017",
+                  "wocat_wh_guidelines_2013"
                 ]
               },
               {
@@ -646111,9 +646508,9 @@
         "label": "Suitability",
         "unit": "suitability rules",
         "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-        "output_count": 33,
-        "evidence_backed_outputs": 32,
-        "contributing_excerpts": 54,
+        "output_count": 34,
+        "evidence_backed_outputs": 33,
+        "contributing_excerpts": 58,
         "contributing_sources": 27,
         "evidence_ids": [
           "EV_wocat_507_2019_008",
@@ -646160,6 +646557,10 @@
           "ev_wh_runoff_potential_index_krois14_1",
           "ev_wh_runoff_potential_index_singh17_1",
           "ev_wh_runoff_potential_index_vema19_1",
+          "ev_wh_slope_chen17_1",
+          "ev_wh_slope_krois14_terraces",
+          "ev_wh_slope_slm11_fanyajuu",
+          "ev_wh_slope_wocatgl13_benchterraces",
           "ev_wh_soil_depth_chen17_1",
           "ev_wh_soil_depth_kahinda08_1",
           "ev_wh_soil_depth_krois14_1",
@@ -646742,6 +647143,30 @@
             ],
             "source_keys": [
               "gismcda_swc_siting_2014"
+            ]
+          },
+          {
+            "id": "water_harvesting__terracing__slope",
+            "label": "water harvesting  terracing  slope · Terracing",
+            "nbs_id": "water_harvesting_conservation",
+            "family_ids": [
+              "water_harvesting__terracing"
+            ],
+            "farming_system": "",
+            "scope_type": "",
+            "scope_id": "",
+            "risk_role": "",
+            "evidence_ids": [
+              "ev_wh_slope_chen17_1",
+              "ev_wh_slope_krois14_terraces",
+              "ev_wh_slope_slm11_fanyajuu",
+              "ev_wh_slope_wocatgl13_benchterraces"
+            ],
+            "source_keys": [
+              "fao_slm_in_practice_2011",
+              "gismcda_swc_siting_2014",
+              "terracing_water_erosion_metaanalysis_china_2017",
+              "wocat_wh_guidelines_2013"
             ]
           },
           {
@@ -685931,7 +686356,7 @@
         "catalogue": {
           "summary": {
             "structural_claims": 367,
-            "explicitly_linked_claims": 28,
+            "explicitly_linked_claims": 32,
             "focus_claims": 5,
             "selection_only_with_relationship_content": 2,
             "scopes": {
@@ -685978,8 +686403,8 @@
               "claim_scope": "practice_technology",
               "evidence_type": "literature_relationship",
               "reviewer_ok": "false",
-              "relationship": "{\"opt_low\": 18, \"opt_high\": 30, \"abs_min\": 2, \"abs_max\": 30, \"unit\": \"degrees\", \"direction\": \"terraces are OPTIMALLY suited at 18-30 degrees, highly suitable at 10-18 and above 30, and only marginally suitable on gentle ground (2-5); below 2 degrees terracing is not suitable — the practice needs the slope that makes it necessary\"}",
-              "context": "",
+              "relationship": "{\"opt_low\": 18, \"opt_high\": 30, \"abs_min\": null, \"abs_max\": null, \"unit\": \"degrees\", \"direction\": \"Peak source class at 18–30°. Above 30° is highly suitable (7). The 0–2° class is labelled Not suitable (1). Restricted (0) has no slope band. Adjacent printed classes share endpoints.\", \"source_classes\": [{\"slope_degrees_printed\": \"0–2\", \"class\": \"Not suitable\", \"source_score\": 1}, {\"slope_degrees_printed\": \"2–5\", \"class\": \"Marginally suitable\", \"source_score\": 3}, {\"slope_degrees_printed\": \"5–10\", \"class\": \"Moderately suitable\", \"source_score\": 5}, {\"slope_degrees_printed\": \"10–18\", \"class\": \"Highly suitable\", \"source_score\": 7}, {\"slope_degrees_printed\": \"18–30\", \"class\": \"Optimally suitable\", \"source_score\": 9}, {\"slope_degrees_printed\": \">30\", \"class\": \"Highly suitable\", \"source_score\": 7}, {\"slope_degrees_printed\": \"—\", \"class\": \"Restricted\", \"source_score\": 0}]}",
+              "context": "{\"model_use\": {\"criterion\": \"slope\", \"source_weight\": 0.39, \"weight_table\": \"Table 5, PDF p. 10\", \"method\": \"within-study AHP criterion weight\"}, \"source_table\": {\"locator\": \"PDF p. 9, Table 4, slope – terraces row\", \"source_sha256\": \"570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd\"}}",
               "quote": "Table 4\nSuitability levels for SWCTs (terraces and bunds).\nSuitability rating\nOptimally suitable\nHighly suitable\nModerately suitable\nMarginally suitable\nNot suitable\nRestricted\nSuitability level\n9\n7\n5\n3\n1\n0\nRainfall (mm)\n400e600\n200e400\n600e800\n800e1000\n100e200\n1000e1200\n0e100\n>1200\ne\nRunoff coefﬁcient\n>0.9\n0.6e0.9\n0.3e0.6\n0e0.3\ne\ne\nSlope e terraces (\u0006)\n18e30\n10e18 > 30\n5e10\n2e5\n0e2\ne\nSlope e bunds (\u0006)\n<2e5\n5e10\n10e18\n18e30\n>30\ne\nSoil depth (m)\n>1.0\n0.5e1.0\n0.3e0.5\n0.2e0.3\n<0.2\ne\nSoil texture (% clay content)\n15e35\n6e15\n35e55\n0e6\n>55\ne\nLand use\nAgriculture\nMeadows, Shrub land,\nScarce vegetation\nGrassland\nForest\ne\nInfrastructure,\nWater bodies",
               "page": "9",
               "locator_type": "page",
@@ -685988,12 +686413,14 @@
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "terraces are OPTIMALLY suited at 18-30 degrees, highly suitable at 10-18 and above 30, and only marginally suitable on gentle ground (2-5); below 2 degrees terracing is not suitable — the practice needs the slope that makes it necessary",
+              "source_direction": "Peak source class at 18–30°. Above 30° is highly suitable (7). The 0–2° class is labelled Not suitable (1). Restricted (0) has no slope band. Adjacent printed classes share endpoints.",
               "has_stated_direction": true,
-              "has_source_classes": false,
+              "has_source_classes": true,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__terracing__slope"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -686597,8 +687024,8 @@
               "claim_scope": "practice_technology",
               "evidence_type": "literature_relationship",
               "reviewer_ok": "false",
-              "relationship": "{\"abs_max\": 30, \"unit\": \"degrees\", \"level_terrace_max\": 25, \"zig_terrace_max\": 30, \"slope_separated_range\": [15, 20], \"direction\": \"terrace TYPE is chosen by slope: level terraces below 25 degrees, zig terraces on fairly uniform slopes generally below 30 degrees, slope-separated terraces specifically at 15-20 degrees — above about 30 degrees none of the types is specified\"}",
-              "context": "",
+              "relationship": "{\"abs_max\": null, \"unit\": \"degrees\", \"level_terrace_max\": 25, \"zig_terrace_max\": 30, \"slope_separated_range\": [15, 20], \"direction\": \"Table 1 reports site conditions by terrace design. The generally <30° field-slope condition belongs to zig terraces.\", \"source_classes\": [{\"design\": \"Level terrace\", \"site_conditions\": \"Sloped land <25° for rice, drought-tolerant crops and orchards.\"}, {\"design\": \"Zig terrace\", \"site_conditions\": \"Soil deeper than 15 cm and fairly uniform field slopes, generally <30°.\"}, {\"design\": \"Slope-separated terrace\", \"site_conditions\": \"Low rainfall areas with permeable soils and slopes between 15° and 20°.\"}, {\"design\": \"Slope terrace\", \"site_conditions\": \"Thin soil cover and gentle slopes <7°.\"}, {\"design\": \"Fanya juu terrace\", \"site_conditions\": \"Thick soil cover and steep, uneven slopes where benching is unsuitable.\"}, {\"design\": \"Half-moon terrace / fish-scale pit\", \"site_conditions\": \"Steep slopes with shallow stony soils and short steep slopes for tree survival.\"}]}",
+              "context": "{\"source_table\": {\"locator\": \"PDF p. 4, Table 1, Scope of application column\", \"source_sha256\": \"00e0131089d16f5ece432390aae8681f967dbd511b4b77555b23ce9f1e74b80d\", \"slope_unit\": \"degrees\", \"eligible_use\": \"design-specific guidance\"}}",
               "quote": "Table 1\nTypes of terraces considered in the plot database.\nType\nStructural features\nScope of application\nSize\nLevel terrace\nConsists of a series of level platforms constructed\nalong the contour lines of a terraced slope\nConstructed on sloped land (< 25°),\nplanted rice, drought tolerant crops and\norchards\nThe width of the platform is > 8 m, while the width of\nthe mechanized terrace is > 10 m; the height of the\nridge is approximately 0.3 m, and the gradient of the\nridge is between 71° and 76°\nZig terrace\nPlatforms tilt toward the inside to increase water\nstorage, and the inclination of the adverse slope is\nbetween 10° and 15°\nFields with soils deeper than 15 cm and\nfairly uniform slopes that are not too\nsteep (generally < 30°)\nThe width of the zig terrace is only 2–6 m; the vertical\ndistance of adjoining platforms is approximately 2–3 m\nSlope-separated\nterrace\nA slope in the midst of two adjacent horizontal\nplatforms\nRecommended for low rainfall areas with\npermeable soils and slopes between 15°\nand 20°",
               "page": "4",
               "locator_type": "page",
@@ -686607,12 +687034,14 @@
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "terrace TYPE is chosen by slope: level terraces below 25 degrees, zig terraces on fairly uniform slopes generally below 30 degrees, slope-separated terraces specifically at 15-20 degrees — above about 30 degrees none of the types is specified",
+              "source_direction": "Table 1 reports site conditions by terrace design. The generally <30° field-slope condition belongs to zig terraces.",
               "has_stated_direction": true,
-              "has_source_classes": false,
+              "has_source_classes": true,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__terracing__slope"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -688247,7 +688676,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__terracing__slope"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -688949,7 +689380,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__terracing__slope"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -697269,7 +697702,14 @@
               "weight_summary": [],
               "study_weights": [],
               "mapped_group_weights": [],
-              "function_support": [],
+              "function_support": [
+                {
+                  "family": "water_harvesting__terracing",
+                  "sources": [],
+                  "function_options": 0,
+                  "mapping_id": "water_harvesting__terracing__slope"
+                }
+              ],
               "evidence_ids": [
                 "ev_wh_slope_krois14_terraces",
                 "ev_wh_slope_krois14_bunds",
@@ -699610,19 +700050,11 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "d7e835455079",
-    "data_id": "124cd1468663",
+    "data_id": "a9f96f8db87c",
     "count_definition_version": "4",
-    "built_at": "2026-11-09T09:36:37.738455+00:00",
-    "source_commit": "565c2566db60eab7ca3c9d8f4e0c1b11e09aa029",
+    "built_at": "2026-11-09T10:39:16.169481+00:00",
+    "source_commit": "7c74a43dfd71acb604862813e0b44de93c0d6c17",
     "history": [
-      {
-        "release": "1.5.0",
-        "ui_id": "afee041f1a1a",
-        "data_id": "16d73c9398e3",
-        "count_definition_version": "4",
-        "built_at": "2026-11-05T07:22:57.500664+00:00",
-        "source_commit": "4bc1ae3c37ff62eeecf60a7dc37f221e0c7ffe44"
-      },
       {
         "release": "1.5.0",
         "ui_id": "afee041f1a1a",
@@ -700014,6 +700446,14 @@
         "count_definition_version": "4",
         "built_at": "2026-11-09T09:36:37.738455+00:00",
         "source_commit": "565c2566db60eab7ca3c9d8f4e0c1b11e09aa029"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "d7e835455079",
+        "data_id": "a9f96f8db87c",
+        "count_definition_version": "4",
+        "built_at": "2026-11-09T10:39:16.169481+00:00",
+        "source_commit": "7c74a43dfd71acb604862813e0b44de93c0d6c17"
       }
     ]
   }
