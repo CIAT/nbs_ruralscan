@@ -132,7 +132,7 @@ def test_missing_declaration_and_missing_hold_close_the_release(tmp_path):
     ],
 )
 def test_refuse_malformed_or_misdirected_settings(tmp_path, edits):
-    practice = "riparian_buffer"
+    practice = "wetland_management"
     config = copy_inputs(tmp_path, practice)
     replace_record(config.mapping_settings, lambda rows: rows[0].update(edits))
     with pytest.raises(ValueError):
@@ -266,7 +266,7 @@ def test_full_corpus_refuses_ambiguous_embedded_json(tmp_path, column, content):
     [
         ("agroforestry", "authored_mappings"),
         ("water_harvesting_conservation", "review_holds"),
-        ("riparian_buffer", "mapping_settings"),
+        ("wetland_management", "mapping_settings"),
     ],
 )
 @pytest.mark.parametrize("field", ["variable", "suitability_family_id"])
