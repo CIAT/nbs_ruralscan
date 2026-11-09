@@ -1,5 +1,7 @@
 # Canning sugarcane wetlands — bounded T4/operational review
 
+**9 November update.** Pete approved filing the lagoon case as wetland-creation implementation evidence. The [approved decision](SCOPE_DECISION.md) supersedes the pending routing described in this historical review.
+
 2026-11-05, extractionv1.9.4. Source `wet_constructed_suitability_sugarcane_2022` (online2022, Environmental Management2023volume71pp304–320). **17-page main paper fully reviewed; zero T4 claims; one operational finance candidate held.** No evidence admitted, no register/queue/ledger/git edits.
 
 `SCOPE_DECISION.md` is the concrete source-routing memo. `independent_scope_review.md` provides separate review. Source describes rural excavated freshwater flood-drainage/habitat lagoons; current queued constructed-treatment family is parked. Creation-family routing requires user decision. Tidal/salt-marsh stays parked. No practice merger, un-parking or definition change made. Treatment-design discussions remain engineering/Module6 pointers even if creation routing approved.

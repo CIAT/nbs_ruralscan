@@ -57,6 +57,8 @@ one vs peat-specific rewetting), because that sets the variable set and the suit
   *non-wetland* land — a siting problem, not a restore-what-was problem. Different variable set.
 - **Footprint.** `area_suitability`.
 
+**Documented implementation.** In Queensland’s Tully–Murray floodplain, the Riversdale–Murray scheme excavated freshwater lagoons alongside arterial drains to manage flooding of sugarcane fields. Vegetated lagoon margins and downstream river connections provided fish habitat. The design dimensions describe how the scheme was built. T4 has no siting cutoff from this case. [Canning et al., pp. 305–306](https://doi.org/10.1007/s00267-022-01734-4) · [Source-routing decision](../audits/all_practice_batch3_20261105/wetlands/SCOPE_DECISION.md)
+
 ### F3 — Peatland restoration / paludiculture · `wetland_management__peatland`
 - **Definition.** Rewet drained peatlands and/or farm them wet (paludiculture — wet meadow/pasture, reed).
 - **Why its own family.** Gated by **peat soil presence** (a specific soil layer) + drainage state + water table
