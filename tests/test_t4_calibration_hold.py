@@ -198,3 +198,91 @@ def test_developer_contract_cannot_select_function_around_hold(monkeypatch):
                 },
             },
         )
+
+
+@pytest.mark.parametrize(
+    ("family", "geometries"),
+    [
+        (
+            "natural_restored",
+            {
+                "demello18_1": {"river_buffer_m": 30, "spring_radius_m": 50},
+                "dalacorte20_2": {"per_bank_m": 50, "total_width_m": 100},
+                "zhao13_1": {"analysis_window_m": 210, "analysis_window_pixels": 7},
+            },
+        ),
+        (
+            "planted",
+            {
+                "cole20_1": {"sediment_bound_m": 7.5, "soluble_m": 15},
+                "schultz95_1": {
+                    "near_stream_woody_approx_min_m": 4.6,
+                    "additional_managed_woody_min_m": 18.3,
+                    "outer_grass_forb_min_m": 6.1,
+                },
+                "tiwari16_1": {
+                    "extent_from_perennial_stream_m": 30,
+                    "width_along_intermittent_stream_m": 10,
+                },
+            },
+        ),
+    ],
+)
+def test_riparian_design_geometry_stays_visible_but_cannot_score(family, geometries):
+    from nbs_ruralscan.schema_tools.review_notes import evidence_fingerprint
+
+    nbs = "riparian_buffer"
+    mapping = f"{nbs}__{family}__distance_to_waterbody"
+    result = dc.build_contract(ROOT, nbs=nbs)
+    row = next(r for r in result["contract"]["rows"] if r["rule_id"] == mapping)
+    params = row["declared_relationship"]["params"]
+    hold = params["reviewed_adaptation"]["numerical_calibration"]
+    assert hold["status"] == "held" and row["status"] == "blocked"
+    assert row["function_options"] == [] and row["function_id"] is None
+    assert row["selected_evidence_ids"] == []
+    assert (
+        row["weight"]["configured_default"] is row["weight"]["runtime_weight"] is None
+    )
+    assert not {"abs_min", "abs_max", "opt_low", "opt_high"}.intersection(params)
+    expected = {
+        f"ev_distance_to_waterbody_{key}": value for key, value in geometries.items()
+    }
+    profiles = {p["evidence_id"]: p for p in hold["retained_source_profiles"]}
+    assert profiles.keys() == expected.keys() == set(row["evidence_ids"])
+    evidence = {
+        r["evidence_id"]: r
+        for r in read(ROOT / "schema/registers/EV_evidence_register.csv")
+    }
+    for eid, geometry in expected.items():
+        source = evidence[eid]
+        profile = profiles[eid]
+        assert source["reviewer_ok"] == "true" and source["review_state"] != "dropped"
+        assert profile["source_id"] == source["source_id"]
+        assert profile["evidence_sha256"] == evidence_fingerprint(source)
+        published = profile["published_profile"]
+        assert published == json.loads(source["relationship"])["source_profile"]
+        assert geometry.items() <= published["geometry"].items()
+
+    # Cells at or just beyond the source widths cannot receive a score.
+    with pytest.raises(ValueError, match="Numerical calibration held"):
+        evaluate_numeric(
+            {
+                "relationship_type": row["declared_relationship"]["type"],
+                "relationship_params": params,
+            },
+            [0, 30, 31, 50, 51, 210, 211],
+        )
+    with pytest.raises(ValueError, match="Missing or stale function selection"):
+        dc.build_contract(
+            ROOT,
+            nbs=nbs,
+            selection={
+                "contract_version": dc.VERSION,
+                "selections": {
+                    mapping: {
+                        "function_id": "numeric_threshold",
+                        "function_fingerprint": "stale",
+                    }
+                },
+            },
+        )
