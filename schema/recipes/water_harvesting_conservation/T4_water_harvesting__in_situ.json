@@ -192,6 +192,146 @@
     "paper_support_pct": null
   },
   {
+    "mapping_id": "water_harvesting__in_situ__slope",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "srtm_dem_30m",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "scope": "water_harvesting__in_situ__slope",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "status": "held",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/in_field_bund_slope.md",
+          "reason": "Retain FAO tree-bund guidance and the full Krois regional bund model in native slope units. The mechanisation profile concerns conservation agriculture. No common bund slope cutoff or suitability score is approved.",
+          "retained_source_profiles": [
+            {
+              "structure": "Bund systems, Ronquillo watershed, northern Peru",
+              "locator": "PDF p. 9, Table 4, slope – bunds; PDF p. 10, Table 5, slope criterion.",
+              "unit": "degrees",
+              "published_profile": {
+                "role": "regional suitability model",
+                "unit": "degrees",
+                "classes": [
+                  {
+                    "slope_band_as_printed": "<2–5",
+                    "label": "optimally suitable",
+                    "source_score": 9
+                  },
+                  {
+                    "slope_band_as_printed": "5–10",
+                    "label": "highly suitable",
+                    "source_score": 7
+                  },
+                  {
+                    "slope_band_as_printed": "10–18",
+                    "label": "moderately suitable",
+                    "source_score": 5
+                  },
+                  {
+                    "slope_band_as_printed": "18–30",
+                    "label": "marginally suitable",
+                    "source_score": 3
+                  },
+                  {
+                    "slope_band_as_printed": ">30",
+                    "label": "not suitable",
+                    "source_score": 1
+                  },
+                  {
+                    "slope_band_as_printed": null,
+                    "label": "restricted",
+                    "source_score": 0
+                  }
+                ],
+                "slope_criterion_weight": 0.39,
+                "endpoint_convention": "Retain printed intervals. First class and touching endpoints are unresolved for scoring."
+              },
+              "interpretation": "Keep Krois & Schulte’s Ronquillo model for bunds in degrees, with its printed classes, ambiguous optimum notation and within-study slope weight of 0.39. Above 30° scores 1. The model assigns no slope band to restricted (0).",
+              "disposition": "bund_evidence_scoped_to_regional_siting_model",
+              "source_weight_row_quote": "Slope\n7\n3\n1\n3\n3\n3\n0.39",
+              "evidence_id": "ev_wh_slope_krois14_bunds",
+              "source_id": "gismcda_swc_siting_2014",
+              "evidence_sha256": "e1cc52d7776937d129a3cb0d5efd1bf4272cf8cd10b0bef0515b6cde3406eebf",
+              "source_artifact_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd",
+              "source_quote": "Table 4\nSuitability levels for SWCTs (terraces and bunds).\nSuitability rating\nOptimally suitable\nHighly suitable\nModerately suitable\nMarginally suitable\nNot suitable\nRestricted\nSuitability level\n9\n7\n5\n3\n1\n0\nRainfall (mm)\n400e600\n200e400\n600e800\n800e1000\n100e200\n1000e1200\n0e100\n>1200\ne\nRunoff coefﬁcient\n>0.9\n0.6e0.9\n0.3e0.6\n0e0.3\ne\ne\nSlope e terraces (\u0006)\n18e30\n10e18 > 30\n5e10\n2e5\n0e2\ne\nSlope e bunds (\u0006)\n<2e5\n5e10\n10e18\n18e30\n>30\ne\nSoil depth (m)\n>1.0\n0.5e1.0\n0.3e0.5\n0.2e0.3\n<0.2\ne\nSoil texture (% clay content)\n15e35\n6e15\n35e55\n0e6\n>55\ne\nLand use\nAgriculture\nMeadows, Shrub land,\nScarce vegetation\nGrassland\nForest\ne\nInfrastructure,\nWater bodies"
+            },
+            {
+              "structure": "Contour bunds for tree planting",
+              "locator": "FAO manual §5.3.2, Suitability and Limitations, contour bunds for tree planting.",
+              "unit": "percent",
+              "published_profile": {
+                "role": "implementation recommendation",
+                "slope_grade_pct": [
+                  0,
+                  5
+                ],
+                "terrain": "Even terrain without gullies or rills.",
+                "limitation": "Overtopping can break the bund at low spots."
+              },
+              "interpretation": "FAO recommends flat to 5% grade and even ground without gullies or rills for tree-planting contour bunds. Water can overtop the bund and break it at low spots.",
+              "disposition": "siting_recommendation_scoped_to_tree_planting_contour_bunds",
+              "other_conditions": "Arid to semi-arid, 200–750 mm rainfall and soil at least 1.5 m deep, preferably 2 m.",
+              "evidence_id": "ev_wh_slope_critchley91_contourbunds",
+              "source_id": "fao_critchley_wh_manual_1991",
+              "evidence_sha256": "2d85ecc43f2958bb0aba34f207fc9af46671ba8b570d59e9112a1902b0a54796",
+              "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+              "source_quote": "Suitability Contour bunds for tree planting can be used under the following conditions: Rainfall: 200 - 750 mm; from semi-arid to arid areas. Soils: Must be at least 1.5 m and preferably 2 m deep to ensure adequate root development and water storage. Slopes: from flat up to 5.0%."
+            },
+            {
+              "structure": "Conservation agriculture, mechanised and manual or animal-traction systems",
+              "locator": "PDF pp. 74–75 (printed pp. 77–78), Conservation agriculture, Principles and types and Applicability.",
+              "unit": "percent",
+              "published_profile": {
+                "role": "conservation-agriculture implementation guidance",
+                "unit": "percent grade",
+                "mechanised_systems_unsuitable_above": 16,
+                "steeper_slopes": "Hand planters or animal traction.",
+                "applicable_to_bund_siting": false
+              },
+              "interpretation": "Keep mechanisation guidance within conservation agriculture. Slopes above 16% are described as unsuitable for mechanised systems. Hand planting or animal traction can be used on steeper slopes. Excluded from bund support and scoring.",
+              "disposition": "retain_mechanisation_evidence_exclude_from_bund_support_and_scoring",
+              "evidence_id": "ev_wh_slope_slm11_ca",
+              "source_id": "fao_slm_in_practice_2011",
+              "evidence_sha256": "d6a032c1a6fee25d0a4eb45b238b53b0c1f6b6bb81356d034e93c22972e42f3b",
+              "source_artifact_sha256": "a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3",
+              "source_quote": "Terrain and landscape: Suitable for flat to moderate slopes, mechanised sys­ tems are unsuitable for slopes steeper than 16%, but hand planters are suit­ able for steeper slopes."
+            }
+          ],
+          "excluded_from_bund_scoring": [
+            "ev_wh_slope_slm11_ca"
+          ],
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "type": "trapezoidal",
+            "params": {
+              "opt_high": 5.0,
+              "abs_max": 30.0
+            },
+            "uncertainty_pct": "60.0"
+          }
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.2,
+    "weight_adjustable": true,
+    "justification": "Retain FAO tree-bund guidance and the full Krois regional bund model in native slope units. The mechanisation profile concerns conservation agriculture. No common bund slope cutoff or suitability score is approved. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "variable": "slope",
+    "suitability_family_id": "water_harvesting__in_situ",
+    "evidence_ids": [
+      "ev_wh_slope_krois14_bunds",
+      "ev_wh_slope_critchley91_contourbunds"
+    ],
+    "n_sources": 2,
+    "corpus_n": null,
+    "paper_support_pct": null
+  },
+  {
     "mapping_id": "water_harvesting__in_situ__soil_depth_to_bedrock",
     "nbs_id": "water_harvesting_conservation",
     "suitability_dimension": "biophysical_constraint",

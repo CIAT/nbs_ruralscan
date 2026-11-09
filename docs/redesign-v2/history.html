@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>History and Feedback</title>
+<script>(function(){var t="light";try{t=localStorage.getItem("v1b-theme")||"light"}catch(e){}document.documentElement.setAttribute("data-theme",t)})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="v1b.css">
+<link rel="stylesheet" href="review-mode.css">
+</head>
+<body>
+<div id="chrome"></div>
+<!-- History page. FEEDBACK_LOG.md is the editable source of the table below: when served over
+     http the page reads FEEDBACK_LOG.md directly; the embedded JSON copy (#log-data) is a fallback
+     for file:// and should be regenerated from the markdown when the log changes. -->
+<main class="wrap hist-page">
+  <section class="chapter">
+    <span class="eyebrow sc">Rural NbS Scan · prototype history</span>
+    <h1 class="question">How the prototype changed, and why</h1>
+    <p class="lede">The three versions of the mock-up, what each tried, and every request from the World Bank and the project team with what was done about it.</p>
+    <p><a href="../redesign/history.html#compare">Compare this archived v2.0 walkthrough with v2.1</a></p>
+    <nav class="toc" aria-label="Sections"><a href="#story"><span class="sec-n">H.1</span>From v0 to v2</a><a href="#log"><span class="sec-n">H.2</span>Requests and responses</a><a href="index.html">Home: about the project</a></nav>
+  </section>
+
+  <section class="cfg" id="story">
+    <h2 class="hh"><span class="sec-n">H.1</span>From v0 to v2</h2>
+    <div class="story">
+      <div class="st-v"><span class="st-tag">v0 · July 2026</span><h3>Original mock-up</h3>
+        <p>The first published mock-up: one page with six stage tabs, from Setup to Next steps, plus developer tabs. It fixed the order of the stages and the content each one carries — suitability, project risk, priority hotspots, practice comparison — and its link to the schema tables. Each tab was a grid of equal panels with toggles, chips and charts, and the maps used radial gradients with per-cell noise. <a href="../wireframe-v0.html">Open v0</a></p></div>
+      <div class="st-v"><span class="st-tag">v1 · October 2026</span><h3>Draft revision</h3>
+        <p>A revision after the World Bank session of 6 October and the team’s comments. It put project background before settings, opened maps as district summaries, replaced the overall risk score with separate hazard overlays, and added the five Scorecard indicators, a budget box, local save and load, and scripted AI examples. It was not taken forward: the example map repeated twelve authored values in visible blocks, the opening still read as a form, and each stage remained a set of equal panels. The project lead rejected the maps and the landing page on 28–31 October. <a href="../wireframe.html">Open v1</a></p></div>
+      <div class="st-v"><span class="st-tag">v2 · November 2026</span><h3>This redesign</h3>
+        <p>Built from a diagnosis of five failures shared by v0 and v1: example data that looked authored, page furniture before content, no single question per stage, abbreviation-heavy labelling, and caveats repeated as content. Each stage now asks one question, shows one main figure and keeps depth in numbered sub-tabs. A visible control bar holds practice, suitability classes, view and climate. The example surface is one coherent synthetic field on real Sierra Leone boundaries. Stage 02, Explore the practices, was added, and technical configuration became its own page. <a href="index.html">Open v2</a></p></div>
+      <div class="st-v st-fixed"><span class="st-tag">Unchanged throughout</span><h3>What has stayed the same</h3>
+        <p>The scan scopes; it does not assess feasibility. The contracted delivery is a set of reproducible notebooks, and these pages demonstrate the method. No figure in any version is a pilot result.</p></div>
+    </div>
+  </section>
+
+  <section class="cfg" id="log">
+    <div class="tp-head"><div><h2 class="hh"><span class="sec-n">H.2</span>Requests and responses</h2><p class="need">One row per request: who asked, what was done, and where to see it. World Bank requests are listed first. "Done" means implemented in this prototype, not that the requester has accepted it.</p></div>
+      <div class="dl-pair"><a href="FEEDBACK_LOG.md" target="_blank" rel="noopener">Source log (markdown)</a></div></div>
+    <p class="counts" id="counts"></p>
+    <div class="hfilt">
+      <div class="fld"><span>Source</span><div class="seg seg-sm" id="f-src" role="group" aria-label="Source"><button type="button" data-v="" aria-pressed="true">All</button><button type="button" data-v="World Bank" aria-pressed="false">World Bank</button><button type="button" data-v="Pete" aria-pressed="false">Pete</button><button type="button" data-v="Agent review" aria-pressed="false">Agent review</button></div></div>
+      <div class="fld"><span>Status</span><div class="seg seg-sm" id="f-st" role="group" aria-label="Status"><button type="button" data-v="" aria-pressed="true">All</button><button type="button" data-v="done" aria-pressed="false">Done</button><button type="button" data-v="partial" aria-pressed="false">Partial</button><button type="button" data-v="open" aria-pressed="false">Open</button></div></div>
+    </div>
+    <div class="tabwrap"><table class="qt hlog" id="tlog"></table></div>
+  </section>
+
+  <p class="home-link">The project and what this wireframe is for are explained on <a href="index.html">Home</a>.</p>
+  </section>
+</main>
+<script type="application/json" id="log-data">[
+ {
+  "date": "2026-10-06",
+  "source": "Laurent (WB)",
+  "request": "Start from a challenge, not from an NbS; priority/descriptor variables up front",
+  "response": "Setup leads with challenge + objectives; new Stage 02 Explore the practices",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10-06",
+  "source": "Laurent (WB)",
+  "request": "Explain climate scenario toggling",
+  "response": "Climate control in the bar; 2050 plate variant with \"envelope shifts, not a forecast\" note",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10-06",
+  "source": "Laurent (WB)",
+  "request": "Theme groups expanded; pick 2–3 priorities at once",
+  "response": "5.2 groups expanded by default; objectives multi-select",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10-06",
+  "source": "Laurent (WB)",
+  "request": "Gender toggle unclear",
+  "response": "National-context card: one value, cannot rank districts",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10-06",
+  "source": "Laurent (WB)",
+  "request": "WBG Scorecard indicators in comparison; (i) per variable",
+  "response": "6.4 crosswalk of the five indicators; (i) links on 5.2 rows",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10-06",
+  "source": "Laurent (WB)",
+  "request": "Paragraphs TTLs can paste into project documents",
+  "response": "07 scoping brief plate with copy-text",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10-06",
+  "source": "Dinara (WB)",
+  "request": "Shade the active stage; one step at a time",
+  "response": "Stepper with current/done states; one plate per stage; sub-tabs",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10-06",
+  "source": "Dinara (WB)",
+  "request": "Show hard exclusions and proximity",
+  "response": "Exclusions hatched + outlined on the plate; 100 ha parcel inset",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10-06",
+  "source": "Dinara (WB)",
+  "request": "Disaggregate hazards; overlap",
+  "response": "04 Fire / Flood / Both",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10-06",
+  "source": "Dinara (WB)",
+  "request": "Downloadable outputs; info bubbles",
+  "response": "Download PNG/CSV on every section; (i) links",
+  "status": "partial (downloads are placeholders)"
+ },
+ {
+  "date": "2026-10-06",
+  "source": "Dinara (WB)",
+  "request": "Modify inputs for local economic conditions",
+  "response": "6.3 budget box + cost components; local costing flagged",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10-06",
+  "source": "Dinara (WB)",
+  "request": "Next steps: tool ends at scoping",
+  "response": "07 \"outside this tool\" columns",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10",
+  "source": "WB written follow-up",
+  "request": "Small vectors / 100 ha parcels",
+  "response": "Inset on Figure 3.1",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10",
+  "source": "WB written follow-up",
+  "request": "Five Scorecard indicators",
+  "response": "6.4",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10",
+  "source": "WB written follow-up",
+  "request": "Budget box → affordable hectares",
+  "response": "6.3",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10",
+  "source": "WB written follow-up",
+  "request": "Where does the TTL make the need-vs-risk trade-off?",
+  "response": "4.4 plain-question block: keep flagged places or take High-flag places off, with before/after maps and why it is the TTL's call",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-10-28",
+  "source": "Pete",
+  "request": "Landing must explain purpose/aims; maps looked bad; too much in one view; controls sticky; admin selector; AI entry points; save/load",
+  "response": "v2 redesign (direction A)",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-11-02",
+  "source": "Pete",
+  "request": "Controls too hidden; palettes; numbering; do not strip content, stage it",
+  "response": "Control bar; tiered palettes; numbered figures/tables; sub-tabs",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-11-02",
+  "source": "Pete",
+  "request": "Hotspots oversimplified; config not a sidebar; dark mode; version selector; practices tab",
+  "response": "05 rebuilt; 00 config page; theme toggle; v0/v1/v2 selector; Stage 02",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-11-03",
+  "source": "Pete",
+  "request": "Review/comments system like ENSO explorer",
+  "response": "Review mode + GitHub issue hand-off",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-11-03",
+  "source": "Pete",
+  "request": "a) landing confusing → go straight to Setup",
+  "response": "Stage 01 opens on the three scope choices with a two-sentence intro naming the audience; old landing content moved to history.html (About this prototype); seven-stage strip moved to the overview",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-11-03",
+  "source": "Pete",
+  "request": "b) \"What changed\" must be a detailed history page with Bank requests and responses",
+  "response": "history.html: v0 → v1 → v2 narrative plus this log as a filterable table; opened in a new tab from the version bar",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-11-03",
+  "source": "Pete",
+  "request": "c) restore the opportunity-space chart as an option; 3.4 numbers lack context and spatial resolution",
+  "response": "3.2 Chart/Table toggle with Figure 3.3; 3.4 shows each problem as a five-fifth distribution with country reference, reading line and a map that drives Figure 3.1",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-11-03",
+  "source": "Pete",
+  "request": "d) merge 3.4 and 3.5 so problems and what the NbS addresses sit together",
+  "response": "3.4 Problems in the opportunity space and what the practice can do about them: ten problems, severity beside response; 3.5 removed",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-11-03",
+  "source": "Pete",
+  "request": "e) 4.4 trade-off section unclear",
+  "response": "4.4 rewritten as a plain question with two options, before/after maps, hectares and why it is the task team's call; Table 4.5 kept",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-11-03",
+  "source": "Pete",
+  "request": "f) \"Which practices deserve closer investigation?\" too loaded; neutral wording",
+  "response": "Stage 06 asks \"How do the practices compare on a common footing?\"; take-away: a side-by-side, not a ranking",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-11-03",
+  "source": "Pete",
+  "request": "Config as sub-tabs, C.1 dissolved; keep illustration placeholder (issue); 5.2 expanded; no cost source for silvoarable",
+  "response": "00 config in six sub-tabs C.1–C.6 with the two-jobs text at the top of C.1 and C.2; placeholder kept; 5.2 expanded; 2.4 shows no cost source for planted silvoarable",
+  "status": "done v2"
+ },
+ {
+  "date": "2026-11-05",
+  "source": "Pete",
+  "request": "Landing tab explaining the project in detail and what the visual methodology wireframe is for; stage strip and overview there",
+  "response": "Home page (index.html), first item in the stepper: project, purpose of the wireframe, method flow with the seven-stage strip, is/is-not, how to use, pages; About block moved out of history",
+  "status": "done v2"
+ }
+]</script>
+<script src="../sle_geo.js"></script>
+<script src="v1b-map.js?v=20261106-nav"></script>
+<script>V1BUI.chrome(0);</script>
+<script src="v1b-versions.js?v=20261106-brand"></script>
+<script>
+(function () {
+  'use strict';
+  var ROWS = JSON.parse(document.getElementById('log-data').textContent);
+  var f = { src: '', st: '' };
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  function srcOf(r) { var s = r.source; return /\bWB\b|World Bank/i.test(s) ? 'World Bank' : /agent/i.test(s) ? 'Agent review' : /Pete/i.test(s) ? 'Pete' : 'Other'; }
+  function stOf(r) { var s = r.status.toLowerCase(); return /^open/.test(s) ? 'open' : /partial/.test(s) ? 'partial' : 'done'; }
+  var FILES = { '0': '00-config.html', '1': '01-setup.html', '2': '02-practices.html', '3': '03-opportunity.html', '4': '04-risk.html', '5': '05-hotspots.html', '6': '06-comparison.html', '7': '07-next.html' };
+  function linkOf(r) {
+    var t = r.response + ' ' + r.request, m = /\b([1-7])\.([1-6])\b/.exec(r.response) || /\b([1-7])\.([1-6])\b/.exec(t);
+    if (/landing/i.test(r.request)) return ['01-setup.html', 'Stage 01'];
+    if (/history\.html|history page/i.test(t)) return ['history.html', 'This page'];
+    if (/00 config|config page|Config as sub-tabs/i.test(t)) return ['00-config.html', 'Technical configuration'];
+    if (m) return [FILES[m[1]] + (m[1] !== '1' && m[1] !== '7' ? '?tab=' + m[2] : ''), 'Section ' + m[1] + '.' + m[2]];
+    var g = /Figure ([1-7])\.\d/.exec(t); if (g) return [FILES[g[1]], 'Stage 0' + g[1]];
+    var s = /Stage 0([1-7])|\b0([1-7]) /.exec(r.response); if (s) { var n = s[1] || s[2]; return [FILES[n], 'Stage 0' + n]; }
+    if (/Climate control|climate scenario/i.test(t)) return ['03-opportunity.html', 'Stage 03'];
+    if (/Gender/i.test(t)) return ['05-hotspots.html', 'Section 5.1'];
+    if (/exclusion/i.test(t)) return ['03-opportunity.html', 'Figure 3.1'];
+    if (/Control bar|palettes/i.test(t)) return ['03-opportunity.html', 'Stage 03'];
+    if (/Download|Stepper|Setup/i.test(t)) return ['01-setup.html', 'Stage 01'];
+    if (/Review mode/i.test(t)) return ['01-setup.html?review', 'Review mode'];
+    return null;
+  }
+  var ORDER = { 'World Bank': 0, 'Pete': 1, 'Agent review': 2, 'Other': 3 };
+  function render() {
+    var by = {}; ROWS.forEach(function (r) { var k = srcOf(r); by[k] = by[k] || { n: 0, done: 0, partial: 0, open: 0 }; by[k].n++; by[k][stOf(r)]++; });
+    document.getElementById('counts').innerHTML = ['World Bank', 'Pete', 'Agent review'].map(function (k) {
+      var c = by[k] || { n: 0, done: 0, partial: 0, open: 0 };
+      return '<span><b>' + c.n + ' ' + (k === 'World Bank' ? 'World Bank requests' : k === 'Pete' ? 'requests from Pete' : 'agent-review suggestions') + '</b>: ' + c.done + ' done, ' + c.partial + ' partial, ' + c.open + ' open</span>';
+    }).join('');
+    var list = ROWS.filter(function (r) { return (!f.src || srcOf(r) === f.src) && (!f.st || stOf(r) === f.st); })
+      .sort(function (a, b) { return (ORDER[srcOf(a)] - ORDER[srcOf(b)]) || (a.date < b.date ? -1 : a.date > b.date ? 1 : 0); });
+    var html = '<caption class="tabcap"><b>Table H.1</b> · Requests and responses<small>From FEEDBACK_LOG.md. Agent-review suggestions are advisory and are listed only when the team adopts them.</small></caption>' +
+      '<thead><tr><th>Date</th><th>Source</th><th>Request</th><th>Response</th><th>Status</th><th>Where</th></tr></thead><tbody>';
+    var last = '';
+    list.forEach(function (r) {
+      var g = srcOf(r);
+      if (g !== last && !f.src) { html += '<tr class="hgrp"><th colspan="6">' + (g === 'World Bank' ? 'World Bank' : g === 'Pete' ? 'Project lead (Pete)' : g) + '</th></tr>'; last = g; }
+      var l = linkOf(r), st = stOf(r);
+      html += '<tr class="' + (g === 'World Bank' ? 'is-wb' : '') + '"><td class="nw">' + esc(r.date) + '</td><td>' + esc(r.source) + '</td><td>' + esc(r.request) + '</td><td>' + esc(r.response || '—') + '</td>' +
+        '<td><span class="hst hst-' + st + '">' + esc(r.status) + '</span></td><td class="nw">' + (l ? '<a href="' + l[0] + '">' + l[1] + '</a>' : '') + '</td></tr>';
+    });
+    if (!list.length) html += '<tr><td colspan="6" class="sub">' + (f.src === 'Agent review' ? 'No agent-review suggestions have been adopted into the log yet.' : 'No rows match these filters.') + '</td></tr>';
+    document.getElementById('tlog').innerHTML = html + '</tbody>';
+  }
+  function parseMd(md) {
+    var out = [];
+    md.split('\n').forEach(function (line) {
+      if (!/^\|\s*20/.test(line)) return;
+      var c = line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(function (x) { return x.trim(); });
+      if (c.length >= 5) out.push({ date: c[0], source: c[1], request: c[2], response: c[3], status: c[4] });
+    });
+    return out;
+  }
+  function seg(id, fn) { var bs = document.querySelectorAll('#' + id + ' button'); bs.forEach(function (b) { b.addEventListener('click', function () { bs.forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); fn(b.getAttribute('data-v')); }); }); }
+  seg('f-src', function (v) { f.src = v; render(); });
+  seg('f-st', function (v) { f.st = v; render(); });
+  render();
+  if (/^https?:/.test(location.protocol) && window.fetch) {
+    fetch('FEEDBACK_LOG.md', { cache: 'no-store' }).then(function (r) { return r.ok ? r.text() : null; }).then(function (t) { var rows = t && parseMd(t); if (rows && rows.length) { ROWS = rows; render(); } }).catch(function () {});
+  }
+})();
+</script>
+<script src="review-mode.js"></script>
+</body>
+</html>

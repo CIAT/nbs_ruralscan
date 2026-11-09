@@ -9,6 +9,7 @@
       '<select id="v1b-version" aria-describedby="v1b-version-note">' +
         '<option value="../wireframe-v0.html">v0 · Original</option>' +
         '<option value="../wireframe.html">v1 · Draft</option>' +
+        '<option value="../redesign-v2/index.html">v2.0 · Visual methodology</option>' +
         '<option value="index.html" selected>v2.1 · Visual methodology</option>' +
       '</select>' +
       '<span id="v1b-version-note">v2.1 · Rural NbS Scan · wireframe / mock-up · example data</span>' +
