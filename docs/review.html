@@ -763,15 +763,28 @@
       p.why.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul></div>';
   }
 
+  // "Same severity question as boil19_1." on its own is unreadable: show that unit's question too
+  function questionText(u) {
+    var q = String(u.question || '');
+    var m = /\bas\s+(?:ev_)?([A-Za-z0-9_]+)\.?\s*$/.exec(q);
+    if (!/^\s*Same\b/i.test(q) || !m) return q;
+    var key = m[1], ref = null;
+    (S.units || []).forEach(function (x) { var id = String(x.evidence_id || ''); if (!ref && (id === key || id.slice(-key.length - 1) === '_' + key)) ref = x; });
+    return ref && ref.question ? q + ' That question: ' + ref.question : q;
+  }
+
   // practice · variable · table, before anything else (Pete 2026-10-26)
   function identityHtml(u) {
     var id = u.identity || {
       practice: String(u.nbs_id || '').replace(/_/g, ' ') + (u.suitability_family_id ? ' → ' + String(u.suitability_family_id).split('__').pop().replace(/_/g, ' ') : ''),
       variable: String(u.variable || '').replace(/_/g, ' '), tables: [] };
-    var t = (id.tables || []).length ? id.tables.map(esc).join(' <span class="sep">·</span> ') : '<span class="muted">no table (dropped or unrouted)</span>';
+    // plain words (Pete 2026-11-09): name the rating, or say in one sentence why it is not used
+    var asof = id.as_of ? ' <span class="muted">(as of ' + esc(id.as_of) + ')</span>' : ' <span class="muted">(batch built before this was tracked — rebuild the batch)</span>';
+    var t = (id.tables || []).length ? id.tables.map(esc).join(' <span class="sep">·</span> ') + asof
+      : '<span class="muted">' + esc(id.not_used_reason || 'Not used in any rating.') + '</span>' + asof;
     return '<div class="identity"><span class="idc"><span class="idk">Practice</span>' + esc(id.practice) + '</span>' +
       '<span class="idc"><span class="idk">Variable</span>' + esc(id.variable) + '</span>' +
-      '<span class="idc"><span class="idk">Feeds</span>' + t + '</span></div>';
+      '<span class="idc"><span class="idk">Used in</span>' + t + '</span></div>';
   }
 
   // ---------- unit view ----------
@@ -816,7 +829,7 @@
       '<div class="cols">' +
         // LEFT: only what the decision needs — the question, the claim, the quote.
         '<div class="card"><h2>What was extracted</h2>' +
-          '<div class="why"><b>Why this needs a look</b>' + esc(u.question) + '</div>' +
+          '<div class="why"><b>Why this needs a look</b>' + esc(questionText(u)) + '</div>' +
       identityHtml(u) +
         (u.plain ? '<div class="plain"><h3>In plain words</h3>' +
           (u.plain.practice ? '<p class="plain-practice">' + esc(u.plain.practice) + '</p>' : '') +
@@ -1008,7 +1021,7 @@
       glance +
       '<div class="cols">' +
         '<div class="card">' +
-          (present(u.question) ? '<div class="why"><b>Why this needs a look</b>' + esc(u.question) + '</div>' : '') +
+          (present(u.question) ? '<div class="why"><b>Why this needs a look</b>' + esc(questionText(u)) + '</div>' : '') +
           foldHtml('Full narrative', '<div class="plain">' + narrative + '</div>', '', false) +
         '</div>' +
         '<div class="card">' +

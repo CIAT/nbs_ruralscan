@@ -624,9 +624,13 @@ def identity(
     fams: dict[str, str],
     routes: dict[str, list[dict]],
     t5: dict[str, str],
+    placements: list[dict] | None = None,
 ) -> dict:
     """What a reviewer must see first (Pete 2026-10-26): the practice, the outcome variable and
-    the table(s) the unit feeds — each a short label."""
+    the table(s) the unit feeds — each a short label.
+
+    Plain words (Pete 2026-11-09, "what does 'no table (dropped or unrouted)' mean?"): the
+    labels name the rating, and an unused unit says WHY it is unused, in one sentence."""
     nbs = r["nbs_id"].replace("_", " ")
     fam = r.get("suitability_family_id") or ""
     fam_lbl = fam.split("__")[-1].replace("_", " ")
@@ -636,26 +640,50 @@ def identity(
     var = labels.get(r["variable"], r["variable"].replace("_", " "))
     role = r.get("use_role", "")
     hz = str(ctx.get("hazard_type") or "")
+    hz_lbl = hz.replace("_", " ")
     tables: list[str] = []
     if role == "structural_suitability":
-        tables = ["T4 suitability"]
+        tables = ["Where the practice can go (T4 suitability)"]
     elif role == "operational_risk":
-        tables = ["M2b project risk"]
+        tables = ["Risk to the investment: enabling conditions (M2b)"]
     elif role == "asset_vulnerability":
-        tables = [f"T3 asset threat · {hz.replace('_', ' ') or 'hazard'}"]
+        tables = [f"Risk to the investment from {hz_lbl or 'a hazard'} (T3)"]
     else:
         for x in routes.get(r["variable"], []):
-            tag = "" if x.get("proximity") == "direct" else " (proxy)"
+            tag = "" if x.get("proximity") == "direct" else " (indirect measure)"
             if x.get("target_table") == "T6":
-                tables.append(
-                    f"T6 · {t5.get(x['target_key'], x['target_key'].replace('_', ' '))}{tag}"
-                )
+                key = t5.get(x["target_key"], x["target_key"].replace("_", " "))
+                tables.append(f"Scorecard: {key} (T6){tag}")
             elif x.get("target_table") == "T3" and x.get("target_key") == hz:
-                tables.append(f"T3 · {hz.replace('_', ' ')}{tag}")
+                tables.append(f"Livelihood rating for {hz_lbl} (T3){tag}")
+    tables = list(dict.fromkeys(tables))
+    placed = bool(placements)
+    reason = ""
+    if (r.get("review_state") or "") == "dropped":
+        reason = "Not used in any rating: it was removed in an earlier review."
+    elif role in ("structural_suitability", "operational_risk"):
+        reason = ""  # T4 / M2b are not built from generated T3/T6 rows
+    elif not routes.get(r["variable"]):
+        reason = (
+            f"Not used in any rating: what it measures ({var}) is not yet linked "
+            "to any scorecard or hazard row."
+        )
+    elif not tables:
+        reason = (
+            "Not used in any rating: what it measures only feeds hazard ratings, and "
+            "the study does not name the hazard."
+        )
+    elif not placed:
+        reason = (
+            "Not used in a rating yet: it has a place to go but was held out "
+            "(open 'Where this lands' below for the rule that kept it out)."
+        )
     return {
         "practice": practice,
         "variable": var,
-        "tables": list(dict.fromkeys(tables)),
+        "tables": tables if (placed or role != "nbs_effect") and not reason else [],
+        "not_used_reason": reason,
+        "as_of": date.today().isoformat(),
     }
 
 
@@ -983,7 +1011,9 @@ def _build_units(item_rows, ev, *, schema, corpus, image_dir, recipe_dirs):
                     sense,
                 ),
                 "picos": picos(r, rel, ctx, labels, fams, s_rec),
-                "identity": identity(r, ctx, labels, fams, routes, t5),
+                "identity": identity(
+                    r, ctx, labels, fams, routes, t5, places.get(eid) or []
+                ),
                 "library_path": s_rec.get("library_path", ""),
                 "cited_original": (r.get("lineage_of") or "").strip()
                 if r.get("claim_basis") == "cited_secondary"
