@@ -281,6 +281,191 @@
     "n_sources": 2
   },
   {
+    "mapping_id": "water_harvesting__micro_catchment__annual_precipitation",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "worldclim_v2_precip",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "scope": "water_harvesting__micro_catchment__annual_precipitation",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/negarim.md",
+          "status": "held",
+          "reason": "FAO says annual rainfall can be as low as 150 mm. Its Negev research-farm example describes local climate. WOCAT reports common paired rainfall and slope conditions. These roles supply no approved numeric score or exclusion at 150 mm/year.",
+          "practice_scope": "Negarim tree microcatchments only.",
+          "retained_source_profiles": [
+            {
+              "structure": "Negarim tree microcatchments",
+              "evidence_id": "ev_wh_precip_critchley91_negarim",
+              "source_id": "fao_critchley_wh_manual_1991",
+              "evidence_sha256": "f600039b417a9e194e33ebde305afc43edaa253ed376876cb9d268292b1a7cb7",
+              "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+              "locator": "FAO manual §§5.2.1–2: background and technical details, Suitability",
+              "source_quote": "Suitability Negarim microcatchments are mainly used for tree growing in arid and semi-arid areas. Rainfall: can be as low as 150 mm per annum.",
+              "unit": "mm/year",
+              "published_profile": {
+                "role": "siting recommendation",
+                "rainfall_can_be_as_low_as_mm_per_year": 150
+              },
+              "interpretation": "Annual rainfall can be as low as 150 mm in the technical guidance for tree Negarim. FAO separately describes Negev research farms in areas with rainfall as low as 100–150 mm/year.",
+              "site_example": {
+                "location": "Negev Desert, Israel",
+                "context": "research farms in areas where annual rainfall is as low as 100–150 mm; area climate, no success rate or recommended minimum",
+                "area_rainfall_mm_per_year": [
+                  100,
+                  150
+                ],
+                "source_quote": "Israel has the most widespread and best developed Negarim microcatchments, mostly located on research farms in the Negev Desert, where rainfall is as low as 100-150 mm per annum.",
+                "locator": "FAO manual §5.2.1, Background"
+              }
+            },
+            {
+              "structure": "Negarim tree microcatchments",
+              "evidence_id": "ev_wh_precip_wocatgl13_negarim",
+              "source_id": "wocat_wh_guidelines_2013",
+              "evidence_sha256": "f126985bc0eb0c64b5bfe918f2efbf8871ed2a5d776c6697cb6dded424dc1eda",
+              "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+              "locator": "PDF p. 125, printed p. 112, Negarim paragraph",
+              "source_quote": "Negarim are small diamond-shaped runoff basins, surrounded by low earth bunds. Runoff infiltrates at the lowest apex, where the trees are planted. Reported sizes of negarim are 100-250 m² in Israel and up to 400 m² in India. As 15-90% of rainfall may be harvested as runoff and used for the tree crop, the catchment to cropping area ratio ranges between 3:1 and 10:1; in flatter catchments and drier areas this may be up to 25:1. They are applied on sloping land (1-20%), however are com- monly found on slopes of 1-5% in areas of 150-500 mm/y of rainfall.",
+              "unit": "mm/year",
+              "published_profile": {
+                "role": "common reported use",
+                "rainfall_mm_per_year": [
+                  150,
+                  500
+                ],
+                "associated_slope_grade_pct": [
+                  1,
+                  5
+                ]
+              },
+              "interpretation": "WOCAT reports the common combined use context: 150–500 mm/year and 1–5% slopes. No rainfall suitability limits are established."
+            }
+          ],
+          "source_independence": "Unresolved. WOCAT credits a Negarim design illustration to Critchley and Siegert (1991). The two publications are counted for traceability. Independence of the reported ranges has not been established.",
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "type": "trapezoidal",
+            "params": {
+              "abs_min": 150.0,
+              "abs_max": 500.0
+            },
+            "uncertainty_pct": "30.0"
+          }
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.3333,
+    "weight_adjustable": true,
+    "justification": "FAO says annual rainfall can be as low as 150 mm. Its Negev research-farm example describes local climate. WOCAT reports common paired rainfall and slope conditions. These roles supply no approved numeric score or exclusion at 150 mm/year. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "variable": "annual_precipitation",
+    "suitability_family_id": "water_harvesting__micro_catchment",
+    "evidence_ids": [
+      "ev_wh_precip_critchley91_negarim",
+      "ev_wh_precip_wocatgl13_negarim"
+    ],
+    "n_sources": 2
+  },
+  {
+    "mapping_id": "water_harvesting__micro_catchment__slope",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "srtm_dem_30m",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "scope": "water_harvesting__micro_catchment__slope",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/negarim.md",
+          "status": "held",
+          "reason": "Keep FAO’s recommended slopes, WOCAT’s wider reported application range and WOCAT’s common rainfall–slope setting separate. No shared score or exclusion at 5% slope is approved.",
+          "practice_scope": "Negarim tree microcatchments only.",
+          "retained_source_profiles": [
+            {
+              "structure": "Negarim tree microcatchments",
+              "evidence_id": "ev_wh_slope_critchley91_negarim",
+              "source_id": "fao_critchley_wh_manual_1991",
+              "evidence_sha256": "c761293b056087856ae7a3a142c4b2a24d2b0c512e6860102ef3ee3ffa8a535c",
+              "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+              "locator": "FAO manual §§5.2.1–2: background and technical details, Suitability",
+              "source_quote": "Suitability Negarim microcatchments are mainly used for tree growing in arid and semi-arid areas. Rainfall: can be as low as 150 mm per annum. Soils: should be at least 1.5 m but preferably 2 m deep in order to ensure adequate root development and storage of the water harvested. Slopes: from flat up to 5.0%.",
+              "unit": "percent grade",
+              "published_profile": {
+                "role": "siting recommendation",
+                "slope_grade_pct": [
+                  0,
+                  5
+                ],
+                "uneven_terrain": "subdivide the block"
+              },
+              "interpretation": "FAO recommends flat ground to 5% grade for Negarim. Uneven blocks should be subdivided. The upper end describes the recommendation.",
+              "topography_quote": "Topography: need not be even - if uneven a block of microcatchments should be subdivided."
+            },
+            {
+              "structure": "Negarim tree microcatchments",
+              "evidence_id": "ev_wh_slope_wocatgl13_negarim",
+              "source_id": "wocat_wh_guidelines_2013",
+              "evidence_sha256": "e4bdc98e34a7112ef886d8e94ba612e5ce11b619b3b5d117b3c6a256ceac2e16",
+              "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+              "locator": "PDF p. 125, printed p. 112, Negarim paragraph",
+              "source_quote": "Negarim are small diamond-shaped runoff basins, surrounded by low earth bunds. Runoff infiltrates at the lowest apex, where the trees are planted. Reported sizes of negarim are 100-250 m² in Israel and up to 400 m² in India. As 15-90% of rainfall may be harvested as runoff and used for the tree crop, the catchment to cropping area ratio ranges between 3:1 and 10:1; in flatter catchments and drier areas this may be up to 25:1. They are applied on sloping land (1-20%), however are com- monly found on slopes of 1-5% in areas of 150-500 mm/y of rainfall.",
+              "unit": "percent grade",
+              "published_profile": {
+                "role": "reported use",
+                "broader_slope_grade_pct": [
+                  1,
+                  20
+                ],
+                "common_slope_grade_pct": [
+                  1,
+                  5
+                ],
+                "rainfall_mm_per_year_in_common_setting": [
+                  150,
+                  500
+                ]
+              },
+              "interpretation": "WOCAT describes application on 1–20% slopes, commonly 1–5% in areas receiving 150–500 mm/year. Common use supplies no optimum score."
+            }
+          ],
+          "source_independence": "Unresolved. WOCAT credits a Negarim design illustration to Critchley and Siegert (1991). The two publications are counted for traceability. Independence of the reported ranges has not been established.",
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "type": "trapezoidal",
+            "params": {
+              "abs_min": 0.6,
+              "opt_low": 0.6,
+              "opt_high": 2.9,
+              "abs_max": 2.9
+            },
+            "uncertainty_pct": "60.0"
+          }
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.3333,
+    "weight_adjustable": true,
+    "justification": "Keep FAO’s recommended slopes, WOCAT’s wider reported application range and WOCAT’s common rainfall–slope setting separate. No shared score or exclusion at 5% slope is approved. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "variable": "slope",
+    "suitability_family_id": "water_harvesting__micro_catchment",
+    "evidence_ids": [
+      "ev_wh_slope_critchley91_negarim",
+      "ev_wh_slope_wocatgl13_negarim"
+    ],
+    "n_sources": 2
+  },
+  {
     "mapping_id": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
     "nbs_id": "water_harvesting_conservation",
     "suitability_dimension": "biophysical_constraint",

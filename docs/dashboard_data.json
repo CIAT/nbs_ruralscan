@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-09T11:46:02.385048+00:00",
-  "git_commit": "e00cd34d9cb218b9a5d6cd911aa9633dfff51928",
+  "timestamp": "2026-11-09T12:28:30.111385+00:00",
+  "git_commit": "887189ce4238427486816cc3e83674ec9bfc2dfd",
   "registers": {
     "SRC_source_register": [
       {
@@ -34682,9 +34682,28 @@
         "suitability_family_id": "water_harvesting__micro_catchment",
         "variable": "annual_precipitation",
         "relationship": {
-          "abs_min": 150,
+          "abs_min": null,
           "unit": "mm",
-          "direction": "Negarim microcatchments work down to very low rainfall"
+          "direction": "Annual rainfall can be as low as 150 mm in the technical guidance for tree Negarim. FAO separately describes Negev research farms in areas with rainfall as low as 100–150 mm/year.",
+          "source_profile": {
+            "role": "siting recommendation",
+            "rainfall_can_be_as_low_as_mm_per_year": 150
+          }
+        },
+        "context": {
+          "source_table": {
+            "locator": "FAO manual §§5.2.1–2: background and technical details, Suitability",
+            "source_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+            "practice": "Negarim tree microcatchments"
+          },
+          "site_example": {
+            "location": "Negev Desert, Israel",
+            "context": "research farms in areas where annual rainfall is as low as 100–150 mm; area climate, no success rate or recommended minimum",
+            "area_rainfall_mm_per_year": [
+              100,
+              150
+            ]
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -34729,9 +34748,24 @@
         "suitability_family_id": "water_harvesting__micro_catchment",
         "variable": "slope",
         "relationship": {
-          "abs_max": 5.0,
+          "abs_max": null,
           "unit": "percent",
-          "direction": "flat to gentle ground only"
+          "direction": "FAO recommends flat ground to 5% grade for Negarim. Uneven blocks should be subdivided. The upper end describes the recommendation.",
+          "source_profile": {
+            "role": "siting recommendation",
+            "slope_grade_pct": [
+              0,
+              5
+            ],
+            "uneven_terrain": "subdivide the block"
+          }
+        },
+        "context": {
+          "source_table": {
+            "locator": "FAO manual §§5.2.1–2: background and technical details, Suitability",
+            "source_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+            "practice": "Negarim tree microcatchments"
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -35570,12 +35604,34 @@
         "suitability_family_id": "water_harvesting__micro_catchment",
         "variable": "slope",
         "relationship": {
-          "abs_min": 1,
-          "opt_low": 1,
-          "opt_high": 5,
-          "abs_max": 20,
+          "abs_min": null,
+          "opt_low": null,
+          "opt_high": null,
+          "abs_max": null,
           "unit": "percent",
-          "direction": "applied on a wide slope range but most common on gentle slopes"
+          "direction": "WOCAT describes application on 1–20% slopes, commonly 1–5% in areas receiving 150–500 mm/year. Common use supplies no optimum score.",
+          "source_profile": {
+            "role": "reported use",
+            "broader_slope_grade_pct": [
+              1,
+              20
+            ],
+            "common_slope_grade_pct": [
+              1,
+              5
+            ],
+            "rainfall_mm_per_year_in_common_setting": [
+              150,
+              500
+            ]
+          }
+        },
+        "context": {
+          "source_table": {
+            "locator": "PDF p. 125, printed p. 112, Negarim paragraph",
+            "source_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+            "practice": "Negarim tree microcatchments"
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -35596,10 +35652,28 @@
         "suitability_family_id": "water_harvesting__micro_catchment",
         "variable": "annual_precipitation",
         "relationship": {
-          "abs_min": 150,
-          "abs_max": 500,
+          "abs_min": null,
+          "abs_max": null,
           "unit": "mm",
-          "direction": "negarim are commonly found in dry areas"
+          "direction": "WOCAT reports the common combined use context: 150–500 mm/year and 1–5% slopes. No rainfall suitability limits are established.",
+          "source_profile": {
+            "role": "common reported use",
+            "rainfall_mm_per_year": [
+              150,
+              500
+            ],
+            "associated_slope_grade_pct": [
+              1,
+              5
+            ]
+          }
+        },
+        "context": {
+          "source_table": {
+            "locator": "PDF p. 125, printed p. 112, Negarim paragraph",
+            "source_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+            "practice": "Negarim tree microcatchments"
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -324064,6 +324138,191 @@
           "n_sources": 2
         },
         {
+          "mapping_id": "water_harvesting__micro_catchment__annual_precipitation",
+          "nbs_id": "water_harvesting_conservation",
+          "dataset_id": "worldclim_v2_precip",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "trapezoidal",
+          "relationship_params": {
+            "reviewed_adaptation": {
+              "numerical_calibration": {
+                "scope": "water_harvesting__micro_catchment__annual_precipitation",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_water_block_20261109/negarim.md",
+                "status": "held",
+                "reason": "FAO says annual rainfall can be as low as 150 mm. Its Negev research-farm example describes local climate. WOCAT reports common paired rainfall and slope conditions. These roles supply no approved numeric score or exclusion at 150 mm/year.",
+                "practice_scope": "Negarim tree microcatchments only.",
+                "retained_source_profiles": [
+                  {
+                    "structure": "Negarim tree microcatchments",
+                    "evidence_id": "ev_wh_precip_critchley91_negarim",
+                    "source_id": "fao_critchley_wh_manual_1991",
+                    "evidence_sha256": "f600039b417a9e194e33ebde305afc43edaa253ed376876cb9d268292b1a7cb7",
+                    "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+                    "locator": "FAO manual §§5.2.1–2: background and technical details, Suitability",
+                    "source_quote": "Suitability Negarim microcatchments are mainly used for tree growing in arid and semi-arid areas. Rainfall: can be as low as 150 mm per annum.",
+                    "unit": "mm/year",
+                    "published_profile": {
+                      "role": "siting recommendation",
+                      "rainfall_can_be_as_low_as_mm_per_year": 150
+                    },
+                    "interpretation": "Annual rainfall can be as low as 150 mm in the technical guidance for tree Negarim. FAO separately describes Negev research farms in areas with rainfall as low as 100–150 mm/year.",
+                    "site_example": {
+                      "location": "Negev Desert, Israel",
+                      "context": "research farms in areas where annual rainfall is as low as 100–150 mm; area climate, no success rate or recommended minimum",
+                      "area_rainfall_mm_per_year": [
+                        100,
+                        150
+                      ],
+                      "source_quote": "Israel has the most widespread and best developed Negarim microcatchments, mostly located on research farms in the Negev Desert, where rainfall is as low as 100-150 mm per annum.",
+                      "locator": "FAO manual §5.2.1, Background"
+                    }
+                  },
+                  {
+                    "structure": "Negarim tree microcatchments",
+                    "evidence_id": "ev_wh_precip_wocatgl13_negarim",
+                    "source_id": "wocat_wh_guidelines_2013",
+                    "evidence_sha256": "f126985bc0eb0c64b5bfe918f2efbf8871ed2a5d776c6697cb6dded424dc1eda",
+                    "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+                    "locator": "PDF p. 125, printed p. 112, Negarim paragraph",
+                    "source_quote": "Negarim are small diamond-shaped runoff basins, surrounded by low earth bunds. Runoff infiltrates at the lowest apex, where the trees are planted. Reported sizes of negarim are 100-250 m² in Israel and up to 400 m² in India. As 15-90% of rainfall may be harvested as runoff and used for the tree crop, the catchment to cropping area ratio ranges between 3:1 and 10:1; in flatter catchments and drier areas this may be up to 25:1. They are applied on sloping land (1-20%), however are com- monly found on slopes of 1-5% in areas of 150-500 mm/y of rainfall.",
+                    "unit": "mm/year",
+                    "published_profile": {
+                      "role": "common reported use",
+                      "rainfall_mm_per_year": [
+                        150,
+                        500
+                      ],
+                      "associated_slope_grade_pct": [
+                        1,
+                        5
+                      ]
+                    },
+                    "interpretation": "WOCAT reports the common combined use context: 150–500 mm/year and 1–5% slopes. No rainfall suitability limits are established."
+                  }
+                ],
+                "source_independence": "Unresolved. WOCAT credits a Negarim design illustration to Critchley and Siegert (1991). The two publications are counted for traceability. Independence of the reported ranges has not been established.",
+                "held_relationship": {
+                  "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+                  "type": "trapezoidal",
+                  "params": {
+                    "abs_min": 150.0,
+                    "abs_max": 500.0
+                  },
+                  "uncertainty_pct": "30.0"
+                }
+              }
+            }
+          },
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.3333,
+          "weight_adjustable": true,
+          "justification": "FAO says annual rainfall can be as low as 150 mm. Its Negev research-farm example describes local climate. WOCAT reports common paired rainfall and slope conditions. These roles supply no approved numeric score or exclusion at 150 mm/year. Retained approved calibration hold; no new numeric synthesis or approval.",
+          "variable": "annual_precipitation",
+          "suitability_family_id": "water_harvesting__micro_catchment",
+          "evidence_ids": [
+            "ev_wh_precip_critchley91_negarim",
+            "ev_wh_precip_wocatgl13_negarim"
+          ],
+          "n_sources": 2
+        },
+        {
+          "mapping_id": "water_harvesting__micro_catchment__slope",
+          "nbs_id": "water_harvesting_conservation",
+          "dataset_id": "srtm_dem_30m",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "trapezoidal",
+          "relationship_params": {
+            "reviewed_adaptation": {
+              "numerical_calibration": {
+                "scope": "water_harvesting__micro_catchment__slope",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_water_block_20261109/negarim.md",
+                "status": "held",
+                "reason": "Keep FAO’s recommended slopes, WOCAT’s wider reported application range and WOCAT’s common rainfall–slope setting separate. No shared score or exclusion at 5% slope is approved.",
+                "practice_scope": "Negarim tree microcatchments only.",
+                "retained_source_profiles": [
+                  {
+                    "structure": "Negarim tree microcatchments",
+                    "evidence_id": "ev_wh_slope_critchley91_negarim",
+                    "source_id": "fao_critchley_wh_manual_1991",
+                    "evidence_sha256": "c761293b056087856ae7a3a142c4b2a24d2b0c512e6860102ef3ee3ffa8a535c",
+                    "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+                    "locator": "FAO manual §§5.2.1–2: background and technical details, Suitability",
+                    "source_quote": "Suitability Negarim microcatchments are mainly used for tree growing in arid and semi-arid areas. Rainfall: can be as low as 150 mm per annum. Soils: should be at least 1.5 m but preferably 2 m deep in order to ensure adequate root development and storage of the water harvested. Slopes: from flat up to 5.0%.",
+                    "unit": "percent grade",
+                    "published_profile": {
+                      "role": "siting recommendation",
+                      "slope_grade_pct": [
+                        0,
+                        5
+                      ],
+                      "uneven_terrain": "subdivide the block"
+                    },
+                    "interpretation": "FAO recommends flat ground to 5% grade for Negarim. Uneven blocks should be subdivided. The upper end describes the recommendation.",
+                    "topography_quote": "Topography: need not be even - if uneven a block of microcatchments should be subdivided."
+                  },
+                  {
+                    "structure": "Negarim tree microcatchments",
+                    "evidence_id": "ev_wh_slope_wocatgl13_negarim",
+                    "source_id": "wocat_wh_guidelines_2013",
+                    "evidence_sha256": "e4bdc98e34a7112ef886d8e94ba612e5ce11b619b3b5d117b3c6a256ceac2e16",
+                    "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+                    "locator": "PDF p. 125, printed p. 112, Negarim paragraph",
+                    "source_quote": "Negarim are small diamond-shaped runoff basins, surrounded by low earth bunds. Runoff infiltrates at the lowest apex, where the trees are planted. Reported sizes of negarim are 100-250 m² in Israel and up to 400 m² in India. As 15-90% of rainfall may be harvested as runoff and used for the tree crop, the catchment to cropping area ratio ranges between 3:1 and 10:1; in flatter catchments and drier areas this may be up to 25:1. They are applied on sloping land (1-20%), however are com- monly found on slopes of 1-5% in areas of 150-500 mm/y of rainfall.",
+                    "unit": "percent grade",
+                    "published_profile": {
+                      "role": "reported use",
+                      "broader_slope_grade_pct": [
+                        1,
+                        20
+                      ],
+                      "common_slope_grade_pct": [
+                        1,
+                        5
+                      ],
+                      "rainfall_mm_per_year_in_common_setting": [
+                        150,
+                        500
+                      ]
+                    },
+                    "interpretation": "WOCAT describes application on 1–20% slopes, commonly 1–5% in areas receiving 150–500 mm/year. Common use supplies no optimum score."
+                  }
+                ],
+                "source_independence": "Unresolved. WOCAT credits a Negarim design illustration to Critchley and Siegert (1991). The two publications are counted for traceability. Independence of the reported ranges has not been established.",
+                "held_relationship": {
+                  "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+                  "type": "trapezoidal",
+                  "params": {
+                    "abs_min": 0.6,
+                    "opt_low": 0.6,
+                    "opt_high": 2.9,
+                    "abs_max": 2.9
+                  },
+                  "uncertainty_pct": "60.0"
+                }
+              }
+            }
+          },
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.3333,
+          "weight_adjustable": true,
+          "justification": "Keep FAO’s recommended slopes, WOCAT’s wider reported application range and WOCAT’s common rainfall–slope setting separate. No shared score or exclusion at 5% slope is approved. Retained approved calibration hold; no new numeric synthesis or approval.",
+          "variable": "slope",
+          "suitability_family_id": "water_harvesting__micro_catchment",
+          "evidence_ids": [
+            "ev_wh_slope_critchley91_negarim",
+            "ev_wh_slope_wocatgl13_negarim"
+          ],
+          "n_sources": 2
+        },
+        {
           "mapping_id": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
           "nbs_id": "water_harvesting_conservation",
           "suitability_dimension": "biophysical_constraint",
@@ -370762,9 +371021,9 @@
     }
   ],
   "qaqc_stats": {
-    "total_reviews": 2461,
+    "total_reviews": 2465,
     "queried": 211,
-    "n_reviewers": 26,
+    "n_reviewers": 27,
     "by_reviewer": {
       "ai_mechanism_rule": 727,
       "orchestrator": 466,
@@ -370785,6 +371044,7 @@
       "ai_fix_round": 16,
       "ai_plastic_ruling": 11,
       "ai_supersede_check": 4,
+      "ai_t4_negarim_source_check": 4,
       "Codex source recovery": 3,
       "ai_scope_classifier_repair": 2,
       "ai_t4_clay_source_check": 2,
@@ -370795,7 +371055,7 @@
     },
     "by_decision": {
       "drop": 1541,
-      "ok": 597,
+      "ok": 601,
       "flag": 210,
       "reclassify": 18,
       "retag": 4,
@@ -370805,7 +371065,7 @@
     },
     "by_reason": {
       "insufficient_context": 695,
-      "accepted_correction": 563,
+      "accepted_correction": 567,
       "unspecified": 312,
       "other": 270,
       "wrong_practice": 167,
@@ -370841,7 +371101,7 @@
       "routing_ruling": 3,
       "variable_ruling": 31,
       "direction_audit": 122,
-      "unit_correction": 86
+      "unit_correction": 90
     },
     "flag_eval": {
       "tp": 64,
@@ -370852,10 +371112,10 @@
       "tp_corrected": 26
     },
     "pass_eval": {
-      "tn": 569,
+      "tn": 573,
       "fn": 10,
       "out_of_remit": 1493,
-      "checked": 2072,
+      "checked": 2076,
       "fn_rate_pct": 1.7
     },
     "recall_est_pct": 86.5,
@@ -403061,6 +403321,46 @@
       "reason": "accepted_correction",
       "note": "context.model_use, context.source_table, relationship.abs_max, relationship.abs_min, relationship.direction, relationship.opt_high, relationship.opt_low, relationship.source_classes, relationship.unit: Correct the mapped rainfall statistic from annual to local rainy-season total. Preserve and scope all native classes and AHP weight. Remove scalar thresholds from the annual key.",
       "reviewer": "ai_t4_terrace_rainfall_check"
+    },
+    {
+      "date": "2026-11-09",
+      "evidence_id": "ev_wh_precip_critchley91_negarim",
+      "source_id": "fao_critchley_wh_manual_1991",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.site_example, context.source_table, relationship.abs_min, relationship.direction, relationship.source_profile: Annual rainfall can be as low as 150 mm in the technical guidance for tree Negarim. FAO separately describes Negev research farms in areas with rainfall as low as 100–150 mm/year. Keep source values in their stated roles and remove unapproved executable scalar limits.",
+      "reviewer": "ai_t4_negarim_source_check"
+    },
+    {
+      "date": "2026-11-09",
+      "evidence_id": "ev_wh_slope_critchley91_negarim",
+      "source_id": "fao_critchley_wh_manual_1991",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.source_table, relationship.abs_max, relationship.direction, relationship.source_profile: FAO recommends flat ground to 5% grade for Negarim. Uneven blocks should be subdivided. The upper end describes the recommendation. Keep source values in their stated roles and remove unapproved executable scalar limits.",
+      "reviewer": "ai_t4_negarim_source_check"
+    },
+    {
+      "date": "2026-11-09",
+      "evidence_id": "ev_wh_slope_wocatgl13_negarim",
+      "source_id": "wocat_wh_guidelines_2013",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.source_table, relationship.abs_max, relationship.abs_min, relationship.direction, relationship.opt_high, relationship.opt_low, relationship.source_profile: WOCAT describes application on 1–20% slopes, commonly 1–5% in areas receiving 150–500 mm/year. Common use supplies no optimum score. Keep source values in their stated roles and remove unapproved executable scalar limits.",
+      "reviewer": "ai_t4_negarim_source_check"
+    },
+    {
+      "date": "2026-11-09",
+      "evidence_id": "ev_wh_precip_wocatgl13_negarim",
+      "source_id": "wocat_wh_guidelines_2013",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.source_table, relationship.abs_max, relationship.abs_min, relationship.direction, relationship.source_profile: WOCAT reports the common combined use context: 150–500 mm/year and 1–5% slopes. No rainfall suitability limits are established. Keep source values in their stated roles and remove unapproved executable scalar limits.",
+      "reviewer": "ai_t4_negarim_source_check"
     }
   ],
   "family_presentation": {
@@ -403710,11 +404010,11 @@
       "source_id": "fao_critchley_wh_manual_1991",
       "page": "",
       "mapping_id": "water_harvesting__micro_catchment__annual_precipitation",
-      "reason": "Source checked; proposed HOLD (not applied). §5.2.2 says rainfall can be as low as 150 mm/year for tree-growing Negarim microcatchments. Preceding background reports examples at 100–150 mm/year. Existing abs_min=150 overstates this as an absolute lower limit.",
-      "decision_needed": "Hold absolute-minimum encoding; keep full as-low-as-150 mm guidance and 100–150 mm examples with tree/catchment-design context. Do not erase the number or force zero below 150. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Retained Negarim profile. Annual rainfall can be as low as 150 mm in the technical guidance for tree Negarim. FAO separately describes Negev research farms in areas with rainfall as low as 100–150 mm/year.",
+      "decision_needed": "Approved, 9 November 2026. Keep FAO siting guidance, Negev area climate, and WOCAT common and broader use separately. No hard exclusions at 150 mm/year or 5% slope.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "80defd7f555efc297392b98fae496ff8cb7f2627c91628d72c3db92316bba194",
+      "evidence_sha256": "f600039b417a9e194e33ebde305afc43edaa253ed376876cb9d268292b1a7cb7",
       "source_locator": "5.2 Negarim microcatchments > Suitability",
       "context_changed": false
     },
@@ -403726,11 +404026,11 @@
       "source_id": "fao_critchley_wh_manual_1991",
       "page": "",
       "mapping_id": "water_harvesting__micro_catchment__slope",
-      "reason": "Source checked; proposed KEEP (not applied). §5.2.2 explicitly recommends flat to 5% slope for tree-growing Negarim microcatchments. Unlike contour bunds, uneven topography can be accommodated by subdividing a block (continuation PDF 6).",
-      "decision_needed": "Keep full 0–5% recommendation for Negarim; retain subdivision condition on uneven terrain. Do not generalise the separate contour-bund even-terrain restriction to this technique. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Retained Negarim profile. FAO recommends flat ground to 5% grade for Negarim. Uneven blocks should be subdivided. The upper end describes the recommendation.",
+      "decision_needed": "Approved, 9 November 2026. Keep FAO siting guidance, Negev area climate, and WOCAT common and broader use separately. No hard exclusions at 150 mm/year or 5% slope.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "32a3dc5db2583af48147d3e0800ebd0ffb61d7bd3a1ff086feeb77d38fab2079",
+      "evidence_sha256": "c761293b056087856ae7a3a142c4b2a24d2b0c512e6860102ef3ee3ffa8a535c",
       "source_locator": "5.2 Negarim microcatchments > Suitability",
       "context_changed": false
     },
@@ -403758,11 +404058,11 @@
       "source_id": "wocat_wh_guidelines_2013",
       "page": "125",
       "mapping_id": "water_harvesting__micro_catchment__annual_precipitation",
-      "reason": "Source checked; proposed HOLD (not applied). Negarim subsection, PDF125 / printed112, describes diamond-shaped runoff basins and says they are commonly found at 150–500 mm/year. This is an observed/common deployment range, not a statement that other rainfall is impossible. The current abs_min/abs_max overstate that wording.",
-      "decision_needed": "Hold current absolute rainfall limits. Keep the full 150–500 mm/year common-use evidence with negarim context for synthesis, without converting observed distribution to hard exclusion. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Retained Negarim profile. WOCAT reports the common combined use context: 150–500 mm/year and 1–5% slopes. No rainfall suitability limits are established.",
+      "decision_needed": "Approved, 9 November 2026. Keep FAO siting guidance, Negev area climate, and WOCAT common and broader use separately. No hard exclusions at 150 mm/year or 5% slope.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "6b6ec95677536b4c1a16dfd481f876c581ac38e289de935f94e389fe32f49ba7",
+      "evidence_sha256": "f126985bc0eb0c64b5bfe918f2efbf8871ed2a5d776c6697cb6dded424dc1eda",
       "source_locator": "",
       "context_changed": false
     },
@@ -403774,11 +404074,11 @@
       "source_id": "wocat_wh_guidelines_2013",
       "page": "125",
       "mapping_id": "water_harvesting__micro_catchment__slope",
-      "reason": "Source checked; proposed HOLD (not applied). Negarim guidance, PDF125 / printed112: applied at 1–20% slope and commonly found at 1–5%. This supports two different source statements—application range and most common range. It does not label 1–5% an experimentally demonstrated optimum or establish zero suitability outside 1–20%.",
-      "decision_needed": "Hold automatic optimum/absolute interpretation. Keep both complete ranges with their wording for comparative synthesis; do not silently turn common use into calibrated optimum. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Retained Negarim profile. WOCAT describes application on 1–20% slopes, commonly 1–5% in areas receiving 150–500 mm/year. Common use supplies no optimum score.",
+      "decision_needed": "Approved, 9 November 2026. Keep FAO siting guidance, Negev area climate, and WOCAT common and broader use separately. No hard exclusions at 150 mm/year or 5% slope.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "d4eaa51e5553c0780d33f2a37cacf38c4488e6f0665942055843e5e70bce6b74",
+      "evidence_sha256": "e4bdc98e34a7112ef886d8e94ba612e5ce11b619b3b5d117b3c6a256ceac2e16",
       "source_locator": "",
       "context_changed": false
     },
@@ -429743,7 +430043,10 @@
         ],
         "dropped_evidence_ids": [],
         "approved_evidence_ids": [],
-        "reviewed_evidence_ids": [],
+        "reviewed_evidence_ids": [
+          "ev_wh_precip_critchley91_negarim",
+          "ev_wh_slope_critchley91_negarim"
+        ],
         "extraction_counts": {
           "T4": 19,
           "effects": 0,
@@ -429753,7 +430056,9 @@
         "contributions": {
           "T4": [
             "ev_wh_precip_critchley91_contourbunds",
+            "ev_wh_precip_critchley91_negarim",
             "ev_wh_precip_critchley91_trapezoidal",
+            "ev_wh_slope_critchley91_negarim",
             "ev_wh_soildepth_critchley91_contourbunds",
             "ev_wh_soildepth_critchley91_negarim"
           ],
@@ -471231,7 +471536,9 @@
         "reviewed_evidence_ids": [
           "ev_rain_water_productivity_wocwh13_2",
           "ev_rain_water_productivity_wocwh13_3",
-          "ev_rain_water_productivity_wocwh13_4"
+          "ev_rain_water_productivity_wocwh13_4",
+          "ev_wh_precip_wocatgl13_negarim",
+          "ev_wh_slope_wocatgl13_negarim"
         ],
         "extraction_counts": {
           "T4": 22,
@@ -471242,8 +471549,10 @@
         "contributions": {
           "T4": [
             "ev_wh_precip_wocatgl13_benchterraces",
+            "ev_wh_precip_wocatgl13_negarim",
             "ev_wh_precip_wocatgl13_trapezoidal",
             "ev_wh_slope_wocatgl13_benchterraces",
+            "ev_wh_slope_wocatgl13_negarim",
             "ev_wh_soildepth_wocatgl13_strips"
           ],
           "T3": [],
@@ -486755,7 +487064,7 @@
       }
     ],
     "totals": {
-      "compiled_outputs": 728,
+      "compiled_outputs": 730,
       "evidence_ids": [
         "EV_binam_2017_007",
         "EV_chomba_2020_001",
@@ -493205,7 +493514,7 @@
         "ev_yield_stability_sileshi12_3",
         "ev_yield_stability_silv26_1"
       ],
-      "contributing_excerpts": 3078,
+      "contributing_excerpts": 3082,
       "contributing_sources": 565,
       "known_sources": 946,
       "source_keys": [
@@ -494159,24 +494468,24 @@
       "extracted_sources": 713,
       "reviewed_sources": 160,
       "fully_reviewed_sources": 61,
-      "sources_with_reviewed_excerpts": 391,
+      "sources_with_reviewed_excerpts": 392,
       "sources_with_approved_excerpts": 160,
       "active_excerpts": 4913,
       "retained_excerpts": 4913,
       "all_excerpts": 6447,
-      "reviewed_excerpts": 2136,
-      "unreviewed_excerpts": 4311,
-      "reviewed_pct": 33.1,
+      "reviewed_excerpts": 2140,
+      "unreviewed_excerpts": 4307,
+      "reviewed_pct": 33.2,
       "approved_excerpts": 414,
-      "approved_pct": 19.4,
-      "reviewed_active_excerpts": 607,
+      "approved_pct": 19.3,
+      "reviewed_active_excerpts": 611,
       "reviewed_dropped_excerpts": 1529,
-      "reviewed_unresolved_excerpts": 193,
+      "reviewed_unresolved_excerpts": 197,
       "dropped_excerpts": 1534,
-      "t4_relationships": 43,
+      "t4_relationships": 45,
       "t4_operational_relationships": 8,
-      "t4_structural_relationships": 35,
-      "t4_evidence_backed_relationships": 34,
+      "t4_structural_relationships": 37,
+      "t4_evidence_backed_relationships": 36,
       "t4_contributing_sources": 27,
       "source_mix": {
         "literature": 582,
@@ -518393,7 +518702,7 @@
         "nbs_id": "water_harvesting_conservation",
         "name": "Water harvesting conservation",
         "metrics": {
-          "compiled_outputs": 216,
+          "compiled_outputs": 218,
           "evidence_ids": [
             "ev_accessibility_travel_time_schmidt12_11",
             "ev_accessibility_travel_time_wei16_1_op",
@@ -521025,7 +521334,7 @@
             "ev_yield_stability_seti18_3",
             "ev_yield_stability_silv26_1"
           ],
-          "contributing_excerpts": 1077,
+          "contributing_excerpts": 1081,
           "contributing_sources": 172,
           "known_sources": 259,
           "source_keys": [
@@ -521292,24 +521601,24 @@
           "extracted_sources": 196,
           "reviewed_sources": 20,
           "fully_reviewed_sources": 3,
-          "sources_with_reviewed_excerpts": 137,
+          "sources_with_reviewed_excerpts": 138,
           "sources_with_approved_excerpts": 20,
           "active_excerpts": 1724,
           "retained_excerpts": 1724,
           "all_excerpts": 2629,
-          "reviewed_excerpts": 1030,
-          "unreviewed_excerpts": 1599,
-          "reviewed_pct": 39.2,
+          "reviewed_excerpts": 1034,
+          "unreviewed_excerpts": 1595,
+          "reviewed_pct": 39.3,
           "approved_excerpts": 40,
           "approved_pct": 3.9,
-          "reviewed_active_excerpts": 126,
+          "reviewed_active_excerpts": 130,
           "reviewed_dropped_excerpts": 904,
-          "reviewed_unresolved_excerpts": 86,
+          "reviewed_unresolved_excerpts": 90,
           "dropped_excerpts": 905,
-          "t4_relationships": 13,
+          "t4_relationships": 15,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 13,
-          "t4_evidence_backed_relationships": 13,
+          "t4_structural_relationships": 15,
+          "t4_evidence_backed_relationships": 15,
           "t4_contributing_sources": 14,
           "source_mix": {
             "literature": 137,
@@ -522533,7 +522842,7 @@
             "scope_kind": "family",
             "scope_definition": "Crescent bunds catching runoff from a short bare micro-catchment upslope.",
             "metrics": {
-              "compiled_outputs": 16,
+              "compiled_outputs": 18,
               "evidence_ids": [
                 "ev_asset_drought_wocat_1613_2014_drought",
                 "ev_asset_drought_wocat_1614_2014_drought",
@@ -522736,7 +523045,7 @@
                 "ev_windbreak_protection_wocat_1613_2014_wind_velocity",
                 "ev_windbreak_protection_wocat_1614_2014_wind_velocity"
               ],
-              "contributing_excerpts": 52,
+              "contributing_excerpts": 56,
               "contributing_sources": 19,
               "known_sources": 41,
               "source_keys": [
@@ -522785,24 +523094,24 @@
               "extracted_sources": 24,
               "reviewed_sources": 1,
               "fully_reviewed_sources": 0,
-              "sources_with_reviewed_excerpts": 8,
+              "sources_with_reviewed_excerpts": 9,
               "sources_with_approved_excerpts": 1,
               "active_excerpts": 110,
               "retained_excerpts": 110,
               "all_excerpts": 200,
-              "reviewed_excerpts": 91,
-              "unreviewed_excerpts": 109,
-              "reviewed_pct": 45.5,
+              "reviewed_excerpts": 95,
+              "unreviewed_excerpts": 105,
+              "reviewed_pct": 47.5,
               "approved_excerpts": 1,
               "approved_pct": 1.1,
-              "reviewed_active_excerpts": 1,
+              "reviewed_active_excerpts": 5,
               "reviewed_dropped_excerpts": 90,
-              "reviewed_unresolved_excerpts": 0,
+              "reviewed_unresolved_excerpts": 4,
               "dropped_excerpts": 90,
-              "t4_relationships": 1,
+              "t4_relationships": 3,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 1,
-              "t4_evidence_backed_relationships": 1,
+              "t4_structural_relationships": 3,
+              "t4_evidence_backed_relationships": 3,
               "t4_contributing_sources": 2,
               "source_mix": {
                 "literature": 29,
@@ -528747,9 +529056,9 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 13,
-            "evidence_backed_outputs": 13,
-            "contributing_excerpts": 33,
+            "output_count": 15,
+            "evidence_backed_outputs": 15,
+            "contributing_excerpts": 37,
             "contributing_sources": 14,
             "evidence_ids": [
               "ev_wh_annual_precipitation_kahinda08_3",
@@ -528762,8 +529071,10 @@
               "ev_wh_drainage_density_mahmoud21_1",
               "ev_wh_drainage_density_singh17_1",
               "ev_wh_precip_critchley91_contourbunds",
+              "ev_wh_precip_critchley91_negarim",
               "ev_wh_precip_critchley91_trapezoidal",
               "ev_wh_precip_wocatgl13_benchterraces",
+              "ev_wh_precip_wocatgl13_negarim",
               "ev_wh_precip_wocatgl13_trapezoidal",
               "ev_wh_runoff_potential_index_alabadi17_1",
               "ev_wh_runoff_potential_index_dewinnaar07_1",
@@ -528772,9 +529083,11 @@
               "ev_wh_runoff_potential_index_singh17_1",
               "ev_wh_runoff_potential_index_vema19_1",
               "ev_wh_slope_chen17_1",
+              "ev_wh_slope_critchley91_negarim",
               "ev_wh_slope_krois14_terraces",
               "ev_wh_slope_slm11_fanyajuu",
               "ev_wh_slope_wocatgl13_benchterraces",
+              "ev_wh_slope_wocatgl13_negarim",
               "ev_wh_soil_depth_chen17_1",
               "ev_wh_soil_depth_kahinda08_1",
               "ev_wh_soil_depth_krois14_1",
@@ -528861,6 +529174,46 @@
                 "source_keys": [
                   "fao_critchley_wh_manual_1991",
                   "kahinda2008_sa_rwh_suitability"
+                ]
+              },
+              {
+                "id": "water_harvesting__micro_catchment__annual_precipitation",
+                "label": "water harvesting  micro catchment  annual precipitation · Micro catchment",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__micro_catchment"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_precip_critchley91_negarim",
+                  "ev_wh_precip_wocatgl13_negarim"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "wocat_wh_guidelines_2013"
+                ]
+              },
+              {
+                "id": "water_harvesting__micro_catchment__slope",
+                "label": "water harvesting  micro catchment  slope · Micro catchment",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__micro_catchment"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_slope_critchley91_negarim",
+                  "ev_wh_slope_wocatgl13_negarim"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "wocat_wh_guidelines_2013"
                 ]
               },
               {
@@ -574244,7 +574597,7 @@
         "project_level": false,
         "evidence_tracking": "routed",
         "totals": {
-          "compiled_outputs": 35,
+          "compiled_outputs": 37,
           "evidence_ids": [
             "EV_chomba_2020_001",
             "EV_chomba_2020_002",
@@ -575317,7 +575670,7 @@
             "ev_wh_watertable_wocat7777_1",
             "ev_wh_watertable_wocat7778_1"
           ],
-          "contributing_excerpts": 59,
+          "contributing_excerpts": 63,
           "contributing_sources": 27,
           "known_sources": 210,
           "source_keys": [
@@ -575535,24 +575888,24 @@
           "extracted_sources": 197,
           "reviewed_sources": 60,
           "fully_reviewed_sources": 54,
-          "sources_with_reviewed_excerpts": 78,
+          "sources_with_reviewed_excerpts": 80,
           "sources_with_approved_excerpts": 60,
           "active_excerpts": 851,
           "retained_excerpts": 851,
           "all_excerpts": 1070,
-          "reviewed_excerpts": 438,
-          "unreviewed_excerpts": 632,
-          "reviewed_pct": 40.9,
+          "reviewed_excerpts": 442,
+          "unreviewed_excerpts": 628,
+          "reviewed_pct": 41.3,
           "approved_excerpts": 215,
-          "approved_pct": 49.1,
-          "reviewed_active_excerpts": 221,
+          "approved_pct": 48.6,
+          "reviewed_active_excerpts": 225,
           "reviewed_dropped_excerpts": 217,
-          "reviewed_unresolved_excerpts": 6,
+          "reviewed_unresolved_excerpts": 10,
           "dropped_excerpts": 219,
-          "t4_relationships": 35,
+          "t4_relationships": 37,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 35,
-          "t4_evidence_backed_relationships": 34,
+          "t4_structural_relationships": 37,
+          "t4_evidence_backed_relationships": 36,
           "t4_contributing_sources": 27,
           "source_mix": {
             "literature": 106,
@@ -579644,7 +579997,7 @@
             "nbs_id": "water_harvesting_conservation",
             "name": "Water harvesting conservation",
             "metrics": {
-              "compiled_outputs": 13,
+              "compiled_outputs": 15,
               "evidence_ids": [
                 "ev_wh5_adham_2018_clay_content",
                 "ev_wh5_adham_2018_land_cover",
@@ -580029,7 +580382,7 @@
                 "ev_wh_watertable_wocat7777_1",
                 "ev_wh_watertable_wocat7778_1"
               ],
-              "contributing_excerpts": 33,
+              "contributing_excerpts": 37,
               "contributing_sources": 14,
               "known_sources": 74,
               "source_keys": [
@@ -580111,24 +580464,24 @@
               "extracted_sources": 71,
               "reviewed_sources": 2,
               "fully_reviewed_sources": 2,
-              "sources_with_reviewed_excerpts": 8,
+              "sources_with_reviewed_excerpts": 10,
               "sources_with_approved_excerpts": 2,
               "active_excerpts": 367,
               "retained_excerpts": 367,
               "all_excerpts": 382,
-              "reviewed_excerpts": 25,
-              "unreviewed_excerpts": 357,
-              "reviewed_pct": 6.5,
+              "reviewed_excerpts": 29,
+              "unreviewed_excerpts": 353,
+              "reviewed_pct": 7.6,
               "approved_excerpts": 5,
-              "approved_pct": 20.0,
-              "reviewed_active_excerpts": 10,
+              "approved_pct": 17.2,
+              "reviewed_active_excerpts": 14,
               "reviewed_dropped_excerpts": 15,
-              "reviewed_unresolved_excerpts": 5,
+              "reviewed_unresolved_excerpts": 9,
               "dropped_excerpts": 15,
-              "t4_relationships": 13,
+              "t4_relationships": 15,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 13,
-              "t4_evidence_backed_relationships": 13,
+              "t4_structural_relationships": 15,
+              "t4_evidence_backed_relationships": 15,
               "t4_contributing_sources": 14,
               "source_mix": {
                 "literature": 19,
@@ -580436,7 +580789,7 @@
                 "scope_kind": "family",
                 "scope_definition": "Crescent bunds catching runoff from a short bare micro-catchment upslope.",
                 "metrics": {
-                  "compiled_outputs": 1,
+                  "compiled_outputs": 3,
                   "evidence_ids": [
                     "ev_wh_aridity_slm11_micro",
                     "ev_wh_aridity_wocat1528_1",
@@ -580481,7 +580834,7 @@
                     "ev_wh_watertable_wocat2895_1",
                     "ev_wh_watertable_wocat5860_1"
                   ],
-                  "contributing_excerpts": 2,
+                  "contributing_excerpts": 6,
                   "contributing_sources": 2,
                   "known_sources": 9,
                   "source_keys": [
@@ -580498,24 +580851,24 @@
                   "extracted_sources": 9,
                   "reviewed_sources": 0,
                   "fully_reviewed_sources": 0,
-                  "sources_with_reviewed_excerpts": 0,
+                  "sources_with_reviewed_excerpts": 2,
                   "sources_with_approved_excerpts": 0,
                   "active_excerpts": 42,
                   "retained_excerpts": 42,
                   "all_excerpts": 42,
-                  "reviewed_excerpts": 0,
-                  "unreviewed_excerpts": 42,
-                  "reviewed_pct": 0.0,
+                  "reviewed_excerpts": 4,
+                  "unreviewed_excerpts": 38,
+                  "reviewed_pct": 9.5,
                   "approved_excerpts": 0,
-                  "approved_pct": null,
-                  "reviewed_active_excerpts": 0,
+                  "approved_pct": 0.0,
+                  "reviewed_active_excerpts": 4,
                   "reviewed_dropped_excerpts": 0,
-                  "reviewed_unresolved_excerpts": 0,
+                  "reviewed_unresolved_excerpts": 4,
                   "dropped_excerpts": 0,
-                  "t4_relationships": 1,
+                  "t4_relationships": 3,
                   "t4_operational_relationships": 0,
-                  "t4_structural_relationships": 1,
-                  "t4_evidence_backed_relationships": 1,
+                  "t4_structural_relationships": 3,
+                  "t4_evidence_backed_relationships": 3,
                   "t4_contributing_sources": 2,
                   "source_mix": {
                     "literature": 1,
@@ -581327,9 +581680,9 @@
                 "label": "Suitability",
                 "unit": "suitability rules",
                 "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-                "output_count": 13,
-                "evidence_backed_outputs": 13,
-                "contributing_excerpts": 33,
+                "output_count": 15,
+                "evidence_backed_outputs": 15,
+                "contributing_excerpts": 37,
                 "contributing_sources": 14,
                 "evidence_ids": [
                   "ev_wh_annual_precipitation_kahinda08_3",
@@ -581342,8 +581695,10 @@
                   "ev_wh_drainage_density_mahmoud21_1",
                   "ev_wh_drainage_density_singh17_1",
                   "ev_wh_precip_critchley91_contourbunds",
+                  "ev_wh_precip_critchley91_negarim",
                   "ev_wh_precip_critchley91_trapezoidal",
                   "ev_wh_precip_wocatgl13_benchterraces",
+                  "ev_wh_precip_wocatgl13_negarim",
                   "ev_wh_precip_wocatgl13_trapezoidal",
                   "ev_wh_runoff_potential_index_alabadi17_1",
                   "ev_wh_runoff_potential_index_dewinnaar07_1",
@@ -581352,9 +581707,11 @@
                   "ev_wh_runoff_potential_index_singh17_1",
                   "ev_wh_runoff_potential_index_vema19_1",
                   "ev_wh_slope_chen17_1",
+                  "ev_wh_slope_critchley91_negarim",
                   "ev_wh_slope_krois14_terraces",
                   "ev_wh_slope_slm11_fanyajuu",
                   "ev_wh_slope_wocatgl13_benchterraces",
+                  "ev_wh_slope_wocatgl13_negarim",
                   "ev_wh_soil_depth_chen17_1",
                   "ev_wh_soil_depth_kahinda08_1",
                   "ev_wh_soil_depth_krois14_1",
@@ -581441,6 +581798,46 @@
                     "source_keys": [
                       "fao_critchley_wh_manual_1991",
                       "kahinda2008_sa_rwh_suitability"
+                    ]
+                  },
+                  {
+                    "id": "water_harvesting__micro_catchment__annual_precipitation",
+                    "label": "water harvesting  micro catchment  annual precipitation · Micro catchment",
+                    "nbs_id": "water_harvesting_conservation",
+                    "family_ids": [
+                      "water_harvesting__micro_catchment"
+                    ],
+                    "farming_system": "",
+                    "scope_type": "",
+                    "scope_id": "",
+                    "risk_role": "",
+                    "evidence_ids": [
+                      "ev_wh_precip_critchley91_negarim",
+                      "ev_wh_precip_wocatgl13_negarim"
+                    ],
+                    "source_keys": [
+                      "fao_critchley_wh_manual_1991",
+                      "wocat_wh_guidelines_2013"
+                    ]
+                  },
+                  {
+                    "id": "water_harvesting__micro_catchment__slope",
+                    "label": "water harvesting  micro catchment  slope · Micro catchment",
+                    "nbs_id": "water_harvesting_conservation",
+                    "family_ids": [
+                      "water_harvesting__micro_catchment"
+                    ],
+                    "farming_system": "",
+                    "scope_type": "",
+                    "scope_id": "",
+                    "risk_role": "",
+                    "evidence_ids": [
+                      "ev_wh_slope_critchley91_negarim",
+                      "ev_wh_slope_wocatgl13_negarim"
+                    ],
+                    "source_keys": [
+                      "fao_critchley_wh_manual_1991",
+                      "wocat_wh_guidelines_2013"
                     ]
                   },
                   {
@@ -582442,9 +582839,9 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 35,
-            "evidence_backed_outputs": 34,
-            "contributing_excerpts": 59,
+            "output_count": 37,
+            "evidence_backed_outputs": 36,
+            "contributing_excerpts": 63,
             "contributing_sources": 27,
             "evidence_ids": [
               "EV_wocat_507_2019_008",
@@ -582483,8 +582880,10 @@
               "ev_wh_drainage_density_mahmoud21_1",
               "ev_wh_drainage_density_singh17_1",
               "ev_wh_precip_critchley91_contourbunds",
+              "ev_wh_precip_critchley91_negarim",
               "ev_wh_precip_critchley91_trapezoidal",
               "ev_wh_precip_wocatgl13_benchterraces",
+              "ev_wh_precip_wocatgl13_negarim",
               "ev_wh_precip_wocatgl13_trapezoidal",
               "ev_wh_runoff_potential_index_alabadi17_1",
               "ev_wh_runoff_potential_index_dewinnaar07_1",
@@ -582493,9 +582892,11 @@
               "ev_wh_runoff_potential_index_singh17_1",
               "ev_wh_runoff_potential_index_vema19_1",
               "ev_wh_slope_chen17_1",
+              "ev_wh_slope_critchley91_negarim",
               "ev_wh_slope_krois14_terraces",
               "ev_wh_slope_slm11_fanyajuu",
               "ev_wh_slope_wocatgl13_benchterraces",
+              "ev_wh_slope_wocatgl13_negarim",
               "ev_wh_soil_depth_chen17_1",
               "ev_wh_soil_depth_kahinda08_1",
               "ev_wh_soil_depth_krois14_1",
@@ -582928,6 +583329,46 @@
                 "source_keys": [
                   "fao_critchley_wh_manual_1991",
                   "kahinda2008_sa_rwh_suitability"
+                ]
+              },
+              {
+                "id": "water_harvesting__micro_catchment__annual_precipitation",
+                "label": "water harvesting  micro catchment  annual precipitation · Micro catchment",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__micro_catchment"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_precip_critchley91_negarim",
+                  "ev_wh_precip_wocatgl13_negarim"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "wocat_wh_guidelines_2013"
+                ]
+              },
+              {
+                "id": "water_harvesting__micro_catchment__slope",
+                "label": "water harvesting  micro catchment  slope · Micro catchment",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__micro_catchment"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_slope_critchley91_negarim",
+                  "ev_wh_slope_wocatgl13_negarim"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "wocat_wh_guidelines_2013"
                 ]
               },
               {
@@ -646794,9 +647235,9 @@
         "label": "Suitability",
         "unit": "suitability rules",
         "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-        "output_count": 35,
-        "evidence_backed_outputs": 34,
-        "contributing_excerpts": 59,
+        "output_count": 37,
+        "evidence_backed_outputs": 36,
+        "contributing_excerpts": 63,
         "contributing_sources": 27,
         "evidence_ids": [
           "EV_wocat_507_2019_008",
@@ -646835,8 +647276,10 @@
           "ev_wh_drainage_density_mahmoud21_1",
           "ev_wh_drainage_density_singh17_1",
           "ev_wh_precip_critchley91_contourbunds",
+          "ev_wh_precip_critchley91_negarim",
           "ev_wh_precip_critchley91_trapezoidal",
           "ev_wh_precip_wocatgl13_benchterraces",
+          "ev_wh_precip_wocatgl13_negarim",
           "ev_wh_precip_wocatgl13_trapezoidal",
           "ev_wh_runoff_potential_index_alabadi17_1",
           "ev_wh_runoff_potential_index_dewinnaar07_1",
@@ -646845,9 +647288,11 @@
           "ev_wh_runoff_potential_index_singh17_1",
           "ev_wh_runoff_potential_index_vema19_1",
           "ev_wh_slope_chen17_1",
+          "ev_wh_slope_critchley91_negarim",
           "ev_wh_slope_krois14_terraces",
           "ev_wh_slope_slm11_fanyajuu",
           "ev_wh_slope_wocatgl13_benchterraces",
+          "ev_wh_slope_wocatgl13_negarim",
           "ev_wh_soil_depth_chen17_1",
           "ev_wh_soil_depth_kahinda08_1",
           "ev_wh_soil_depth_krois14_1",
@@ -647280,6 +647725,46 @@
             "source_keys": [
               "fao_critchley_wh_manual_1991",
               "kahinda2008_sa_rwh_suitability"
+            ]
+          },
+          {
+            "id": "water_harvesting__micro_catchment__annual_precipitation",
+            "label": "water harvesting  micro catchment  annual precipitation · Micro catchment",
+            "nbs_id": "water_harvesting_conservation",
+            "family_ids": [
+              "water_harvesting__micro_catchment"
+            ],
+            "farming_system": "",
+            "scope_type": "",
+            "scope_id": "",
+            "risk_role": "",
+            "evidence_ids": [
+              "ev_wh_precip_critchley91_negarim",
+              "ev_wh_precip_wocatgl13_negarim"
+            ],
+            "source_keys": [
+              "fao_critchley_wh_manual_1991",
+              "wocat_wh_guidelines_2013"
+            ]
+          },
+          {
+            "id": "water_harvesting__micro_catchment__slope",
+            "label": "water harvesting  micro catchment  slope · Micro catchment",
+            "nbs_id": "water_harvesting_conservation",
+            "family_ids": [
+              "water_harvesting__micro_catchment"
+            ],
+            "farming_system": "",
+            "scope_type": "",
+            "scope_id": "",
+            "risk_role": "",
+            "evidence_ids": [
+              "ev_wh_slope_critchley91_negarim",
+              "ev_wh_slope_wocatgl13_negarim"
+            ],
+            "source_keys": [
+              "fao_critchley_wh_manual_1991",
+              "wocat_wh_guidelines_2013"
             ]
           },
           {
@@ -686661,7 +687146,7 @@
         "catalogue": {
           "summary": {
             "structural_claims": 367,
-            "explicitly_linked_claims": 33,
+            "explicitly_linked_claims": 37,
             "focus_claims": 5,
             "selection_only_with_relationship_content": 2,
             "scopes": {
@@ -688289,8 +688774,8 @@
               "claim_scope": "practice_technology",
               "evidence_type": "literature_relationship",
               "reviewer_ok": "false",
-              "relationship": "{\"abs_min\": 150, \"unit\": \"mm\", \"direction\": \"Negarim microcatchments work down to very low rainfall\"}",
-              "context": "",
+              "relationship": "{\"abs_min\": null, \"unit\": \"mm\", \"direction\": \"Annual rainfall can be as low as 150 mm in the technical guidance for tree Negarim. FAO separately describes Negev research farms in areas with rainfall as low as 100–150 mm/year.\", \"source_profile\": {\"role\": \"siting recommendation\", \"rainfall_can_be_as_low_as_mm_per_year\": 150}}",
+              "context": "{\"source_table\": {\"locator\": \"FAO manual §§5.2.1–2: background and technical details, Suitability\", \"source_sha256\": \"b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860\", \"practice\": \"Negarim tree microcatchments\"}, \"site_example\": {\"location\": \"Negev Desert, Israel\", \"context\": \"research farms in areas where annual rainfall is as low as 100–150 mm; area climate, no success rate or recommended minimum\", \"area_rainfall_mm_per_year\": [100, 150]}}",
               "quote": "Suitability Negarim microcatchments are mainly used for tree growing in arid and semi-arid areas. Rainfall: can be as low as 150 mm per annum.",
               "page": "",
               "locator_type": "section",
@@ -688299,12 +688784,14 @@
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "Negarim microcatchments work down to very low rainfall",
+              "source_direction": "Annual rainfall can be as low as 150 mm in the technical guidance for tree Negarim. FAO separately describes Negev research farms in areas with rainfall as low as 100–150 mm/year.",
               "has_stated_direction": true,
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__micro_catchment__annual_precipitation"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -688349,8 +688836,8 @@
               "claim_scope": "practice_technology",
               "evidence_type": "literature_relationship",
               "reviewer_ok": "false",
-              "relationship": "{\"abs_max\": 5.0, \"unit\": \"percent\", \"direction\": \"flat to gentle ground only\"}",
-              "context": "",
+              "relationship": "{\"abs_max\": null, \"unit\": \"percent\", \"direction\": \"FAO recommends flat ground to 5% grade for Negarim. Uneven blocks should be subdivided. The upper end describes the recommendation.\", \"source_profile\": {\"role\": \"siting recommendation\", \"slope_grade_pct\": [0, 5], \"uneven_terrain\": \"subdivide the block\"}}",
+              "context": "{\"source_table\": {\"locator\": \"FAO manual §§5.2.1–2: background and technical details, Suitability\", \"source_sha256\": \"b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860\", \"practice\": \"Negarim tree microcatchments\"}}",
               "quote": "Suitability Negarim microcatchments are mainly used for tree growing in arid and semi-arid areas. Rainfall: can be as low as 150 mm per annum. Soils: should be at least 1.5 m but preferably 2 m deep in order to ensure adequate root development and storage of the water harvested. Slopes: from flat up to 5.0%.",
               "page": "",
               "locator_type": "section",
@@ -688359,12 +688846,14 @@
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "flat to gentle ground only",
+              "source_direction": "FAO recommends flat ground to 5% grade for Negarim. Uneven blocks should be subdivided. The upper end describes the recommendation.",
               "has_stated_direction": true,
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__micro_catchment__slope"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -689320,8 +689809,8 @@
               "claim_scope": "practice_technology",
               "evidence_type": "literature_relationship",
               "reviewer_ok": "false",
-              "relationship": "{\"abs_min\": 1, \"opt_low\": 1, \"opt_high\": 5, \"abs_max\": 20, \"unit\": \"percent\", \"direction\": \"applied on a wide slope range but most common on gentle slopes\"}",
-              "context": "",
+              "relationship": "{\"abs_min\": null, \"opt_low\": null, \"opt_high\": null, \"abs_max\": null, \"unit\": \"percent\", \"direction\": \"WOCAT describes application on 1–20% slopes, commonly 1–5% in areas receiving 150–500 mm/year. Common use supplies no optimum score.\", \"source_profile\": {\"role\": \"reported use\", \"broader_slope_grade_pct\": [1, 20], \"common_slope_grade_pct\": [1, 5], \"rainfall_mm_per_year_in_common_setting\": [150, 500]}}",
+              "context": "{\"source_table\": {\"locator\": \"PDF p. 125, printed p. 112, Negarim paragraph\", \"source_sha256\": \"32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea\", \"practice\": \"Negarim tree microcatchments\"}}",
               "quote": "Negarim are small diamond-shaped runoff basins, surrounded by low earth bunds. Runoff infiltrates at the lowest apex, where the trees are planted. Reported sizes of negarim are 100-250 m² in Israel and up to 400 m² in India. As 15-90% of rainfall may be harvested as runoff and used for the tree crop, the catchment to cropping area ratio ranges between 3:1 and 10:1; in flatter catchments and drier areas this may be up to 25:1. They are applied on sloping land (1-20%), however are com- monly found on slopes of 1-5% in areas of 150-500 mm/y of rainfall.",
               "page": "125",
               "locator_type": "page",
@@ -689330,12 +689819,14 @@
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "applied on a wide slope range but most common on gentle slopes",
+              "source_direction": "WOCAT describes application on 1–20% slopes, commonly 1–5% in areas receiving 150–500 mm/year. Common use supplies no optimum score.",
               "has_stated_direction": true,
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__micro_catchment__slope"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -689349,8 +689840,8 @@
               "claim_scope": "practice_technology",
               "evidence_type": "literature_relationship",
               "reviewer_ok": "false",
-              "relationship": "{\"abs_min\": 150, \"abs_max\": 500, \"unit\": \"mm\", \"direction\": \"negarim are commonly found in dry areas\"}",
-              "context": "",
+              "relationship": "{\"abs_min\": null, \"abs_max\": null, \"unit\": \"mm\", \"direction\": \"WOCAT reports the common combined use context: 150–500 mm/year and 1–5% slopes. No rainfall suitability limits are established.\", \"source_profile\": {\"role\": \"common reported use\", \"rainfall_mm_per_year\": [150, 500], \"associated_slope_grade_pct\": [1, 5]}}",
+              "context": "{\"source_table\": {\"locator\": \"PDF p. 125, printed p. 112, Negarim paragraph\", \"source_sha256\": \"32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea\", \"practice\": \"Negarim tree microcatchments\"}}",
               "quote": "Negarim are small diamond-shaped runoff basins, surrounded by low earth bunds. Runoff infiltrates at the lowest apex, where the trees are planted. Reported sizes of negarim are 100-250 m² in Israel and up to 400 m² in India. As 15-90% of rainfall may be harvested as runoff and used for the tree crop, the catchment to cropping area ratio ranges between 3:1 and 10:1; in flatter catchments and drier areas this may be up to 25:1. They are applied on sloping land (1-20%), however are com- monly found on slopes of 1-5% in areas of 150-500 mm/y of rainfall.",
               "page": "125",
               "locator_type": "page",
@@ -689359,12 +689850,14 @@
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "negarim are commonly found in dry areas",
+              "source_direction": "WOCAT reports the common combined use context: 150–500 mm/year and 1–5% slopes. No rainfall suitability limits are established.",
               "has_stated_direction": true,
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__micro_catchment__annual_precipitation"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -697460,6 +697953,12 @@
                   "mapping_id": "water_harvesting__in_situ__annual_precipitation"
                 },
                 {
+                  "family": "water_harvesting__micro_catchment",
+                  "sources": [],
+                  "function_options": 0,
+                  "mapping_id": "water_harvesting__micro_catchment__annual_precipitation"
+                },
+                {
                   "family": "water_harvesting__runoff_catchment",
                   "sources": [],
                   "function_options": 0,
@@ -698016,6 +698515,12 @@
               "study_weights": [],
               "mapped_group_weights": [],
               "function_support": [
+                {
+                  "family": "water_harvesting__micro_catchment",
+                  "sources": [],
+                  "function_options": 0,
+                  "mapping_id": "water_harvesting__micro_catchment__slope"
+                },
                 {
                   "family": "water_harvesting__terracing",
                   "sources": [],
@@ -700363,19 +700868,11 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "d7e835455079",
-    "data_id": "55679582a66e",
+    "data_id": "1292b187ed75",
     "count_definition_version": "4",
-    "built_at": "2026-11-09T11:46:02.385048+00:00",
-    "source_commit": "e00cd34d9cb218b9a5d6cd911aa9633dfff51928",
+    "built_at": "2026-11-09T12:28:30.111385+00:00",
+    "source_commit": "887189ce4238427486816cc3e83674ec9bfc2dfd",
     "history": [
-      {
-        "release": "1.5.0",
-        "ui_id": "afee041f1a1a",
-        "data_id": "db6ecaa7d3d7",
-        "count_definition_version": "4",
-        "built_at": "2026-11-05T09:23:46.274312+00:00",
-        "source_commit": "88751d47586d1fb702b231ebb003d2ea21b353f3"
-      },
       {
         "release": "1.5.0",
         "ui_id": "afee041f1a1a",
@@ -700767,6 +701264,14 @@
         "count_definition_version": "4",
         "built_at": "2026-11-09T11:46:02.385048+00:00",
         "source_commit": "e00cd34d9cb218b9a5d6cd911aa9633dfff51928"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "d7e835455079",
+        "data_id": "1292b187ed75",
+        "count_definition_version": "4",
+        "built_at": "2026-11-09T12:28:30.111385+00:00",
+        "source_commit": "887189ce4238427486816cc3e83674ec9bfc2dfd"
       }
     ]
   }
