@@ -8,6 +8,16 @@ from nbs_ruralscan.schema_tools.build_paths import SchemaBuildPaths
 from nbs_ruralscan.schema_tools.publication import _state
 
 
+def _input_state(path: Path) -> tuple | None:
+    # Keep the original spelling for later checks. A link followed by ".." can
+    # select a different file from the lexically shortened path.
+    normalized = Path(os.path.abspath(path))
+    if normalized != path.resolve():
+        raise ValueError(f"Review input contains a symlink: {path}")
+    SchemaBuildPaths(normalized.parent / "schema").preflight([normalized])
+    return _state(normalized)
+
+
 class ReviewInputs:
     """Bind the files read by one import/build, including missing optional inputs."""
 
@@ -17,15 +27,13 @@ class ReviewInputs:
 
     def include(self, files: Iterable[Path]) -> None:
         for path in files:
-            path = Path(os.path.abspath(path))
+            path = Path(path).absolute()
             if path not in self.states:
-                SchemaBuildPaths(path.parent / "schema").preflight([path])
-                self.states[path] = _state(path)
+                self.states[path] = _input_state(path)
 
     def verify(self) -> None:
         for path, state in self.states.items():
-            SchemaBuildPaths(path.parent / "schema").preflight([path])
-            if _state(path) != state:
+            if _input_state(path) != state:
                 raise ValueError(f"Review input changed during preparation: {path}")
 
     def check_outputs(self, paths: Iterable[Path]) -> None:

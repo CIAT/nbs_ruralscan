@@ -9,8 +9,11 @@ the direction it implies; the class itself is never trusted (defect E1/E3) — i
 ``unspecified``.
 
 Quote / page / source are untouched: the verbatim guardrail re-verifies them on the live
-register. The archive file is left intact (it is the restorable record); the ids that moved
-are listed in ``schema/registers/_deferred/migrated_<date>.txt``.
+register. The archive file is left intact (it is the restorable record); the ids
+selected in each completed import are listed in ``schema/registers/_deferred/migrated_<date>.txt``.
+The receipt includes matching existing rows; the separate appended count measures new EV rows.
+The first migration date stays in each existing EV context. Unhashed historical receipt headings
+are recognised for the pinned September 2026 archive; other archive bytes or names use SHA-256.
 
 Rules (per unit)
 ----------------
@@ -36,6 +39,7 @@ stamp       ruleset_version = v1.6.0; review_state / reviewer_ok preserved.
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import io
 import re
@@ -46,6 +50,9 @@ from typing import Any
 
 from nbs_ruralscan.ingest.integrity import atomic_write
 from nbs_ruralscan.recipe.cell_synthesis import classify_magnitude, load_bands
+from nbs_ruralscan.schema_tools.record_publication import edit_records
+from nbs_ruralscan.schema_tools.review_inputs import ReviewInputs
+from nbs_ruralscan.schema_tools.specialist_records import read_table, write_table
 
 ROOT = Path(__file__).resolve().parents[3]
 SCHEMA = ROOT / "schema"
@@ -57,6 +64,11 @@ BANDS_CSV = SCHEMA / "registers" / "BANDS_magnitude_bands.csv"
 INCOME_CSV = SCHEMA / "lookups" / "wb_income_groups.csv"
 
 RULESET = "v1.6.0"
+# The September 2026 archive predates digest-bearing migration receipts.
+_LEGACY_ARCHIVE_SHA256 = (
+    "40ef18a44c1d4afedcd182a0c3be18db7b85d0ece1ccc997e8d1685338bc16a2"
+)
+
 #: sources whose units came in via a T3/T6-targeted search (method §10 table)
 TARGETED_SOURCES = {
     "batcheler_silvopasture_2024",
@@ -183,8 +195,8 @@ def load_t7(path: Path = T7_CSV) -> tuple[set[str], set[str]]:
 
 
 def load_src(path: Path = SRC_CSV) -> dict[str, dict[str, str]]:
-    with open(path, encoding="utf-8", newline="") as f:
-        return {r["source_id"]: r for r in csv.DictReader(f)}
+    _, sources = _register(Path(path), "source_id")
+    return sources
 
 
 def countries_from_text(text: str | None, name_iso: dict[str, str]) -> list[str]:
@@ -387,6 +399,10 @@ def build_relationship(
     return out
 
 
+def _migration_stamp(day: date) -> str:
+    return f"migrated v1.5.0→{RULESET} {day.isoformat()} (deterministic re-shape, method §10)"
+
+
 def build_context(
     unit: dict[str, Any],
     src: dict[str, str],
@@ -394,6 +410,7 @@ def build_context(
     name_iso: dict[str, str],
     aez_ids: set[str],
     fs_ids: set[str],
+    run_day: date | None = None,
 ) -> dict[str, Any]:
     ctx = _obj(unit.get("context"))
     out: dict[str, Any] = {}
@@ -472,7 +489,7 @@ def build_context(
         leftovers.append(
             f"{k}={json.dumps(v, ensure_ascii=False) if not isinstance(v, str) else v}"
         )
-    stamp = f"migrated v1.5.0→{RULESET} {date.today().isoformat()} (deterministic re-shape, method §10)"
+    stamp = _migration_stamp(run_day or date.today())
     out["note"] = "; ".join([stamp] + leftovers)[:1500]
     return out
 
@@ -485,6 +502,7 @@ def migrate_unit(
     name_iso: dict[str, str],
     aez_ids: set[str],
     fs_ids: set[str],
+    run_day: date | None = None,
 ) -> dict[str, Any]:
     ctx_old = _obj(unit.get("context"))
     role = unit.get("use_role", "")
@@ -501,7 +519,9 @@ def migrate_unit(
         new["variable"] = VARIABLE_ALIASES[unit["variable"]]
         unit = dict(unit, variable=new["variable"])
     new["relationship"] = build_relationship(unit, bands)
-    new["context"] = build_context(unit, src, iso_inc, name_iso, aez_ids, fs_ids)
+    new["context"] = build_context(
+        unit, src, iso_inc, name_iso, aez_ids, fs_ids, run_day
+    )
     new["ruleset_version"] = RULESET
     return new
 
@@ -519,23 +539,43 @@ def _cell(v: Any) -> str:
     return str(v)
 
 
-def append_to_register(
-    rows: list[dict[str, Any]], ev_csv: Path = EV_CSV, *, dry_run: bool = False
-) -> int:
-    with open(ev_csv, encoding="utf-8", newline="") as f:
-        reader = csv.DictReader(f)
-        cols = list(reader.fieldnames or [])
-        existing = {}
-        for row in reader:
-            eid = row["evidence_id"]
-            if not eid or eid in existing:
-                raise ValueError(
-                    f"existing register has blank/duplicate evidence_id: {eid!r}"
-                )
-            existing[eid] = row
+def _register(path: Path, key: str) -> tuple[list[str], dict[str, dict[str, str]]]:
+    columns, rows = read_table(path, [key])
+    records = {}
+    for row in rows:
+        value = row[key]
+        if not value.strip() or value in records:
+            raise ValueError(f"existing register has blank/duplicate {key}: {value!r}")
+        records[value] = row
+    return columns, records
+
+
+def _with_first_migration_date(existing, generated):
+    """Reproduce the exact archived stamp; every other note character and field still compares."""
+    prior_note = existing.get("note") if isinstance(existing, dict) else None
+    if not isinstance(prior_note, str):
+        return generated
+    first_stamp = prior_note.partition("; ")[0]
+    match = re.search(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", first_stamp)
+    if not match:
+        return generated
+    try:
+        first_day = date.fromisoformat(match.group())
+    except ValueError:
+        return generated
+    if first_stamp != _migration_stamp(first_day):
+        return generated
+    _, separator, remainder = generated["note"].partition("; ")
+    return dict(generated, note=first_stamp + separator + remainder)
+
+
+def _append(rows, ev_csv: Path, *, historical_replay: bool = False) -> int:
+    cols, existing = _register(ev_csv, "evidence_id")
     seen: set[str] = set()
     for row in rows:
         eid = row["evidence_id"]
+        if not isinstance(eid, str) or not eid.strip() or "\n" in eid or "\r" in eid:
+            raise ValueError("evidence_id must be nonempty text on one line")
         if eid in seen:
             raise ValueError(f"duplicate evidence_id in batch: {eid}")
         seen.add(eid)
@@ -550,6 +590,10 @@ def append_to_register(
             if key in {"context", "relationship"}:
                 old = json.loads(old) if old else None
                 new_value = json.loads(new_value) if new_value else None
+                if historical_replay and key == "context" and old != new_value:
+                    new_value = _with_first_migration_date(old, new_value)
+                    if new_value == old:
+                        row[key] = new_value
             if old != new_value:
                 raise ValueError(
                     f"{eid}: existing evidence differs in {key}; use an audited correction, not append"
@@ -561,13 +605,22 @@ def append_to_register(
     writer = csv.DictWriter(buffer, fieldnames=cols, lineterminator="\n")
     for row in new:
         writer.writerow({c: _cell(row.get(c)) for c in cols})
-    if not dry_run and new:
+    if new:
         previous_bytes = ev_csv.read_bytes()
         separator = b"" if previous_bytes.endswith(b"\n") else b"\n"
         atomic_write(
             ev_csv, previous_bytes + separator + buffer.getvalue().encode("utf-8")
         )
     return len(new)
+
+
+def append_to_register(
+    rows: list[dict[str, Any]], ev_csv: Path = EV_CSV, *, dry_run: bool = False
+) -> int:
+    ev_csv = Path(ev_csv)
+    return edit_records(
+        [ev_csv], lambda stage: _append(rows, stage[ev_csv]), dry_run=dry_run
+    )
 
 
 def stamp_extracted(
@@ -577,15 +630,28 @@ def stamp_extracted(
     day: str,
     src_csv: Path = SRC_CSV,
 ) -> list[str]:
+    """Stamp a fresh ingest while preserving each source's first extraction run."""
+    src_csv = Path(src_csv)
+    return edit_records(
+        [src_csv],
+        lambda stage: _stamp(source_ids, run_id, extractor, day, stage[src_csv]),
+    )
+
+
+def _stamp(
+    source_ids: set[str],
+    run_id: str,
+    extractor: str,
+    day: str,
+    src_csv: Path,
+) -> list[str]:
     """Mark sources whose units were just ingested as `swept` with this run's id.
 
     Promotion leaves a source `pending` (2026-10-28 hardening); only a real ingest moves it.
     A source already `swept` / `signed_off` keeps its status and first run id.
     """
-    with open(src_csv, encoding="utf-8", newline="") as f:
-        reader = csv.DictReader(f)
-        cols = list(reader.fieldnames or [])
-        rows = list(reader)
+    cols, sources = _register(src_csv, "source_id")
+    rows = sources.values()
     stamped: list[str] = []
     for r in rows:
         if r["source_id"] in source_ids and (r.get("extraction_status") or "") in {
@@ -600,10 +666,7 @@ def stamp_extracted(
             )
             stamped.append(r["source_id"])
     if stamped:
-        with open(src_csv, "w", encoding="utf-8", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
-            w.writeheader()
-            w.writerows([{c: r.get(c, "") for c in cols} for r in rows])
+        write_table(src_csv, cols, rows)
     return sorted(stamped)
 
 
@@ -611,19 +674,24 @@ def resync_vars_extracted(
     source_ids: set[str], src_csv: Path = SRC_CSV, ev_csv: Path = EV_CSV
 ) -> dict[str, str]:
     """SRC.vars_extracted = distinct active EV variables per source (all live roles)."""
+    src_csv, ev_csv = Path(src_csv), Path(ev_csv)
+    return edit_records(
+        [src_csv],
+        lambda stage: _resync(source_ids, stage[src_csv], ev_csv),
+        inputs=ReviewInputs([ev_csv]),
+    )
+
+
+def _resync(source_ids, src_csv: Path, ev_csv: Path) -> dict[str, str]:
     by_src: dict[str, set[str]] = defaultdict(set)
-    with open(ev_csv, encoding="utf-8", newline="") as f:
-        for r in csv.DictReader(f):
-            if (r.get("review_state") or "") == "dropped" or r.get(
-                "use_role"
-            ) == "dataset":
-                continue
-            if r["source_id"] in source_ids:
-                by_src[r["source_id"]].add(r["variable"])
-    with open(src_csv, encoding="utf-8", newline="") as f:
-        reader = csv.DictReader(f)
-        cols = list(reader.fieldnames or [])
-        rows = list(reader)
+    _, evidence = _register(ev_csv, "evidence_id")
+    for r in evidence.values():
+        if (r.get("review_state") or "") == "dropped" or r.get("use_role") == "dataset":
+            continue
+        if r["source_id"] in source_ids:
+            by_src[r["source_id"]].add(r["variable"])
+    cols, sources = _register(src_csv, "source_id")
+    rows = sources.values()
     changed: dict[str, str] = {}
     for r in rows:
         if r["source_id"] in source_ids:
@@ -634,10 +702,7 @@ def resync_vars_extracted(
     for extra in ("study_income_group", "venue_type"):
         if extra not in cols:
             cols.append(extra)  # manifest-optional columns the CSV never carried
-    with open(src_csv, "w", encoding="utf-8", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
-        w.writeheader()
-        w.writerows([{c: r.get(c, "") for c in cols} for r in rows])
+    write_table(src_csv, cols, rows)
     return changed
 
 
@@ -646,11 +711,18 @@ def backfill_src_context(
 ) -> dict[str, dict[str, str]]:
     """Deterministic SRC back-fill: study_income_group from study_country; venue_type from
     source_kind; benchmark_tier lower-cased. Returns {source_id: {field: new}}."""
+    src_csv, income_csv = Path(src_csv), Path(income_csv)
+    return edit_records(
+        [src_csv],
+        lambda stage: _backfill(source_ids, stage[src_csv], income_csv),
+        inputs=ReviewInputs([income_csv]),
+    )
+
+
+def _backfill(source_ids, src_csv: Path, income_csv: Path) -> dict[str, dict[str, str]]:
     iso_inc, name_iso = load_income(income_csv)
-    with open(src_csv, encoding="utf-8", newline="") as f:
-        reader = csv.DictReader(f)
-        cols = list(reader.fieldnames or [])
-        rows = list(reader)
+    cols, sources = _register(src_csv, "source_id")
+    rows = sources.values()
     changed: dict[str, dict[str, str]] = {}
     for r in rows:
         if r["source_id"] not in source_ids:
@@ -676,28 +748,29 @@ def backfill_src_context(
     for extra in ("study_income_group", "venue_type"):
         if extra not in cols:
             cols.append(extra)  # manifest-optional columns the CSV never carried
-    with open(src_csv, "w", encoding="utf-8", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
-        w.writeheader()
-        w.writerows([{c: r.get(c, "") for c in cols} for r in rows])
+    write_table(src_csv, cols, rows)
     return changed
 
 
-def run(
-    sources: set[str] = TARGETED_SOURCES,
-    *,
-    deferred: Path = DEFERRED,
-    write: bool = True,
-) -> dict[str, Any]:
-    units = json.loads(Path(deferred).read_text(encoding="utf-8"))
+def _transform(
+    sources, deferred, archive_bytes, bands_csv, income_csv, t7_csv, src_csv, run_day
+):
+    units = json.loads(archive_bytes.decode("utf-8"))
+    if not isinstance(units, list) or not all(isinstance(unit, dict) for unit in units):
+        raise ValueError(f"{deferred.name}: expected a list of archived evidence units")
     sel = [u for u in units if u.get("source_id") in sources]
-    bands = load_bands(BANDS_CSV)
-    iso_inc, name_iso = load_income()
-    aez_ids, fs_ids = load_t7()
-    src = load_src()
+    bands = load_bands(bands_csv)
+    iso_inc, name_iso = load_income(income_csv)
+    aez_ids, fs_ids = load_t7(t7_csv)
+    src = load_src(src_csv)
+    missing = sorted({unit["source_id"] for unit in sel} - src.keys())
+    if missing:
+        raise ValueError(
+            f"Archived evidence references missing source IDs: {', '.join(missing)}"
+        )
     migrated = [
         migrate_unit(
-            u, src.get(u["source_id"], {}), bands, iso_inc, name_iso, aez_ids, fs_ids
+            u, src[u["source_id"]], bands, iso_inc, name_iso, aez_ids, fs_ids, run_day
         )
         for u in sel
     ]
@@ -715,21 +788,103 @@ def run(
             1 for m in migrated if m.get("review_state") == "dropped"
         ),
     }
-    if write:
-        summary["appended"] = append_to_register(migrated)
-        summary["src_backfill"] = backfill_src_context(sources)
-        summary["vars_extracted_changed"] = resync_vars_extracted(sources)
-        manifest = DEFERRED.parent / f"migrated_{date.today().isoformat()}.txt"
-        manifest.write_text(
-            "# evidence_ids migrated from EV_T3_T6_deferred_2026-09 into the live register "
-            f"under ruleset {RULESET} (method §10; only T3/T6-targeted sources)\n"
-            + "\n".join(m["evidence_id"] for m in migrated)
-            + "\n",
-            encoding="utf-8",
-        )
-        summary["manifest"] = str(manifest.relative_to(ROOT))
     summary["units"] = migrated
     return summary
+
+
+def _manifest_heading(archive: Path, archive_bytes: bytes) -> str:
+    digest = hashlib.sha256(archive_bytes).hexdigest()
+    label = archive.stem
+    if archive.name != DEFERRED.name or digest != _LEGACY_ARCHIVE_SHA256:
+        label += f" [sha256={digest}]"
+    return (
+        f"# evidence_ids migrated from {label} into the live register "
+        f"under ruleset {RULESET} (method §10; only T3/T6-targeted sources)"
+    )
+
+
+def _merge_manifest(path: Path, heading: str, evidence_ids: list[str]) -> str:
+    prior_ids = []
+    if path.exists():
+        previous = path.read_text(encoding="utf-8")
+        header, separator, body = previous.partition("\n")
+        if header != heading or not separator or not body.endswith("\n"):
+            raise ValueError(
+                f"{path.name}: existing migration manifest has a different archive or "
+                "an incomplete record. Reconcile the dated manifest before retrying."
+            )
+        prior_ids = body[:-1].split("\n") if body != "\n" else []
+        if any(not eid.strip() for eid in prior_ids) or len(prior_ids) != len(
+            set(prior_ids)
+        ):
+            raise ValueError(
+                f"{path.name}: reconcile blank or duplicate IDs before retrying"
+            )
+    all_ids = list(dict.fromkeys([*prior_ids, *evidence_ids]))
+    return heading + "\n" + "\n".join(all_ids) + "\n"
+
+
+def run(
+    sources: set[str] = TARGETED_SOURCES,
+    *,
+    root: Path = ROOT,
+    deferred: Path | None = None,
+    write: bool = True,
+) -> dict[str, Any]:
+    """Transform the selected archive. A write publishes EV, SRC and the dated ID list together."""
+    root = Path(root).resolve()
+    registers = root / "schema/registers"
+    archive = (
+        Path(deferred)
+        if deferred is not None
+        else registers / "_deferred" / DEFERRED.name
+    )
+    bands = registers / BANDS_CSV.name
+    income = root / "schema/lookups" / INCOME_CSV.name
+    t7 = root / "schema" / T7_CSV.name
+    ev, src = registers / EV_CSV.name, registers / SRC_CSV.name
+    inputs = ReviewInputs([archive, bands, income, t7])
+    archive_bytes = archive.read_bytes()
+    run_day = date.today()
+    if not write:
+        inputs.include([src])
+        summary = _transform(
+            sources, archive, archive_bytes, bands, income, t7, src, run_day
+        )
+        inputs.verify()
+        return summary
+
+    manifest = registers / "_deferred" / f"migrated_{run_day.isoformat()}.txt"
+    manifest_text = ""
+
+    def apply(stage):
+        nonlocal manifest_text
+        summary = _transform(
+            sources, archive, archive_bytes, bands, income, t7, stage[src], run_day
+        )
+        migrated = summary["units"]
+        summary["appended"] = _append(migrated, stage[ev], historical_replay=True)
+        summary["src_backfill"] = _backfill(sources, stage[src], income)
+        summary["vars_extracted_changed"] = _resync(sources, stage[src], stage[ev])
+        manifest_text = _merge_manifest(
+            stage[manifest],
+            _manifest_heading(archive, archive_bytes),
+            [m["evidence_id"] for m in migrated],
+        )
+        stage[manifest].write_text(manifest_text, encoding="utf-8")
+        summary["manifest"] = str(manifest.relative_to(root))
+        return summary
+
+    def validate_manifest(path):
+        if path.read_text(encoding="utf-8") != manifest_text:
+            raise ValueError("Staged manifest differs from migrated evidence IDs")
+
+    return edit_records(
+        [ev, src, manifest],
+        apply,
+        inputs=inputs,
+        validators={manifest: validate_manifest},
+    )
 
 
 def _count(it):
@@ -746,9 +901,21 @@ def main(argv: list[str] | None = None) -> int:
         "--dry-run", action="store_true", help="transform + summarise, write nothing"
     )
     ap.add_argument("--source", action="append", help="restrict to these source_ids")
+    ap.add_argument(
+        "--root",
+        "--data-root",
+        type=Path,
+        default=ROOT,
+        help="Checkout containing the selected schema and registers",
+    )
+    ap.add_argument(
+        "--deferred",
+        type=Path,
+        help="Archived evidence JSON (default: the selected root’s September 2026 archive)",
+    )
     args = ap.parse_args(argv)
     sources = set(args.source) if args.source else TARGETED_SOURCES
-    s = run(sources, write=not args.dry_run)
+    s = run(sources, root=args.root, deferred=args.deferred, write=not args.dry_run)
     units = s.pop("units")
     print(json.dumps(s, indent=2, ensure_ascii=False))
     if args.dry_run:
