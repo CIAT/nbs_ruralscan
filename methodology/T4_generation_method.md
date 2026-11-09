@@ -621,6 +621,32 @@ One variable (within one suitability family) at a time: combine its evidence uni
 - **Filter before T4? Soft floor, not a hard cut.** Carry every candidate variable into T4 *with* its `paper_support_pct`, `n_sources` and ML flag. A variable below a prevalence floor (default 20 %) is **flagged `review_low_support` for a recorded inclusion decision**, not auto-dropped — because prevalence is as much *convention* (citation echo, publication bias) as importance, and a rarely-published variable can be locally decisive (ML can rescue it → `include_ml_override`). Hard, statistical pruning is left to correlation clustering; inclusion/exclusion is an auditable, admin-gated decision (mirrors the wireframe's "edit included variables").
 - **Output** → a T4 row with `relationship_type` + `relationship_params`, `uncertainty_pct`, `context_overrides`, `weight_default`, **`paper_support_pct` + `n_sources` + `corpus_n`**, `justification` (citing `evidence_id`s), `references`, and `dataset_id` resolved via the ontology.
 
+### Synthesis decision record
+
+The synthesis agent interprets spatial targeting and implementation evidence for one
+family, variable and application context. The authoring workflow stores the accepted
+decision as a versioned recipe input. The compiler can then rebuild the result without
+asking an AI to reinterpret the sources. The synthesis skill governs the interpretation
+step. [Synthesis skill](../.agents/skills/source-command-t4-synthesise/SKILL.md)
+
+Keep a decision record in the batch audit for each proposed change. A block may share
+one run record and identify its mapping decisions individually.
+
+| Record | Detail needed to replay or review |
+|---|---|
+| Inputs | Practice, family, variable, geography and structure. Pin the source and evidence registers, relevant dataset bindings, policies, previous accepted recipe and compiler by Git revision and path or content hash. List each candidate evidence ID, source table/page or section, and original lineage. A checksum identifies any input read outside the repository. |
+| Agent run | Record the actual task prompt or immutable prompt reference, agent role and instructions, skill and ruleset versions (commit and path or hash), model/provider identifier and reasoning effort from the run. Record separate settings for each participating agent. Identify any unavailable setting explicitly. |
+| Interpretation | Record how each source was used or set aside, compatibility groups, native classes and semantics, any conversion or averaging, endpoints and unknowns. Explain why the proposed mapping fits the measured quantity, spatial layer and practice. Preserve disagreement and describe at least one consequential boundary case. |
+| Decision and output | Link the prior rule, field-level change, rationale, reviewer decision and scope, versioned authored input, compiler invocation and candidate result. Record a release ID when published. An accepted hold also records which profiles remain available and what would support scoring. |
+
+For identical inputs and context, replay the accepted authored decision and compare
+the analytical row, including its applicability, parameters, binding and holds. A fresh
+AI interpretation is a proposal. If it differs materially, show the old and proposed
+results for the same example sites and explain the difference before replacing the
+accepted rule. For a new context or new evidence, identify the changed inputs, show
+which sites would change class and retain the previous revision. Changes to wording
+alone need no recalibration. [Recipe releases](../docs/RECIPE_RELEASES.md)
+
 ### Reviewed numeric class tables (October 2026; issue #362)
 
 **Cross-paper harmonization proposal (20 October 2026):** [16 worked scenarios](examples/t4_cross_paper_harmonization.md) define score crosswalks, unequal class counts, missing ranges, exclusion conflicts, independence and weighted-median ties. [Browser review](../docs/review/t4-harmonization-examples.html). Conventions approved by Pete on 20 October 2026; implemented in `recipe/harmonization.py` with schema policy and regression tests (issue #365). [Actual evidence results](../docs/review/t4-harmonization-results.html).
