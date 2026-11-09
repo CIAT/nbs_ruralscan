@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NbS Comparison</title>
+<script>(function(){var t="light";try{t=localStorage.getItem("v1b-theme")||"light"}catch(e){}document.documentElement.setAttribute("data-theme",t)})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="v1b.css">
+<link rel="stylesheet" href="review-mode.css">
+</head>
+<body>
+<div id="chrome"></div>
+
+<main class="wrap">
+  <section class="chapter">
+    <span class="eyebrow sc">Stage 06 · NbS comparison</span>
+    <h1 class="question">How do the practices compare on a common footing?</h1>
+    <p class="lede">Read the practices side by side: how much room each has, how well it meets the need, what the evidence says it does, and roughly what it costs. <b>You take away a side-by-side, not a ranking</b> — the practices on the same measures, to carry into feasibility.</p>
+  </section>
+
+  <div class="subtabs" role="tablist" aria-label="Stage 06 sections" style="margin-top:8px">
+    <button type="button" role="tab" aria-controls="tp-1" aria-selected="true"><span class="sec-n">6.1</span>Comparison</button>
+    <button type="button" role="tab" aria-controls="tp-2" aria-selected="false" tabindex="-1"><span class="sec-n">6.2</span>Response profiles</button>
+    <button type="button" role="tab" aria-controls="tp-3" aria-selected="false" tabindex="-1"><span class="sec-n">6.3</span>Economics and budget</button>
+    <button type="button" role="tab" aria-controls="tp-4" aria-selected="false" tabindex="-1"><span class="sec-n">6.4</span>Bank indicators</button>
+  </div>
+
+  <section class="tabpanel" role="tabpanel" id="tp-1">
+    <div class="tp-head"><div><h2><span class="sec-n">6.1</span>Comparison</h2><p>The practices on one table: footprint, overlap with need, what they address, cost and reach.</p></div>
+      <div class="dl-pair"><span class="export-unavailable" aria-disabled="true" title="Not available in this mock-up">Download CSV · unavailable in mock-up</span></div></div>
+    <table class="cmp">
+      <caption class="tabcap"><b>Table 6.1</b> · Practices compared<small>Example data — authored values, not a pilot result. Practices not selected in the control bar are shown muted. Affordable area uses the budget in Section 6.3.</small></caption>
+      <thead><tr>
+        <th style="width:19%">Practice</th>
+        <th style="width:15%">Footprint<small id="fp-cls">Very high + High</small></th>
+        <th style="width:10%">Overlap with need<small>share of footprint</small></th>
+        <th style="width:30%">What it addresses<small>top problems · strength · confidence</small></th>
+        <th style="width:12%">Indicative cost<small>establishment</small></th>
+        <th style="width:14%">Affordable<small id="aff-h">at USD 5,000,000</small></th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p class="units">Areas are nominal: cells × 2,500 ha. Riparian buffers are reported as kilometres of stream zone and are not comparable with hectares.</p>
+    <div class="reading">
+      <div>
+        <h3>How to read Table 6.1</h3>
+        <ol class="notes">
+          <li><b>Footprint is room, not a target.</b> It is where the practice could go, before anyone asks a farmer.</li>
+          <li><b>Overlap is not compatibility.</b> Two practices can share a cell on the map and still compete for the same field.</li>
+          <li><b>Strength and confidence are separate.</b> A strong benefit seen in few studies is still low confidence (full profiles in Section 6.2).</li>
+          <li><b>Affordable area is an order of magnitude.</b> It tells you whether the budget buys a pilot or a programme, not what a project would cost (Section 6.3).</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="tabpanel" role="tabpanel" id="tp-2" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">6.2</span>Response profiles</h2><p>Every problem row for every practice, side by side.</p></div>
+      <div class="dl-pair"><span class="export-unavailable" aria-disabled="true" title="Not available in this mock-up">Download CSV · unavailable in mock-up</span></div></div>
+    <div class="tabwrap"><table class="qt" id="t63"></table></div>
+    <p class="m2-note" style="border-left-color:var(--s3);max-width:900px"><b>Strength and confidence are separate,</b> and both come from pooled studies elsewhere. An empty cell means no evidence was pooled for that pair — not that there is no effect.</p>
+  </section>
+
+  <section class="tabpanel" role="tabpanel" id="tp-3" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">6.3</span>Economics and budget</h2><p>What establishment costs are made of, and how much a budget could reach.</p></div>
+      <div class="dl-pair"><span class="export-unavailable" aria-disabled="true" title="Not available in this mock-up">Download CSV · unavailable in mock-up</span></div></div>
+    <form class="budget" id="budget" onsubmit="return false">
+    <div class="b-h"><b>Budget for establishment</b><span>Feeds the affordable area here and in Table 6.1</span></div>
+    <label class="fld f-amt"><span>Amount</span><input id="amt" type="text" inputmode="numeric" value="5,000,000"></label>
+    <label class="fld f-cur"><span>Currency</span><select id="cur"><option>USD</option><option>EUR</option><option>XOF</option></select></label>
+    <label class="fld f-yr"><span>Price year</span><input id="yr" type="text" inputmode="numeric" value="2026"></label>
+    <div class="fld"><span>Costs counted</span>
+      <div class="seg" id="seg-cost" role="group" aria-label="Costs counted">
+        <button type="button" data-v="est" aria-pressed="true">Establishment only</button>
+        <button type="button" data-v="maint" aria-pressed="false">With 3 years of maintenance</button>
+      </div>
+    </div>
+    <p class="b-warn" id="bwarn" hidden>Cost ranges are recorded in US dollars. Affordable area is shown only for a US dollar budget; the scan does not convert currencies.</p>
+  </form>
+    <div class="tabwrap"><table class="qt" id="t64"></table></div>
+    <div class="tp-grid" style="margin-top:28px">
+      <div class="tabwrap"><table class="qt" id="taff"></table></div>
+      <div>
+        <h3 class="side-h">Assumptions behind the affordable area</h3>
+        <ol class="notes">
+          <li>Affordable area = budget ÷ cost per unit, from the highest to the lowest cost in the range.</li>
+          <li>“With 3 years of maintenance” adds three years of the maintenance cost per unit.</li>
+          <li>Costs are in US dollars from mixed sources and years, undiscounted; no currency conversion.</li>
+          <li>Labour and inputs are inside the cost ranges, not added again.</li>
+          <li>No delivery, monitoring or overhead costs are included.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="tabpanel" role="tabpanel" id="tp-4" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">6.4</span>Bank indicators</h2><p>What the scan can say towards the five Scorecard indicators the Bank suggested, and where it stops.</p></div>
+      <div class="dl-pair"><span class="export-unavailable" aria-disabled="true" title="Not available in this mock-up">Download CSV · unavailable in mock-up</span></div></div>
+    <table class="xw">
+      <caption class="tabcap"><b>Table 6.2</b> · Scorecard indicators: what the scan can and cannot report</caption>
+      <thead><tr><th>Indicator</th><th>What the scan can report</th><th>What it cannot</th></tr></thead>
+      <tbody>
+        <tr><td>Percentage of people facing food and nutrition insecurity</td><td data-l="Can:">Where food-insecurity need overlaps the opportunity space, as a national or district context layer</td><td data-l="Cannot:">A change in that percentage; residents are not beneficiaries</td></tr>
+        <tr><td>Hectares of key ecosystems</td><td data-l="Can:">Overlap of the opportunity space with mapped ecosystems (WorldCover, Global Mangrove Watch)</td><td data-l="Cannot:">Hectares of ecosystem actually protected, restored or enhanced</td></tr>
+        <tr><td>Hectares of terrestrial and aquatic areas under enhanced conservation or management</td><td data-l="Can:">Hectares of opportunity space, and the area a budget could reach</td><td data-l="Cannot:">Hectares actually brought under management</td></tr>
+        <tr><td>Beneficiaries with enhanced resilience to climate risks</td><td data-l="Can:">Residents living in the selected cells, and the hazards they face</td><td data-l="Cannot:">Beneficiaries; that needs a delivery model and a benefit pathway</td></tr>
+        <tr><td>Percentage of terrestrial and aquatic areas that are protected</td><td data-l="Can:">The national protected share as context, and overlap of the opportunity space with protected areas</td><td data-l="Cannot:">A change in the protected share; the denominator is national, not the project area</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="nextstage">
+    <p><b>Next, turn the shortlist into a scoping brief.</b> It lists what feasibility must check before anyone invests.</p>
+    <a class="btn" href="07-next.html">Open Stage 07</a>
+  </div>
+</main>
+
+<script src="../sle_geo.js"></script>
+<script src="v1b-versions.js?v=20261106-brand"></script>
+<script src="v1b-map.js?v=20261106-nav"></script>
+<script src="v1b-fixture.js"></script>
+<script>
+(function () {
+  'use strict';
+  V1BUI.chrome(6);
+  var P = FIXTURE.practices.map(function (p) { return Object.assign({}, p); }), mode = 'est', maxHa = 1, SEL = ['agro_f1'];
+  var fmt = function (n) { return Math.round(n).toLocaleString('en-GB'); };
+  function round2(n) { var p = Math.pow(10, Math.max(0, Math.floor(Math.log10(n)) - 1)); return Math.round(n / p) * p; }
+  function glyph(n) { var s = ''; for (var i = 0; i < 3; i++) s += '<i class="' + (i < n ? 'on' : '') + '"></i>'; return '<span class="g" aria-hidden="true">' + s + '</span>'; }
+  var COMP = {
+    agro_f1: { lab: '45–80 days per ha (year 1)', inp: '200–400 seedlings per ha; small tools' },
+    riparian: { lab: '60–110 days per km (year 1)', inp: '600–1,000 seedlings per km; fencing' },
+    anr: { lab: '15–40 days per ha (year 1)', inp: 'Firebreaks; a few gap seedlings' }
+  };
+  function budget() {
+    var amt = parseFloat(document.getElementById('amt').value.replace(/[^0-9.]/g, '')) || 0, usd = document.getElementById('cur').value === 'USD';
+    return { amt: amt, usd: usd };
+  }
+  function afford(p) {
+    var b = budget(); if (!b.usd || !b.amt) return null;
+    var extra = mode === 'maint' ? 3 * p.cost.maint : 0;
+    var lo = b.amt / (p.cost.high + extra), hi = b.amt / (p.cost.low + extra), fpU = p.footprintType === 'area' ? p.footprintHa : p.footprintKm;
+    return { lo: round2(lo), hi: round2(hi), share: hi / fpU * 100 };
+  }
+  function row(p) {
+    var fp = p.footprintType === 'area'
+      ? '<div class="fp-bar" style="width:' + (100 * p.footprintHa / maxHa).toFixed(1) + '%"></div><span class="fp-v">' + fmt(p.footprintHa) + ' ha</span><span class="fp-n">area of suitable cells</span>'
+      : '<div class="fp-line" style="width:60%"></div><span class="fp-v">' + fmt(p.footprintKm) + ' km</span><span class="fp-n">zone along streams — not hectares</span>';
+    var addr = p.addresses.slice(0, 3).map(function (a) { return '<li>' + glyph(a.strength) + '<span><b>' + a.problem + '</b> · ' + a.word + ' · <span class="c">' + a.conf + '</span></span></li>'; }).join('');
+    var off = SEL.indexOf(p.id) < 0, a = afford(p);
+    return '<tr class="' + (off ? 'row-off' : '') + '">' +
+      '<td><span class="p-name">' + p.name + '</span><span class="p-fam">' + p.family + '</span>' + (off ? '<span class="row-tag">Not selected · add it in the control bar</span>' : '') + '</td>' +
+      '<td data-l="Footprint">' + fp + '</td>' +
+      '<td data-l="Overlap with need"><span class="ov">' + Math.round(p.overlapNeed * 100) + ' %</span><span class="ov-bar"><i style="width:' + Math.round(p.overlapNeed * 100) + '%"></i></span></td>' +
+      '<td data-l="What it addresses"><ul class="addr">' + addr + '</ul></td>' +
+      '<td data-l="Indicative cost"><span class="cost">$' + fmt(p.cost.low) + '–' + fmt(p.cost.high) + '</span> per ' + p.cost.unit + '<span class="cost-src">' + p.cost.source + '</span></td>' +
+      '<td data-l="Affordable">' + (a ? '<span class="aff">' + fmt(a.lo) + '–' + fmt(a.hi) + '</span> ' + p.cost.unit : '<span class="aff">—</span>') + '</td></tr>';
+  }
+  function all() {
+    maxHa = Math.max.apply(null, P.filter(function (p) { return p.footprintType === 'area'; }).map(function (p) { return p.footprintHa; }));
+    document.getElementById('rows').innerHTML = P.map(row).join('');
+    var b = budget();
+    document.getElementById('aff-h').textContent = b.usd ? 'at USD ' + fmt(b.amt) + (mode === 'maint' ? ' with maintenance' : '') : 'USD budgets only';
+    document.getElementById('bwarn').hidden = b.usd;
+    document.getElementById('taff').innerHTML = '<caption class="tabcap"><b>Table 6.5</b> · Affordable area at this budget<small>Budget ÷ cost per unit, per practice.</small></caption>' +
+      '<thead><tr><th>Practice</th><th class="r">Cost per unit used</th><th class="r">Affordable</th><th class="r">Share of footprint</th></tr></thead><tbody>' +
+      P.map(function (p) { var a = afford(p), extra = mode === 'maint' ? 3 * p.cost.maint : 0;
+        return '<tr><td>' + p.name + '</td><td class="r">$' + fmt(p.cost.low + extra) + '–' + fmt(p.cost.high + extra) + ' per ' + p.cost.unit + '</td><td class="r">' + (a ? fmt(a.lo) + '–' + fmt(a.hi) + ' ' + p.cost.unit : '—') + '</td><td class="r">' + (a ? 'up to ' + (a.share < 1 ? a.share.toFixed(1) : Math.round(a.share)) + ' %' : '—') + '</td></tr>'; }).join('') + '</tbody>';
+  }
+  // 6.2 response profiles: problems as rows, practices as columns
+  (function () {
+    var probs = [];
+    P.forEach(function (p) { p.addresses.forEach(function (a) { if (probs.indexOf(a.problem) < 0) probs.push(a.problem); }); });
+    ['Carbon', 'Food insecurity', 'Heat stress'].forEach(function (x) { if (probs.indexOf(x) < 0) probs.push(x); });
+    var extra = { agro_f1: { 'Carbon': [3, 'strong benefit', 'medium confidence'], 'Food insecurity': [1, 'weak benefit', 'low confidence'], 'Biodiversity loss': [2, 'moderate benefit', 'medium confidence'] },
+      riparian: { 'Biodiversity loss': [2, 'moderate benefit', 'medium confidence'], 'Heat stress': [1, 'weak benefit', 'low confidence'] },
+      anr: { 'Carbon': [3, 'strong benefit', 'medium confidence'], 'Food insecurity': [0, 'no clear effect', 'low confidence'] } };
+    function cell(p, prob) {
+      var a = p.addresses.filter(function (x) { return x.problem === prob; })[0];
+      var e = a ? [a.strength, a.word, a.conf] : (extra[p.id] || {})[prob];
+      return e ? '<td>' + glyph(e[0]) + e[1] + '<span class="sub" style="display:block">' + e[2] + '</span></td>' : '<td class="sub">—</td>';
+    }
+    document.getElementById('t63').innerHTML = '<caption class="tabcap"><b>Table 6.3</b> · Response profiles by practice<small>Example rows; generated from pooled evidence, not local measurement.</small></caption>' +
+      '<thead><tr><th>Problem</th>' + P.map(function (p) { return '<th>' + p.name + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      probs.map(function (pr) { return '<tr><td><b>' + pr + '</b></td>' + P.map(function (p) { return cell(p, pr); }).join('') + '</tr>'; }).join('') + '</tbody>';
+  })();
+  // 6.3 cost components
+  document.getElementById('t64').innerHTML = '<caption class="tabcap"><b>Table 6.4</b> · Cost components by practice<small>Example ranges, US dollars, mixed sources and years. Local costing required.</small></caption>' +
+    '<thead><tr><th>Practice</th><th>Establishment</th><th>Maintenance, years 1–3</th><th>Labour</th><th>Inputs</th><th>Source class</th></tr></thead><tbody>' +
+    P.map(function (p) { return '<tr><td><b>' + p.name + '</b></td><td>$' + fmt(p.cost.low) + '–' + fmt(p.cost.high) + ' per ' + p.cost.unit + '</td><td>$' + fmt(p.cost.maint) + ' per ' + p.cost.unit + ' per year</td><td>' + COMP[p.id].lab + '</td><td>' + COMP[p.id].inp + '</td><td class="sub">' + p.cost.source + '</td></tr>'; }).join('') + '</tbody>';
+
+  ['amt', 'cur', 'yr'].forEach(function (id) { document.getElementById(id).addEventListener('input', all); });
+  document.getElementById('amt').addEventListener('blur', function (e) { var n = parseFloat(e.target.value.replace(/[^0-9.]/g, '')); if (n) e.target.value = fmt(n); });
+  V1BUI.segmented(document.getElementById('seg-cost'), function (v) { mode = v; all(); });
+  V1BUI.onControls(function (st) {
+    var R = FIXTURE.rollup(st);
+    P[0].footprintHa = R.totals.selected * FIXTURE.haPerCell;
+    P[0].overlapNeed = R.totals.overlap / Math.max(1, R.totals.selected);
+    SEL = st.practices;
+    document.getElementById('fp-cls').textContent = V1BUI.classWords(st);
+    all();
+  });
+  V1BUI.tabs(document.querySelector('.subtabs'));
+})();
+</script>
+<script src="review-mode.js"></script>
+</body>
+</html>
