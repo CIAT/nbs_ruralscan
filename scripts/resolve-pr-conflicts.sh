@@ -88,7 +88,7 @@ else
   uv run pytest -q -x tests/test_cell_synthesis.py tests/test_effect_checks.py tests/test_pipeline_hardening.py tests/test_t4_recovery.py >/dev/null || { echo "✗ core tests"; exit 4; }
 fi
 
-git add -A
+git add -u  # tracked files only: other sessions may have untracked work in this tree
 git diff --cached --quiet || git commit -q -m "chore: regenerate after merging main"
 git push -q
 echo "✓ pushed $branch (full test suite runs in CI)"

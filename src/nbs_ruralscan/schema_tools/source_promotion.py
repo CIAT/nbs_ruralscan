@@ -164,6 +164,37 @@ def _scopes(row: dict, key: str) -> list[str]:
     )
 
 
+def _web_snapshot(corpus: Path, source_id: str) -> Path | None:
+    for ext in (".html", ".md", ".txt"):
+        f = corpus / f"{source_id}{ext}"
+        if f.exists():
+            return f
+    return None
+
+
+def _snapshot_title_error(snapshot: Path, citation: str) -> str:
+    """Identity check for a web snapshot: the citation's title words must appear near the
+    top of the page text (same idea as the PDF opening-pages check)."""
+    import re as _re
+
+    from nbs_ruralscan.schema_tools.validate_sources import _strip_html
+
+    raw = snapshot.read_text(encoding="utf-8", errors="ignore")
+    text = _strip_html(raw) if snapshot.suffix == ".html" else raw
+    if not text.strip():
+        return f"{snapshot.name}: empty snapshot"
+    m = _re.search(r"\)\.\s*(.+?)(?:\.\s|$)", citation)
+    title = (m.group(1) if m else citation).lower()
+    words = [w for w in _re.findall(r"[a-zà-ÿ]{5,}", title)][:8]
+    head = text[:20000].lower()
+    hits = sum(1 for w in words if w in head)
+    if words and hits < max(3, len(words) * 2 // 3):
+        return (
+            f"{snapshot.name}: citation title words not found near the top of the page"
+        )
+    return ""
+
+
 def build_row(q: dict, meta: dict, cols: list[str], a, *, corpus: Path) -> dict:
     validate_source_id(q["source_id"])
     scopes = _scopes(q, "nbs_id")
@@ -177,8 +208,13 @@ def build_row(q: dict, meta: dict, cols: list[str], a, *, corpus: Path) -> dict:
     if not q.get("target_library_path"):
         raise ValueError("team library path missing; share the source before promotion")
     pdf = corpus / f"{q['source_id']}.pdf"
-    validate_body(pdf.read_bytes(), "pdf")
-    problem = pdf_title_error(pdf, q.get("citation") or "")
+    snapshot = _web_snapshot(corpus, q["source_id"]) if not pdf.exists() else None
+    if snapshot is not None:
+        # web source (acquisition rule: url + saved snapshot + section locators)
+        problem = _snapshot_title_error(snapshot, q.get("citation") or "")
+    else:
+        validate_body(pdf.read_bytes(), "pdf")
+        problem = pdf_title_error(pdf, q.get("citation") or "")
     if problem:
         raise ValueError(f"source document identity hold: {problem}")
     if not meta.get("benchmark_tier") or not meta.get("venue_type"):
@@ -213,9 +249,13 @@ def build_row(q: dict, meta: dict, cols: list[str], a, *, corpus: Path) -> dict:
             "extraction_date": "",
             "extraction_run_id": "",
             "extractor": "",
-            "source_kind": "paper" if proc == "updated_lit" else "grey_lit",
+            "source_kind": "website"
+            if snapshot is not None
+            else ("paper" if proc == "updated_lit" else "grey_lit"),
             "url": q["url"],
-            "artifact_sha1": _sha1(pdf) if pdf.exists() else "",
+            "artifact_sha1": _sha1(pdf)
+            if pdf.exists()
+            else (_sha1(snapshot) if snapshot is not None else ""),
             "retrieved_at": a.date,
             "access_status": {
                 "oa": "open_access",
