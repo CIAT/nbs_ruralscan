@@ -1,6 +1,7 @@
 """Rebuild developer inputs from reviewed evidence without changing source tables.
 
-The live recipe is an audited baseline and the source of authored design gates.
+Declared practices read design gates from their maintained recipe inputs.
+The live recipe supplies the accepted baseline for full-corpus comparison.
 A mismatch is an error, not permission to publish new analytical rules silently.
 """
 
@@ -28,9 +29,8 @@ def compiler_paths() -> dict[str, Path]:
         for folder in ("recipe", "runtime")
         for path in sorted((package / folder).glob("*.py"))
     }
-    paths["src/nbs_ruralscan/schema_tools/generate.py"] = (
-        package / "schema_tools/generate.py"
-    )
+    for name in ("schema_tools/generate.py", "schema_tools/specialist_records.py"):
+        paths["src/nbs_ruralscan/" + name] = package / name
     return paths
 
 
@@ -57,8 +57,10 @@ def _read(path: Path) -> list[dict[str, str]]:
 
 def _semantic(row: dict[str, str]) -> dict:
     result = dict(row)
-    for key in ("relationship_params", "evidence_ids", "context_overrides"):
-        result[key] = json.loads(row.get(key) or "null")
+    for key in t4_build.T4_JSON_FIELDS:
+        value = t4_build.mapping_json(row, key)
+        # Canonical JSON compares nested booleans independently of numeric zero/one.
+        result[key] = json.dumps(value, sort_keys=True, allow_nan=False)
     return result
 
 

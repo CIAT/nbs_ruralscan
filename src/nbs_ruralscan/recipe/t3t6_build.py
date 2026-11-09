@@ -14,6 +14,7 @@ from dataclasses import dataclass, fields
 from pathlib import Path
 from typing import Any
 
+from .table_fields import T3_FIELDS, T6_FIELDS
 from nbs_ruralscan.recipe import cell_synthesis as cs
 from nbs_ruralscan.recipe import prose as P
 from nbs_ruralscan.recipe.evidence import EvidenceUnit, load_units
@@ -84,57 +85,6 @@ class T3T6BuildInputs:
                 raise ValueError(f"Missing T3/T6 input ({field.name}): {path}")
 
 
-# column orders as frozen in schema/structure/columns.json (v0.4.0) — required + optional + conditional
-T3_FIELDS = [
-    "record_id",
-    "nbs_id",
-    "hazard_type",
-    "farming_system",
-    "mitigation_potential",
-    "mitigation_mechanism",
-    "confidence",
-    "timescale_of_effect",
-    "landscape_scale_only",
-    "caveats",
-    "justification",
-    "risk_role",
-    "evidence_ids",
-    "suitability_family_id",
-    "scope_type",
-    "scope_id",
-    "applicability",
-    "family_spread",
-    "evidence_level",
-    "agreement_level",
-    "context_dependent",
-    "asset_sensitivity",
-    "asset_risk_weight",
-]
-T6_FIELDS = [
-    "record_id",
-    "nbs_id",
-    "variable_id",
-    "variable_type",
-    "effect_direction",
-    "effect_confidence",
-    "effect_mechanism",
-    "conditionality",
-    "timescale_of_effect",
-    "economic_indicator_type",
-    "economic_value_range",
-    "justification",
-    "economic_archetype_id",
-    "evidence_ids",
-    "suitability_family_id",
-    "scope_type",
-    "scope_id",
-    "applicability",
-    "family_spread",
-    "magnitude_summary",
-    "evidence_level",
-    "agreement_level",
-    "context_dependent",
-]
 T3_HAZARDS = cs.T3_HAZARDS
 
 

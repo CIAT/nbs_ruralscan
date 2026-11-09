@@ -38,6 +38,8 @@ from nbs_ruralscan.recipe.cell_synthesis import (
     transfer_class_from_shares,
 )
 
+from nbs_ruralscan.runtime.schema_loader import RecipeRelease
+
 TABLES = {
     "T3": "T3_nbs_hazard_farming.json",
     "T6": "T6_nbs_scorecard.json",
@@ -71,8 +73,18 @@ class EffectResolution:
     note: str = ""
 
 
-def load_rows(schema_root: str | Path, table: str) -> list[dict[str, Any]]:
+def load_rows(
+    schema_root: str | Path | RecipeRelease, table: str
+) -> list[dict[str, Any]]:
     """Every generated row of `table` (T3 · T6 · T6E) across all NbS recipes."""
+    if isinstance(schema_root, RecipeRelease):
+        if table not in TABLES:
+            raise KeyError(table)
+        return [
+            row
+            for practice in schema_root.practices
+            for row in schema_root.table(practice, table)
+        ]
     out: list[dict[str, Any]] = []
     for p in sorted((Path(schema_root) / "recipes").glob(f"*/{TABLES[table]}")):
         out.extend(json.loads(p.read_text(encoding="utf-8")))

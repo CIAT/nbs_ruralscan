@@ -72,7 +72,15 @@ def test_calibration_hold_survives_empty_round_and_new_synthesis(
         writer = csv.DictWriter(handle, list(held))
         writer.writeheader()
         writer.writerow(held)
-    inputs = replace(inputs, audited_recipe=baseline)
+    # This fixture represents a historical snapshot where the accepted CSV carried the hold.
+    inputs = replace(
+        inputs,
+        audited_recipe=baseline,
+        definition_index=None,
+        authored_mappings=None,
+        mapping_settings=None,
+        review_holds=None,
+    )
     family = held["suitability_family_id"]
     empty = (
         {} if missing_family else {family: FamilyResult(family=family, corpus_n=None)}

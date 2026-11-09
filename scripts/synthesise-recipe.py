@@ -52,7 +52,15 @@ def synthesise(nbs_id, *, inputs=None, approved_only=True, screened_sources=None
     )
 
 
-def write_recipe(nbs_id, results, vont_rows, *, inputs=None, output_dir=None):
+def write_recipe(
+    nbs_id,
+    results,
+    vont_rows,
+    *,
+    inputs=None,
+    output_dir=None,
+    supersede_holds_from=None,
+):
     inputs = inputs or T4BuildInputs.from_root(ROOT, nbs_id)
     return t4_build.write_recipe(
         nbs_id,
@@ -60,6 +68,7 @@ def write_recipe(nbs_id, results, vont_rows, *, inputs=None, output_dir=None):
         vont_rows,
         inputs=inputs,
         output_dir=output_dir or inputs.audited_recipe.parent,
+        supersede_holds_from=supersede_holds_from,
     )
 
 
@@ -100,6 +109,11 @@ def main(argv: list[str] | None = None) -> int:
         help="JSON: {families: {family: {source_ids: [...], provenance: ..., complete: true}}}",
     )
     ap.add_argument("--dry-run", action="store_true", help="report only; write nothing")
+    ap.add_argument(
+        "--supersede-holds-from",
+        metavar="SHA256",
+        help="Apply a reviewed hold change against this exact accepted mapping SHA-256, in place",
+    )
     args = ap.parse_args(argv)
     if not re.fullmatch(r"[a-z][a-z0-9_]*", args.nbs_id):
         ap.error("Invalid NbS identifier")
@@ -171,12 +185,32 @@ def main(argv: list[str] | None = None) -> int:
                     f"  {sel.decision:20s} {sel.variable:26s} {sel.support_pct}%  {sel.note}"
                 )
 
-    report_path = args.report
-    if report_path is None and not args.dry_run:
-        report_path = (
-            args.output_dir or inputs.audited_recipe.parent
-        ) / "T4_synthesis_report.json"
-    if report_path and not args.dry_run:
+    recipe_dir = args.output_dir or inputs.audited_recipe.parent
+    report_path = args.report or recipe_dir / "T4_synthesis_report.json"
+    if not args.dry_run:
+        reserved = (
+            *inputs.paths(),
+            recipe_dir / "T4_suitability_mappings.csv",
+            *(recipe_dir / f"T4_{family}.json" for family in results),
+        )
+        if (
+            report_path.is_symlink()
+            or (report_path.exists() and report_path.stat().st_nlink != 1)
+            or report_path.resolve() in {p.resolve() for p in reserved}
+        ):
+            ap.error(
+                "A T4 report cannot use a linked destination or overwrite an input or compiled mapping"
+            )
+        write_recipe(
+            args.nbs_id,
+            results,
+            _rd(inputs.ontology),
+            inputs=inputs,
+            output_dir=args.output_dir,
+            supersede_holds_from=args.supersede_holds_from,
+        )
+
+    if not args.dry_run:
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(
             json.dumps(
@@ -194,6 +228,7 @@ def main(argv: list[str] | None = None) -> int:
                             *(source_root / "schema/registers").glob("*.csv"),
                             inputs.crop_scope_policy,
                             inputs.numeric_policy,
+                            *inputs.authored_paths(),
                         ]
                     },
                     "screened_corpus_manifest": {
@@ -218,13 +253,6 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         print("\n--dry-run: nothing written")
         return 0
-    write_recipe(
-        args.nbs_id,
-        results,
-        _rd(inputs.ontology),
-        inputs=inputs,
-        output_dir=args.output_dir,
-    )
     print(
         f"\nwrote {args.output_dir or inputs.audited_recipe.parent}/T4_*.json + T4_suitability_mappings.csv"
     )

@@ -51,6 +51,8 @@ def test_explicit_input_files_need_no_repository_layout(relocated, tmp_path):
     normal = t4_build.T4BuildInputs.from_root(relocated, NBS)
     isolated = {}
     for field in fields(normal):
+        if getattr(normal, field.name) is None:
+            continue
         dest = tmp_path / (field.name + ".csv")
         shutil.copyfile(getattr(normal, field.name), dest)
         isolated[field.name] = dest
