@@ -58,6 +58,7 @@ body.classification-open{padding-right:440px}
     <button type="button" role="tab" id="tab-2" aria-controls="tp-2" aria-selected="false" tabindex="-1"><span class="sec-n">3.2</span>People and land maps</button>
     <button type="button" role="tab" id="tab-3" aria-controls="tp-3" aria-selected="false" tabindex="-1"><span class="sec-n">3.3</span>Risk to rural livelihoods</button>
     <button type="button" role="tab" id="tab-4" aria-controls="tp-4" aria-selected="false" tabindex="-1"><span class="sec-n">3.4</span>Problems and what the practice can do</button>
+    <button type="button" role="tab" id="tab-5" aria-controls="tp-5" aria-selected="false" tabindex="-1"><span class="sec-n">3.5</span>Rural services</button>
   </div>
 
   <!-- 2.1 -->
@@ -168,6 +169,17 @@ body.classification-open{padding-right:440px}
     <p class="m2-note" style="max-width:1000px"><b>How to read Table 3.4.</b> The country is split into fifths for every problem, from least to most affected. If the opportunity space looked like the country, each fifth would hold 20 % of it (the dashed line). Bars above the line in the dark end mean the problem is more concentrated here. Select a map to show that problem on Figure 3.1. The practice columns are pooled evidence from elsewhere, not local measurement; the full table with sources is in <a href="02-practices.html?tab=3">Stage 02, Section 2.3</a>.</p>
   </section>
 
+  <section class="tabpanel" role="tabpanel" id="tp-5" aria-labelledby="tab-5" hidden>
+    <h2><span class="sec-n">3.5</span>Which rural services are exposed?</h2>
+    <p>Haiti design example · fixed illustrative footprint in one example department. Figures show how the team could report mapped road length and facility counts by department.</p>
+    <label>Hazard <select id="service-hazard"><option>River flood</option><option>Landslide</option><option>Wildfire</option></select></label>
+    <p id="service-layer"></p>
+    <div class="tabwrap"><table class="qt"><caption>Illustrative assets within the suitable footprint</caption>
+    <thead><tr><th>Mapped infrastructure</th><th>Exposed</th><th>Assessed</th><th>Missing hazard coverage</th></tr></thead>
+    <tbody id="service-assets"></tbody></table></div>
+    <p>Exposed assets are part of the assessed total. Rural inventory completeness is unknown. Source vintage is unverified for this illustration. Unmapped facilities are outside all three counts.</p>
+    <details class="acc"><summary>Candidate sources and interpretation</summary><div class="a-body"><p>Check road coverage against the Geofabrik OpenStreetMap extract, health facilities against Haiti’s MSPP Carte Sanitaire, and schools against the CNIGS inventory. Record each release date during pilot preparation. Hazard candidates include JRC GloFAS river flooding, NASA LHASA rainfall-triggered landslides, and MODIS MCD64A1 historical burns. Fire weather is a separate measure.</p><p>Exposure identifies an overlap. Estimating damage requires vulnerability data. Claiming service protection also requires evidence of a practice effect and a spatial connection, such as an upstream catchment.</p></div></details>
+  </section>
   <div class="nextstage">
     <p><b>Next, test these places against hazards to the investment.</b> Fire and flood can damage young trees before they pay back.</p>
     <a class="btn" href="04-risk.html">Open Stage 04</a>
@@ -479,6 +491,24 @@ body.classification-open{padding-right:440px}
   V1BUI.segmented(document.getElementById('context-view'),function(view){document.getElementById('context-table-wrap').hidden=view!=='table';document.getElementById('context-plot').hidden=view!=='plot';});
   window.addEventListener('pageshow',function(e){if(e.persisted){CL.refresh();livelihoods();contextMap();}});
   window.addEventListener('storage',function(e){if(e.key==='v2-variable-classification' || e.key===null){CL.refresh();livelihoods();contextMap();}});
+
+  var serviceHazard = document.getElementById('service-hazard');
+  var examples = [
+    { layer: '1-in-100-year river inundation', exposed: [18, 3, 1] },
+    { layer: 'High modelled landslide hazard', exposed: [12, 2, 2] },
+    { layer: 'Historical detected burn footprint', exposed: [7, 1, 0] }
+  ];
+  function showServiceExposure() {
+    var example = examples[serviceHazard.selectedIndex];
+    document.getElementById('service-layer').textContent = example.layer;
+    document.getElementById('service-assets').innerHTML = [
+      ['Rural roads (km)', 100, 6], ['Schools', 20, 2], ['Health facilities', 8, 1]
+    ].map(function (asset, i) {
+      return '<tr><th scope="row">' + asset[0] + '</th><td>' + example.exposed[i] + '</td><td>' + asset[1] + '</td><td>' + asset[2] + '</td></tr>';
+    }).join('');
+  }
+  serviceHazard.addEventListener('change', showServiceExposure);
+  showServiceExposure();
 
   /* ---- tabs ---- */
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.subtabs [role=tab]'));
