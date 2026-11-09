@@ -58,6 +58,7 @@ body.classification-open{padding-right:440px}
     <button type="button" role="tab" id="tab-2" aria-controls="tp-2" aria-selected="false" tabindex="-1"><span class="sec-n">3.2</span>People and land maps</button>
     <button type="button" role="tab" id="tab-3" aria-controls="tp-3" aria-selected="false" tabindex="-1"><span class="sec-n">3.3</span>Risk to rural livelihoods</button>
     <button type="button" role="tab" id="tab-4" aria-controls="tp-4" aria-selected="false" tabindex="-1"><span class="sec-n">3.4</span>Problems and what the practice can do</button>
+    <button type="button" role="tab" id="tab-5" aria-controls="tp-5" aria-selected="false" tabindex="-1"><span class="sec-n">3.5</span>Rural services</button>
   </div>
 
   <!-- 2.1 -->
@@ -168,6 +169,21 @@ body.classification-open{padding-right:440px}
     <p class="m2-note" style="max-width:1000px"><b>How to read Table 3.4.</b> The country is split into fifths for every problem, from least to most affected. If the opportunity space looked like the country, each fifth would hold 20 % of it (the dashed line). Bars above the line in the dark end mean the problem is more concentrated here. Select a map to show that problem on Figure 3.1. The practice columns are pooled evidence from elsewhere, not local measurement; the full table with sources is in <a href="02-practices.html?tab=3">Stage 02, Section 2.3</a>.</p>
   </section>
 
+  <section class="tabpanel" role="tabpanel" id="tp-5" aria-labelledby="tab-5" hidden>
+    <h2><span class="sec-n">3.5</span>Which rural services are exposed?</h2>
+    <p>Haiti design example · fixed illustrative footprint across two fictional departments. Overlay existing road and facility inventories with an available hazard map. All figures here are illustrative.</p>
+    <label>Hazard <select id="service-hazard"><option value="flood">River flood</option><option value="landslide">Landslide</option><option value="fire">Wildfire</option></select></label>
+    <p id="service-layer"></p>
+    <div class="tabwrap"><table class="qt"><caption>Illustrative assets within the suitable footprint</caption>
+    <thead><tr><th>Mapped infrastructure</th><th>Exposed</th><th>Assessed</th><th>Missing hazard coverage</th></tr></thead>
+    <tbody id="service-assets"></tbody></table></div>
+    <p>Exposed assets are part of the assessed total. Rural inventory completeness is unknown. Source vintage is unverified for this illustration. Unmapped facilities are outside all three counts.</p>
+    <h3 id="road-trace">Which mapped road sections overlap the hazard?</h3>
+    <p id="road-result" aria-live="polite"></p>
+    <div class="tabwrap"><table class="qt"><caption>Road sections screened for the selected hazard</caption><thead><tr><th>Example section</th><th>Department</th><th>Exposed km</th></tr></thead><tbody id="road-sections"></tbody></table></div>
+    <a class="btn" href="05-hotspots.html?tab=2#service-priority">Use these road sections in 5.2</a>
+    <details class="acc"><summary>Candidate sources and interpretation</summary><div class="a-body"><p>Check road coverage against the Geofabrik OpenStreetMap extract, health facilities against Haiti’s MSPP Carte Sanitaire, and schools against the CNIGS inventory. Record each release date during pilot preparation. Hazard candidates include JRC GloFAS river flooding, NASA LHASA rainfall-triggered landslides, and MODIS MCD64A1 historical burns. Fire weather is a separate measure.</p><p>If protecting an exposed road becomes a project objective, carry that question into <a href="07-next.html#road-feasibility">feasibility and design</a>.</p></div></details>
+  </section>
   <div class="nextstage">
     <p><b>Next, test these places against hazards to the investment.</b> Fire and flood can damage young trees before they pay back.</p>
     <a class="btn" href="04-risk.html">Open Stage 04</a>
@@ -178,6 +194,7 @@ body.classification-open{padding-right:440px}
 <script src="v1b-versions.js?v=20261106-brand"></script>
 <script src="v1b-map.js?v=20261106-nav"></script>
 <script src="v1b-fixture.js"></script>
+<script src="v1b-road-example.js"></script>
 <script src="v1b-classification.js?v=20261105-risk"></script>
 <script>
 (function () {

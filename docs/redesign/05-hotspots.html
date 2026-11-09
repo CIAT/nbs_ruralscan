@@ -98,6 +98,13 @@
           <button type="button" data-v="climate" aria-pressed="false">Climate adaptation</button><button type="button" data-v="livelihood" aria-pressed="false">Livelihood</button><button type="button" data-v="biodiversity" aria-pressed="false">Biodiversity</button><button type="button" data-v="balanced" aria-pressed="true">Balanced</button><button type="button" data-v="custom" aria-pressed="false">Custom</button>
         </div></div>
     </div>
+    <fieldset id="service-priority"><legend>Haiti worked example · rural services</legend>
+      <label><input id="use-services" type="checkbox"> Prioritise areas with exposed rural roads</label>
+      <p id="service-context"></p><p id="road-input"></p>
+      <p><a href="03-opportunity.html?tab=5#road-trace">Inspect road sections and change the hazard in 3.5</a></p>
+      <label id="service-weight-control" hidden>Priority weight <input id="service-weight" type="range" min="0" max="50" step="5" value="20"> <output id="service-percent" for="service-weight">20%</output></label>
+      <button type="button" class="btn" id="see-service-ranks">Compare example ranks in 5.4</button>
+    </fieldset>
     <p class="wstat" id="wstat" aria-live="polite"></p>
     <div class="tabwrap"><table class="qt wt" id="t51"></table></div>
   </section>
@@ -121,6 +128,11 @@
   <section class="tabpanel" role="tabpanel" id="tp-4" hidden>
     <div class="tp-head"><div><h2><span class="sec-n">5.4</span>District ranking</h2><p>Which districts hold the most hotspot area, and why. Select a row to read its narrative.</p></div>
       <div class="dl-pair"><span class="export-unavailable" aria-disabled="true" title="Not available in this mock-up">Download CSV · unavailable in mock-up</span></div></div>
+    <div class="tabwrap" id="road-comparison"><table class="qt"><caption>Haiti example · road exposure and department ranks</caption>
+      <thead><tr><th>Department</th><th>Exposed sections</th><th>Exposed / assessed km</th><th>Base score</th><th>Selected score</th><th>Base → selected rank</th></tr></thead>
+      <tbody id="road-ranks"></tbody></table></div>
+    <p id="rank-reason" aria-live="polite"></p><p id="rank-formula"></p><a href="03-opportunity.html?tab=5#road-trace">Trace the exposed sections in 3.5</a>
+    <p class="sub">Illustrative scores for two departments. The Sierra Leone district results below use the main walkthrough.</p>
     <div class="rank-grid">
       <div class="tabwrap"><table class="qt rk" id="t52"></table></div>
       <aside class="why" id="why"></aside>
@@ -146,6 +158,7 @@
 <script src="v1b-versions.js?v=20261106-brand"></script>
 <script src="v1b-map.js?v=20261106-nav"></script>
 <script src="v1b-fixture.js"></script>
+<script src="v1b-road-example.js"></script>
 <script>
 (function () {
   'use strict';
@@ -368,6 +381,11 @@
 
   t51();
   V1BUI.onControls(function (st) { ST = st; R = F.rollup(st); render(); figs(); t52(); t53(); });
+  document.getElementById('see-service-ranks').addEventListener('click', function () {
+    var tab = document.querySelector('[aria-controls="tp-4"]');
+    tab.click();
+    tab.focus();
+  });
   V1BUI.tabs(document.querySelector('.subtabs'));
   var q = new URLSearchParams(location.search);
   if (q.get('plate') && q.get('plate') !== 'district') { variant = q.get('plate'); render(); }

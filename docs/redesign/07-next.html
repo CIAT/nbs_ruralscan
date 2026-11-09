@@ -55,12 +55,14 @@
             </ol>
           </div>
           <div>
-            <h3>Questions for feasibility</h3>
+            <h3>Questions and actions for project preparation and implementation</h3>
             <ol id="questions">
               <li>What do seedlings, labour and land cost locally?</li>
-              <li>Who uses the land, whose access could change, and whom should the borrower engage? Ask environmental and social specialists to review ESS5 and ESS7 relevance and any consent requirements.</li>
+              <li id="esf-follow-up"><b>Feasibility.</b> Section 4.3 flags possible loss of seasonal grazing access. If fencing is pursued, the borrower’s local team checks routes with herders and identifies who could be affected.</li>
+              <li><b>Project design.</b> Compare fence layouts with land users, agree how access will be maintained, and assign responsibility for the agreed measures.</li>
+              <li><b>Implementation.</b> The implementing partner checks whether herders can still use the route, provides a way to raise concerns and adjusts the fence if access is blocked.</li>
               <li>Which parcels are excluded at field scale?</li>
-              <li>How might planting change water use, habitat or downstream community safety? Which impacts could be avoided through a different site or design?</li>
+              <li>How does planting affect local hydrology and water use?</li>
               <li>Will farmers adopt, and on what terms?</li>
               <li>What baseline and comparison design will monitoring use?</li>
             </ol>
@@ -100,7 +102,7 @@
         <h3>Local co-production</h3>
         <dl>
           <dt>Validate the map</dt><dd>Partners check included and excluded areas alike.</dd>
-          <dt>Rights and consent</dt><dd>Tenure and free, prior and informed consent.</dd>
+          <dt>Rights and consent</dt><dd>Record gaps in the desk evidence and refer customary-use questions to the borrower for preparation. Refer potential impacts on peoples covered by ESS7 to environmental and social specialists, who can assess the consent requirements in paragraph 24 of the <a href="https://pubdocs.worldbank.org/en/837721522762050108/Environmental-and-Social-Framework.pdf">World Bank Environmental and Social Framework</a>.</dd>
           <dt>Delivery</dt><dd>Who supplies seedlings, advice and finance.</dd>
           <dt>Adoption</dt><dd>What farmers would take up, and why.</dd>
         </dl>
@@ -109,6 +111,7 @@
         <span class="tag">Not a stage of this scan</span>
         <h3>Feasibility studies</h3>
         <dl>
+          <dt id="road-feasibility">Road exposure (Haiti example)</dt><dd>If road protection is a project objective, the feasibility team can assess the shortlisted site, compare design options and estimate any reduction in damage or disruption.</dd>
           <dt>Hydrology</dt><dd>Water use and catchment effects.</dd>
           <dt>Site design</dt><dd>Species, spacing and layout per site.</dd>
           <dt>Costs and safeguards</dt><dd>Local budgets and environmental and social standards.</dd>
@@ -161,7 +164,7 @@
     paras = [
       ['Opportunity', 'Planted silvoarable agroforestry could establish on about ' + fmt(T.selected * HA) + ' ha, ' + pct(T.selected / T.cells) + ' of the country, classed ' + cw + (st.climate === 'ssp' ? ' on climate around 2050' : '') + '. More than half of ' + list(over50) + ' falls in this opportunity space.',
         'Areas are nominal cell counts on an example surface, not mapped fields.'],
-      ['Hotspots and risk', 'Of that area, ' + fmt(T.overlap * HA) + ' ha (' + pct(T.overlap / sel) + ') meets ' + needW + ' need for climate resilience and livelihoods; the largest shares are in ' + list(hot) + '. ' + pct(T.anyHigh / sel) + ' of the opportunity space carries a High fire or flood flag for young trees; flagged places are kept and shown.',
+      ['Hotspots and risk', 'Of that area, ' + fmt(T.overlap * HA) + ' ha (' + pct(T.overlap / sel) + ') meets ' + needW + ' need for climate resilience and livelihoods; the largest shares are in ' + list(hot) + '. ' + pct(T.anyHigh / sel) + ' of the opportunity space carries a High fire or flood flag for young trees. For the ' + ({fire: 'fire', flood: 'flood', both: 'fire or flood'}[st.reviewHazard] || 'fire') + ' screen, places with High exposure are ' + (st.reviewFlag === 'remove' ? 'set aside.' : 'kept and flagged.'),
         'Need and hazard are 5 km proxies; a flag marks exposure, not expected loss.'],
       ['Cost and reach', 'Establishment costs USD ' + fmt(P.cost.low) + '–' + fmt(P.cost.high) + ' per ha. A USD 5,000,000 budget would establish roughly ' + fmt(lo) + '–' + fmt(hi) + ' ha, a pilot rather than a programme at this scale.',
         'Costs are undiscounted ranges from mixed sources and exclude maintenance.']
@@ -177,7 +180,7 @@
     paras.forEach(function (p) { out.push(p[0] + '. ' + p[1] + ' ' + p[2], ''); });
     out.push('Assumptions');
     document.querySelectorAll('#assume li').forEach(function (li, i) { out.push((i + 1) + '. ' + li.textContent); });
-    out.push('', 'Questions for feasibility');
+    out.push('', 'Questions and actions for project preparation and implementation');
     document.querySelectorAll('#questions li').forEach(function (li, i) { out.push((i + 1) + '. ' + li.textContent); });
     out.push('', 'Scoping grade. Not a feasibility finding. Example data.');
     return out.join('\n');
