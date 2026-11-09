@@ -982,9 +982,10 @@ def _build_units(item_rows, ev, *, schema, corpus, image_dir, recipe_dirs):
                         crop = f"review/img/{eid}.png"
                         page = found
                         crop_note = (
-                            f"page {found} of the PDF version, found by searching for the "
-                            f"quoted text (the quote itself is from the transcript, section "
-                            f"{r.get('locator')}); {note}"
+                            f"Page {found} of the source PDF. Highlighted: the text this "
+                            "finding was coded from."
+                            if note == "quote highlighted"
+                            else f"Page {found} of the source PDF. {note}"
                         )
         units.append(
             {

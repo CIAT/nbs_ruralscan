@@ -765,7 +765,8 @@
 
   // "Same severity question as boil19_1." on its own is unreadable: show that unit's question too
   function questionText(u) {
-    var q = String(u.question || '');
+    // the leading [reason_code] drives the AI suggestion; it is not for the reader
+    var q = String(u.question || '').replace(/^\s*\[[a-z_]+\]\s*/, '');
     var m = /\bas\s+(?:ev_)?([A-Za-z0-9_]+)\.?\s*$/.exec(q);
     if (!/^\s*Same\b/i.test(q) || !m) return q;
     var key = m[1], ref = null;
