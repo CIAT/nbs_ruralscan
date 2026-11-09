@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-09T07:55:55.287358+00:00",
-  "git_commit": "753bb59df5c58a9c1863964220fcd289365a6bb7",
+  "timestamp": "2026-11-09T08:02:57.593099+00:00",
+  "git_commit": "549940fd33f5bd2dcf5a79b48e1b08c1e2ee8b6d",
   "registers": {
     "SRC_source_register": [
       {
@@ -323632,6 +323632,145 @@
       ],
       "T4_suitability_mappings": [
         {
+          "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
+          "nbs_id": "water_harvesting_conservation",
+          "dataset_id": "worldclim_v2_precip",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "trapezoidal",
+          "relationship_params": {
+            "reviewed_adaptation": {
+              "numerical_calibration": {
+                "status": "held",
+                "reason": "The pooled maximum of 500 mm falls below the 600–800 mm optimum. The contributing studies address different structures and rainfall statistics.",
+                "scope": "water_harvesting__runoff_catchment__annual_precipitation",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_water_block_20261109/rainfall_decision.md",
+                "held_relationship": {
+                  "type": "trapezoidal",
+                  "params": {
+                    "abs_min": 200.0,
+                    "opt_low": 600.0,
+                    "opt_high": 800.0,
+                    "abs_max": 500.0
+                  },
+                  "uncertainty_pct": "60.0"
+                },
+                "retained_source_profiles": [
+                  {
+                    "source_id": "kahinda2008_sa_rwh_suitability",
+                    "evidence_id": "ev_wh_annual_precipitation_kahinda08_4",
+                    "evidence_sha256": "0832caaf38a02a2881ccfdc977fdebdc058a1dba531763bb5ab07f0023b5732f",
+                    "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+                    "locator": "PDF p. 3 (printed p. 790), §2.2.1.2 and Table 3, XRWH column",
+                    "structure": "external-catchment water harvesting in South Africa",
+                    "statistic": "Annual rainfall with 80% probability of exceedance (mm)",
+                    "rainfall_mm_to_published_rank": {
+                      "0-100": 1,
+                      "100-200": 2,
+                      "200-400": 3,
+                      "400-600": 4,
+                      "600-800": 5,
+                      "800-1000": 3,
+                      ">1000": 1
+                    },
+                    "scale": "1 (least) to 5 (most). Adjacent printed ranges share endpoints without a stated assignment convention.",
+                    "interpretive_note": "Kahinda et al. rank external-catchment water harvesting in South Africa. Table 3 uses annual rainfall with 80% probability of exceedance. The top class is 600–800 mm. Both end classes carry rank 1. Mean annual rainfall measures a different statistic."
+                  },
+                  {
+                    "source_id": "sanddam_siting_guidelines_kenya_2020",
+                    "evidence_id": "ev_wh_annual_precipitation_ryan20_1",
+                    "evidence_sha256": "7ec6477f6bc5696c6d88ee0d30cdf557e96f68b0143dba6a8235ea0624b4ff37",
+                    "source_artifact_sha256": "a31e97eeb33847d34b5108fd095b2ed8c744e463547dde94b9c97d7d70920ecf",
+                    "locator": "PDF p. 9 Table 3, rainfall amount; PDF p. 24, Rainfall discussion",
+                    "structure": "sand dams in the Tiva catchment, Kenya",
+                    "guideline_under_test": {
+                      "relation": ">=",
+                      "mm": 200
+                    },
+                    "field_observations": [
+                      {
+                        "rainfall_mm": [
+                          200,
+                          400
+                        ],
+                        "sampled_dams": 0
+                      },
+                      {
+                        "rainfall_mm": [
+                          400,
+                          600
+                        ],
+                        "sampled_dams": 29,
+                        "dams_with_water": 2
+                      }
+                    ],
+                    "interpretation": "The authors question the historical minimum. No sampled dams in the first band means there is no performance estimate for that band.",
+                    "interpretive_note": "Ngugi et al. assess a pre-existing ≥200 mm sand-dam guideline in Kenya. In the Tiva sample, no dams were recorded in the 200–400 mm class and only 2 of 29 in the 400–600 mm class had water. The authors question the 200 mm minimum."
+                  },
+                  {
+                    "source_id": "fao_critchley_wh_manual_1991",
+                    "evidence_id": "ev_wh_precip_critchley91_trapezoidal",
+                    "evidence_sha256": "53373f2b4dd165f8fc761d2144573d5c97a33280f1f200703a6f7e75e0902c30",
+                    "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+                    "locator": "FAO manual, §5.6.1 Background and §5.6.2 Technical Details, i. Suitability",
+                    "structure": "trapezoidal bunds collecting long-slope runoff, commonly for crop production",
+                    "rainfall_range_mm": [
+                      250,
+                      500
+                    ],
+                    "source_terms": "common application in arid to semi-arid areas",
+                    "conditions": "Agricultural soils with significant non-cracking clay, slope 0.25–1.5% (most suitable below 0.5%), even topography inside bunds.",
+                    "interpretive_note": "Critchley & Siegert specify 250–500 mm for a common crop-production application of trapezoidal bunds in arid to semi-arid areas. The section draws on Turkana, Kenya, and also specifies low slopes, even enclosed ground and non-cracking clay-bearing soil."
+                  },
+                  {
+                    "source_id": "wocat_wh_guidelines_2013",
+                    "evidence_id": "ev_wh_precip_wocatgl13_trapezoidal",
+                    "evidence_sha256": "0baee79ddc29d5537269f98a37ae7ea090597bed572bbd06dda4cb14d99f4770",
+                    "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+                    "locator": "PDF p. 86 (printed p. 73), Macrocatchment Water Harvesting, Water storage in soil, trapezoidal bund paragraph",
+                    "structure": "large trapezoidal bunds harvesting runoff from an external upslope catchment",
+                    "annual_rainfall_range_mm": [
+                      200,
+                      400
+                    ],
+                    "conditions": "Trapped water subsides before planting. Enclosed areas can reach 1 ha and catchment-to-application ratios are 15:1–100:1.",
+                    "interpretive_note": "WOCAT gives 200–400 mm of annual rainfall for trapezoidal bunds harvesting upslope external runoff. Its separate 400 mm guidance for semi-circular bunds applies to another structure."
+                  }
+                ],
+                "bund_synthesis": {
+                  "structure": "trapezoidal bunds",
+                  "evidence_ids": [
+                    "ev_wh_precip_critchley91_trapezoidal",
+                    "ev_wh_precip_wocatgl13_trapezoidal"
+                  ],
+                  "overlap_mm": [
+                    250,
+                    400
+                  ],
+                  "use": "Compare both original ranges together. Overlap is descriptive. Neither range assigns suitability scores.",
+                  "lineage": "The WOCAT layout figure cites Oweis et al. (2012) adapted from Critchley & Siegert (1991). Independence of the rainfall recommendations is unresolved."
+                }
+              }
+            }
+          },
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.1111,
+          "weight_adjustable": true,
+          "justification": "Peter approved holding the shared rainfall calibration on 9 November 2026. Retain four source profiles. Use the FAO and WOCAT rainfall ranges together for trapezoidal bunds, retaining their different endpoints. Keep the Kahinda exceedance-based ranks and Ngugi sand-dam guideline assessment in their respective contexts. Retained approved calibration hold; no new numeric synthesis or approval.",
+          "variable": "annual_precipitation",
+          "suitability_family_id": "water_harvesting__runoff_catchment",
+          "evidence_ids": [
+            "ev_wh_annual_precipitation_kahinda08_4",
+            "ev_wh_annual_precipitation_ryan20_1",
+            "ev_wh_precip_critchley91_trapezoidal",
+            "ev_wh_precip_wocatgl13_trapezoidal"
+          ],
+          "n_sources": 4
+        },
+        {
           "mapping_id": "water_harvesting__runoff_catchment__catchment_area",
           "nbs_id": "water_harvesting_conservation",
           "suitability_dimension": "biophysical_constraint",
@@ -402626,8 +402765,8 @@
       "source_id": "fao_critchley_wh_manual_1991",
       "page": "",
       "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
-      "reason": "Source checked; proposed KEEP (not applied). §5.6 describes long-slope runoff collection by trapezoidal bunds, most commonly for crops; §5.6.2 gives 250–500 mm rainfall with even enclosed ground and construction-suitable clay-bearing soils.",
-      "decision_needed": "Keep full 250–500 mm siting recommendation with trapezoidal-bund and crop-production context. Preserve other conditions and avoid turning range endpoints into universal zero-suitability cutoffs. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Shared rainfall calibration held on 9 November 2026. Critchley & Siegert specify 250–500 mm for a common crop-production application of trapezoidal bunds in arid to semi-arid areas. The section draws on Turkana, Kenya, and also specifies low slopes, even enclosed ground and non-cracking clay-bearing soil.",
+      "decision_needed": "Approved for trapezoidal-bund synthesis with both original ranges. Their 250–400 mm overlap is descriptive. No executable scoring endpoints were approved.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "53373f2b4dd165f8fc761d2144573d5c97a33280f1f200703a6f7e75e0902c30",
@@ -402754,8 +402893,8 @@
       "source_id": "kahinda2008_sa_rwh_suitability",
       "page": "3",
       "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
-      "reason": "Source checked; proposed HOLD (not applied). Kahinda Table 3 (PDF3) ranks external-catchment harvesting highest at 600–800 mm, but 0–100 and >1,000 mm retain rank 1, not zero. Methods specify annual rainfall with 80% probability of exceedance, explicitly rejecting mean annual rainfall for this application. Current abs_min=100/abs_max=1000 encode exclusions not supplied by the rank table. National South African model, not universal limits.",
-      "decision_needed": "Hold current hard bounds and mean-rainfall substitution. Keep the complete external-catchment rank table for synthesis using the correct rainfall statistic; agree any score conversion, endpoints and compatible pool separately. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Shared rainfall calibration held on 9 November 2026. Kahinda et al. rank external-catchment water harvesting in South Africa. Table 3 uses annual rainfall with 80% probability of exceedance. The top class is 600–800 mm. Both end classes carry rank 1. Mean annual rainfall measures a different statistic.",
+      "decision_needed": "Retain the complete profile in its original structure and measurement context. The shared rainfall curve is held until a reviewed replacement is available.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "0832caaf38a02a2881ccfdc977fdebdc058a1dba531763bb5ab07f0023b5732f",
@@ -402946,8 +403085,8 @@
       "source_id": "sanddam_siting_guidelines_kenya_2020",
       "page": "9",
       "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
-      "reason": "Source checked; proposed HOLD (not applied). Ngugi et al. (2020), Table 3 (PDF9), lists ≥200 mm as a standard guideline being assessed. Discussion PDF24 explicitly calls 200 mm potentially too low: no sampled dams at 200–400 mm and only 2 of 29 at 400–600 mm had water. PDF5 notes rainfall minima are poorly defined. Current record reads the legacy criterion as an endorsed universal minimum.",
-      "decision_needed": "Hold current ≥200 mm cutoff. Retain the historical guideline AND the study critique as distinct linked evidence; no automatic replacement with 400/600 mm. Keep actual source authorship (Ngugi et al.; legacy evidence ID says ryan). This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Shared rainfall calibration held on 9 November 2026. Ngugi et al. assess a pre-existing ≥200 mm sand-dam guideline in Kenya. In the Tiva sample, no dams were recorded in the 200–400 mm class and only 2 of 29 in the 400–600 mm class had water. The authors question the 200 mm minimum.",
+      "decision_needed": "Retain the complete profile in its original structure and measurement context. The shared rainfall curve is held until a reviewed replacement is available.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "7ec6477f6bc5696c6d88ee0d30cdf557e96f68b0143dba6a8235ea0624b4ff37",
@@ -403026,8 +403165,8 @@
       "source_id": "wocat_wh_guidelines_2013",
       "page": "86",
       "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
-      "reason": "Source checked; proposed HOLD (not applied). PDF86 / printed73 describes large trapezoidal external-catchment bunds and states suitability in 200–400 mm annual rainfall. Neighbouring semi-circular bund guidance is separate. The quantified recommendation is useful evidence, but the text does not establish absolute failure outside its range.",
-      "decision_needed": "Keep the full 200–400 mm/year trapezoidal-bund recommendation for synthesis; hold current automatic zero-suitability tails and transfer to other runoff-catchment structures until separately justified. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Shared rainfall calibration held on 9 November 2026. WOCAT gives 200–400 mm of annual rainfall for trapezoidal bunds harvesting upslope external runoff. Its separate 400 mm guidance for semi-circular bunds applies to another structure.",
+      "decision_needed": "Approved for trapezoidal-bund synthesis with both original ranges. Their 250–400 mm overlap is descriptive. No executable scoring endpoints were approved.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "0baee79ddc29d5537269f98a37ae7ea090597bed572bbd06dda4cb14d99f4770",
@@ -428555,7 +428694,9 @@
           "other": 0
         },
         "contributions": {
-          "T4": [],
+          "T4": [
+            "ev_wh_precip_critchley91_trapezoidal"
+          ],
           "T3": [],
           "T6": [],
           "M2b": []
@@ -436079,7 +436220,9 @@
           "other": 0
         },
         "contributions": {
-          "T4": [],
+          "T4": [
+            "ev_wh_annual_precipitation_kahinda08_4"
+          ],
           "T3": [],
           "T6": [],
           "M2b": []
@@ -449634,7 +449777,9 @@
           "other": 0
         },
         "contributions": {
-          "T4": [],
+          "T4": [
+            "ev_wh_annual_precipitation_ryan20_1"
+          ],
           "T3": [],
           "T6": [],
           "M2b": []
@@ -470019,7 +470164,9 @@
           "other": 0
         },
         "contributions": {
-          "T4": [],
+          "T4": [
+            "ev_wh_precip_wocatgl13_trapezoidal"
+          ],
           "T3": [],
           "T6": [
             "ev_rain_water_productivity_wocwh13_1"
@@ -485529,7 +485676,7 @@
       }
     ],
     "totals": {
-      "compiled_outputs": 720,
+      "compiled_outputs": 721,
       "evidence_ids": [
         "EV_binam_2017_007",
         "EV_chomba_2020_001",
@@ -491979,8 +492126,8 @@
         "ev_yield_stability_sileshi12_3",
         "ev_yield_stability_silv26_1"
       ],
-      "contributing_excerpts": 3058,
-      "contributing_sources": 561,
+      "contributing_excerpts": 3062,
+      "contributing_sources": 564,
       "known_sources": 946,
       "source_keys": [
         "abasse_2023_fmnr_niger_state_of_knowledge",
@@ -492947,11 +493094,11 @@
       "reviewed_dropped_excerpts": 1529,
       "reviewed_unresolved_excerpts": 190,
       "dropped_excerpts": 1534,
-      "t4_relationships": 35,
+      "t4_relationships": 36,
       "t4_operational_relationships": 8,
-      "t4_structural_relationships": 27,
-      "t4_evidence_backed_relationships": 26,
-      "t4_contributing_sources": 21,
+      "t4_structural_relationships": 28,
+      "t4_evidence_backed_relationships": 27,
+      "t4_contributing_sources": 25,
       "source_mix": {
         "literature": 582,
         "grey": 160,
@@ -517167,7 +517314,7 @@
         "nbs_id": "water_harvesting_conservation",
         "name": "Water harvesting conservation",
         "metrics": {
-          "compiled_outputs": 208,
+          "compiled_outputs": 209,
           "evidence_ids": [
             "ev_accessibility_travel_time_schmidt12_11",
             "ev_accessibility_travel_time_wei16_1_op",
@@ -519799,8 +519946,8 @@
             "ev_yield_stability_seti18_3",
             "ev_yield_stability_silv26_1"
           ],
-          "contributing_excerpts": 1057,
-          "contributing_sources": 168,
+          "contributing_excerpts": 1061,
+          "contributing_sources": 171,
           "known_sources": 259,
           "source_keys": [
             "abate_2021_ifpri_dp2069_cbinremp",
@@ -520080,11 +520227,11 @@
           "reviewed_dropped_excerpts": 904,
           "reviewed_unresolved_excerpts": 83,
           "dropped_excerpts": 905,
-          "t4_relationships": 5,
+          "t4_relationships": 6,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 5,
-          "t4_evidence_backed_relationships": 5,
-          "t4_contributing_sources": 8,
+          "t4_structural_relationships": 6,
+          "t4_evidence_backed_relationships": 6,
+          "t4_contributing_sources": 12,
           "source_mix": {
             "literature": 137,
             "grey": 78,
@@ -521811,7 +521958,7 @@
             "scope_kind": "family",
             "scope_definition": "Structures that collect runoff from a catchment larger than the cultivated/storage area (e.g. check dams, farm ponds).",
             "metrics": {
-              "compiled_outputs": 28,
+              "compiled_outputs": 29,
               "evidence_ids": [
                 "ev_adoption_rate_cirilo03_11",
                 "ev_adoption_rate_neuf17_1",
@@ -522517,8 +522664,8 @@
                 "ev_yield_stability_rock10_1",
                 "ev_yield_stability_silv26_1"
               ],
-              "contributing_excerpts": 291,
-              "contributing_sources": 63,
+              "contributing_excerpts": 295,
+              "contributing_sources": 67,
               "known_sources": 100,
               "source_keys": [
                 "abate_2021_ifpri_dp2069_cbinremp",
@@ -522639,11 +522786,11 @@
               "reviewed_dropped_excerpts": 183,
               "reviewed_unresolved_excerpts": 28,
               "dropped_excerpts": 184,
-              "t4_relationships": 4,
+              "t4_relationships": 5,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 4,
-              "t4_evidence_backed_relationships": 4,
-              "t4_contributing_sources": 7,
+              "t4_structural_relationships": 5,
+              "t4_evidence_backed_relationships": 5,
+              "t4_contributing_sources": 11,
               "source_mix": {
                 "literature": 58,
                 "grey": 37,
@@ -527521,15 +527668,19 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 5,
-            "evidence_backed_outputs": 5,
-            "contributing_excerpts": 13,
-            "contributing_sources": 8,
+            "output_count": 6,
+            "evidence_backed_outputs": 6,
+            "contributing_excerpts": 17,
+            "contributing_sources": 12,
             "evidence_ids": [
+              "ev_wh_annual_precipitation_kahinda08_4",
+              "ev_wh_annual_precipitation_ryan20_1",
               "ev_wh_catchment_area_kadam12_1",
               "ev_wh_drainage_density_karimi19_1",
               "ev_wh_drainage_density_mahmoud21_1",
               "ev_wh_drainage_density_singh17_1",
+              "ev_wh_precip_critchley91_trapezoidal",
+              "ev_wh_precip_wocatgl13_trapezoidal",
               "ev_wh_runoff_potential_index_alabadi17_1",
               "ev_wh_runoff_potential_index_dewinnaar07_1",
               "ev_wh_runoff_potential_index_karimi19_1",
@@ -527542,15 +527693,43 @@
             ],
             "source_keys": [
               "dewinnaar_2007_gis_runoff_thukela",
+              "fao_critchley_wh_manual_1991",
               "fuzzy_ahp_2017_wh_zones",
               "gismcda_swc_siting_2014",
               "kadam2012_scscn_india_rwh",
+              "kahinda2008_sa_rwh_suitability",
               "karimi_2019_runoff_map_rwh_zones",
               "mahmoud_2016_mcda_gis_wh_recharge",
               "mahmoud_2021_checkdam_suitability_topo_drainage_morocco",
-              "singh_2019_fuzzy_wh_structure_rainfed"
+              "sanddam_siting_guidelines_kenya_2020",
+              "singh_2019_fuzzy_wh_structure_rainfed",
+              "wocat_wh_guidelines_2013"
             ],
             "rows": [
+              {
+                "id": "water_harvesting__runoff_catchment__annual_precipitation",
+                "label": "water harvesting  runoff catchment  annual precipitation · Runoff-catchment water harvesting",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__runoff_catchment"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_annual_precipitation_kahinda08_4",
+                  "ev_wh_annual_precipitation_ryan20_1",
+                  "ev_wh_precip_critchley91_trapezoidal",
+                  "ev_wh_precip_wocatgl13_trapezoidal"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "kahinda2008_sa_rwh_suitability",
+                  "sanddam_siting_guidelines_kenya_2020",
+                  "wocat_wh_guidelines_2013"
+                ]
+              },
               {
                 "id": "water_harvesting__runoff_catchment__catchment_area",
                 "label": "water harvesting  runoff catchment  catchment area · Runoff-catchment water harvesting",
@@ -572824,7 +573003,7 @@
         "project_level": false,
         "evidence_tracking": "routed",
         "totals": {
-          "compiled_outputs": 27,
+          "compiled_outputs": 28,
           "evidence_ids": [
             "EV_chomba_2020_001",
             "EV_chomba_2020_002",
@@ -573897,8 +574076,8 @@
             "ev_wh_watertable_wocat7777_1",
             "ev_wh_watertable_wocat7778_1"
           ],
-          "contributing_excerpts": 39,
-          "contributing_sources": 21,
+          "contributing_excerpts": 43,
+          "contributing_sources": 25,
           "known_sources": 210,
           "source_keys": [
             "abigaba_2024",
@@ -574129,11 +574308,11 @@
           "reviewed_dropped_excerpts": 217,
           "reviewed_unresolved_excerpts": 3,
           "dropped_excerpts": 219,
-          "t4_relationships": 27,
+          "t4_relationships": 28,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 27,
-          "t4_evidence_backed_relationships": 26,
-          "t4_contributing_sources": 21,
+          "t4_structural_relationships": 28,
+          "t4_evidence_backed_relationships": 27,
+          "t4_contributing_sources": 25,
           "source_mix": {
             "literature": 106,
             "grey": 99,
@@ -578224,7 +578403,7 @@
             "nbs_id": "water_harvesting_conservation",
             "name": "Water harvesting conservation",
             "metrics": {
-              "compiled_outputs": 5,
+              "compiled_outputs": 6,
               "evidence_ids": [
                 "ev_wh5_adham_2018_clay_content",
                 "ev_wh5_adham_2018_land_cover",
@@ -578609,8 +578788,8 @@
                 "ev_wh_watertable_wocat7777_1",
                 "ev_wh_watertable_wocat7778_1"
               ],
-              "contributing_excerpts": 13,
-              "contributing_sources": 8,
+              "contributing_excerpts": 17,
+              "contributing_sources": 12,
               "known_sources": 74,
               "source_keys": [
                 "boers_1986_mcwh_arid",
@@ -578705,11 +578884,11 @@
               "reviewed_dropped_excerpts": 15,
               "reviewed_unresolved_excerpts": 2,
               "dropped_excerpts": 15,
-              "t4_relationships": 5,
+              "t4_relationships": 6,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 5,
-              "t4_evidence_backed_relationships": 5,
-              "t4_contributing_sources": 8,
+              "t4_structural_relationships": 6,
+              "t4_evidence_backed_relationships": 6,
+              "t4_contributing_sources": 12,
               "source_mix": {
                 "literature": 19,
                 "grey": 55,
@@ -579270,7 +579449,7 @@
                 "scope_kind": "family",
                 "scope_definition": "Structures that collect runoff from a catchment larger than the cultivated/storage area (e.g. check dams, farm ponds).",
                 "metrics": {
-                  "compiled_outputs": 4,
+                  "compiled_outputs": 5,
                   "evidence_ids": [
                     "ev_wh5_adham_2018_clay_content",
                     "ev_wh5_adham_2018_land_cover",
@@ -579432,8 +579611,8 @@
                     "ev_wh_watertable_wocat7777_1",
                     "ev_wh_watertable_wocat7778_1"
                   ],
-                  "contributing_excerpts": 12,
-                  "contributing_sources": 7,
+                  "contributing_excerpts": 16,
+                  "contributing_sources": 11,
                   "known_sources": 32,
                   "source_keys": [
                     "dewinnaar_2007_gis_runoff_thukela",
@@ -579486,11 +579665,11 @@
                   "reviewed_dropped_excerpts": 0,
                   "reviewed_unresolved_excerpts": 0,
                   "dropped_excerpts": 0,
-                  "t4_relationships": 4,
+                  "t4_relationships": 5,
                   "t4_operational_relationships": 0,
-                  "t4_structural_relationships": 4,
-                  "t4_evidence_backed_relationships": 4,
-                  "t4_contributing_sources": 7,
+                  "t4_structural_relationships": 5,
+                  "t4_evidence_backed_relationships": 5,
+                  "t4_contributing_sources": 11,
                   "source_mix": {
                     "literature": 14,
                     "grey": 18,
@@ -579907,15 +580086,19 @@
                 "label": "Suitability",
                 "unit": "suitability rules",
                 "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-                "output_count": 5,
-                "evidence_backed_outputs": 5,
-                "contributing_excerpts": 13,
-                "contributing_sources": 8,
+                "output_count": 6,
+                "evidence_backed_outputs": 6,
+                "contributing_excerpts": 17,
+                "contributing_sources": 12,
                 "evidence_ids": [
+                  "ev_wh_annual_precipitation_kahinda08_4",
+                  "ev_wh_annual_precipitation_ryan20_1",
                   "ev_wh_catchment_area_kadam12_1",
                   "ev_wh_drainage_density_karimi19_1",
                   "ev_wh_drainage_density_mahmoud21_1",
                   "ev_wh_drainage_density_singh17_1",
+                  "ev_wh_precip_critchley91_trapezoidal",
+                  "ev_wh_precip_wocatgl13_trapezoidal",
                   "ev_wh_runoff_potential_index_alabadi17_1",
                   "ev_wh_runoff_potential_index_dewinnaar07_1",
                   "ev_wh_runoff_potential_index_karimi19_1",
@@ -579928,15 +580111,43 @@
                 ],
                 "source_keys": [
                   "dewinnaar_2007_gis_runoff_thukela",
+                  "fao_critchley_wh_manual_1991",
                   "fuzzy_ahp_2017_wh_zones",
                   "gismcda_swc_siting_2014",
                   "kadam2012_scscn_india_rwh",
+                  "kahinda2008_sa_rwh_suitability",
                   "karimi_2019_runoff_map_rwh_zones",
                   "mahmoud_2016_mcda_gis_wh_recharge",
                   "mahmoud_2021_checkdam_suitability_topo_drainage_morocco",
-                  "singh_2019_fuzzy_wh_structure_rainfed"
+                  "sanddam_siting_guidelines_kenya_2020",
+                  "singh_2019_fuzzy_wh_structure_rainfed",
+                  "wocat_wh_guidelines_2013"
                 ],
                 "rows": [
+                  {
+                    "id": "water_harvesting__runoff_catchment__annual_precipitation",
+                    "label": "water harvesting  runoff catchment  annual precipitation · Runoff-catchment water harvesting",
+                    "nbs_id": "water_harvesting_conservation",
+                    "family_ids": [
+                      "water_harvesting__runoff_catchment"
+                    ],
+                    "farming_system": "",
+                    "scope_type": "",
+                    "scope_id": "",
+                    "risk_role": "",
+                    "evidence_ids": [
+                      "ev_wh_annual_precipitation_kahinda08_4",
+                      "ev_wh_annual_precipitation_ryan20_1",
+                      "ev_wh_precip_critchley91_trapezoidal",
+                      "ev_wh_precip_wocatgl13_trapezoidal"
+                    ],
+                    "source_keys": [
+                      "fao_critchley_wh_manual_1991",
+                      "kahinda2008_sa_rwh_suitability",
+                      "sanddam_siting_guidelines_kenya_2020",
+                      "wocat_wh_guidelines_2013"
+                    ]
+                  },
                   {
                     "id": "water_harvesting__runoff_catchment__catchment_area",
                     "label": "water harvesting  runoff catchment  catchment area · Runoff-catchment water harvesting",
@@ -580828,10 +581039,10 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 27,
-            "evidence_backed_outputs": 26,
-            "contributing_excerpts": 39,
-            "contributing_sources": 21,
+            "output_count": 28,
+            "evidence_backed_outputs": 27,
+            "contributing_excerpts": 43,
+            "contributing_sources": 25,
             "evidence_ids": [
               "EV_wocat_507_2019_008",
               "ev_T4_canopy_ahmad2018_1",
@@ -580859,10 +581070,14 @@
               "ev_wet_distance_to_waterbody_russell97_1",
               "ev_wet_groundwater_seepage_brouwer26_1",
               "ev_wet_water_table_depth_brouwer26_1",
+              "ev_wh_annual_precipitation_kahinda08_4",
+              "ev_wh_annual_precipitation_ryan20_1",
               "ev_wh_catchment_area_kadam12_1",
               "ev_wh_drainage_density_karimi19_1",
               "ev_wh_drainage_density_mahmoud21_1",
               "ev_wh_drainage_density_singh17_1",
+              "ev_wh_precip_critchley91_trapezoidal",
+              "ev_wh_precip_wocatgl13_trapezoidal",
               "ev_wh_runoff_potential_index_alabadi17_1",
               "ev_wh_runoff_potential_index_dewinnaar07_1",
               "ev_wh_runoff_potential_index_karimi19_1",
@@ -580878,22 +581093,26 @@
               "castle_2025",
               "chuma_2021",
               "dewinnaar_2007_gis_runoff_thukela",
+              "fao_critchley_wh_manual_1991",
               "fuzzy_ahp_2017_wh_zones",
               "gis_riparian_siting_russell_1997",
               "gismcda_swc_siting_2014",
               "haile_2024",
               "kadam2012_scscn_india_rwh",
+              "kahinda2008_sa_rwh_suitability",
               "karimi_2019_runoff_map_rwh_zones",
               "mahmoud_2016_mcda_gis_wh_recharge",
               "mahmoud_2021_checkdam_suitability_topo_drainage_morocco",
               "mushtaq_2023",
               "nath_2021",
               "page_nl_paludiculture_crop_suitability_model",
+              "sanddam_siting_guidelines_kenya_2020",
               "singh_2019_fuzzy_wh_structure_rainfed",
               "singh_2026",
               "vaast2016_double_dividend",
               "wet_optimal_location_created_mediterranean_2010",
               "wocat_507_2019",
+              "wocat_wh_guidelines_2013",
               "wotlolan_2021"
             ],
             "rows": [
@@ -581228,6 +581447,30 @@
                 ],
                 "source_keys": [
                   "vaast2016_double_dividend"
+                ]
+              },
+              {
+                "id": "water_harvesting__runoff_catchment__annual_precipitation",
+                "label": "water harvesting  runoff catchment  annual precipitation · Runoff-catchment water harvesting",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__runoff_catchment"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_annual_precipitation_kahinda08_4",
+                  "ev_wh_annual_precipitation_ryan20_1",
+                  "ev_wh_precip_critchley91_trapezoidal",
+                  "ev_wh_precip_wocatgl13_trapezoidal"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "kahinda2008_sa_rwh_suitability",
+                  "sanddam_siting_guidelines_kenya_2020",
+                  "wocat_wh_guidelines_2013"
                 ]
               },
               {
@@ -644986,10 +645229,10 @@
         "label": "Suitability",
         "unit": "suitability rules",
         "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-        "output_count": 27,
-        "evidence_backed_outputs": 26,
-        "contributing_excerpts": 39,
-        "contributing_sources": 21,
+        "output_count": 28,
+        "evidence_backed_outputs": 27,
+        "contributing_excerpts": 43,
+        "contributing_sources": 25,
         "evidence_ids": [
           "EV_wocat_507_2019_008",
           "ev_T4_canopy_ahmad2018_1",
@@ -645017,10 +645260,14 @@
           "ev_wet_distance_to_waterbody_russell97_1",
           "ev_wet_groundwater_seepage_brouwer26_1",
           "ev_wet_water_table_depth_brouwer26_1",
+          "ev_wh_annual_precipitation_kahinda08_4",
+          "ev_wh_annual_precipitation_ryan20_1",
           "ev_wh_catchment_area_kadam12_1",
           "ev_wh_drainage_density_karimi19_1",
           "ev_wh_drainage_density_mahmoud21_1",
           "ev_wh_drainage_density_singh17_1",
+          "ev_wh_precip_critchley91_trapezoidal",
+          "ev_wh_precip_wocatgl13_trapezoidal",
           "ev_wh_runoff_potential_index_alabadi17_1",
           "ev_wh_runoff_potential_index_dewinnaar07_1",
           "ev_wh_runoff_potential_index_karimi19_1",
@@ -645036,22 +645283,26 @@
           "castle_2025",
           "chuma_2021",
           "dewinnaar_2007_gis_runoff_thukela",
+          "fao_critchley_wh_manual_1991",
           "fuzzy_ahp_2017_wh_zones",
           "gis_riparian_siting_russell_1997",
           "gismcda_swc_siting_2014",
           "haile_2024",
           "kadam2012_scscn_india_rwh",
+          "kahinda2008_sa_rwh_suitability",
           "karimi_2019_runoff_map_rwh_zones",
           "mahmoud_2016_mcda_gis_wh_recharge",
           "mahmoud_2021_checkdam_suitability_topo_drainage_morocco",
           "mushtaq_2023",
           "nath_2021",
           "page_nl_paludiculture_crop_suitability_model",
+          "sanddam_siting_guidelines_kenya_2020",
           "singh_2019_fuzzy_wh_structure_rainfed",
           "singh_2026",
           "vaast2016_double_dividend",
           "wet_optimal_location_created_mediterranean_2010",
           "wocat_507_2019",
+          "wocat_wh_guidelines_2013",
           "wotlolan_2021"
         ],
         "rows": [
@@ -645386,6 +645637,30 @@
             ],
             "source_keys": [
               "vaast2016_double_dividend"
+            ]
+          },
+          {
+            "id": "water_harvesting__runoff_catchment__annual_precipitation",
+            "label": "water harvesting  runoff catchment  annual precipitation · Runoff-catchment water harvesting",
+            "nbs_id": "water_harvesting_conservation",
+            "family_ids": [
+              "water_harvesting__runoff_catchment"
+            ],
+            "farming_system": "",
+            "scope_type": "",
+            "scope_id": "",
+            "risk_role": "",
+            "evidence_ids": [
+              "ev_wh_annual_precipitation_kahinda08_4",
+              "ev_wh_annual_precipitation_ryan20_1",
+              "ev_wh_precip_critchley91_trapezoidal",
+              "ev_wh_precip_wocatgl13_trapezoidal"
+            ],
+            "source_keys": [
+              "fao_critchley_wh_manual_1991",
+              "kahinda2008_sa_rwh_suitability",
+              "sanddam_siting_guidelines_kenya_2020",
+              "wocat_wh_guidelines_2013"
             ]
           },
           {
@@ -684659,7 +684934,7 @@
         "catalogue": {
           "summary": {
             "structural_claims": 367,
-            "explicitly_linked_claims": 13,
+            "explicitly_linked_claims": 17,
             "focus_claims": 5,
             "selection_only_with_relationship_content": 2,
             "scopes": {
@@ -685278,7 +685553,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__runoff_catchment__annual_precipitation"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -685719,7 +685996,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__runoff_catchment__annual_precipitation"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -686574,7 +686853,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__runoff_catchment__annual_precipitation"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -687183,7 +687464,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__runoff_catchment__annual_precipitation"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -695410,7 +695693,14 @@
               "weight_summary": [],
               "study_weights": [],
               "mapped_group_weights": [],
-              "function_support": [],
+              "function_support": [
+                {
+                  "family": "water_harvesting__runoff_catchment",
+                  "sources": [],
+                  "function_options": 0,
+                  "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation"
+                }
+              ],
               "evidence_ids": [
                 "ev_wh_annual_precipitation_krois14_1",
                 "ev_wh_annual_precipitation_kahinda08_1",
@@ -698269,10 +698559,10 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "d7e835455079",
-    "data_id": "50fd86163e3e",
+    "data_id": "5730eb71be67",
     "count_definition_version": "4",
-    "built_at": "2026-11-09T07:55:55.287358+00:00",
-    "source_commit": "753bb59df5c58a9c1863964220fcd289365a6bb7",
+    "built_at": "2026-11-09T08:02:57.593099+00:00",
+    "source_commit": "549940fd33f5bd2dcf5a79b48e1b08c1e2ee8b6d",
     "history": [
       {
         "release": "1.5.0",
@@ -698661,18 +698951,18 @@
       {
         "release": "1.5.0",
         "ui_id": "d7e835455079",
-        "data_id": "fdb4d1e37085",
+        "data_id": "d06dea9524ae",
         "count_definition_version": "4",
-        "built_at": "2026-11-09T07:43:25.882390+00:00",
-        "source_commit": "bbf71a47252aee9f4f3f2125ae79b1946dad4587"
+        "built_at": "2026-11-09T07:49:30.991775+00:00",
+        "source_commit": "511bbe959cf1005355908bf1429d9788b89a0423"
       },
       {
         "release": "1.5.0",
         "ui_id": "d7e835455079",
-        "data_id": "50fd86163e3e",
+        "data_id": "5730eb71be67",
         "count_definition_version": "4",
-        "built_at": "2026-11-09T07:55:55.287358+00:00",
-        "source_commit": "753bb59df5c58a9c1863964220fcd289365a6bb7"
+        "built_at": "2026-11-09T08:02:57.593099+00:00",
+        "source_commit": "549940fd33f5bd2dcf5a79b48e1b08c1e2ee8b6d"
       }
     ]
   }

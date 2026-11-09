@@ -4,9 +4,11 @@ This recipe uses the practice ID `water_harvesting_conservation`. T0 defines the
 
 ## Suitability
 
-T4 has five mappings on numerical calibration hold. For runoff catchments these cover contributing area, drainage density, runoff potential and stream order. For terracing the hold covers runoff potential. Four also require a matching spatial input. Each mapping preserves its supporting source evidence and the reasons for its hold. The five rows currently supply **zero executable suitability functions**. [Reviewed T4 mappings](T4_suitability_mappings.csv) · [Authored settings and holds](../../recipe_inputs/t4/water_harvesting_conservation/)
+T4 has six mappings on numerical calibration hold. For runoff catchments these cover annual precipitation, contributing area, drainage density, runoff potential and stream order. For terracing the hold covers runoff potential. Four also require a matching spatial input. Each mapping preserves its supporting source evidence and the reasons for its hold. The six rows currently supply **zero executable suitability functions**. [Reviewed T4 mappings](T4_suitability_mappings.csv) · [Authored settings and holds](../../recipe_inputs/t4/water_harvesting_conservation/)
 
-Twenty draft mappings from the earlier recipe await evidence review. Their historical values, source cards and release dispositions are linked individually. For clay content, the two reviewed source corrections preserve the native classes and descriptive mean ranks across studies. A family-level response still requires review. [Mapping crosswalk](../../../methodology/audits/t4_six_practice_release_20261109/water_harvesting.md) · [Clay rank comparison](../../../methodology/audits/t4_water_block_20261109/clay_rank_comparison.csv)
+The external-catchment rainfall hold retains four source profiles. For trapezoidal bunds the two guides give 250–500 mm and 200–400 mm per year, overlapping at 250–400 mm. Their ranges inform siting guidance while the shared rainfall score stays on hold. [Rainfall decision](../../../methodology/audits/t4_water_block_20261109/rainfall_decision.md)
+
+Nineteen draft mappings from the earlier recipe await evidence review. Their historical values, source cards and release dispositions are linked individually. For clay content, the two reviewed source corrections preserve the native classes and descriptive mean ranks across studies. A family-level response still requires review. [Mapping crosswalk](../../../methodology/audits/t4_six_practice_release_20261109/water_harvesting.md) · [Clay rank comparison](../../../methodology/audits/t4_water_block_20261109/clay_rank_comparison.csv)
 
 ## Other recipe tables
 

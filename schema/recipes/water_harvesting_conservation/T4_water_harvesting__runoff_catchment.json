@@ -1,5 +1,146 @@
 [
   {
+    "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "worldclim_v2_precip",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "status": "held",
+          "reason": "The pooled maximum of 500 mm falls below the 600–800 mm optimum. The contributing studies address different structures and rainfall statistics.",
+          "scope": "water_harvesting__runoff_catchment__annual_precipitation",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/rainfall_decision.md",
+          "held_relationship": {
+            "type": "trapezoidal",
+            "params": {
+              "abs_min": 200.0,
+              "opt_low": 600.0,
+              "opt_high": 800.0,
+              "abs_max": 500.0
+            },
+            "uncertainty_pct": "60.0"
+          },
+          "retained_source_profiles": [
+            {
+              "source_id": "kahinda2008_sa_rwh_suitability",
+              "evidence_id": "ev_wh_annual_precipitation_kahinda08_4",
+              "evidence_sha256": "0832caaf38a02a2881ccfdc977fdebdc058a1dba531763bb5ab07f0023b5732f",
+              "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+              "locator": "PDF p. 3 (printed p. 790), §2.2.1.2 and Table 3, XRWH column",
+              "structure": "external-catchment water harvesting in South Africa",
+              "statistic": "Annual rainfall with 80% probability of exceedance (mm)",
+              "rainfall_mm_to_published_rank": {
+                "0-100": 1,
+                "100-200": 2,
+                "200-400": 3,
+                "400-600": 4,
+                "600-800": 5,
+                "800-1000": 3,
+                ">1000": 1
+              },
+              "scale": "1 (least) to 5 (most). Adjacent printed ranges share endpoints without a stated assignment convention.",
+              "interpretive_note": "Kahinda et al. rank external-catchment water harvesting in South Africa. Table 3 uses annual rainfall with 80% probability of exceedance. The top class is 600–800 mm. Both end classes carry rank 1. Mean annual rainfall measures a different statistic."
+            },
+            {
+              "source_id": "sanddam_siting_guidelines_kenya_2020",
+              "evidence_id": "ev_wh_annual_precipitation_ryan20_1",
+              "evidence_sha256": "7ec6477f6bc5696c6d88ee0d30cdf557e96f68b0143dba6a8235ea0624b4ff37",
+              "source_artifact_sha256": "a31e97eeb33847d34b5108fd095b2ed8c744e463547dde94b9c97d7d70920ecf",
+              "locator": "PDF p. 9 Table 3, rainfall amount; PDF p. 24, Rainfall discussion",
+              "structure": "sand dams in the Tiva catchment, Kenya",
+              "guideline_under_test": {
+                "relation": ">=",
+                "mm": 200
+              },
+              "field_observations": [
+                {
+                  "rainfall_mm": [
+                    200,
+                    400
+                  ],
+                  "sampled_dams": 0
+                },
+                {
+                  "rainfall_mm": [
+                    400,
+                    600
+                  ],
+                  "sampled_dams": 29,
+                  "dams_with_water": 2
+                }
+              ],
+              "interpretation": "The authors question the historical minimum. No sampled dams in the first band means there is no performance estimate for that band.",
+              "interpretive_note": "Ngugi et al. assess a pre-existing ≥200 mm sand-dam guideline in Kenya. In the Tiva sample, no dams were recorded in the 200–400 mm class and only 2 of 29 in the 400–600 mm class had water. The authors question the 200 mm minimum."
+            },
+            {
+              "source_id": "fao_critchley_wh_manual_1991",
+              "evidence_id": "ev_wh_precip_critchley91_trapezoidal",
+              "evidence_sha256": "53373f2b4dd165f8fc761d2144573d5c97a33280f1f200703a6f7e75e0902c30",
+              "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+              "locator": "FAO manual, §5.6.1 Background and §5.6.2 Technical Details, i. Suitability",
+              "structure": "trapezoidal bunds collecting long-slope runoff, commonly for crop production",
+              "rainfall_range_mm": [
+                250,
+                500
+              ],
+              "source_terms": "common application in arid to semi-arid areas",
+              "conditions": "Agricultural soils with significant non-cracking clay, slope 0.25–1.5% (most suitable below 0.5%), even topography inside bunds.",
+              "interpretive_note": "Critchley & Siegert specify 250–500 mm for a common crop-production application of trapezoidal bunds in arid to semi-arid areas. The section draws on Turkana, Kenya, and also specifies low slopes, even enclosed ground and non-cracking clay-bearing soil."
+            },
+            {
+              "source_id": "wocat_wh_guidelines_2013",
+              "evidence_id": "ev_wh_precip_wocatgl13_trapezoidal",
+              "evidence_sha256": "0baee79ddc29d5537269f98a37ae7ea090597bed572bbd06dda4cb14d99f4770",
+              "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+              "locator": "PDF p. 86 (printed p. 73), Macrocatchment Water Harvesting, Water storage in soil, trapezoidal bund paragraph",
+              "structure": "large trapezoidal bunds harvesting runoff from an external upslope catchment",
+              "annual_rainfall_range_mm": [
+                200,
+                400
+              ],
+              "conditions": "Trapped water subsides before planting. Enclosed areas can reach 1 ha and catchment-to-application ratios are 15:1–100:1.",
+              "interpretive_note": "WOCAT gives 200–400 mm of annual rainfall for trapezoidal bunds harvesting upslope external runoff. Its separate 400 mm guidance for semi-circular bunds applies to another structure."
+            }
+          ],
+          "bund_synthesis": {
+            "structure": "trapezoidal bunds",
+            "evidence_ids": [
+              "ev_wh_precip_critchley91_trapezoidal",
+              "ev_wh_precip_wocatgl13_trapezoidal"
+            ],
+            "overlap_mm": [
+              250,
+              400
+            ],
+            "use": "Compare both original ranges together. Overlap is descriptive. Neither range assigns suitability scores.",
+            "lineage": "The WOCAT layout figure cites Oweis et al. (2012) adapted from Critchley & Siegert (1991). Independence of the rainfall recommendations is unresolved."
+          }
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.1111,
+    "weight_adjustable": true,
+    "justification": "Peter approved holding the shared rainfall calibration on 9 November 2026. Retain four source profiles. Use the FAO and WOCAT rainfall ranges together for trapezoidal bunds, retaining their different endpoints. Keep the Kahinda exceedance-based ranks and Ngugi sand-dam guideline assessment in their respective contexts. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "variable": "annual_precipitation",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": [
+      "ev_wh_annual_precipitation_kahinda08_4",
+      "ev_wh_annual_precipitation_ryan20_1",
+      "ev_wh_precip_critchley91_trapezoidal",
+      "ev_wh_precip_wocatgl13_trapezoidal"
+    ],
+    "n_sources": 4,
+    "corpus_n": null,
+    "paper_support_pct": null
+  },
+  {
     "mapping_id": "water_harvesting__runoff_catchment__catchment_area",
     "nbs_id": "water_harvesting_conservation",
     "suitability_dimension": "biophysical_constraint",

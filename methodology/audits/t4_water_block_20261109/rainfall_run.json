@@ -1,0 +1,149 @@
+{
+  "run_id": "t4_runoff_rainfall_20261109",
+  "date": "2026-11-09",
+  "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
+  "decision": "Approved by Pete. Hold whole-family rainfall calibration and retain all four source profiles. Use both bund ranges together for trapezoidal bunds.",
+  "decision_detail": "rainfall_decision.md",
+  "request": "ok approve the block, hold the shared rainfall rule, keep all four source profiles and use the two bund ranges together for bunds. \n\nnote we will need to build a skill that can translate the evidence table into T4 rules, it will be impossible to have rule logic that can do it all. This will have to be part of the methdology, the key will be repeatability and transparency the exact skill/agent/rules and AI model effort used should be logged. We should not have T4s that vary and are inconsistent (within reason some movement is inevitaable by context and/or as more data arrives).",
+  "inputs": {
+    "repository_revision": "bbf71a47252aee9f4f3f2125ae79b1946dad4587",
+    "compiler": "src/nbs_ruralscan/recipe/t4_build.py",
+    "cli": "scripts/synthesise-recipe.py",
+    "registers": [
+      "schema/registers/EV_evidence_register.csv",
+      "schema/registers/SRC_source_register.csv",
+      "schema/registers/FAM_family_registry.csv",
+      "schema/registers/VONT_variable_ontology.csv",
+      "schema/registers/BIND_dataset_binding.csv"
+    ],
+    "dataset_registry": "schema/T1_data_registry.csv",
+    "prior_recipe": "schema/recipes/water_harvesting_conservation/T4_suitability_mappings.csv",
+    "practice_inputs": "schema/recipe_inputs/t4/water_harvesting_conservation/",
+    "numeric_policy": "schema/lookups/t4_numeric_compilation_policy.csv",
+    "crop_scope_policy": "schema/lookups/crop_scope_policy.csv",
+    "source_profiles": [
+      {
+        "evidence_id": "ev_wh_annual_precipitation_kahinda08_4",
+        "source_id": "kahinda2008_sa_rwh_suitability",
+        "evidence_fingerprint": "0832caaf38a02a2881ccfdc977fdebdc058a1dba531763bb5ab07f0023b5732f",
+        "extraction_ruleset": "v1.5.1",
+        "locator": "PDF p. 3",
+        "artifact_format": "PDF",
+        "artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8"
+      },
+      {
+        "evidence_id": "ev_wh_annual_precipitation_ryan20_1",
+        "source_id": "sanddam_siting_guidelines_kenya_2020",
+        "evidence_fingerprint": "7ec6477f6bc5696c6d88ee0d30cdf557e96f68b0143dba6a8235ea0624b4ff37",
+        "extraction_ruleset": "v1.5.1",
+        "locator": "PDF p. 9",
+        "artifact_format": "PDF",
+        "artifact_sha256": "a31e97eeb33847d34b5108fd095b2ed8c744e463547dde94b9c97d7d70920ecf"
+      },
+      {
+        "evidence_id": "ev_wh_precip_critchley91_trapezoidal",
+        "source_id": "fao_critchley_wh_manual_1991",
+        "evidence_fingerprint": "53373f2b4dd165f8fc761d2144573d5c97a33280f1f200703a6f7e75e0902c30",
+        "extraction_ruleset": "v1.6.0",
+        "locator": "5.6 Trapezoidal bunds > Suitability",
+        "artifact_format": "HTML",
+        "artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860"
+      },
+      {
+        "evidence_id": "ev_wh_precip_wocatgl13_trapezoidal",
+        "source_id": "wocat_wh_guidelines_2013",
+        "evidence_fingerprint": "0baee79ddc29d5537269f98a37ae7ea090597bed572bbd06dda4cb14d99f4770",
+        "extraction_ruleset": "v1.6.0",
+        "locator": "PDF p. 86",
+        "artifact_format": "PDF",
+        "artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea"
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "Codex /root",
+      "role": "Reviewed source tables and proposed the block, then recorded the decision and verified application.",
+      "prompts": [
+        "ok next",
+        "ok approve the block, hold the shared rainfall rule, keep all four source profiles and use the two bund ranges together for bunds. \n\nnote we will need to build a skill that can translate the evidence table into T4 rules, it will be impossible to have rule logic that can do it all. This will have to be part of the methdology, the key will be repeatability and transparency the exact skill/agent/rules and AI model effort used should be logged. We should not have T4s that vary and are inconsistent (within reason some movement is inevitaable by context and/or as more data arrives)."
+      ],
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "metadata_source": "Codex turn_context.model and turn_context.effort"
+    },
+    {
+      "agent": "Codex /root/rainfall_apply",
+      "role": "Applied the approved block and verified source profiles and compiler behavior.",
+      "prompts": [
+        "Apply approved rainfall hold + dashboard four profiles in /Users/pstewarda/.codex/worktrees/t4-riparian-recovery/nbs_ruralscan on current codex/t4-rainfall-evidence-synthesis branch. Own recipe CSV, compiler family JSON, pipeline/review_priorities.csv, and methodology/audits/t4_water_block_20261109/rainfall_decision.md (or companion profile file). Follow prior apply_area.py pattern, current AGENTS/latest pinned release governance; preserve released prior artifacts. Verify all four source profiles/locators, full Kahinda rank table and rainfall statistic, Ngugi results and guideline, both bund ranges, 250–400 overlap/context and independence. If source EV misleading, qualify in profile/card rather than altering human decisions. Test held runtime, options, approved-only compilation, no unrelated changes. DO NOT run general generate.py; tell me when inputs ready so I can generate. No git commit/push. Report verification details.",
+        "#634 moved authoritative holds to schema/recipe_inputs/t4/<practice>/review_holds.csv; remove matching mapping_settings entry as prescribed, preserve accepted recipe parity. Please retain exact source locators and ensure developer options/runtime reject it even with dataset bound. For our run record, report the model ID/reasoning effort your launcher actually reports if accessible (unknown if unavailable)."
+      ],
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "metadata_source": "Codex turn_context.model and turn_context.effort"
+    },
+    {
+      "agent": "Codex /root/synthesis_replay",
+      "role": "Read-only behavioral test of the revised skill using the prior clay decision.",
+      "prompts": [
+        "Read-only skill forward-test. Worktree /Users/pstewarda/.codex/worktrees/t4-riparian-recovery/nbs_ruralscan. Use .agents/skills/source-command-t4-synthesise/SKILL.md and method §6. A second AI run of the already approved shared clay evidence comparison for water-harvesting on this checkout proposes a different weighting using the two original study criterion weights. Same evidence, context and governing decisions. What should happen? Inspect approved clay record as needed, report which quantities to preserve/replay and what provenance the skill requires, plus a specific gap if found. No edits or new scientific decisions. Respond in 130 words."
+      ],
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "metadata_source": "Codex turn_context.model and turn_context.effort"
+    }
+  ],
+  "instructions": {
+    "project_guide": {
+      "revision": "bbf71a47252aee9f4f3f2125ae79b1946dad4587",
+      "path": "AGENTS.md"
+    },
+    "applicable_review_contract": {
+      "revision": "bbf71a47252aee9f4f3f2125ae79b1946dad4587",
+      "path": ".agents/skills/extraction_contracts/T4_review_contract.md"
+    },
+    "synthesis_skill": ".agents/skills/source-command-t4-synthesise/SKILL.md",
+    "method": "methodology/T4_generation_method.md#6-synthesis--t4-rows",
+    "application_start_revision": "bbf71a47252aee9f4f3f2125ae79b1946dad4587",
+    "revised_skill_and_method_for_recording_and_replay": "52041cb748be266f03cd04674ddb1b58fcb97c7f"
+  },
+  "replay": {
+    "decision_input": "schema/recipe_inputs/t4/water_harvesting_conservation/review_holds.csv",
+    "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
+    "command": "candidate_dir=$(mktemp -d) && PYTHONPATH=src python scripts/synthesise-recipe.py water_harvesting_conservation --output-dir \"$candidate_dir\" --report \"$candidate_dir/report.json\"",
+    "compare": "Read the row by mapping_id from the output T4_suitability_mappings.csv. Hash all CSV fields as sorted, compact, UTF-8 JSON with unescaped Unicode.",
+    "prior_mapping_sha256": "e6140085325eb2a10b61447ac13013c5c5f53234f365d5bec043c10df132b765",
+    "accepted_mapping_sha256": "e6a8e2d853eadbff1a7856691b7e49ef2a4b59b869bc2f97d73343adbfe2443a",
+    "changed_fields": [
+      "relationship_params",
+      "uncertainty_pct",
+      "justification"
+    ],
+    "decision_inputs_revision": "511bbe959cf1005355908bf1429d9788b89a0423",
+    "inputs_after_squash": "Use the reviewed merge containing this run record. Confirm the authored inputs and skill files against the SHA-256 values below.",
+    "file_sha256": {
+      ".agents/skills/source-command-t4-synthesise/SKILL.md": "a87b41ea4a9ef9c25c21b8260f3d15f62d016c514ff6b170453676dc9fd694ff",
+      "methodology/T4_generation_method.md": "2c5c177001b212a2f5d03730e3a5dfe10547926a095bc90658f350ed2a127818",
+      "AGENTS.md": "6d32ed199cf4ce3c262b50804dd5dc3a7eaf5d1c5a8fd8eba736ba80a4794c57",
+      ".agents/skills/extraction_contracts/T4_review_contract.md": "86ca001a35d80214f53362fa2f99293524615afb299f509782491688da024542",
+      "schema/recipe_inputs/t4/water_harvesting_conservation/mapping_settings.csv": "93fc95984752baae47dd9745a02eafb7793b575077a9d254781ec7efb61a31ef",
+      "schema/recipe_inputs/t4/water_harvesting_conservation/review_holds.csv": "ee4629f7b75d6659c9b5ff2f4f906271241f9842a9ce786821bbb5f019473792"
+    },
+    "scope": "The approved-only build reproduces this mapping exactly. Other accepted legacy rows are outside this decision and full-practice release was not requested.",
+    "verification": {
+      "compiled_mapping_hash_matches_accepted": true,
+      "direct_numeric_evaluation_at_700_mm": "blocked by calibration hold",
+      "developer_numeric_options": 0,
+      "example_sites_annual_rainfall_mm": {
+        "225": "Within the WOCAT trapezoidal-bund range only.",
+        "300": "Within both trapezoidal-bund ranges.",
+        "450": "Within the FAO trapezoidal-bund range only."
+      },
+      "skill_forward_test": "With the prior clay evidence and context fixed, the replay reviewer retained equal weighting, kept study-internal weights separate and routed alternate weighting to a proposal."
+    }
+  }
+}

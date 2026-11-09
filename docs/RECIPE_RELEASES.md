@@ -15,7 +15,7 @@ uv run python -m nbs_ruralscan.recipe.publish_release inspect --store ../recipe-
 
 The publisher copies the declared inputs, compiles the full practice corpus and checks the output against its audited tables before selecting a release. Stale typed evidence, a missing definition, a changed approved function fingerprint or a table mismatch stops publication of the whole requested set. The command reports practice-specific holds. A header-only table is included with zero rows. The readiness report retains unresolved scientific or implementation decisions.
 
-The [first six-practice release](../methodology/migration/2026-11-05/m08-recipe-releases.md#first-six-practice-release-9-november-2026) lists the table counts and scientific holds by practice. Mangrove establishment time, benefit timing and recurrent cost class need local values before operational use. Water-harvesting rows retain five calibration decisions with no selectable functions.
+The [first six-practice release](../methodology/migration/2026-11-05/m08-recipe-releases.md#first-six-practice-release-9-november-2026) lists the table counts and scientific holds by practice. Mangrove establishment time, benefit timing and recurrent cost class need local values before operational use. Water-harvesting rows retain six calibration decisions with no selectable functions.
 
 Each successful publish selects exactly the requested set as the directory's current release. Earlier release IDs remain available. Identical content and provenance yield the same ID. Use separate store directories for collections that need independent current selections.
 
