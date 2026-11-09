@@ -15731,10 +15731,59 @@
     "relationship": {
       "opt_low": 18,
       "opt_high": 30,
-      "abs_min": 2,
-      "abs_max": 30,
+      "abs_min": null,
+      "abs_max": null,
       "unit": "degrees",
-      "direction": "terraces are OPTIMALLY suited at 18-30 degrees, highly suitable at 10-18 and above 30, and only marginally suitable on gentle ground (2-5); below 2 degrees terracing is not suitable — the practice needs the slope that makes it necessary"
+      "direction": "Peak source class at 18–30°. Above 30° is highly suitable (7). The 0–2° class is labelled Not suitable (1). Restricted (0) has no slope band. Adjacent printed classes share endpoints.",
+      "source_classes": [
+        {
+          "slope_degrees_printed": "0–2",
+          "class": "Not suitable",
+          "source_score": 1
+        },
+        {
+          "slope_degrees_printed": "2–5",
+          "class": "Marginally suitable",
+          "source_score": 3
+        },
+        {
+          "slope_degrees_printed": "5–10",
+          "class": "Moderately suitable",
+          "source_score": 5
+        },
+        {
+          "slope_degrees_printed": "10–18",
+          "class": "Highly suitable",
+          "source_score": 7
+        },
+        {
+          "slope_degrees_printed": "18–30",
+          "class": "Optimally suitable",
+          "source_score": 9
+        },
+        {
+          "slope_degrees_printed": ">30",
+          "class": "Highly suitable",
+          "source_score": 7
+        },
+        {
+          "slope_degrees_printed": "—",
+          "class": "Restricted",
+          "source_score": 0
+        }
+      ]
+    },
+    "context": {
+      "model_use": {
+        "criterion": "slope",
+        "source_weight": 0.39,
+        "weight_table": "Table 5, PDF p. 10",
+        "method": "within-study AHP criterion weight"
+      },
+      "source_table": {
+        "locator": "PDF p. 9, Table 4, slope – terraces row",
+        "source_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd"
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -16469,7 +16518,7 @@
     "suitability_family_id": "water_harvesting__terracing",
     "variable": "slope",
     "relationship": {
-      "abs_max": 30,
+      "abs_max": null,
       "unit": "degrees",
       "level_terrace_max": 25,
       "zig_terrace_max": 30,
@@ -16477,7 +16526,41 @@
         15,
         20
       ],
-      "direction": "terrace TYPE is chosen by slope: level terraces below 25 degrees, zig terraces on fairly uniform slopes generally below 30 degrees, slope-separated terraces specifically at 15-20 degrees — above about 30 degrees none of the types is specified"
+      "direction": "Table 1 reports site conditions by terrace design. The generally <30° field-slope condition belongs to zig terraces.",
+      "source_classes": [
+        {
+          "design": "Level terrace",
+          "site_conditions": "Sloped land <25° for rice, drought-tolerant crops and orchards."
+        },
+        {
+          "design": "Zig terrace",
+          "site_conditions": "Soil deeper than 15 cm and fairly uniform field slopes, generally <30°."
+        },
+        {
+          "design": "Slope-separated terrace",
+          "site_conditions": "Low rainfall areas with permeable soils and slopes between 15° and 20°."
+        },
+        {
+          "design": "Slope terrace",
+          "site_conditions": "Thin soil cover and gentle slopes <7°."
+        },
+        {
+          "design": "Fanya juu terrace",
+          "site_conditions": "Thick soil cover and steep, uneven slopes where benching is unsuitable."
+        },
+        {
+          "design": "Half-moon terrace / fish-scale pit",
+          "site_conditions": "Steep slopes with shallow stony soils and short steep slopes for tree survival."
+        }
+      ]
+    },
+    "context": {
+      "source_table": {
+        "locator": "PDF p. 4, Table 1, Scope of application column",
+        "source_sha256": "00e0131089d16f5ece432390aae8681f967dbd511b4b77555b23ce9f1e74b80d",
+        "slope_unit": "degrees",
+        "eligible_use": "design-specific guidance"
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
