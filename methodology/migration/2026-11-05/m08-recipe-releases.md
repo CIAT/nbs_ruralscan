@@ -43,6 +43,6 @@ Neither earlier riparian distance rule had approved numeric support. The six sou
 
 The runoff-catchment rainfall hold retains four source profiles, including both published ranges for trapezoidal bunds. The archived compiler reproduces the original accepted row. The release compiler preserves its scientific fields, clears the unverified screened denominator and percentage, and records why the row is retained. [Replay commands and both fingerprints](../../audits/t4_six_practice_release_20261109/rainfall_replay.md) · [Original synthesis record](../../audits/t4_water_block_20261109/rainfall_run.json)
 
-## Next migration step
+## Runtime handoff
 
-Define the acceptance and external runtime contract for a pinned analytical release, including provenance, readiness, full-corpus validation and redistribution rights. Preserve the existing runtime pin while that contract is rehearsed.
+The external runtime now has a tested reader for this exact release. The handoff records the accepted versions, full-table comparison, readiness checks and the existing scoring pin. [Runtime handoff and reproduction instructions](m16-runtime-recipe-handoff.md)
