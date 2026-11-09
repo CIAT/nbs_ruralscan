@@ -1,6 +1,6 @@
 ---
 name: "source-command-t4-synthesise"
-description: "Compile reviewed suitability evidence into T4 CSV and traceable developer outputs for a declared NbS."
+description: "Translate reviewed spatial suitability evidence into traceable T4 rule proposals, record the decision and compile the accepted recipe."
 ---
 
 # T4 synthesis
@@ -9,6 +9,26 @@ Read `AGENTS.md`, `methodology/T4_generation_method.md` and
 `.agents/skills/extraction_contracts/T4_review_contract.md`. Use the current FAM IDs,
 not labels or a family inferred from the task name. Preserve independent species/crop,
 operational, observed-presence and unresolved-applicability lanes.
+
+## Translating evidence into a rule
+
+Start from the last accepted decision for the same family, variable and spatial
+context. Group candidate evidence by intervention, measured quantity/statistic,
+spatial support and source lineage. For each group record what sites the evidence
+would select, the native classes, bounds, weights or guidance, and where the
+source stops supporting that interpretation. Explain which profiles can be
+combined and how. A common unit alone does not establish compatibility.
+
+Propose the simplest representation supported by each group (for example a
+scoped range, ordinal profile, mask, or a qualitative statement). Record the
+disposition of every candidate, including contrary evidence. Specify the
+aggregation and endpoint convention, treatment of missing values, dataset
+binding and any context override. Where scoring is unsupported, record what
+would resolve it. Check boundary sites against the source and the compiler
+output, including a site at each disputed limit. Document the decision in the
+batch audit using [the synthesis record in method §6](../../../methodology/T4_generation_method.md#synthesis-decision-record).
+Reuse the approved decision on replay. New evidence, a context change or a
+revised expert interpretation warrants an explicit comparison with that decision.
 
 ## Reproducible workflow
 
