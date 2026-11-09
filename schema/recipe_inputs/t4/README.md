@@ -1,0 +1,21 @@
+# T4 recipe inputs
+
+Each practice has a row in [practices.csv](practices.csv). The compiler reads the declared files and the approved evidence register to produce `schema/recipes/<practice>/T4_suitability_mappings.csv`. That mapping CSV is the accepted result used for comparison. A clean compilation can run with the accepted CSV removed. A developer handoff also requires the accepted CSV and checks the full practice corpus against it before applying country filters.
+
+| Input | What to maintain |
+| --- | --- |
+| `authored_mappings.csv` | Complete design rows for eligibility gates, hard exclusions and scenarios. Preserve mapping IDs and row order. Each categorical gate needs approved, active evidence IDs. Multiple gates may cover different host crops in one family. The compiler supplies the screened-corpus fields. |
+| `mapping_settings.csv` | Declared default weight, adjustability, scenario and projection fields for an evidence-compiled family and variable. Use the compiled mapping ID. A blank default means that weight has not been specified. These rows supply settings only when the evidence compiler produces that variable. |
+| `review_holds.csv` | Accepted mapping snapshots with a documented binding or numerical-calibration hold under `relationship_params.reviewed_adaptation`. Include the original supporting evidence, reviewed configuration and decision reference. A binding hold blocks a substitute dataset. A calibration hold retains the reviewed response until a superseding decision. The snapshot keeps the hold effective even in rounds with no newly synthesized row. |
+
+In the first three configuration columns, an index value of `true` requires a corresponding nonempty file in the practice directory. Use `false` when no definitions of that kind exist. Each family must belong to the practice in FAM and each variable must exist in VONT. Give each mapping one home. A held mapping keeps its weight and scenario fields in its snapshot. The separate `run_policy` and `effect_prose` flags declare whether the complete release requires the practice's `T4_run_policy.csv` and `T3T6_prose.json`. Source weight trees retain their original provenance and feed the separate within-study importance calculations.
+
+## Changing a recipe
+
+1. Identify the practice, family, variable and mapping ID. Update the relevant definition in its practice directory. Add a new index declaration when introducing the first entry of a kind. Changes to extracted evidence go through the existing review workflow. Keep a reviewed hold in place until the decision and source references support its replacement.
+2. To supersede a hold, update the reviewed snapshot and its decision reference. When the hold is fully lifted, remove its snapshot and move any continuing weight or scenario fields to the appropriate settings or authored row. Set the index flag to `false` and remove the file when the last entry of that kind is removed.
+3. Build a candidate into a separate directory. In the repository environment run `uv run python scripts/synthesise-recipe.py agroforestry --output-dir /tmp/agroforestry-candidate`, replacing the practice and output path. Compare the candidate mapping CSV and family reports with the accepted recipe, including gate evidence, weights, hold decisions and dataset requirements.
+4. For an accepted hold missing from the declared configuration, reconcile the original decision into `review_holds.csv` first. When an explicit review supersedes that decision, compare an isolated candidate against the accepted mapping, record the decision reference and calculate the SHA-256 of the accepted CSV you reviewed. Run the in-place command with `--supersede-holds-from <accepted-csv-sha256>`. A concurrent change to that baseline requires a fresh comparison.
+5. After review, regenerate the accepted mappings with the same command without `--output-dir` and run the normal schema generator for typed JSON. Rebuild the developer contract to check the accepted mapping against the full approved corpus.
+
+Older input snapshots can still be replayed using their mixed mapping CSV. A complete release requires an explicit practice declaration. Forest restoration and mangrove restoration declare no authored mappings, settings or holds in this revision.

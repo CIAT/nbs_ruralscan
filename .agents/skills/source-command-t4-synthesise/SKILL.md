@@ -15,7 +15,8 @@ operational, observed-presence and unresolved-applicability lanes.
 1. Confirm the authorised NbS and target families against FAM. Start from the existing
    evidence corpus and source-table inventory. Missing evidence is an explicit gap;
    this synthesis command does not authorise a new discovery/extraction sweep.
-2. Use the registered compiler, which reads CSV registers, crop-scope policy, numeric
+2. Preserve authored weights, scenarios, gates and mapping-level holds using the [T4 authoring guide](../../../schema/recipe_inputs/t4/README.md). Record each reviewed binding or calibration decision in the practice’s declared inputs and reconcile it with the accepted recipe.
+   Use the registered compiler, which reads CSV registers, crop-scope policy, numeric
    compilation policy, source tiers, units and conversions:
 
    ```sh

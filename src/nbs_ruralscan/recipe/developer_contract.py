@@ -17,7 +17,8 @@ import os
 from collections import Counter
 from pathlib import Path
 
-from .developer_corpus import rebuild, verify_compiler_snapshot
+from .developer_corpus import compiler_paths, rebuild, verify_compiler_snapshot
+from .t4_build import T4BuildInputs
 from .run_policy import compile_policies, reference_scores
 from .readiness import assess
 from .harmonization import harmonize
@@ -36,6 +37,9 @@ from ..runtime.numeric import evaluate_numeric
 
 VERSION = "0.2.0"
 PACKAGE_VERSION = "0.1.7"
+_SOURCE_WEIGHT_TREES = (
+    "pipeline/t4_audit/agroforestry/importance_2026-10-21/source_weight_trees.csv"
+)
 
 
 def read_csv(path):
@@ -873,10 +877,7 @@ def build_contract(
         for r in rows
     ]
     # Weight diagnostics are rebuilt from source trees, never copied from old report CSVs.
-    importance, importance_path = (
-        [],
-        "pipeline/t4_audit/agroforestry/importance_2026-10-21/source_weight_trees.csv",
-    )
+    importance, importance_path = [], _SOURCE_WEIGHT_TREES
     if nbs == "agroforestry":
         inputs.append(importance_path)
         for model in load_weight_models(root / importance_path):
@@ -1095,38 +1096,44 @@ def _package_docs(root, nbs):
     return docs
 
 
-def _package_inputs(root, nbs):
-    inputs = {
-        "schema/registers/EV_evidence_register.csv",
-        "schema/registers/SRC_source_register.csv",
-        "schema/registers/VONT_variable_ontology.csv",
-        "schema/registers/BIND_dataset_binding.csv",
-        "schema/registers/FAM_family_registry.csv",
-        "schema/T1_data_registry.csv",
-        "schema/T7_geographic_context.csv",
-        "schema/lookups/crop_scope_policy.csv",
-        "schema/lookups/t4_numeric_compilation_policy.csv",
-        f"schema/recipes/{nbs}/T4_suitability_mappings.csv",
-        "scripts/synthesise-recipe.py",
-        "scripts/build-t4-developer.py",
-        "src/nbs_ruralscan/schema_tools/generate.py",
-        "pyproject.toml",
-        "uv.lock",
-    }
-    inputs.update(_package_docs(root, nbs).values())
-    if nbs == "agroforestry":
-        inputs.add(
-            "pipeline/t4_audit/agroforestry/importance_2026-10-21/source_weight_trees.csv"
+def contract_input_paths(root: Path, nbs: str) -> set[Path]:
+    """Every selected data dependency, including a currently absent optional run policy."""
+    root = Path(root).resolve()
+    paths = set(T4BuildInputs.from_root(root, nbs).paths())
+    paths.update(
+        root / name
+        for name in (
+            "schema/registers/BIND_dataset_binding.csv",
+            "schema/registers/FAM_family_registry.csv",
+            "schema/T1_data_registry.csv",
+            "schema/T7_geographic_context.csv",
+            f"schema/recipes/{nbs}/T4_run_policy.csv",
         )
-    policy_path = f"schema/recipes/{nbs}/T4_run_policy.csv"
-    if (root / policy_path).exists():
-        inputs.add(policy_path)
-    inputs.add("schema/structure/columns.json")
-    inputs |= {
-        str(p.relative_to(root))
-        for directory in ("src/nbs_ruralscan/recipe", "src/nbs_ruralscan/runtime")
-        for p in (root / directory).glob("*.py")
+    )
+    if nbs == "agroforestry":
+        paths.add(root / _SOURCE_WEIGHT_TREES)
+    return paths
+
+
+def _package_inputs(root, nbs):
+    root = Path(root).resolve()
+    policy = root / f"schema/recipes/{nbs}/T4_run_policy.csv"
+    inputs = {
+        p.relative_to(root).as_posix()
+        for p in contract_input_paths(root, nbs)
+        if p != policy or p.exists()
     }
+    inputs.update(
+        {
+            "scripts/synthesise-recipe.py",
+            "scripts/build-t4-developer.py",
+            "pyproject.toml",
+            "uv.lock",
+        }
+    )
+    inputs.update(_package_docs(root, nbs).values())
+    inputs.add("schema/structure/columns.json")
+    inputs.update(compiler_paths())
     return inputs
 
 

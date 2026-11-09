@@ -436,22 +436,28 @@ def test_final_reconciliation_covers_live_links_and_parks_ambiguous_classes():
     assert all(r["final_disposition"] != "pending" for r in rows)
 
 
-def test_preserved_gate_cannot_bypass_evidence_review(runner, tmp_path, monkeypatch):
-    import copy
+def test_preserved_gate_cannot_bypass_evidence_review(runner, tmp_path):
+    import csv
     import json
-    from nbs_ruralscan.recipe import t4_build
+    from dataclasses import replace
+    from nbs_ruralscan.recipe.t4_build import T4BuildInputs
 
-    existing = copy.deepcopy(
-        runner._existing_rows(runner.ROOT / "schema/recipes/agroforestry")
-    )
-    gate = next(r for r in existing if r["relationship_type"] == "ranked_classes")
+    inputs = T4BuildInputs.from_root(runner.ROOT, "agroforestry", require_authored=True)
+    rows = runner._rd(inputs.authored_mappings)
+    # Three host gates share one family and variable; all must be verified.
+    gate = next(r for r in rows if r["mapping_id"] == "agro_shaded_coffee_host_gate")
     gate["evidence_ids"] = json.dumps(["missing_or_unreviewed"])
-    monkeypatch.setattr(t4_build, "_existing_rows", lambda _: existing)
+    configured = tmp_path / "design.csv"
+    with configured.open("w", newline="") as f:
+        writer = csv.DictWriter(f, list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
     with pytest.raises(ValueError, match="unapproved/dropped/missing evidence"):
         runner.write_recipe(
             "agroforestry",
             runner.synthesise("agroforestry"),
-            runner._rd(runner.REG / "VONT_variable_ontology.csv"),
+            runner._rd(inputs.ontology),
+            inputs=replace(inputs, authored_mappings=configured),
             output_dir=tmp_path,
         )
     assert not (tmp_path / "T4_suitability_mappings.csv").exists()
