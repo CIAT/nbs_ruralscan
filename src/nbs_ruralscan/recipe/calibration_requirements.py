@@ -5,7 +5,10 @@ from .binding_requirements import params
 
 def calibration_requirement(row):
     """Return the declared hold, failing closed on malformed review metadata."""
-    adaptation = params(row).get("reviewed_adaptation")
+    relationship = params(row)
+    if not isinstance(relationship, dict):
+        raise ValueError("Invalid T4 relationship parameters")
+    adaptation = relationship.get("reviewed_adaptation")
     if adaptation is None:
         return None
     if not isinstance(adaptation, dict):

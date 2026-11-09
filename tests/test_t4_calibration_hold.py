@@ -11,7 +11,11 @@ import pytest
 from nbs_ruralscan.recipe import developer_contract as dc
 from nbs_ruralscan.recipe.calibration_requirements import calibration_requirement
 from nbs_ruralscan.recipe.family import FamilyResult
-from nbs_ruralscan.recipe.t4_build import T4BuildInputs, write_recipe
+from nbs_ruralscan.recipe.t4_build import (
+    T4BuildInputs,
+    _preserve_mapping_review_holds,
+    write_recipe,
+)
 from nbs_ruralscan.runtime.numeric import evaluate_numeric
 from nbs_ruralscan.schema_tools.generate import _coerce
 
@@ -67,6 +71,7 @@ def test_calibration_hold_survives_empty_round_and_new_synthesis(
 ):
     inputs = T4BuildInputs.from_root(ROOT, NBS)
     held = next(r for r in read(inputs.audited_recipe) if r["mapping_id"] == MID)
+    held.update(corpus_n="13", paper_support_pct="35.8")
     baseline = tmp_path / "baseline.csv"
     with baseline.open("w", newline="") as handle:
         writer = csv.DictWriter(handle, list(held))
@@ -92,10 +97,13 @@ def test_calibration_hold_survives_empty_round_and_new_synthesis(
             "candidate_dataset_ids": '["generic_proxy"]',
         }
     ]
-    write_recipe(NBS, empty, vont, inputs=inputs, output_dir=first)
+    # The synthesis and serialization stages both enforce holds against the same snapshot.
+    prepared = _preserve_mapping_review_holds(empty, [held])
+    write_recipe(NBS, prepared, vont, inputs=inputs, output_dir=first)
     retained = read(first / "T4_suitability_mappings.csv")[0]
     assert retained["relationship_params"] == held["relationship_params"]
     assert retained["dataset_id"] == ""
+    assert retained["corpus_n"] == retained["paper_support_pct"] == ""
     assert retained["evidence_ids"] == held["evidence_ids"]
     assert "no new numeric synthesis or approval" in retained["justification"]
 
@@ -132,6 +140,7 @@ def test_calibration_hold_survives_empty_round_and_new_synthesis(
     ):
         assert actual[MID][key] == retained[key]
     assert actual[MID]["dataset_id"] == ""
+    assert actual[MID]["corpus_n"] == actual[MID]["paper_support_pct"] == ""
     assert (
         json.loads(actual["ordinary__runoff"]["relationship_params"])
         == ordinary["relationship_params"]

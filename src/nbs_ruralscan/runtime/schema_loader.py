@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 from typing import TYPE_CHECKING, Any
 
+from nbs_ruralscan.recipe.calibration_requirements import calibration_requirement
 from nbs_ruralscan.recipe.run_policy import compile_policies
 from nbs_ruralscan.recipe.table_fields import TABLE_FIELDS
 from nbs_ruralscan.schema_tools.generate import _coerce
@@ -154,7 +155,7 @@ def _validate_table(members, practice, table, seen):
         document, sort_keys=True, allow_nan=False
     ):
         raise ValueError(f"Recipe CSV and typed JSON differ: {json_name}")
-    return {row[key] for row in records}
+    return {row[key]: row for row in typed}
 
 
 def _validate_policies(members, practice, report):
@@ -221,14 +222,14 @@ def _validate_policies(members, practice, report):
         raise ValueError(f"Approved policy IDs disagree with {name}")
 
 
-def _validate_reports(members, practice, ids):
+def _validate_reports(members, practice, tables):
     effect, readiness = (report_path(practice, name) for name in REPORT_FILES)
     report = _json(members, effect)
     if not isinstance(report, dict) or report.get("nbs_id") != practice:
         raise ValueError(f"Wrong practice in {effect}")
     for table in ("T3", "T6", "T6E"):
         count = report.get(table.lower() + "_rows")
-        if type(count) is not int or count != len(ids[table]):
+        if type(count) is not int or count != len(tables[table]):
             raise ValueError(f"{table} row count disagrees with {effect}")
 
     reviewed = _json(members, readiness)
@@ -266,7 +267,7 @@ def _validate_reports(members, practice, ids):
             )
             or (row["role"] == "reference_only") != (state == "reference_only")
             or state not in ("defined", "provisional", "blocked", "reference_only")
-            or (key not in ids["T4"] and state != "reference_only")
+            or (key not in tables["T4"] and state != "reference_only")
             or row["readiness"].get("execution_ready") is not False
             or not isinstance(functions, dict)
             or any(
@@ -287,11 +288,16 @@ def _validate_reports(members, practice, ids):
             or fingerprint != functions.get(selected)
         ):
             raise ValueError(f"Invalid selected function fingerprint for {key}")
+        if key in tables["T4"] and calibration_requirement(tables["T4"][key]):
+            if state != "blocked" or functions or selected is not None:
+                raise ValueError(
+                    f"Readiness conflicts with numerical calibration hold: {key}"
+                )
         rules.add(key)
         states[state] += 1
     summary = reviewed.get("implementation_readiness")
     if (
-        not ids["T4"].issubset(rules)
+        not tables["T4"].keys() <= rules
         or not isinstance(summary, dict)
         or any(type(value) is not int for value in summary.values())
         or dict(states) != summary
@@ -350,13 +356,13 @@ def validate_recipe_members(members: Mapping[str, bytes]) -> None:
         ):
             raise ValueError(f"Invalid recipe practice declaration: {practice}")
         expected.update(_validate_settings(members, practice, details["settings"]))
-        ids = {}
+        tables = {}
         for table in TABLE_STEMS:
-            ids[table] = _validate_table(members, practice, table, seen[table])
+            tables[table] = _validate_table(members, practice, table, seen[table])
             expected.update(
                 table_path(practice, table, suffix) for suffix in (".csv", ".json")
             )
-        expected.update(_validate_reports(members, practice, ids))
+        expected.update(_validate_reports(members, practice, tables))
     if set(members) != expected:
         raise ValueError(
             "Recipe release contains missing or undeclared logical members"

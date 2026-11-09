@@ -182,10 +182,15 @@ def test_empty_core_defaults_to_structural_holds_despite_operational_links():
     assert "high maps to 0.75" not in rules
 
 
-def test_standalone_mangrove_selectable_without_fabricating_t0():
-    import json
-
+def test_standalone_mangrove_includes_its_definition_and_open_inputs():
     dashboard = json.loads((ROOT / "docs/dashboard_data.json").read_text())
-    assert "mangrove_restoration" in dashboard["recipes"]
-    assert "T4_suitability_mappings" in dashboard["recipes"]["mangrove_restoration"]
-    assert "T0_nbs_registry" not in dashboard["recipes"]["mangrove_restoration"]
+    recipe = dashboard["recipes"]["mangrove_restoration"]
+    assert "T4_suitability_mappings" in recipe
+    (definition,) = recipe["T0_nbs_registry"]
+    assert definition["nbs_id"] == "mangrove_restoration"
+    assert definition["is_active"] is True
+    assert definition["establishment_period_years"] == dict.fromkeys(
+        ("min", "max", "typical")
+    )
+    assert definition["time_to_benefit_years"] == dict.fromkeys(("min", "max"))
+    assert "recurrent_cost_level" not in definition

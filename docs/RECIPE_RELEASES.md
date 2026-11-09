@@ -4,17 +4,18 @@ A local recipe release contains T0 and the authored settings for each selected p
 
 ## Build and check
 
-Run these commands in the repository's Python environment. Choose a private local release directory outside the data and compiler checkouts. The example publishes agroforestry and forest restoration together. Omitting the practice flags requests every practice. The publisher checks the family registry, settings index and recipe directories agree on that list.
+Run these commands in the repository's Python environment. Choose a private local release directory outside the data and compiler checkouts. The example publishes all six registered practices as one release. To publish a subset, repeat `--nbs <practice_id>` for the practices you need. The publisher checks the family registry, settings index and recipe directories agree on that list.
 
 ```sh
-uv run python -m nbs_ruralscan.recipe.publish_release check --root . \
-  --nbs agroforestry --nbs forest_restoration
+uv run python -m nbs_ruralscan.recipe.publish_release check --root .
 uv run python -m nbs_ruralscan.recipe.publish_release publish --root . \
-  --nbs agroforestry --nbs forest_restoration --store ../recipe-releases
+  --store ../recipe-releases
 uv run python -m nbs_ruralscan.recipe.publish_release inspect --store ../recipe-releases
 ```
 
 The publisher copies the declared inputs, compiles the full practice corpus and checks the output against its audited tables before selecting a release. Stale typed evidence, a missing definition, a changed approved function fingerprint or a table mismatch stops publication of the whole requested set. The command reports practice-specific holds. A header-only table is included with zero rows. The readiness report retains unresolved scientific or implementation decisions.
+
+The [first six-practice release](../methodology/migration/2026-11-05/m08-recipe-releases.md#first-six-practice-release-9-november-2026) lists the table counts and scientific holds by practice. Mangrove establishment time, benefit timing and recurrent cost class need local values before operational use. Water-harvesting rows retain six calibration decisions with no selectable functions.
 
 Each successful publish selects exactly the requested set as the directory's current release. Earlier release IDs remain available. Identical content and provenance yield the same ID. Use separate store directories for collections that need independent current selections.
 

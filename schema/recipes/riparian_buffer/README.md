@@ -1,104 +1,28 @@
-# recipes/riparian_buffer/ — T4 synthesis output
+# Riparian buffer recipe
 
-**Status: synthesised and written, NOT review-signed.** `T4_suitability_mappings.csv` — the
-table the dashboard and the pipeline read — is generated from the riparian T4 evidence sweep
-(49 EV units, ruleset v1.5.0) by `scripts/synthesise-recipe.py riparian_buffer`. Both defects
-that blocked it are resolved (below). What still needs a human: the QA review of the 49 units,
-Pete's ten first-pass `benchmark_tier` values, and dataset-fitness sign-off on the two
-hydrography layers this pass added to `T1`.
+The T0 definition covers planted and natural/restored riparian buffers. Both families use watercourse proximity to describe their linear footprint. The reviewed T4 compilation currently contains zero calibrated mappings for either family. Readers can still use the T3 hazard responses, T6 scorecard and T6E economic profile included with this recipe.
 
-## What's here
+## Why the distance thresholds were withdrawn
 
-| File | Contents |
-|---|---|
-| `T0_nbs_registry.{csv,json}` | T0 — NbS registry row |
-| `T4_suitability_mappings.{csv,json}` | the recipe table — 2 rows, one per family |
-| `T4_riparian_buffer__natural_restored.json` | 1 synthesised row + selection table (from 23 units) |
-| `T4_riparian_buffer__planted.json` | 1 synthesised row + selection table (from 26 units) |
+The September 2026 synthesis produced two provisional distance-to-waterbody mappings. All six evidence units listed in those mappings still await review. Their original quantities describe different uses of distance.
 
-T3/T6 are deferred (2026-09-17 scope cut) and are not populated for this NbS.
+| Family | Previous provisional rule | Source evidence retained in the register |
+| --- | --- | --- |
+| Natural/restored | 50–210 m | Zhao used a 210 m study boundary. Dala-Corte estimated a 50 m reserve width per bank for biodiversity protection. De Mello used a 30 m statutory buffer in its study. |
+| Planted | Up to 30 m | Schultz described minimum widths for three buffer zones. Tiwari used a 30 m extent for groundwater discharge hotspots. Cole reported widths for controlling different pollutants. |
 
-## How these were generated
+These sources remain available for assessment. The original synthesis and its decision to express watercourse distance in metres are documented in [PR #249](https://github.com/CIAT/nbs_ruralscan/pull/249). The two [authored distance weights](../../recipe_inputs/t4/riparian_buffer/mapping_settings.csv) apply only when an evidence-based mapping compiles.
 
-```bash
-python3 scripts/synthesise-recipe.py riparian_buffer   # then generate.py schema
-```
+## What the review supports
 
-Every input is read from the registers, never hand-passed — tiers from `SRC.benchmark_tier`,
-grouping/units/datasets/conversions from `VONT`, grey-discount categories from
-`SRC.source_category`. Re-run it after any QA decision and the table rebuilds.
+For natural/restored buffers, Witing's 100 m corridor (50 m per bank) defines the area evaluated in the study. Its urban and water exclusions corroborate the shared terrestrial eligibility rules. [Corridor review](../../../methodology/audits/t4_followup_20261106/witing_corridor_decision.md) · [Eligibility review](../../../methodology/audits/t4_followup_20261106/witing_eligibility_decision.md)
 
-`corpus_n` is the family's PRISMA screened-in count summed over the four discovery processes
-in `SRCH` (`n_included`): **natural_restored 15**, **planted 12**. `tiers` are read from
-`SRC.benchmark_tier` — all ten are Pete's **first-pass** tiers and are pending QA, so every
-`paper_support_pct` below is provisional (tier weighting feeds the weighted median).
+For planted buffers, Bentrup and Kellerman used total corridor widths of 80, 100 and 120 m for stream orders 1, 2 and 3 to inventory existing riparian remnants. Both records describe the same planning method. Numeric suitability cutoffs for either family still need evidence and review. [Stream-order and corridor review](../../../methodology/audits/t4_followup_20261106/bentrup_planning_method_decision.md)
 
-## Yield
+Family-level screened-source membership is unknown. The approved compilation therefore reports source counts without prevalence percentages. Its full disposition report can be rebuilt alongside the CSV and family JSON files. [T4 synthesis workflow](../../../.agents/skills/source-command-t4-synthesise/SKILL.md)
 
-| Family | units in | rows with params | thresholds | variables that produced no params |
-|---|---|---|---|---|
-| natural_restored | 23 | 1 (`distance_to_waterbody`) | 50–210 m | 10 |
-| planted | 26 | 1 (`distance_to_waterbody`) | ≤30 m | 9 |
+## Spatial inputs and effect tables
 
-Most units encode a qualitative `direction` rather than a numeric threshold, so they carry no
-shape params and synthesise to no row. Notably `slope` has the highest support in the planted
-family (40%, 4 sources) and still yields **no threshold** — the sweep captured that slope
-matters without capturing a value. That is a real coverage gap, not a synthesis failure.
+MERIT Hydro (approximately 90 m) is the default global stream-network binding. A band as narrow as 30 m requires finer local hydrography. The T1 catalogue records dataset limitations and BIND records the available alternatives. [Dataset bindings](../../registers/BIND_dataset_binding.csv)
 
-## Open defects — rule on these before writing `T4_suitability_mappings.csv`
-
-1. ~~**Metres vs kilometres.**~~ **FIXED in the engine.** `_harmonise` now folds unit
-   spellings (`degrees_c`/`degC`, `mm_yr`/`mm/year`) to a common token, applies the
-   conversion `VONT.unit_conversions` declares, and **refuses** a mismatch it has no rule
-   for instead of emitting the raw number under the wrong label. The riparian rows now read
-   0.05–0.21 km (= 50–210 m). A flat 1 dp rounding in `_weighted_median` was annihilating
-   the converted values (30 m → 0.03 km → `0.0`), so rounding is now significant-figure
-   aware below 1. Knock-on: `soil_drainage` no longer synthesises at all — its source's `1`
-   is a depth-to-water-table class in metres against a canonical `ordinal_1_7`, so the row
-   is refused rather than emitted (it was `abs_max: 1.0` before).
-2. ~~**Is this `distance_to_waterbody` or `riparian_buffer_width`?**~~ **RULED 2026-09-25:
-   they stay `distance_to_waterbody`, and its canonical unit changes km → m.** Three things
-   decided it. `FAM` gives both families `spatial_product_type = zonal_linear` with a
-   `dominant_limiting_factor` that begins "watercourse proximity" — the band *is* the
-   product and proximity *is* the constraint, so these values are its threshold. All 13
-   quotes measure outward from the watercourse, in metres. And `riparian_buffer_width`
-   already has a separate, non-overlapping job: the width of the **existing** buffer as a
-   restoration-priority indicator (zhao13's MBW) — the same paper supplies both, and the
-   split is coherent. Re-tagging all 13 would have left the family with no gating variable
-   at all, contradicting its own limiting factor. Blast radius of the unit change: nil —
-   `distance_to_waterbody` appears in 13 EV units, all riparian, with no `BIND` row and no
-   other recipe, and its `VONT` row was never ratified (`pending_review`, issue #103).
-
-## The resolution caveat that survives the decision
-
-`min_meaningful_resolution_m` moved 100 → 30 to match the evidence, but **the data does not
-go that fine**. The binding is `merit_hydro_v1` (~90 m), so a 30 m band cannot be resolved
-from the global stream network: the T4 threshold is scoping-grade, and a national hydrography
-upload is preferable wherever one exists (recorded in the `BIND` `fitness_note` and in `T1`
-`limitations`). This is the resolution-audit item for QA sign-off, not a reason to carry the
-wrong unit.
-
-## Added to the shared tables by this pass
-
-| Table | Row | Why |
-|---|---|---|
-| `T1` | `merit_hydro_v1` | the stream network riparian distance is measured from (~90 m, GEE; **non-commercial licence clause — confirm before operational use**) |
-| `T1` | `jrc_global_surface_water_v1_4` | 30 m water-surface complement for lakes and wide rivers |
-| `BIND` | `distance_to_waterbody__global` (+ `…_water_bodies`) | global default binding, rank 1 / 2 |
-
-Both `T1` rows need **dataset-fitness sign-off** — they were chosen to unblock the recipe's
-required `dataset_id`, not ratified.
-
-## New `VONT` entries raised by this sweep (all `pending_review`)
-
-`riparian_buffer_width` · `riparian_vegetation_gap` · `regeneration_potential`. The third
-collides with an existing alias on `rootstock_presence` ("regeneration potential"), which is
-FMNR living-stump specific — reviewers to rule keep-distinct vs merge.
-
-## T3/T6 pilot follow-ups
-
-Generated T3/T6 rows (`T3_nbs_hazard_farming.csv`, `T6_nbs_scorecard.csv`, `T3T6_synthesis_report.json`)
-landed in PR #264. Everything the pilot *saw but could not emit* — unmapped water-quality units, ontology
-gaps, unquotable Blanco-Canqui effectiveness numbers, denominator-less economics, PICOS exclusions — is
-captured in [`methodology/effect_evidence_followups.md`](../../../methodology/effect_evidence_followups.md) §1
-so no source needs re-reading.
+The effect synthesis report accompanies T3, T6 and T6E. Unresolved water-quality mappings, economic denominators and other findings from the pilot are recorded in the [effect evidence follow-ups](../../../methodology/effect_evidence_followups.md).

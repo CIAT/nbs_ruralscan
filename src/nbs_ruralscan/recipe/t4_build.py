@@ -452,6 +452,21 @@ def _dataset_binding_hold(row: dict[str, Any]) -> str:
     return requirement["reason"] if requirement else ""
 
 
+def _retained_hold_row(baseline, calibration):
+    row = {key: _coerce(value) for key, value in baseline.items() if value != ""}
+    # The historical number of sources screened is not a denominator for this round.
+    row["corpus_n"] = None
+    row["paper_support_pct"] = None
+    note = (
+        "Retained approved calibration hold; no new numeric synthesis or approval."
+        if calibration
+        else "Retained approved binding hold only; no new numeric synthesis or approval."
+    )
+    if note not in row.get("justification", ""):
+        row["justification"] = (row.get("justification") or "") + " " + note
+    return row
+
+
 def _preserve_mapping_review_holds(results, existing):
     """Keep mapping-specific input/calibration decisions across synthesis rounds.
 
@@ -487,13 +502,7 @@ def _preserve_mapping_review_holds(results, existing):
                     # hold. Retain the reviewed configuration and its source links.
                     # Native source profiles remain in the evidence/audit records.
                     row.clear()
-                    row.update(
-                        {
-                            key: _coerce(value)
-                            for key, value in baseline.items()
-                            if value != ""
-                        }
-                    )
+                    row.update(_retained_hold_row(baseline, calibration))
                 relationship = deepcopy(binding_params(row))
                 adaptation = relationship.setdefault("reviewed_adaptation", {})
                 if not isinstance(adaptation, dict):
@@ -502,26 +511,20 @@ def _preserve_mapping_review_holds(results, existing):
                     adaptation["dataset_binding"] = deepcopy(requirement)
                 row["relationship_params"] = relationship
                 seen.add(row["mapping_id"])
-            if _dataset_binding_hold(row):
-                row["dataset_id"] = ""
     for mapping_id in sorted(held.keys() - seen):
-        baseline, requirement, calibration = held[mapping_id]
+        baseline, _, calibration = held[mapping_id]
         family = baseline["suitability_family_id"]
-        row = {key: _coerce(value) for key, value in baseline.items() if value != ""}
-        if requirement:
-            row["dataset_id"] = ""
-        row["corpus_n"] = None
-        row["paper_support_pct"] = None
-        note = (
-            "Retained approved calibration hold; no new numeric synthesis or approval."
-            if calibration
-            else "Retained approved binding hold only; no new numeric synthesis or approval."
-        )
-        if note not in row.get("justification", ""):
-            row["justification"] = (row.get("justification") or "") + " " + note
         out.setdefault(family, FamilyResult(family=family, corpus_n=None)).rows.append(
-            row
+            _retained_hold_row(baseline, calibration)
         )
+    for result in out.values():
+        for row in result.rows:
+            reason = _dataset_binding_hold(row)
+            if reason:
+                row["dataset_id"] = ""
+                note = "Dataset binding unresolved; requires matching input: " + reason
+                if note not in row.get("justification", ""):
+                    row["justification"] = (row.get("justification") or "") + " " + note
     return out
 
 
@@ -657,18 +660,8 @@ def write_recipe(
                 )
     csv_rows: list[dict[str, object]] = []
     for family, res in results.items():
-        output_rows = [dict(row) for row in res.rows]
-        binding_holds = set()
-        for row in output_rows:
-            reason = _dataset_binding_hold(row)
-            if reason:
-                binding_holds.add(row["mapping_id"])
-                row["dataset_id"] = ""
-                note = "Dataset binding unresolved; requires matching input: " + reason
-                if note not in row.get("justification", ""):
-                    row["justification"] = row.get("justification", "") + " " + note
-        save_family(replace(res, rows=output_rows), recipe_dir / f"T4_{family}.json")
-        for row in output_rows:
+        save_family(res, recipe_dir / f"T4_{family}.json")
+        for row in res.rows:
             if (family, row["variable"]) in gates:
                 continue
             csv_rows.append(
@@ -676,7 +669,7 @@ def write_recipe(
                     "mapping_id": row["mapping_id"],
                     "nbs_id": nbs_id,
                     "dataset_id": ""
-                    if row["mapping_id"] in binding_holds
+                    if _dataset_binding_hold(row)
                     else ds_by_var.get(row["variable"], ""),
                     "suitability_dimension": row["suitability_dimension"],
                     "relationship_type": row["relationship_type"],
