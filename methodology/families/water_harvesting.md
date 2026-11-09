@@ -91,6 +91,7 @@ sigmoid on runoff for ex-situ, decreasing for recharge; ponds favour 1–8 % slo
   **Scope Q** — own family or fold into F3? Parked from discovery pending sign-off.
 
 ## 4. Edge cases the scheme resolves
+- **Graded soil bunds (Wolka et al., Table 1).** Retain as drainage and erosion-control guidance. The roughly 1% grade along the bund conveys excess runoff; the reported >1,400 mm/year setting provides implementation context. The contradictory soil-drainage descriptions remain documented. This decision adds no family, rainfall cutoff or soil-drainage score. Level-bund guidance keeps its approved scope. [9 November decision](../audits/t4_followup_20261105/source_holds/REPORT.md#wolka_graded_bund_scope)
 - **In-situ vs micro-catchment** — both on-field, split by whether a distinct runoff-donor catchment exists
   (F2) or not (F1); the recipe's runoff membership flips sign between them.
 - **Ex-situ storage footprint** — never pixel area; drainage-line siting density (F3 `applicability_zone`).
