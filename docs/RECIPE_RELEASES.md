@@ -39,6 +39,10 @@ same = load_recipe_release(Path("../recipe-releases"), release.release_id)
 
 Opening a release verifies its complete file inventory, hashes, table formats, row identities, authored settings and readiness reports. Keep the returned handle for the duration of a read. The provenance file records the source revision when available, content hashes for the selected source files, and fingerprints of the compiler source. The byte hashes also identify inputs in a data-only checkout.
 
+## Verify the external runtime reader
+
+Install the pinned version of `RuralScan/runtime` in its own Python environment, then run `python -I -m nbs_runtime.recipe_release --store /path/to/recipe-releases` there. Its bundled pin names the release, producer revision and six practices. The command verifies the local files and prints row counts and spatial execution status. For a comparison of every table, setting, report and provenance record against the producer, follow the [runtime handoff instructions](../methodology/migration/2026-11-05/m16-runtime-recipe-handoff.md#repeat-the-comparison).
+
 ## Maintain settings
 
 Authored T4 gates, mapping defaults, scenario settings and reviewed holds are maintained in the declared inputs. T0 practice identity, T4 run policy and effect prose have their own files. Generated recipe tables remain available to existing checkout readers. [T4 input layout and editing workflow](../schema/recipe_inputs/t4/README.md)
