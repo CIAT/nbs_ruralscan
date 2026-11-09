@@ -1,85 +1,97 @@
 [
   {
-    "mapping_id": "water_harvesting__micro_catchment__annual_precipitation",
-    "suitability_family_id": "water_harvesting__micro_catchment",
-    "variable": "annual_precipitation",
-    "variable_unit": "mm/year",
-    "dataset_id": "[\"worldclim_v2_precip\",\"chelsa_bioclim_v21_baseline\",\"chirps_precipitation_v2\"]",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 150.0,
-      "abs_max": 500.0
-    },
-    "uncertainty_pct": 30.0,
-    "context_overrides": [],
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 150.0, 'abs_max': 500.0}; uncertainty ±30% from spread. Collapsed 5 citation echo(es). ",
-    "references": [
-      "fao_critchley_wh_manual_1991",
-      "wocat_wh_guidelines_2013"
-    ],
-    "evidence_ids": [
-      "ev_wh_precip_critchley91_negarim",
-      "ev_wh_precip_wocatgl13_negarim"
-    ],
-    "paper_support_pct": 15.9,
-    "n_sources": 2,
-    "corpus_n": 19
-  },
-  {
     "mapping_id": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
-    "suitability_family_id": "water_harvesting__micro_catchment",
-    "variable": "soil_depth_to_bedrock",
-    "variable_unit": "cm",
-    "dataset_id": "[\"ssurgo_statsgo\",\"isric_soilgrids250_v2\"]",
+    "nbs_id": "water_harvesting_conservation",
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "trapezoidal",
     "relationship_params": {
-      "abs_min": 100.0,
-      "opt_low": 200.0
+      "reviewed_adaptation": {
+        "dataset_binding": {
+          "status": "requires_matching_input",
+          "scope": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/soil_depth.md",
+          "reason": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+          "unmatched_dataset_id": "ssurgo_statsgo",
+          "required_measurements": [
+            {
+              "evidence_id": "ev_wh_soildepth_critchley91_negarim",
+              "measure": "Soil depth available to tree roots and for storage of harvested water."
+            },
+            {
+              "evidence_id": "ev_wh_soildepth_wocatgl13_strips",
+              "measure": "Soil depth at the cultivated strips, as described in the guidance; the lower boundary is unspecified."
+            }
+          ]
+        },
+        "numerical_calibration": {
+          "status": "held",
+          "scope": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/soil_depth.md",
+          "reason": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+          "retained_source_profiles": [
+            {
+              "structure": "Negarim tree microcatchments",
+              "locator": "FAO manual §5.2.2 Technical details, i. Suitability.",
+              "required_measurement": "Soil depth available to tree roots and for storage of harvested water.",
+              "minimum_soil_depth_m": 1.5,
+              "preferred_soil_depth_m": 2,
+              "associated_conditions": "Arid and semi-arid tree growing, rainfall can be as low as 150 mm per year, flat to 5% slopes, subdivide the block on uneven ground.",
+              "binding_assessment": "Depth to bedrock alone cannot identify shallower restrictions on roots or storage. Establish adequate usable soil depth in this application.",
+              "evidence_id": "ev_wh_soildepth_critchley91_negarim",
+              "source_id": "fao_critchley_wh_manual_1991",
+              "evidence_sha256": "0661426bb7adfe1bab47617a1cd754fc6c6466cd64282a2b52676203b4806215",
+              "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+              "source_quote": "Suitability Negarim microcatchments are mainly used for tree growing in arid and semi-arid areas. Rainfall: can be as low as 150 mm per annum. Soils: should be at least 1.5 m but preferably 2 m deep in order to ensure adequate root development and storage of the water harvested."
+            },
+            {
+              "structure": "Cultivated strips fed by alternating contour catchment strips",
+              "locator": "PDF p. 127 (printed p. 114), Cultivated strips.",
+              "required_measurement": "Soil depth at the cultivated strips, as described in the guidance; the lower boundary is unspecified.",
+              "minimum_soil_depth_m": 1,
+              "maximum_slope_pct": 4,
+              "annual_rainfall_mm": {
+                "relation": ">",
+                "value": 200
+              },
+              "binding_assessment": "The guidance does not define its soil depth by a bedrock interface. Verify the layer’s lower boundary and the soil thickness available to the cultivated strips.",
+              "evidence_id": "ev_wh_soildepth_wocatgl13_strips",
+              "source_id": "wocat_wh_guidelines_2013",
+              "evidence_sha256": "e29d09299c88a0c1d1d0e1a79fc99e5052f68289492d3bb73e37246ac7d33c31",
+              "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+              "source_quote": "Cultivated strips: On gentle slopes alternating cropping strips along the contour are built: the upper one is used as a catchment and the lower one is cropped. The width of the cropped strip ranges from 1 – 3 m. The C:A ratio is usually 1:1 but can reach 1:5 depending on rainfall and the crop. Often on the sides and the lower end of the cropped area soil bunds are constructed to impede runoff from the cropped area. Cultivated strips are used on flat land or on gentle slopes of up to 4% with at least 1 m deep soils and that receive rainfall of more than 200 mm/y."
+            }
+          ],
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "type": "trapezoidal",
+            "params": {
+              "abs_min": 100.0,
+              "opt_low": 200.0
+            },
+            "uncertainty_pct": "60.0"
+          }
+        }
+      }
     },
-    "uncertainty_pct": 60.0,
     "context_overrides": [],
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0, 'opt_low': 200.0}; uncertainty ±60% from spread. ",
-    "references": [
-      "fao_critchley_wh_manual_1991",
-      "wocat_wh_guidelines_2013"
-    ],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.3333,
+    "weight_adjustable": true,
+    "justification": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation. Retained approved calibration hold; no new numeric synthesis or approval. Dataset binding unresolved; requires matching input: Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+    "variable": "soil_depth_to_bedrock",
+    "suitability_family_id": "water_harvesting__micro_catchment",
     "evidence_ids": [
       "ev_wh_soildepth_critchley91_negarim",
       "ev_wh_soildepth_wocatgl13_strips"
     ],
-    "paper_support_pct": 15.9,
     "n_sources": 2,
-    "corpus_n": 19
-  },
-  {
-    "mapping_id": "water_harvesting__micro_catchment__slope",
-    "suitability_family_id": "water_harvesting__micro_catchment",
-    "variable": "slope",
-    "variable_unit": "degrees",
-    "dataset_id": "[\"srtm_dem_30m\",\"srtm_dem_90m\"]",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 0.6,
-      "opt_low": 0.6,
-      "opt_high": 2.9,
-      "abs_max": 2.9
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.6, 'opt_low': 0.6, 'opt_high': 2.9, 'abs_max': 2.9}; uncertainty ±60% from spread. Collapsed 6 citation echo(es). ",
-    "references": [
-      "fao_critchley_wh_manual_1991",
-      "wocat_wh_guidelines_2013"
-    ],
-    "evidence_ids": [
-      "ev_wh_slope_critchley91_negarim",
-      "ev_wh_slope_wocatgl13_negarim"
-    ],
-    "paper_support_pct": 15.9,
-    "n_sources": 2,
-    "corpus_n": 19
+    "corpus_n": null,
+    "paper_support_pct": null,
+    "dataset_id": ""
   }
 ]

@@ -1,5 +1,7 @@
 """Derived implementation readiness, separate from spatial execution authorization."""
 
+from .calibration_requirements import calibration_requirement
+
 LABELS = {
     "defined": "Defined for implementation",
     "provisional": "Provisional input assumption",
@@ -56,7 +58,16 @@ def assess(row):
     ]
     proposals = policy.get("input_proposals", []) if policy_matches else []
     state = "blocked"
-    if role == "reference_only":
+    hold = calibration_requirement(
+        {"relationship_params": row.get("declared_relationship", {}).get("params", {})}
+    )
+    if hold:
+        reason = "Numerical calibration held: " + hold["reason"]
+        action(
+            "Method lead",
+            "Resolve the documented calibration hold before selecting a response.",
+        )
+    elif role == "reference_only":
         state = "reference_only"
         reason = "Retained operational evidence; no executable response is claimed."
     elif role == "operational_scenario":

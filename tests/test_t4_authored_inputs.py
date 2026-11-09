@@ -153,7 +153,20 @@ def test_in_place_build_protects_divergent_accepted_hold(tmp_path, new_hold):
     root = tmp_path / "data"
     inputs = copy_inputs(root, practice)
     held = t4._rd(inputs.review_holds)[0]["mapping_id"]
-    target = "water_harvesting__in_situ__slope" if new_hold else held
+    target = "synthetic_new_mapping" if new_hold else held
+
+    if new_hold:
+        # Add a synthetic newly accepted mapping before the reviewer places a hold.
+        setting = next(
+            r for r in t4._rd(inputs.mapping_settings) if r["variable"] == "slope"
+        )
+
+        def add_mapping(rows):
+            record = dict.fromkeys(rows[0], "")
+            record.update(setting, mapping_id=target)
+            rows.append(record)
+
+        replace_record(inputs.audited_recipe, add_mapping)
 
     def later_review(rows):
         row = next(r for r in rows if r["mapping_id"] == target)

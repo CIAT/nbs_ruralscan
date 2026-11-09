@@ -194,6 +194,74 @@ def test_unapproved_links_rejected_even_if_upstream_payload_is_corrupted(monkeyp
         dc.build_contract(ROOT)
 
 
+@pytest.mark.parametrize(
+    "state",
+    [
+        "pending",
+        "dropped",
+        "missing",
+        "reclassified",
+        "observed_presence",
+        "species_specific",
+    ],
+)
+def test_calibration_hold_links_documentary_evidence_only(monkeypatch, state):
+    corpus = dc.rebuild(ROOT, "agroforestry")
+    raw = next(r for r in corpus["rows"] if r["mapping_id"] == NDVI)
+    original = json.loads(raw["evidence_ids"])[0]
+    witness = next(r for r in corpus["evidence"] if r["evidence_id"] == original)
+    eid = "pending_source_on_calibration_hold"
+    raw["evidence_ids"] = json.dumps([eid])
+    raw["relationship_params"] = json.dumps(
+        {
+            "reviewed_adaptation": {
+                "numerical_calibration": {
+                    "status": "held",
+                    "reason": "Resolve source-specific units.",
+                }
+            }
+        }
+    )
+    if state != "missing":
+        corpus["evidence"].append(
+            {
+                **witness,
+                "evidence_id": eid,
+                "reviewer_ok": "false",
+                "review_state": "dropped" if state == "dropped" else "",
+                "variable": "slope" if state == "reclassified" else raw["variable"],
+                "suitability_family_id": raw["suitability_family_id"],
+                "claim_scope": "species_specific"
+                if state == "species_specific"
+                else "practice_technology",
+            }
+        )
+    corpus["synthesis_report"]["evidence_dispositions"].append(
+        {
+            "evidence_id": eid,
+            "disposition": "observed_presence"
+            if state == "observed_presence"
+            else "unresolved_review",
+        }
+    )
+    monkeypatch.setattr(dc, "rebuild", lambda root, nbs: corpus)
+    if state != "pending":
+        with pytest.raises(ValueError, match=eid):
+            dc.build_contract(ROOT)
+        return
+
+    result = dc.build_contract(ROOT)
+    row = indexed(result)[NDVI]
+    assert row["evidence_ids"] == [eid]
+    assert row["selected_evidence_ids"] == row["function_options"] == []
+    assert row["function_id"] is None
+    assert row["readiness"]["state"] == "blocked"
+    assert "Resolve source-specific units" in row["readiness"]["reason"]
+    assert any(eid in note for note in row["notes"])
+    ref = next(r for r in result["evidence"] if r["evidence_id"] == eid)
+    assert ref["reviewer_ok"] == "false" and not ref["function_ids"]
+
+
 def test_bind_upload_fallback_keeps_band_and_categorical_mismatch_visible():
     bindings = [
         Binding(

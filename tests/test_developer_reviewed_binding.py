@@ -208,7 +208,13 @@ def test_approved_water_holds_block_even_a_catalogued_override():
         for r in dc.read_csv(recipe / "T4_suitability_mappings.csv")
         if dc._matching_input_requirement(r)
     ]
-    assert len(held) == 4
+    assert {
+        "water_harvesting__in_situ__annual_precipitation",
+        "water_harvesting__runoff_catchment__drainage_density",
+        "water_harvesting__runoff_catchment__runoff_potential_index",
+        "water_harvesting__runoff_catchment__stream_order",
+        "water_harvesting__terracing__runoff_potential_index",
+    }.issubset({row["mapping_id"] for row in held})
     for row in held:
         assert row["dataset_id"] == ""
         requirement = dc._matching_input_requirement(row)
