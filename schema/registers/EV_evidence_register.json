@@ -15804,10 +15804,55 @@
     "suitability_family_id": "water_harvesting__in_situ",
     "variable": "slope",
     "relationship": {
-      "opt_high": 5,
-      "abs_max": 30,
+      "opt_high": null,
+      "abs_max": null,
       "unit": "degrees",
-      "direction": "bunds invert the terrace relationship: optimally suited below 2-5 degrees, declining through 5-10 and 10-18, and not suitable above 30 degrees"
+      "direction": "Keep Krois & Schulte’s Ronquillo model for bunds in degrees, with its printed classes, ambiguous optimum notation and within-study slope weight of 0.39. Above 30° scores 1. The model assigns no slope band to restricted (0).",
+      "source_profile": {
+        "role": "regional suitability model",
+        "unit": "degrees",
+        "classes": [
+          {
+            "slope_band_as_printed": "<2–5",
+            "label": "optimally suitable",
+            "source_score": 9
+          },
+          {
+            "slope_band_as_printed": "5–10",
+            "label": "highly suitable",
+            "source_score": 7
+          },
+          {
+            "slope_band_as_printed": "10–18",
+            "label": "moderately suitable",
+            "source_score": 5
+          },
+          {
+            "slope_band_as_printed": "18–30",
+            "label": "marginally suitable",
+            "source_score": 3
+          },
+          {
+            "slope_band_as_printed": ">30",
+            "label": "not suitable",
+            "source_score": 1
+          },
+          {
+            "slope_band_as_printed": null,
+            "label": "restricted",
+            "source_score": 0
+          }
+        ],
+        "slope_criterion_weight": 0.39,
+        "endpoint_convention": "Retain printed intervals. First class and touching endpoints are unresolved for scoring."
+      }
+    },
+    "context": {
+      "source_table": {
+        "locator": "PDF p. 9, Table 4, slope – bunds; PDF p. 10, Table 5, slope criterion.",
+        "practice": "Bund systems, Ronquillo watershed, northern Peru",
+        "source_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd"
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -18567,9 +18612,25 @@
     "suitability_family_id": "water_harvesting__in_situ",
     "variable": "slope",
     "relationship": {
-      "abs_max": 5.0,
+      "abs_max": null,
       "unit": "percent",
-      "direction": "flat to gentle ground; even topography without gullies or rills"
+      "direction": "FAO recommends flat to 5% grade and even ground without gullies or rills for tree-planting contour bunds. Water can overtop the bund and break it at low spots.",
+      "source_profile": {
+        "role": "implementation recommendation",
+        "slope_grade_pct": [
+          0,
+          5
+        ],
+        "terrain": "Even terrain without gullies or rills.",
+        "limitation": "Overtopping can break the bund at low spots."
+      }
+    },
+    "context": {
+      "source_table": {
+        "locator": "FAO manual §5.3.2, Suitability and Limitations, contour bunds for tree planting.",
+        "practice": "Contour bunds for tree planting",
+        "source_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860"
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -18900,7 +18961,21 @@
       "type": "qualitative",
       "mechanised_abs_max": 16,
       "unit": "percent",
-      "direction": "flat to moderate slopes; the limit applies to MECHANISED conservation agriculture only - hand planting works on steeper land"
+      "direction": "Keep mechanisation guidance within conservation agriculture. Slopes above 16% are described as unsuitable for mechanised systems. Hand planting or animal traction can be used on steeper slopes. Excluded from bund support and scoring.",
+      "source_profile": {
+        "role": "conservation-agriculture implementation guidance",
+        "unit": "percent grade",
+        "mechanised_systems_unsuitable_above": 16,
+        "steeper_slopes": "Hand planters or animal traction.",
+        "applicable_to_bund_siting": false
+      }
+    },
+    "context": {
+      "source_table": {
+        "locator": "PDF pp. 74–75 (printed pp. 77–78), Conservation agriculture, Principles and types and Applicability.",
+        "practice": "Conservation agriculture, mechanised and manual or animal-traction systems",
+        "source_sha256": "a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3"
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",

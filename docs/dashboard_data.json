@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-09T12:28:30.111385+00:00",
-  "git_commit": "887189ce4238427486816cc3e83674ec9bfc2dfd",
+  "timestamp": "2026-11-09T12:49:45.993337+00:00",
+  "git_commit": "c10e14b311383bfe94d6ff8abceab3c5019e26b1",
   "registers": {
     "SRC_source_register": [
       {
@@ -32071,10 +32071,55 @@
         "suitability_family_id": "water_harvesting__in_situ",
         "variable": "slope",
         "relationship": {
-          "opt_high": 5,
-          "abs_max": 30,
+          "opt_high": null,
+          "abs_max": null,
           "unit": "degrees",
-          "direction": "bunds invert the terrace relationship: optimally suited below 2-5 degrees, declining through 5-10 and 10-18, and not suitable above 30 degrees"
+          "direction": "Keep Krois & Schulte’s Ronquillo model for bunds in degrees, with its printed classes, ambiguous optimum notation and within-study slope weight of 0.39. Above 30° scores 1. The model assigns no slope band to restricted (0).",
+          "source_profile": {
+            "role": "regional suitability model",
+            "unit": "degrees",
+            "classes": [
+              {
+                "slope_band_as_printed": "<2–5",
+                "label": "optimally suitable",
+                "source_score": 9
+              },
+              {
+                "slope_band_as_printed": "5–10",
+                "label": "highly suitable",
+                "source_score": 7
+              },
+              {
+                "slope_band_as_printed": "10–18",
+                "label": "moderately suitable",
+                "source_score": 5
+              },
+              {
+                "slope_band_as_printed": "18–30",
+                "label": "marginally suitable",
+                "source_score": 3
+              },
+              {
+                "slope_band_as_printed": ">30",
+                "label": "not suitable",
+                "source_score": 1
+              },
+              {
+                "slope_band_as_printed": null,
+                "label": "restricted",
+                "source_score": 0
+              }
+            ],
+            "slope_criterion_weight": 0.39,
+            "endpoint_convention": "Retain printed intervals. First class and touching endpoints are unresolved for scoring."
+          }
+        },
+        "context": {
+          "source_table": {
+            "locator": "PDF p. 9, Table 4, slope – bunds; PDF p. 10, Table 5, slope criterion.",
+            "practice": "Bund systems, Ronquillo watershed, northern Peru",
+            "source_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd"
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -34834,9 +34879,25 @@
         "suitability_family_id": "water_harvesting__in_situ",
         "variable": "slope",
         "relationship": {
-          "abs_max": 5.0,
+          "abs_max": null,
           "unit": "percent",
-          "direction": "flat to gentle ground; even topography without gullies or rills"
+          "direction": "FAO recommends flat to 5% grade and even ground without gullies or rills for tree-planting contour bunds. Water can overtop the bund and break it at low spots.",
+          "source_profile": {
+            "role": "implementation recommendation",
+            "slope_grade_pct": [
+              0,
+              5
+            ],
+            "terrain": "Even terrain without gullies or rills.",
+            "limitation": "Overtopping can break the bund at low spots."
+          }
+        },
+        "context": {
+          "source_table": {
+            "locator": "FAO manual §5.3.2, Suitability and Limitations, contour bunds for tree planting.",
+            "practice": "Contour bunds for tree planting",
+            "source_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860"
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -35167,7 +35228,21 @@
           "type": "qualitative",
           "mechanised_abs_max": 16,
           "unit": "percent",
-          "direction": "flat to moderate slopes; the limit applies to MECHANISED conservation agriculture only - hand planting works on steeper land"
+          "direction": "Keep mechanisation guidance within conservation agriculture. Slopes above 16% are described as unsuitable for mechanised systems. Hand planting or animal traction can be used on steeper slopes. Excluded from bund support and scoring.",
+          "source_profile": {
+            "role": "conservation-agriculture implementation guidance",
+            "unit": "percent grade",
+            "mechanised_systems_unsuitable_above": 16,
+            "steeper_slopes": "Hand planters or animal traction.",
+            "applicable_to_bund_siting": false
+          }
+        },
+        "context": {
+          "source_table": {
+            "locator": "PDF pp. 74–75 (printed pp. 77–78), Conservation agriculture, Principles and types and Applicability.",
+            "practice": "Conservation agriculture, mechanised and manual or animal-traction systems",
+            "source_sha256": "a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3"
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -324044,6 +324119,144 @@
           "n_sources": 2
         },
         {
+          "mapping_id": "water_harvesting__in_situ__slope",
+          "nbs_id": "water_harvesting_conservation",
+          "dataset_id": "srtm_dem_30m",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "trapezoidal",
+          "relationship_params": {
+            "reviewed_adaptation": {
+              "numerical_calibration": {
+                "scope": "water_harvesting__in_situ__slope",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "status": "held",
+                "decision_ref": "methodology/audits/t4_water_block_20261109/in_field_bund_slope.md",
+                "reason": "Retain FAO tree-bund guidance and the full Krois regional bund model in native slope units. The mechanisation profile concerns conservation agriculture. No common bund slope cutoff or suitability score is approved.",
+                "retained_source_profiles": [
+                  {
+                    "structure": "Bund systems, Ronquillo watershed, northern Peru",
+                    "locator": "PDF p. 9, Table 4, slope – bunds; PDF p. 10, Table 5, slope criterion.",
+                    "unit": "degrees",
+                    "published_profile": {
+                      "role": "regional suitability model",
+                      "unit": "degrees",
+                      "classes": [
+                        {
+                          "slope_band_as_printed": "<2–5",
+                          "label": "optimally suitable",
+                          "source_score": 9
+                        },
+                        {
+                          "slope_band_as_printed": "5–10",
+                          "label": "highly suitable",
+                          "source_score": 7
+                        },
+                        {
+                          "slope_band_as_printed": "10–18",
+                          "label": "moderately suitable",
+                          "source_score": 5
+                        },
+                        {
+                          "slope_band_as_printed": "18–30",
+                          "label": "marginally suitable",
+                          "source_score": 3
+                        },
+                        {
+                          "slope_band_as_printed": ">30",
+                          "label": "not suitable",
+                          "source_score": 1
+                        },
+                        {
+                          "slope_band_as_printed": null,
+                          "label": "restricted",
+                          "source_score": 0
+                        }
+                      ],
+                      "slope_criterion_weight": 0.39,
+                      "endpoint_convention": "Retain printed intervals. First class and touching endpoints are unresolved for scoring."
+                    },
+                    "interpretation": "Keep Krois & Schulte’s Ronquillo model for bunds in degrees, with its printed classes, ambiguous optimum notation and within-study slope weight of 0.39. Above 30° scores 1. The model assigns no slope band to restricted (0).",
+                    "disposition": "bund_evidence_scoped_to_regional_siting_model",
+                    "source_weight_row_quote": "Slope\n7\n3\n1\n3\n3\n3\n0.39",
+                    "evidence_id": "ev_wh_slope_krois14_bunds",
+                    "source_id": "gismcda_swc_siting_2014",
+                    "evidence_sha256": "e1cc52d7776937d129a3cb0d5efd1bf4272cf8cd10b0bef0515b6cde3406eebf",
+                    "source_artifact_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd",
+                    "source_quote": "Table 4\nSuitability levels for SWCTs (terraces and bunds).\nSuitability rating\nOptimally suitable\nHighly suitable\nModerately suitable\nMarginally suitable\nNot suitable\nRestricted\nSuitability level\n9\n7\n5\n3\n1\n0\nRainfall (mm)\n400e600\n200e400\n600e800\n800e1000\n100e200\n1000e1200\n0e100\n>1200\ne\nRunoff coefﬁcient\n>0.9\n0.6e0.9\n0.3e0.6\n0e0.3\ne\ne\nSlope e terraces (\u0006)\n18e30\n10e18 > 30\n5e10\n2e5\n0e2\ne\nSlope e bunds (\u0006)\n<2e5\n5e10\n10e18\n18e30\n>30\ne\nSoil depth (m)\n>1.0\n0.5e1.0\n0.3e0.5\n0.2e0.3\n<0.2\ne\nSoil texture (% clay content)\n15e35\n6e15\n35e55\n0e6\n>55\ne\nLand use\nAgriculture\nMeadows, Shrub land,\nScarce vegetation\nGrassland\nForest\ne\nInfrastructure,\nWater bodies"
+                  },
+                  {
+                    "structure": "Contour bunds for tree planting",
+                    "locator": "FAO manual §5.3.2, Suitability and Limitations, contour bunds for tree planting.",
+                    "unit": "percent",
+                    "published_profile": {
+                      "role": "implementation recommendation",
+                      "slope_grade_pct": [
+                        0,
+                        5
+                      ],
+                      "terrain": "Even terrain without gullies or rills.",
+                      "limitation": "Overtopping can break the bund at low spots."
+                    },
+                    "interpretation": "FAO recommends flat to 5% grade and even ground without gullies or rills for tree-planting contour bunds. Water can overtop the bund and break it at low spots.",
+                    "disposition": "siting_recommendation_scoped_to_tree_planting_contour_bunds",
+                    "other_conditions": "Arid to semi-arid, 200–750 mm rainfall and soil at least 1.5 m deep, preferably 2 m.",
+                    "evidence_id": "ev_wh_slope_critchley91_contourbunds",
+                    "source_id": "fao_critchley_wh_manual_1991",
+                    "evidence_sha256": "2d85ecc43f2958bb0aba34f207fc9af46671ba8b570d59e9112a1902b0a54796",
+                    "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+                    "source_quote": "Suitability Contour bunds for tree planting can be used under the following conditions: Rainfall: 200 - 750 mm; from semi-arid to arid areas. Soils: Must be at least 1.5 m and preferably 2 m deep to ensure adequate root development and water storage. Slopes: from flat up to 5.0%."
+                  },
+                  {
+                    "structure": "Conservation agriculture, mechanised and manual or animal-traction systems",
+                    "locator": "PDF pp. 74–75 (printed pp. 77–78), Conservation agriculture, Principles and types and Applicability.",
+                    "unit": "percent",
+                    "published_profile": {
+                      "role": "conservation-agriculture implementation guidance",
+                      "unit": "percent grade",
+                      "mechanised_systems_unsuitable_above": 16,
+                      "steeper_slopes": "Hand planters or animal traction.",
+                      "applicable_to_bund_siting": false
+                    },
+                    "interpretation": "Keep mechanisation guidance within conservation agriculture. Slopes above 16% are described as unsuitable for mechanised systems. Hand planting or animal traction can be used on steeper slopes. Excluded from bund support and scoring.",
+                    "disposition": "retain_mechanisation_evidence_exclude_from_bund_support_and_scoring",
+                    "evidence_id": "ev_wh_slope_slm11_ca",
+                    "source_id": "fao_slm_in_practice_2011",
+                    "evidence_sha256": "d6a032c1a6fee25d0a4eb45b238b53b0c1f6b6bb81356d034e93c22972e42f3b",
+                    "source_artifact_sha256": "a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3",
+                    "source_quote": "Terrain and landscape: Suitable for flat to moderate slopes, mechanised sys­ tems are unsuitable for slopes steeper than 16%, but hand planters are suit­ able for steeper slopes."
+                  }
+                ],
+                "excluded_from_bund_scoring": [
+                  "ev_wh_slope_slm11_ca"
+                ],
+                "held_relationship": {
+                  "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+                  "type": "trapezoidal",
+                  "params": {
+                    "opt_high": 5.0,
+                    "abs_max": 30.0
+                  },
+                  "uncertainty_pct": "60.0"
+                }
+              }
+            }
+          },
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.2,
+          "weight_adjustable": true,
+          "justification": "Retain FAO tree-bund guidance and the full Krois regional bund model in native slope units. The mechanisation profile concerns conservation agriculture. No common bund slope cutoff or suitability score is approved. Retained approved calibration hold; no new numeric synthesis or approval.",
+          "variable": "slope",
+          "suitability_family_id": "water_harvesting__in_situ",
+          "evidence_ids": [
+            "ev_wh_slope_krois14_bunds",
+            "ev_wh_slope_critchley91_contourbunds"
+          ],
+          "n_sources": 2
+        },
+        {
           "mapping_id": "water_harvesting__in_situ__soil_depth_to_bedrock",
           "nbs_id": "water_harvesting_conservation",
           "suitability_dimension": "biophysical_constraint",
@@ -371021,9 +371234,9 @@
     }
   ],
   "qaqc_stats": {
-    "total_reviews": 2465,
+    "total_reviews": 2468,
     "queried": 211,
-    "n_reviewers": 27,
+    "n_reviewers": 28,
     "by_reviewer": {
       "ai_mechanism_rule": 727,
       "orchestrator": 466,
@@ -371046,6 +371259,7 @@
       "ai_supersede_check": 4,
       "ai_t4_negarim_source_check": 4,
       "Codex source recovery": 3,
+      "ai_t4_bund_slope_source_check": 3,
       "ai_scope_classifier_repair": 2,
       "ai_t4_clay_source_check": 2,
       "ai_t4_terrace_slope_check": 2,
@@ -371055,7 +371269,7 @@
     },
     "by_decision": {
       "drop": 1541,
-      "ok": 601,
+      "ok": 604,
       "flag": 210,
       "reclassify": 18,
       "retag": 4,
@@ -371065,7 +371279,7 @@
     },
     "by_reason": {
       "insufficient_context": 695,
-      "accepted_correction": 567,
+      "accepted_correction": 570,
       "unspecified": 312,
       "other": 270,
       "wrong_practice": 167,
@@ -371101,7 +371315,7 @@
       "routing_ruling": 3,
       "variable_ruling": 31,
       "direction_audit": 122,
-      "unit_correction": 90
+      "unit_correction": 93
     },
     "flag_eval": {
       "tp": 64,
@@ -371112,10 +371326,10 @@
       "tp_corrected": 26
     },
     "pass_eval": {
-      "tn": 573,
+      "tn": 576,
       "fn": 10,
       "out_of_remit": 1493,
-      "checked": 2076,
+      "checked": 2079,
       "fn_rate_pct": 1.7
     },
     "recall_est_pct": 86.5,
@@ -403361,6 +403575,36 @@
       "reason": "accepted_correction",
       "note": "context.source_table, relationship.abs_max, relationship.abs_min, relationship.direction, relationship.source_profile: WOCAT reports the common combined use context: 150–500 mm/year and 1–5% slopes. No rainfall suitability limits are established. Keep source values in their stated roles and remove unapproved executable scalar limits.",
       "reviewer": "ai_t4_negarim_source_check"
+    },
+    {
+      "date": "2026-11-09",
+      "evidence_id": "ev_wh_slope_krois14_bunds",
+      "source_id": "gismcda_swc_siting_2014",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.source_table, relationship.abs_max, relationship.direction, relationship.opt_high, relationship.source_profile: Keep Krois & Schulte’s Ronquillo model for bunds in degrees, with its printed classes, ambiguous optimum notation and within-study slope weight of 0.39. Above 30° scores 1. The model assigns no slope band to restricted (0).",
+      "reviewer": "ai_t4_bund_slope_source_check"
+    },
+    {
+      "date": "2026-11-09",
+      "evidence_id": "ev_wh_slope_critchley91_contourbunds",
+      "source_id": "fao_critchley_wh_manual_1991",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.source_table, relationship.abs_max, relationship.direction, relationship.source_profile: FAO recommends flat to 5% grade and even ground without gullies or rills for tree-planting contour bunds. Water can overtop the bund and break it at low spots.",
+      "reviewer": "ai_t4_bund_slope_source_check"
+    },
+    {
+      "date": "2026-11-09",
+      "evidence_id": "ev_wh_slope_slm11_ca",
+      "source_id": "fao_slm_in_practice_2011",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.source_table, relationship.direction, relationship.source_profile: Keep mechanisation guidance within conservation agriculture. Slopes above 16% are described as unsuitable for mechanised systems. Hand planting or animal traction can be used on steeper slopes. Excluded from bund support and scoring.",
+      "reviewer": "ai_t4_bund_slope_source_check"
     }
   ],
   "family_presentation": {
@@ -403866,11 +404110,11 @@
       "source_id": "fao_critchley_wh_manual_1991",
       "page": "",
       "mapping_id": "water_harvesting__in_situ__slope",
-      "reason": "Source checked; proposed KEEP (not applied). §5.3.2 recommends flat ground up to 5% for contour bunds for trees, and even terrain without gullies/rills; overtopping/breakage at low spots explains the terrain restriction. Percent gradient, not degrees.",
-      "decision_needed": "Keep full flat-to-5% recommendation and even-terrain condition for contour bunds for trees. Any wider family application or executable exclusion requires explicit harmonisation. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "FAO recommends flat to 5% grade and even ground without gullies or rills for tree-planting contour bunds. Water can overtop the bund and break it at low spots.",
+      "decision_needed": "Approved, 9 November 2026. Retain FAO tree-bund guidance and Krois’s regional table separately. Keep mechanisation evidence outside bund scoring. No shared slope cutoff.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "9b2bb05fcc5a9e99405c7fd3f1505f02802d6a829ea96b6ddf804d0f8b23b3ba",
+      "evidence_sha256": "2d85ecc43f2958bb0aba34f207fc9af46671ba8b570d59e9112a1902b0a54796",
       "source_locator": "5.3 Contour bunds for trees > Suitability",
       "context_changed": false
     },
@@ -403914,11 +404158,11 @@
       "source_id": "fao_slm_in_practice_2011",
       "page": "75",
       "mapping_id": "water_harvesting__in_situ__slope",
-      "reason": "Source checked; proposed DROP (not applied). PDF75 / printed78 limits mechanised conservation agriculture above 16%, while hand planting/animal traction can work on steeper slopes. PDF74 defines minimum/no tillage, mulch and rotation, not a capture structure. The 16% number is mechanisation-specific and cannot limit water harvesting generally.",
-      "decision_needed": "Propose soft-drop from water-harvesting T4 for wrong_practice; preserve the source record and mechanised/manual distinction. Do not transfer its 16% limit to harvesting structures. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Keep mechanisation guidance within conservation agriculture. Slopes above 16% are described as unsuitable for mechanised systems. Hand planting or animal traction can be used on steeper slopes. Excluded from bund support and scoring.",
+      "decision_needed": "Approved, 9 November 2026. Retain FAO tree-bund guidance and Krois’s regional table separately. Keep mechanisation evidence outside bund scoring. No shared slope cutoff.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "5c805ba6e12dc9737e1a35c50d4703257b08e6540f36cbeebf5d54d669459627",
+      "evidence_sha256": "d6a032c1a6fee25d0a4eb45b238b53b0c1f6b6bb81356d034e93c22972e42f3b",
       "source_locator": "",
       "context_changed": false
     },
@@ -403930,11 +404174,11 @@
       "source_id": "gismcda_swc_siting_2014",
       "page": "9",
       "mapping_id": "water_harvesting__in_situ__slope",
-      "reason": "Source checked; proposed HOLD (not applied). Krois & Schulte Table 4 maps bund slope in degrees: optimum printed <2–5, then 5–10 high, 10–18 moderate, 18–30 marginal, >30 not suitable. Source not-suitable score is 1; restricted score is separately 0. Existing abs_max=30 risks losing this distinction.",
-      "decision_needed": "Hold scalar hard-bound encoding; retain complete ranked table for bund synthesis, including source scores and ambiguous <2–5 notation. Resolve endpoints and score convention before compilation. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Keep Krois & Schulte’s Ronquillo model for bunds in degrees, with its printed classes, ambiguous optimum notation and within-study slope weight of 0.39. Above 30° scores 1. The model assigns no slope band to restricted (0).",
+      "decision_needed": "Approved, 9 November 2026. Retain FAO tree-bund guidance and Krois’s regional table separately. Keep mechanisation evidence outside bund scoring. No shared slope cutoff.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "8751f7e92a1c854dd625276ff0c7d4da571f4864b1c18487bf40451dd6db871a",
+      "evidence_sha256": "e1cc52d7776937d129a3cb0d5efd1bf4272cf8cd10b0bef0515b6cde3406eebf",
       "source_locator": "",
       "context_changed": false
     },
@@ -404186,7 +404430,7 @@
       "source_id": "fuzzy_ahp_2017_wh_zones",
       "page": "11",
       "mapping_id": "water_harvesting__runoff_catchment__slope",
-      "reason": "Source checked; proposed KEEP (not applied). Table 4 gives slope importance 0.069; Figure 10 labels flat slopes appropriate for check dams, while undulating/rolling terrain is associated with percolation ponds. Source results report good/excellent zones at 2–8%, which is an output description, not an independent universal slope envelope.",
+      "reason": "Source checked; proposed KEEP (not applied). Table 4 gives slope importance 0.069; Figure 10 labels flat slopes appropriate for check dams, while undulating/rolling terrain is associated with percolation ponds. Source results report good/excellent zones at 2–8%, which is an output description, not an independent universal slope envelope. In the local terrain legend flat is <2%, undulating is 2–8% and rolling is 8–15%. Figure 10 combines those terrain classes with soil infiltration and land cover.",
       "decision_needed": "Keep check-dam-specific flat-slope preference and separately labelled source importance. Do not convert mapped 2–8% output or weight 0.069 into universal slope cutoffs/scores; retain structure-dependent direction. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
@@ -404330,7 +404574,7 @@
       "source_id": "karimi_2019_runoff_map_rwh_zones",
       "page": "19",
       "mapping_id": "water_harvesting__runoff_catchment__slope",
-      "reason": "Source checked; proposed KEEP (not applied). Table 6 ranks slopes 0–5, 5–10, 10–15, 15–30, >30% from best to worst. Lowest class has positive assigned weight; it is not a hard exclusion. Criterion weight 0.158 is source-model importance.",
+      "reason": "Source checked; proposed KEEP (not applied). Table 6 ranks slopes 0–5, 5–10, 10–15, 15–30, >30% from best to worst. Lowest class has positive assigned weight; it is not a hard exclusion. Criterion weight 0.158 is source-model importance. PDF p. 6 separately cites construction guidance calling slopes above 5% unsuitable. Table 6 nevertheless assigns class weights 0.082, 0.043, 0.034, 0.016 and 0.006 in order. Retain this discrepancy and the cited lineage.",
       "decision_needed": "Keep complete ranked slope profile for farm-pond targeting, including >30% lowest class. Preserve source weights separately; do not create a zero-suitability tail or transfer to all water-harvesting structures. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
@@ -404458,7 +404702,7 @@
       "source_id": "sanddam_siting_guidelines_kenya_2020",
       "page": "9",
       "mapping_id": "water_harvesting__runoff_catchment__slope",
-      "reason": "Source checked; proposed HOLD (not applied). Ngugi et al. Table 3 (PDF9) lists catchment slope 2–4% as existing guidance. Discussion PDF23 says no clear slope-performance pattern was identified and most dams on 2–5% slopes were dry. Current optimum 2–4% and flatter/steeper causal explanation overstate the evaluated guideline.",
+      "reason": "Source checked; proposed HOLD (not applied). Ngugi et al. Table 3 (PDF9) lists catchment slope 2–4% as existing guidance. Discussion PDF23 says no clear slope-performance pattern was identified and most dams on 2–5% slopes were dry. Current optimum 2–4% and flatter/steeper causal explanation overstate the evaluated guideline. Table 9 counts eight of nine dams on 2–5% catchment slopes without water at assessment. Its interval differs from the historical 2–4% siting interval.",
       "decision_needed": "Hold current optimum encoding. Retain 2–4% as historical siting guidance with its empirical challenge, keeping catchment slope distinct from riverbed gradient; do not invent a replacement optimum. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
@@ -404490,7 +404734,7 @@
       "source_id": "singh_2019_fuzzy_wh_structure_rainfed",
       "page": "4",
       "mapping_id": "water_harvesting__runoff_catchment__slope",
-      "reason": "Source checked; proposed KEEP (not applied). Vema et al. (2019), Table 2 / Fig.1 (PDF4), gives trapezoidal INPUT classes for slope (%): low (0,0,5,10), medium (5,10,20,30), high (20,30,100,100). Section 3.3 combines all three inputs through 27 fuzzy rules; check dams/farm ponds and percolation tanks can respond differently. These values do not directly score structure suitability.",
+      "reason": "Source checked; proposed KEEP (not applied). Vema et al. (2019), Table 2 / Fig.1 (PDF4), gives trapezoidal INPUT classes for slope (%): low (0,0,5,10), medium (5,10,20,30), high (20,30,100,100). Section 3.3 combines all three inputs through 27 fuzzy rules; check dams/farm ponds and percolation tanks can respond differently. These values do not directly score structure suitability. The study area spans 0–11.97% grade, so the high input class exceeds the mapped terrain range.",
       "decision_needed": "Keep all slope (%) input classes and the conditional rule-base context. No direct input-membership-to-suitability conversion; retain storage-specific direction separately and do not extend it to percolation/recharge structures. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
@@ -430045,6 +430289,7 @@
         "approved_evidence_ids": [],
         "reviewed_evidence_ids": [
           "ev_wh_precip_critchley91_negarim",
+          "ev_wh_slope_critchley91_contourbunds",
           "ev_wh_slope_critchley91_negarim"
         ],
         "extraction_counts": {
@@ -430058,6 +430303,7 @@
             "ev_wh_precip_critchley91_contourbunds",
             "ev_wh_precip_critchley91_negarim",
             "ev_wh_precip_critchley91_trapezoidal",
+            "ev_wh_slope_critchley91_contourbunds",
             "ev_wh_slope_critchley91_negarim",
             "ev_wh_soildepth_critchley91_contourbunds",
             "ev_wh_soildepth_critchley91_negarim"
@@ -430217,7 +430463,8 @@
         ],
         "approved_evidence_ids": [],
         "reviewed_evidence_ids": [
-          "ev_rain_water_productivity_faoslm11_2"
+          "ev_rain_water_productivity_faoslm11_2",
+          "ev_wh_slope_slm11_ca"
         ],
         "extraction_counts": {
           "T4": 8,
@@ -432688,6 +432935,7 @@
         "approved_evidence_ids": [],
         "reviewed_evidence_ids": [
           "ev_wh_annual_precipitation_krois14_1",
+          "ev_wh_slope_krois14_bunds",
           "ev_wh_slope_krois14_terraces",
           "ev_wh_soil_texture_krois14_1"
         ],
@@ -432700,6 +432948,7 @@
         "contributions": {
           "T4": [
             "ev_wh_runoff_potential_index_krois14_1",
+            "ev_wh_slope_krois14_bunds",
             "ev_wh_slope_krois14_terraces",
             "ev_wh_soil_depth_krois14_1"
           ],
@@ -487064,7 +487313,7 @@
       }
     ],
     "totals": {
-      "compiled_outputs": 730,
+      "compiled_outputs": 731,
       "evidence_ids": [
         "EV_binam_2017_007",
         "EV_chomba_2020_001",
@@ -493514,7 +493763,7 @@
         "ev_yield_stability_sileshi12_3",
         "ev_yield_stability_silv26_1"
       ],
-      "contributing_excerpts": 3082,
+      "contributing_excerpts": 3084,
       "contributing_sources": 565,
       "known_sources": 946,
       "source_keys": [
@@ -494473,19 +494722,19 @@
       "active_excerpts": 4913,
       "retained_excerpts": 4913,
       "all_excerpts": 6447,
-      "reviewed_excerpts": 2140,
-      "unreviewed_excerpts": 4307,
+      "reviewed_excerpts": 2143,
+      "unreviewed_excerpts": 4304,
       "reviewed_pct": 33.2,
       "approved_excerpts": 414,
       "approved_pct": 19.3,
-      "reviewed_active_excerpts": 611,
+      "reviewed_active_excerpts": 614,
       "reviewed_dropped_excerpts": 1529,
-      "reviewed_unresolved_excerpts": 197,
+      "reviewed_unresolved_excerpts": 200,
       "dropped_excerpts": 1534,
-      "t4_relationships": 45,
+      "t4_relationships": 46,
       "t4_operational_relationships": 8,
-      "t4_structural_relationships": 37,
-      "t4_evidence_backed_relationships": 36,
+      "t4_structural_relationships": 38,
+      "t4_evidence_backed_relationships": 37,
       "t4_contributing_sources": 27,
       "source_mix": {
         "literature": 582,
@@ -518702,7 +518951,7 @@
         "nbs_id": "water_harvesting_conservation",
         "name": "Water harvesting conservation",
         "metrics": {
-          "compiled_outputs": 218,
+          "compiled_outputs": 219,
           "evidence_ids": [
             "ev_accessibility_travel_time_schmidt12_11",
             "ev_accessibility_travel_time_wei16_1_op",
@@ -521334,7 +521583,7 @@
             "ev_yield_stability_seti18_3",
             "ev_yield_stability_silv26_1"
           ],
-          "contributing_excerpts": 1081,
+          "contributing_excerpts": 1083,
           "contributing_sources": 172,
           "known_sources": 259,
           "source_keys": [
@@ -521606,19 +521855,19 @@
           "active_excerpts": 1724,
           "retained_excerpts": 1724,
           "all_excerpts": 2629,
-          "reviewed_excerpts": 1034,
-          "unreviewed_excerpts": 1595,
-          "reviewed_pct": 39.3,
+          "reviewed_excerpts": 1037,
+          "unreviewed_excerpts": 1592,
+          "reviewed_pct": 39.4,
           "approved_excerpts": 40,
           "approved_pct": 3.9,
-          "reviewed_active_excerpts": 130,
+          "reviewed_active_excerpts": 133,
           "reviewed_dropped_excerpts": 904,
-          "reviewed_unresolved_excerpts": 90,
+          "reviewed_unresolved_excerpts": 93,
           "dropped_excerpts": 905,
-          "t4_relationships": 15,
+          "t4_relationships": 16,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 15,
-          "t4_evidence_backed_relationships": 15,
+          "t4_structural_relationships": 16,
+          "t4_evidence_backed_relationships": 16,
           "t4_contributing_sources": 14,
           "source_mix": {
             "literature": 137,
@@ -522034,7 +522283,7 @@
             "scope_kind": "family",
             "scope_definition": "Earthen bunds or ridges on the contour that hold rain where it falls on the field.",
             "metrics": {
-              "compiled_outputs": 25,
+              "compiled_outputs": 26,
               "evidence_ids": [
                 "ev_adoption_rate_arsl15_op1",
                 "ev_adoption_rate_arsl15_op2",
@@ -522650,8 +522899,8 @@
                 "ev_yield_stability_ndun23_1",
                 "ev_yield_stability_seti18_3"
               ],
-              "contributing_excerpts": 261,
-              "contributing_sources": 50,
+              "contributing_excerpts": 263,
+              "contributing_sources": 51,
               "known_sources": 105,
               "source_keys": [
                 "abate_2021_ifpri_dp2069_cbinremp",
@@ -522763,25 +523012,25 @@
               "extracted_sources": 60,
               "reviewed_sources": 6,
               "fully_reviewed_sources": 1,
-              "sources_with_reviewed_excerpts": 46,
+              "sources_with_reviewed_excerpts": 48,
               "sources_with_approved_excerpts": 6,
               "active_excerpts": 361,
               "retained_excerpts": 361,
               "all_excerpts": 613,
-              "reviewed_excerpts": 288,
-              "unreviewed_excerpts": 325,
-              "reviewed_pct": 47.0,
+              "reviewed_excerpts": 291,
+              "unreviewed_excerpts": 322,
+              "reviewed_pct": 47.5,
               "approved_excerpts": 12,
-              "approved_pct": 4.2,
-              "reviewed_active_excerpts": 36,
+              "approved_pct": 4.1,
+              "reviewed_active_excerpts": 39,
               "reviewed_dropped_excerpts": 252,
-              "reviewed_unresolved_excerpts": 24,
+              "reviewed_unresolved_excerpts": 27,
               "dropped_excerpts": 252,
-              "t4_relationships": 3,
+              "t4_relationships": 4,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 3,
-              "t4_evidence_backed_relationships": 3,
-              "t4_contributing_sources": 3,
+              "t4_structural_relationships": 4,
+              "t4_evidence_backed_relationships": 4,
+              "t4_contributing_sources": 4,
               "source_mix": {
                 "literature": 72,
                 "grey": 25,
@@ -529056,9 +529305,9 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 15,
-            "evidence_backed_outputs": 15,
-            "contributing_excerpts": 37,
+            "output_count": 16,
+            "evidence_backed_outputs": 16,
+            "contributing_excerpts": 39,
             "contributing_sources": 14,
             "evidence_ids": [
               "ev_wh_annual_precipitation_kahinda08_3",
@@ -529083,7 +529332,9 @@
               "ev_wh_runoff_potential_index_singh17_1",
               "ev_wh_runoff_potential_index_vema19_1",
               "ev_wh_slope_chen17_1",
+              "ev_wh_slope_critchley91_contourbunds",
               "ev_wh_slope_critchley91_negarim",
+              "ev_wh_slope_krois14_bunds",
               "ev_wh_slope_krois14_terraces",
               "ev_wh_slope_slm11_fanyajuu",
               "ev_wh_slope_wocatgl13_benchterraces",
@@ -529154,6 +529405,26 @@
                 "source_keys": [
                   "fao_slm_in_practice_2011",
                   "kahinda2008_sa_rwh_suitability"
+                ]
+              },
+              {
+                "id": "water_harvesting__in_situ__slope",
+                "label": "water harvesting  in situ  slope · In situ",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__in_situ"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_slope_critchley91_contourbunds",
+                  "ev_wh_slope_krois14_bunds"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "gismcda_swc_siting_2014"
                 ]
               },
               {
@@ -574597,7 +574868,7 @@
         "project_level": false,
         "evidence_tracking": "routed",
         "totals": {
-          "compiled_outputs": 37,
+          "compiled_outputs": 38,
           "evidence_ids": [
             "EV_chomba_2020_001",
             "EV_chomba_2020_002",
@@ -575670,7 +575941,7 @@
             "ev_wh_watertable_wocat7777_1",
             "ev_wh_watertable_wocat7778_1"
           ],
-          "contributing_excerpts": 63,
+          "contributing_excerpts": 65,
           "contributing_sources": 27,
           "known_sources": 210,
           "source_keys": [
@@ -575888,24 +576159,24 @@
           "extracted_sources": 197,
           "reviewed_sources": 60,
           "fully_reviewed_sources": 54,
-          "sources_with_reviewed_excerpts": 80,
+          "sources_with_reviewed_excerpts": 81,
           "sources_with_approved_excerpts": 60,
           "active_excerpts": 851,
           "retained_excerpts": 851,
           "all_excerpts": 1070,
-          "reviewed_excerpts": 442,
-          "unreviewed_excerpts": 628,
-          "reviewed_pct": 41.3,
+          "reviewed_excerpts": 445,
+          "unreviewed_excerpts": 625,
+          "reviewed_pct": 41.6,
           "approved_excerpts": 215,
-          "approved_pct": 48.6,
-          "reviewed_active_excerpts": 225,
+          "approved_pct": 48.3,
+          "reviewed_active_excerpts": 228,
           "reviewed_dropped_excerpts": 217,
-          "reviewed_unresolved_excerpts": 10,
+          "reviewed_unresolved_excerpts": 13,
           "dropped_excerpts": 219,
-          "t4_relationships": 37,
+          "t4_relationships": 38,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 37,
-          "t4_evidence_backed_relationships": 36,
+          "t4_structural_relationships": 38,
+          "t4_evidence_backed_relationships": 37,
           "t4_contributing_sources": 27,
           "source_mix": {
             "literature": 106,
@@ -579997,7 +580268,7 @@
             "nbs_id": "water_harvesting_conservation",
             "name": "Water harvesting conservation",
             "metrics": {
-              "compiled_outputs": 15,
+              "compiled_outputs": 16,
               "evidence_ids": [
                 "ev_wh5_adham_2018_clay_content",
                 "ev_wh5_adham_2018_land_cover",
@@ -580382,7 +580653,7 @@
                 "ev_wh_watertable_wocat7777_1",
                 "ev_wh_watertable_wocat7778_1"
               ],
-              "contributing_excerpts": 37,
+              "contributing_excerpts": 39,
               "contributing_sources": 14,
               "known_sources": 74,
               "source_keys": [
@@ -580464,24 +580735,24 @@
               "extracted_sources": 71,
               "reviewed_sources": 2,
               "fully_reviewed_sources": 2,
-              "sources_with_reviewed_excerpts": 10,
+              "sources_with_reviewed_excerpts": 11,
               "sources_with_approved_excerpts": 2,
               "active_excerpts": 367,
               "retained_excerpts": 367,
               "all_excerpts": 382,
-              "reviewed_excerpts": 29,
-              "unreviewed_excerpts": 353,
-              "reviewed_pct": 7.6,
+              "reviewed_excerpts": 32,
+              "unreviewed_excerpts": 350,
+              "reviewed_pct": 8.4,
               "approved_excerpts": 5,
-              "approved_pct": 17.2,
-              "reviewed_active_excerpts": 14,
+              "approved_pct": 15.6,
+              "reviewed_active_excerpts": 17,
               "reviewed_dropped_excerpts": 15,
-              "reviewed_unresolved_excerpts": 9,
+              "reviewed_unresolved_excerpts": 12,
               "dropped_excerpts": 15,
-              "t4_relationships": 15,
+              "t4_relationships": 16,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 15,
-              "t4_evidence_backed_relationships": 15,
+              "t4_structural_relationships": 16,
+              "t4_evidence_backed_relationships": 16,
               "t4_contributing_sources": 14,
               "source_mix": {
                 "literature": 19,
@@ -580621,7 +580892,7 @@
                 "scope_kind": "family",
                 "scope_definition": "Earthen bunds or ridges on the contour that hold rain where it falls on the field.",
                 "metrics": {
-                  "compiled_outputs": 3,
+                  "compiled_outputs": 4,
                   "evidence_ids": [
                     "ev_wh_annual_precipitation_kahinda08_2",
                     "ev_wh_annual_precipitation_kahinda08_3",
@@ -580687,8 +580958,8 @@
                     "ev_wh_watertable_wocat1219_1",
                     "ev_wh_watertable_wocat1587_1"
                   ],
-                  "contributing_excerpts": 6,
-                  "contributing_sources": 3,
+                  "contributing_excerpts": 8,
+                  "contributing_sources": 4,
                   "known_sources": 15,
                   "source_keys": [
                     "fao_critchley_wh_manual_1991",
@@ -580710,25 +580981,25 @@
                   "extracted_sources": 12,
                   "reviewed_sources": 1,
                   "fully_reviewed_sources": 1,
-                  "sources_with_reviewed_excerpts": 5,
+                  "sources_with_reviewed_excerpts": 8,
                   "sources_with_approved_excerpts": 1,
                   "active_excerpts": 48,
                   "retained_excerpts": 48,
                   "all_excerpts": 63,
-                  "reviewed_excerpts": 19,
-                  "unreviewed_excerpts": 44,
-                  "reviewed_pct": 30.2,
+                  "reviewed_excerpts": 22,
+                  "unreviewed_excerpts": 41,
+                  "reviewed_pct": 34.9,
                   "approved_excerpts": 3,
-                  "approved_pct": 15.8,
-                  "reviewed_active_excerpts": 4,
+                  "approved_pct": 13.6,
+                  "reviewed_active_excerpts": 7,
                   "reviewed_dropped_excerpts": 15,
-                  "reviewed_unresolved_excerpts": 1,
+                  "reviewed_unresolved_excerpts": 4,
                   "dropped_excerpts": 15,
-                  "t4_relationships": 3,
+                  "t4_relationships": 4,
                   "t4_operational_relationships": 0,
-                  "t4_structural_relationships": 3,
-                  "t4_evidence_backed_relationships": 3,
-                  "t4_contributing_sources": 3,
+                  "t4_structural_relationships": 4,
+                  "t4_evidence_backed_relationships": 4,
+                  "t4_contributing_sources": 4,
                   "source_mix": {
                     "literature": 4,
                     "grey": 11,
@@ -581680,9 +581951,9 @@
                 "label": "Suitability",
                 "unit": "suitability rules",
                 "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-                "output_count": 15,
-                "evidence_backed_outputs": 15,
-                "contributing_excerpts": 37,
+                "output_count": 16,
+                "evidence_backed_outputs": 16,
+                "contributing_excerpts": 39,
                 "contributing_sources": 14,
                 "evidence_ids": [
                   "ev_wh_annual_precipitation_kahinda08_3",
@@ -581707,7 +581978,9 @@
                   "ev_wh_runoff_potential_index_singh17_1",
                   "ev_wh_runoff_potential_index_vema19_1",
                   "ev_wh_slope_chen17_1",
+                  "ev_wh_slope_critchley91_contourbunds",
                   "ev_wh_slope_critchley91_negarim",
+                  "ev_wh_slope_krois14_bunds",
                   "ev_wh_slope_krois14_terraces",
                   "ev_wh_slope_slm11_fanyajuu",
                   "ev_wh_slope_wocatgl13_benchterraces",
@@ -581778,6 +582051,26 @@
                     "source_keys": [
                       "fao_slm_in_practice_2011",
                       "kahinda2008_sa_rwh_suitability"
+                    ]
+                  },
+                  {
+                    "id": "water_harvesting__in_situ__slope",
+                    "label": "water harvesting  in situ  slope · In situ",
+                    "nbs_id": "water_harvesting_conservation",
+                    "family_ids": [
+                      "water_harvesting__in_situ"
+                    ],
+                    "farming_system": "",
+                    "scope_type": "",
+                    "scope_id": "",
+                    "risk_role": "",
+                    "evidence_ids": [
+                      "ev_wh_slope_critchley91_contourbunds",
+                      "ev_wh_slope_krois14_bunds"
+                    ],
+                    "source_keys": [
+                      "fao_critchley_wh_manual_1991",
+                      "gismcda_swc_siting_2014"
                     ]
                   },
                   {
@@ -582839,9 +583132,9 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 37,
-            "evidence_backed_outputs": 36,
-            "contributing_excerpts": 63,
+            "output_count": 38,
+            "evidence_backed_outputs": 37,
+            "contributing_excerpts": 65,
             "contributing_sources": 27,
             "evidence_ids": [
               "EV_wocat_507_2019_008",
@@ -582892,7 +583185,9 @@
               "ev_wh_runoff_potential_index_singh17_1",
               "ev_wh_runoff_potential_index_vema19_1",
               "ev_wh_slope_chen17_1",
+              "ev_wh_slope_critchley91_contourbunds",
               "ev_wh_slope_critchley91_negarim",
+              "ev_wh_slope_krois14_bunds",
               "ev_wh_slope_krois14_terraces",
               "ev_wh_slope_slm11_fanyajuu",
               "ev_wh_slope_wocatgl13_benchterraces",
@@ -583309,6 +583604,26 @@
                 "source_keys": [
                   "fao_slm_in_practice_2011",
                   "kahinda2008_sa_rwh_suitability"
+                ]
+              },
+              {
+                "id": "water_harvesting__in_situ__slope",
+                "label": "water harvesting  in situ  slope · In situ",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__in_situ"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_slope_critchley91_contourbunds",
+                  "ev_wh_slope_krois14_bunds"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "gismcda_swc_siting_2014"
                 ]
               },
               {
@@ -647235,9 +647550,9 @@
         "label": "Suitability",
         "unit": "suitability rules",
         "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-        "output_count": 37,
-        "evidence_backed_outputs": 36,
-        "contributing_excerpts": 63,
+        "output_count": 38,
+        "evidence_backed_outputs": 37,
+        "contributing_excerpts": 65,
         "contributing_sources": 27,
         "evidence_ids": [
           "EV_wocat_507_2019_008",
@@ -647288,7 +647603,9 @@
           "ev_wh_runoff_potential_index_singh17_1",
           "ev_wh_runoff_potential_index_vema19_1",
           "ev_wh_slope_chen17_1",
+          "ev_wh_slope_critchley91_contourbunds",
           "ev_wh_slope_critchley91_negarim",
+          "ev_wh_slope_krois14_bunds",
           "ev_wh_slope_krois14_terraces",
           "ev_wh_slope_slm11_fanyajuu",
           "ev_wh_slope_wocatgl13_benchterraces",
@@ -647705,6 +648022,26 @@
             "source_keys": [
               "fao_slm_in_practice_2011",
               "kahinda2008_sa_rwh_suitability"
+            ]
+          },
+          {
+            "id": "water_harvesting__in_situ__slope",
+            "label": "water harvesting  in situ  slope · In situ",
+            "nbs_id": "water_harvesting_conservation",
+            "family_ids": [
+              "water_harvesting__in_situ"
+            ],
+            "farming_system": "",
+            "scope_type": "",
+            "scope_id": "",
+            "risk_role": "",
+            "evidence_ids": [
+              "ev_wh_slope_critchley91_contourbunds",
+              "ev_wh_slope_krois14_bunds"
+            ],
+            "source_keys": [
+              "fao_critchley_wh_manual_1991",
+              "gismcda_swc_siting_2014"
             ]
           },
           {
@@ -687146,7 +687483,7 @@
         "catalogue": {
           "summary": {
             "structural_claims": 367,
-            "explicitly_linked_claims": 37,
+            "explicitly_linked_claims": 39,
             "focus_claims": 5,
             "selection_only_with_relationship_content": 2,
             "scopes": {
@@ -687224,8 +687561,8 @@
               "claim_scope": "practice_technology",
               "evidence_type": "literature_relationship",
               "reviewer_ok": "false",
-              "relationship": "{\"opt_high\": 5, \"abs_max\": 30, \"unit\": \"degrees\", \"direction\": \"bunds invert the terrace relationship: optimally suited below 2-5 degrees, declining through 5-10 and 10-18, and not suitable above 30 degrees\"}",
-              "context": "",
+              "relationship": "{\"opt_high\": null, \"abs_max\": null, \"unit\": \"degrees\", \"direction\": \"Keep Krois & Schulte’s Ronquillo model for bunds in degrees, with its printed classes, ambiguous optimum notation and within-study slope weight of 0.39. Above 30° scores 1. The model assigns no slope band to restricted (0).\", \"source_profile\": {\"role\": \"regional suitability model\", \"unit\": \"degrees\", \"classes\": [{\"slope_band_as_printed\": \"<2–5\", \"label\": \"optimally suitable\", \"source_score\": 9}, {\"slope_band_as_printed\": \"5–10\", \"label\": \"highly suitable\", \"source_score\": 7}, {\"slope_band_as_printed\": \"10–18\", \"label\": \"moderately suitable\", \"source_score\": 5}, {\"slope_band_as_printed\": \"18–30\", \"label\": \"marginally suitable\", \"source_score\": 3}, {\"slope_band_as_printed\": \">30\", \"label\": \"not suitable\", \"source_score\": 1}, {\"slope_band_as_printed\": null, \"label\": \"restricted\", \"source_score\": 0}], \"slope_criterion_weight\": 0.39, \"endpoint_convention\": \"Retain printed intervals. First class and touching endpoints are unresolved for scoring.\"}}",
+              "context": "{\"source_table\": {\"locator\": \"PDF p. 9, Table 4, slope – bunds; PDF p. 10, Table 5, slope criterion.\", \"practice\": \"Bund systems, Ronquillo watershed, northern Peru\", \"source_sha256\": \"570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd\"}}",
               "quote": "Table 4\nSuitability levels for SWCTs (terraces and bunds).\nSuitability rating\nOptimally suitable\nHighly suitable\nModerately suitable\nMarginally suitable\nNot suitable\nRestricted\nSuitability level\n9\n7\n5\n3\n1\n0\nRainfall (mm)\n400e600\n200e400\n600e800\n800e1000\n100e200\n1000e1200\n0e100\n>1200\ne\nRunoff coefﬁcient\n>0.9\n0.6e0.9\n0.3e0.6\n0e0.3\ne\ne\nSlope e terraces (\u0006)\n18e30\n10e18 > 30\n5e10\n2e5\n0e2\ne\nSlope e bunds (\u0006)\n<2e5\n5e10\n10e18\n18e30\n>30\ne\nSoil depth (m)\n>1.0\n0.5e1.0\n0.3e0.5\n0.2e0.3\n<0.2\ne\nSoil texture (% clay content)\n15e35\n6e15\n35e55\n0e6\n>55\ne\nLand use\nAgriculture\nMeadows, Shrub land,\nScarce vegetation\nGrassland\nForest\ne\nInfrastructure,\nWater bodies",
               "page": "9",
               "locator_type": "page",
@@ -687234,12 +687571,14 @@
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "bunds invert the terrace relationship: optimally suited below 2-5 degrees, declining through 5-10 and 10-18, and not suitable above 30 degrees",
+              "source_direction": "Keep Krois & Schulte’s Ronquillo model for bunds in degrees, with its printed classes, ambiguous optimum notation and within-study slope weight of 0.39. Above 30° scores 1. The model assigns no slope band to restricted (0).",
               "has_stated_direction": true,
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__in_situ__slope"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -688929,8 +689268,8 @@
               "claim_scope": "practice_technology",
               "evidence_type": "literature_relationship",
               "reviewer_ok": "false",
-              "relationship": "{\"abs_max\": 5.0, \"unit\": \"percent\", \"direction\": \"flat to gentle ground; even topography without gullies or rills\"}",
-              "context": "",
+              "relationship": "{\"abs_max\": null, \"unit\": \"percent\", \"direction\": \"FAO recommends flat to 5% grade and even ground without gullies or rills for tree-planting contour bunds. Water can overtop the bund and break it at low spots.\", \"source_profile\": {\"role\": \"implementation recommendation\", \"slope_grade_pct\": [0, 5], \"terrain\": \"Even terrain without gullies or rills.\", \"limitation\": \"Overtopping can break the bund at low spots.\"}}",
+              "context": "{\"source_table\": {\"locator\": \"FAO manual §5.3.2, Suitability and Limitations, contour bunds for tree planting.\", \"practice\": \"Contour bunds for tree planting\", \"source_sha256\": \"b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860\"}}",
               "quote": "Suitability Contour bunds for tree planting can be used under the following conditions: Rainfall: 200 - 750 mm; from semi-arid to arid areas. Soils: Must be at least 1.5 m and preferably 2 m deep to ensure adequate root development and water storage. Slopes: from flat up to 5.0%.",
               "page": "",
               "locator_type": "section",
@@ -688939,12 +689278,14 @@
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "flat to gentle ground; even topography without gullies or rills",
+              "source_direction": "FAO recommends flat to 5% grade and even ground without gullies or rills for tree-planting contour bunds. Water can overtop the bund and break it at low spots.",
               "has_stated_direction": true,
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__in_situ__slope"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -689337,8 +689678,8 @@
               "claim_scope": "practice_technology",
               "evidence_type": "literature_relationship",
               "reviewer_ok": "false",
-              "relationship": "{\"type\": \"qualitative\", \"mechanised_abs_max\": 16, \"unit\": \"percent\", \"direction\": \"flat to moderate slopes; the limit applies to MECHANISED conservation agriculture only - hand planting works on steeper land\"}",
-              "context": "",
+              "relationship": "{\"type\": \"qualitative\", \"mechanised_abs_max\": 16, \"unit\": \"percent\", \"direction\": \"Keep mechanisation guidance within conservation agriculture. Slopes above 16% are described as unsuitable for mechanised systems. Hand planting or animal traction can be used on steeper slopes. Excluded from bund support and scoring.\", \"source_profile\": {\"role\": \"conservation-agriculture implementation guidance\", \"unit\": \"percent grade\", \"mechanised_systems_unsuitable_above\": 16, \"steeper_slopes\": \"Hand planters or animal traction.\", \"applicable_to_bund_siting\": false}}",
+              "context": "{\"source_table\": {\"locator\": \"PDF pp. 74–75 (printed pp. 77–78), Conservation agriculture, Principles and types and Applicability.\", \"practice\": \"Conservation agriculture, mechanised and manual or animal-traction systems\", \"source_sha256\": \"a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3\"}}",
               "quote": "Terrain and landscape: Suitable for flat to moderate slopes, mechanised sys­ tems are unsuitable for slopes steeper than 16%, but hand planters are suit­ able for steeper slopes.",
               "page": "75",
               "locator_type": "page",
@@ -689347,7 +689688,7 @@
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "flat to moderate slopes; the limit applies to MECHANISED conservation agriculture only - hand planting works on steeper land",
+              "source_direction": "Keep mechanisation guidance within conservation agriculture. Slopes above 16% are described as unsuitable for mechanised systems. Hand planting or animal traction can be used on steeper slopes. Excluded from bund support and scoring.",
               "has_stated_direction": true,
               "has_source_classes": false,
               "source_shape": "",
@@ -698516,6 +698857,12 @@
               "mapped_group_weights": [],
               "function_support": [
                 {
+                  "family": "water_harvesting__in_situ",
+                  "sources": [],
+                  "function_options": 0,
+                  "mapping_id": "water_harvesting__in_situ__slope"
+                },
+                {
                   "family": "water_harvesting__micro_catchment",
                   "sources": [],
                   "function_options": 0,
@@ -700868,19 +701215,11 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "d7e835455079",
-    "data_id": "1292b187ed75",
+    "data_id": "e928f3dd498c",
     "count_definition_version": "4",
-    "built_at": "2026-11-09T12:28:30.111385+00:00",
-    "source_commit": "887189ce4238427486816cc3e83674ec9bfc2dfd",
+    "built_at": "2026-11-09T12:49:45.993337+00:00",
+    "source_commit": "c10e14b311383bfe94d6ff8abceab3c5019e26b1",
     "history": [
-      {
-        "release": "1.5.0",
-        "ui_id": "afee041f1a1a",
-        "data_id": "e1f44705c2bc",
-        "count_definition_version": "4",
-        "built_at": "2026-11-05T09:57:55.922628+00:00",
-        "source_commit": "88751d47586d1fb702b231ebb003d2ea21b353f3"
-      },
       {
         "release": "1.5.0",
         "ui_id": "afee041f1a1a",
@@ -701272,6 +701611,14 @@
         "count_definition_version": "4",
         "built_at": "2026-11-09T12:28:30.111385+00:00",
         "source_commit": "887189ce4238427486816cc3e83674ec9bfc2dfd"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "d7e835455079",
+        "data_id": "e928f3dd498c",
+        "count_definition_version": "4",
+        "built_at": "2026-11-09T12:49:45.993337+00:00",
+        "source_commit": "c10e14b311383bfe94d6ff8abceab3c5019e26b1"
       }
     ]
   }
