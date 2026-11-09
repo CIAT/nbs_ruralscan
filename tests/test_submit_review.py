@@ -140,6 +140,29 @@ def test_ship_noop_does_not_push_or_open_pr(shipping_repo):
     assert len(git("worktree", "list").splitlines()) == 1
 
 
+def test_first_clarification_history_is_submitted_and_local_event_survives(
+    shipping_repo,
+):
+    root, git, calls, mode = shipping_repo
+    mode["replay"] = "actual"
+    review = root / "pipeline/review"
+    (review / "decisions.json").write_text("{}")
+    event = {"issue_id": "question", "date": "2026-11-07", "note": "First reply"}
+    pending = review / "clarifications.json"
+    pending.write_text(json.dumps([event]))
+    before = pending.read_bytes()
+    assert submit.ship("alice", root=root) == 0
+    branch = next(c[-1] for c in calls if c[:3] == ["git", "push", "-u"])
+    assert json.loads(
+        git("show", f"{branch}:pipeline/metrics/clarification_log.json")
+    ) == [event]
+    assert (
+        git("diff", "--name-only", "main", branch)
+        == "pipeline/metrics/clarification_log.json"
+    )
+    assert pending.read_bytes() == before
+
+
 def test_ship_real_replay_preserves_newer_main_rows(shipping_repo):
     root, git, calls, mode = shipping_repo
     mode["replay"] = "actual"

@@ -21,14 +21,23 @@ SENSE_CSV = (
 ASSET_ROLE = "asset_vulnerability"
 
 
-@lru_cache(maxsize=1)
-def load_sense(path: str | Path = SENSE_CSV) -> dict[str, dict[str, str]]:
+def read_sense(path: str | Path = SENSE_CSV) -> dict[str, dict[str, str]]:
     with Path(path).open(newline="", encoding="utf-8") as f:
         return {r["variable"]: r for r in csv.DictReader(f)}
 
 
+@lru_cache(maxsize=1)
+def load_sense(path: str | Path = SENSE_CSV) -> dict[str, dict[str, str]]:
+    return read_sense(path)
+
+
 def verdict(
-    variable: str, direction: str, use_role: str = "nbs_effect", framing: str = ""
+    variable: str,
+    direction: str,
+    use_role: str = "nbs_effect",
+    framing: str = "",
+    *,
+    sense: dict | None = None,
 ) -> str:
     """benefit | harm | no_effect | context | unknown, in the practice-PRESENT frame."""
     if direction == "none":
@@ -40,7 +49,9 @@ def verdict(
         up = not up  # measured on losing the practice: its presence does the reverse
     if use_role == ASSET_ROLE:
         return "harm" if up else "benefit"
-    hi = (load_sense().get(variable) or {}).get("high_is", "")
+    hi = ((load_sense() if sense is None else sense).get(variable) or {}).get(
+        "high_is", ""
+    )
     if hi == "good":
         return "benefit" if up else "harm"
     if hi == "bad":
@@ -49,11 +60,17 @@ def verdict(
 
 
 def reads(
-    variable: str, direction: str, use_role: str = "nbs_effect", framing: str = ""
+    variable: str,
+    direction: str,
+    use_role: str = "nbs_effect",
+    framing: str = "",
+    *,
+    sense: dict | None = None,
 ) -> dict[str, str]:
     """{'arrow', 'words', 'verdict', 'text'} for display, e.g. '↓ less erosion · benefit'."""
-    s = load_sense().get(variable) or {}
-    v = verdict(variable, direction, use_role, framing)
+    sense = load_sense() if sense is None else sense
+    s = sense.get(variable) or {}
+    v = verdict(variable, direction, use_role, framing, sense=sense)
     if direction == "positive":
         arrow = "↑"
         words = (

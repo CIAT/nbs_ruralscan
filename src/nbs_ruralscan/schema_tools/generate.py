@@ -456,6 +456,8 @@ def generate_dashboard_data(
         "dashboard-relationships.css",
         "dashboard-feedback.js",
         "dashboard-feedback.css",
+        "review/browser-backup.html",
+        "review/browser-backup.js",
         "dashboard-releases.csv",
     )
     ui_hash = hashlib.sha256()

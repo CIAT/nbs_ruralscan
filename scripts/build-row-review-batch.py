@@ -33,6 +33,8 @@ that leans on one paper or on ratings, not a replay of cell_synthesis.
 from __future__ import annotations
 
 import argparse
+from functools import lru_cache
+from typing import NamedTuple
 import csv
 import json
 import re
@@ -43,7 +45,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from nbs_ruralscan.recipe.direction_sense import reads as direction_reads  # noqa: E402
+from nbs_ruralscan.recipe.direction_sense import read_sense, reads as direction_reads  # noqa: E402
+from nbs_ruralscan.schema_tools.review_inputs import ReviewInputs  # noqa: E402
+from nbs_ruralscan.schema_tools.review_batches import (  # noqa: E402
+    batch_directory,
+    publish_batch,
+)
+from nbs_ruralscan.ingest.integrity import validate_source_id  # noqa: E402
 from nbs_ruralscan.recipe.synthesis import (  # noqa: E402
     _DEFAULT_GREY_DISCOUNT,
     BASIS_W,
@@ -100,12 +108,23 @@ def load_vocab(path: Path = VOCAB) -> dict[str, dict[str, dict[str, str]]]:
     return out
 
 
-_VOCAB = load_vocab()
+class Display(NamedTuple):
+    vocab: dict
+    weights: dict
+    sense: dict
 
 
-def ttl(field: str, code: str, hazard: str = "", default: str = "") -> str:
+def ttl(
+    field: str, code: str, hazard: str = "", default: str = "", *, display=None
+) -> str:
     """The TTL wording for a code, `<hazard>` filled in; `default` when the vocab lacks it."""
-    t = (_VOCAB.get(field, {}).get(code, {}).get("ttl_label") or default).strip()
+    t = (
+        (display or _default_display())
+        .vocab.get(field, {})
+        .get(code, {})
+        .get("ttl_label")
+        or default
+    ).strip()
     return t.replace("<hazard>", hazard)
 
 
@@ -146,7 +165,7 @@ def is_rollup(r: dict) -> bool:
     )
 
 
-def _unit(eid: str, ev: dict, src: dict) -> dict:
+def _unit(eid: str, ev: dict, src: dict, display=None) -> dict:
     r = ev.get(eid)
     if not r:
         return {"evidence_id": eid, "missing": True}
@@ -164,6 +183,7 @@ def _unit(eid: str, ev: dict, src: dict) -> dict:
             str(rel.get("direction") or ""),
             r.get("use_role", ""),
             str(rel.get("framing") or ""),
+            sense=(display or _default_display()).sense,
         )["text"],
         "strength": rel.get("strength_class", ""),
         "claim_basis": r.get("claim_basis", ""),
@@ -231,7 +251,17 @@ def _design_weights(path: Path = DESIGN_WEIGHTS) -> dict[str, float]:
         }
 
 
-_DW = _design_weights()
+def _load_display(lookups: Path) -> Display:
+    return Display(
+        load_vocab(lookups / "display_vocab.csv"),
+        _design_weights(lookups / "design_weights.csv"),
+        read_sense(lookups / "variable_direction_sense.csv"),
+    )
+
+
+@lru_cache(maxsize=1)
+def _default_display() -> Display:
+    return _load_display(ROOT / "schema/lookups")
 
 
 def _basis_bucket(claim_basis: str, design: str) -> str:
@@ -311,6 +341,7 @@ def build_statement(
     data_deficient: bool,
     conflicting: bool,
     harm_sources: int,
+    display=None,
 ) -> str:
     """One-line statement built ONLY from the row's own fields (never the engine prose),
     so it always agrees with the headline — a family-vote re-class included."""
@@ -321,13 +352,21 @@ def build_statement(
         lead = f"{nbs_label} → {_words(target.get('priority', ''))}"
     elif asset:
         lead = f"{nbs_label} — " + _lc_first(
-            ttl("risk_role", role, hz, "Threat to the works from <hazard>")
+            ttl(
+                "risk_role",
+                role,
+                hz,
+                "Threat to the works from <hazard>",
+                display=display,
+            )
         )
     else:
         fs = target.get("farming_system", "")
         fs = "all farming systems" if fs in ("", "all") else _words(fs)
         lead = f"{nbs_label} — " + _lc_first(
-            ttl("risk_role", role, hz, "Protects farmers from <hazard>")
+            ttl(
+                "risk_role", role, hz, "Protects farmers from <hazard>", display=display
+            )
         )
         lead += f" ({fs})"
     src_s = f"{n_sources} source{'' if n_sources == 1 else 's'}"
@@ -371,11 +410,13 @@ def family_vote_line(fv: dict | None, nbs_id: str = "") -> str:
     return " · ".join(out)
 
 
-def _unit_weight(r: dict, s: dict) -> float:
+def _unit_weight(r: dict, s: dict, display=None) -> float:
     rel = _j(r.get("relationship"), {}) or {}
     w = TIER_W.get((s.get("benchmark_tier") or "").lower(), 0.5)
     w *= BASIS_W.get(r.get("claim_basis", ""), 0.5)
-    w *= _DW.get(str(rel.get("design") or "").strip().lower(), 1.0)
+    w *= (display or _default_display()).weights.get(
+        str(rel.get("design") or "").strip().lower(), 1.0
+    )
     if (s.get("source_category") or "").lower() == "grey":
         w *= GREY_DISCOUNT.get(r.get("use_role", ""), _DEFAULT_GREY_DISCOUNT)
     return w
@@ -392,6 +433,7 @@ def at_a_glance(
     table: str = "T6",
     target: dict | None = None,
     nbs_label: str = "",
+    display=None,
 ) -> dict:
     target = target or {}
     units = [
@@ -404,7 +446,7 @@ def at_a_glance(
         by_src[r.get("source_id", "")].append(r)
     # one vote per source = its mean unit weight, split evenly across its units
     src_w = {
-        sid: sum(_unit_weight(r, src.get(sid, {})) for r in rs) / len(rs)
+        sid: sum(_unit_weight(r, src.get(sid, {}), display) for r in rs) / len(rs)
         for sid, rs in by_src.items()
     }
     total = sum(src_w.values()) or 1.0
@@ -478,6 +520,7 @@ def at_a_glance(
         data_deficient=dd,
         conflicting=conf,
         harm_sources=harm_sources,
+        display=display,
     )
     return {
         "headline": headline,
@@ -506,6 +549,7 @@ def card(
     src: dict,
     question: str = "",
     nbs_label: str = "",
+    display=None,
 ) -> dict:
     j = _j(r.get("justification"), {}) or {}
     if table in ("T6", "T6E"):
@@ -555,10 +599,10 @@ def card(
         "pool_note": j.get("pool_note", ""),
         "family_vote": j.get("family_vote") or None,
         "held_out_of_class": [
-            {"reason": k, "units": [_unit(e, ev, src) for e in (ids or [])]}
+            {"reason": k, "units": [_unit(e, ev, src, display) for e in (ids or [])]}
             for k, ids in held.items()
         ],
-        "evidence": [_unit(e, ev, src) for e in ev_ids],
+        "evidence": [_unit(e, ev, src, display) for e in ev_ids],
         "question": question,
         "at_a_glance": at_a_glance(
             cls_value,
@@ -571,6 +615,7 @@ def card(
             table=table,
             target=target,
             nbs_label=nbs_label,
+            display=display,
         ),
     }
 
@@ -698,6 +743,7 @@ def build_cards(
     src_path: Path = SRC,
     fragility: dict[str, dict] | None = None,
     second_read: dict[str, dict] | None = None,
+    display=None,
 ) -> tuple[list[dict], list[str]]:
     """Cards for the wanted record_ids ({id: question}) and/or every roll-up row."""
     wanted = wanted or {}
@@ -710,7 +756,7 @@ def build_cards(
     for table, r in load_rows(nbs_id, recipes):
         rid = r.get("record_id", "")
         if rid in wanted or (all_rollups and is_rollup(r)):
-            c = card(table, r, ev, src, wanted.get(rid, ""), label)
+            c = card(table, r, ev, src, wanted.get(rid, ""), label, display)
             pr = priority(c, (fragility or {}).get(rid), (second_read or {}).get(rid))
             if pr is not None:
                 c["priority"] = pr
@@ -719,58 +765,34 @@ def build_cards(
     return cards, [k for k in wanted if k not in seen]
 
 
-def write_batch(
-    batch_id: str,
-    title: str,
-    cards: list[dict],
-    notes: str = "",
-    out_dir: Path = OUT,
-) -> Path:
-    out_dir.mkdir(parents=True, exist_ok=True)
-    today = date.today().isoformat()
-    p = out_dir / f"{batch_id}.json"
-    p.write_text(
-        json.dumps(
-            {
-                "kind": "rows",
-                "batch": {
-                    "id": batch_id,
-                    "title": title,
-                    "date": today,
-                    "notes": notes,
-                    "n": len(cards),
-                    "kind": "rows",
-                },
-                "reasons": ROW_REASONS,
-                "vocab": _VOCAB,
-                "rows": cards,
-            },
-            ensure_ascii=False,
-            indent=1,
-        )
-        + "\n",
-        encoding="utf-8",
-    )
-    idx_p = out_dir / "index.json"
-    idx = (
-        json.loads(idx_p.read_text(encoding="utf-8"))
-        if idx_p.exists()
-        else {"batches": []}
-    )
-    idx["batches"] = [b for b in idx["batches"] if b["id"] != batch_id] + [
-        {
+def _payload(batch_id, title, notes, cards, vocab):
+    return {
+        "kind": "rows",
+        "batch": {
             "id": batch_id,
             "title": title,
-            "date": today,
+            "date": date.today().isoformat(),
+            "notes": notes,
             "n": len(cards),
-            "file": f"review/{batch_id}.json",
             "kind": "rows",
-        }
-    ]
-    idx_p.write_text(
-        json.dumps(idx, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
+        },
+        "reasons": ROW_REASONS,
+        "vocab": vocab,
+        "rows": cards,
+    }
+
+
+def write_batch(
+    batch_id: str, title: str, cards: list[dict], notes: str = "", out_dir: Path = OUT
+) -> Path:
+    inputs = ReviewInputs([VOCAB])
+    publish_batch(
+        batch_directory(ROOT, out_dir),
+        batch_id,
+        lambda _: _payload(batch_id, title, notes, cards, load_vocab(VOCAB)),
+        inputs=inputs,
     )
-    return p
+    return out_dir / f"{batch_id}.json"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -789,25 +811,71 @@ def main(argv: list[str] | None = None) -> int:
         default=[],
         help="JSON verdict file(s): [{record_id, verdict, severity, why}]",
     )
+    ap.add_argument("--root", type=Path, default=ROOT, help="Selected data root")
+    ap.add_argument("--out-dir", type=Path, help="Review output directory")
+    ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args(argv)
-    wanted: dict[str, str] = {}
-    if a.rows:
-        with open(a.rows, newline="", encoding="utf-8") as f:
-            wanted = {
-                r["record_id"].strip(): (r.get("question") or "").strip()
-                for r in csv.DictReader(f)
-                if (r.get("record_id") or "").strip()
-            }
-    cards, missing = build_cards(
-        a.nbs,
-        wanted,
-        a.all_rollups,
-        fragility=load_fragility(a.fragility),
-        second_read=load_second_read(a.second_read),
+    validate_source_id(a.nbs)
+    output = batch_directory(a.root, a.out_dir)
+    schema = a.root / "schema"
+    recipes = schema / "recipes"
+    lookups = schema / "lookups"
+    ev, src = (schema / "registers" / name for name in (EV.name, SRC.name))
+    inputs = ReviewInputs(
+        [
+            ev,
+            src,
+            *(
+                recipes / a.nbs / name
+                for name in [*TABLES.values(), "T0_nbs_registry.csv"]
+            ),
+            *(
+                lookups / name
+                for name in [
+                    "display_vocab.csv",
+                    "design_weights.csv",
+                    "variable_direction_sense.csv",
+                ]
+            ),
+            *(Path(path) for path in [a.rows, a.fragility, *a.second_read] if path),
+        ]
     )
-    write_batch(a.batch_id, a.title, cards, a.notes)
+
+    n = 0
+    missing = []
+
+    def render(_):
+        nonlocal n, missing
+        wanted = {}
+        if a.rows:
+            with open(a.rows, newline="", encoding="utf-8") as f:
+                wanted = {
+                    r["record_id"].strip(): (r.get("question") or "").strip()
+                    for r in csv.DictReader(f)
+                    if (r.get("record_id") or "").strip()
+                }
+        display = _load_display(lookups)
+        cards, missing = build_cards(
+            a.nbs,
+            wanted,
+            a.all_rollups,
+            recipes=recipes,
+            ev_path=ev,
+            src_path=src,
+            display=display,
+            fragility=load_fragility(a.fragility),
+            second_read=load_second_read(a.second_read),
+        )
+        n = len(cards)
+        return _payload(a.batch_id, a.title, a.notes, cards, display.vocab)
+
+    result = publish_batch(output, a.batch_id, render, inputs=inputs, dry_run=a.dry_run)
+    target = (
+        str(result) if a.out_dir or a.root != ROOT else f"docs/review/{a.batch_id}.json"
+    )
     print(
-        f"{len(cards)} row card(s) → docs/review/{a.batch_id}.json; missing ids: {missing}"
+        f"{n} row card(s) → {target}; missing ids: {missing}"
+        + (" (dry run)" if a.dry_run else "")
     )
     return 0
 

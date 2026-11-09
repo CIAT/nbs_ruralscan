@@ -20,7 +20,7 @@ failures. Artifact rebuilding remains separate; use an independent copy.
 from __future__ import annotations
 
 import argparse
-import json
+import hashlib
 import os
 import re
 import shutil
@@ -31,6 +31,7 @@ import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
+from nbs_ruralscan.schema_tools.review_local import read_decisions, review_pair_lock
 from nbs_ruralscan.schema_tools.build_paths import SchemaBuildPaths
 from nbs_ruralscan.schema_tools.generate import generate
 from nbs_ruralscan.schema_tools.publication import staged_publish
@@ -44,13 +45,7 @@ ROOT = Path(__file__).resolve().parents[3]
 
 
 def _load_store(path: Path) -> dict:
-    if not path.exists():
-        return {}
-    raw = path.read_bytes()
-    try:
-        return json.loads(raw.decode("utf-8"))
-    except UnicodeDecodeError:
-        return json.loads(raw.decode("cp1252"))  # tolerate a stray Windows byte
+    return read_decisions(path)[0]
 
 
 def consensus_decisions(store: dict) -> tuple[dict, list[str]]:
@@ -113,13 +108,24 @@ def replay(root: Path) -> ReplayResult:
     failures. Incomplete rollback retains recovery copies. This is not crash-safe
     or atomically visible to readers; use a stable snapshot and one writer.
     """
-    from nbs_ruralscan.schema_tools.clarifications import publish, read_json
+    from nbs_ruralscan.schema_tools.review_inputs import ReviewInputs
+    from nbs_ruralscan.schema_tools.clarifications import (
+        LOCK,
+        merge_history,
+        read_events,
+        serialize_events,
+    )
 
     root = Path(root).resolve(strict=True)
     files = ReviewFiles.from_root(root)
-    store = _load_store(root / "pipeline/review/decisions.json")
+    decision_path = root / "pipeline/review/decisions.json"
+    pending_path = root / "pipeline/review/clarifications.json"
+    with LOCK, review_pair_lock():
+        inputs = ReviewInputs((decision_path, pending_path))
+        store = _load_store(decision_path)
+        local_events = read_events(pending_path)
+        inputs.verify()
     decisions, conflicts = consensus_decisions(store)
-    local_events = read_json(root / "pipeline/review/clarifications.json", [])
     check_review_destinations(
         files.evidence,
         files.log,
@@ -140,7 +146,14 @@ def replay(root: Path) -> ReplayResult:
         nonlocal result
         assert staged.output_root is not None
         staged_files = ReviewFiles.from_root(staged.output_root)
-        clarification_count = publish(staged.output_root, local_events=local_events)
+        inputs.verify()
+        staged_history = staged.output_root / "pipeline/metrics/clarification_log.json"
+        events, clarification_count = merge_history(
+            read_events(staged_history), local_events
+        )
+        if clarification_count:
+            staged_history.parent.mkdir(parents=True, exist_ok=True)
+            staged_history.write_bytes(serialize_events(events))
         applied = (
             apply_decisions(decisions, "consensus", files=staged_files)
             if decisions
@@ -149,6 +162,7 @@ def replay(root: Path) -> ReplayResult:
         if applied and applied["reasons"] and not staged_files.log.is_file():
             raise ValueError("Review decisions produced no audit log")
         result = ReplayResult(clarification_count, applied, tuple(conflicts))
+        inputs.verify()
         return []
 
     # Optional files can remain absent on no-op/unknown-ID/clarification-only runs.
@@ -158,6 +172,7 @@ def replay(root: Path) -> ReplayResult:
         list(destinations),
         render,
         optional_destinations=destinations,
+        artifact_validators={path: lambda _: inputs.verify() for path in destinations},
     )
     assert result is not None
     return result
@@ -204,6 +219,28 @@ SHIP_FILES = (
     "docs/table_progress.json",
     "docs/scorecard.json",
 )
+
+
+def _submission_stores(root: Path) -> dict[str, bytes]:
+    """Copy the declared pair from one observed local review state."""
+    from nbs_ruralscan.schema_tools.review_inputs import ReviewInputs
+    from nbs_ruralscan.schema_tools.clarifications import LOCK, read_events
+
+    review = root / "pipeline/review"
+    pending = review / "clarifications.json"
+    paths = (review / "decisions.json", pending)
+    with LOCK, review_pair_lock():
+        selected = ReviewInputs(paths)
+        read_events(pending)
+        bodies = {path.name: path.read_bytes() for path in paths if path.exists()}
+        selected.verify()
+        for path, state in selected.states.items():
+            body = bodies.get(path.name)
+            expected = state[0] if state is not None else None
+            actual = hashlib.sha256(body).hexdigest() if body is not None else None
+            if expected != actual:
+                raise ValueError(f"Review store changed while reading: {path}")
+        return bodies
 
 
 def ship(
@@ -270,12 +307,10 @@ def ship(
         checkout = Path(tempfile.mkdtemp(prefix="nbs-review-")) / "checkout"
         run(["git", "worktree", "add", "-b", branch, str(checkout), "origin/main"])
         print(f"Review checkout: {checkout}", flush=True)
-        for name in ("decisions.json", "clarifications.json"):
-            source = root / "pipeline" / "review" / name
-            if source.exists():
-                target = checkout / "pipeline" / "review" / name
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(source.read_bytes())
+        for name, body in _submission_stores(root).items():
+            target = checkout / "pipeline" / "review" / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(body)
         corpus = root / ".cache" / "corpus"
         target_corpus = checkout / ".cache" / "corpus"
         target_corpus.parent.mkdir(exist_ok=True)
@@ -300,9 +335,13 @@ def ship(
             ),
             flush=True,
         )
-        changed = run(
-            ["git", "diff", "--name-only", "--", *SHIP_FILES], checkout
-        ).splitlines()
+        tracked = run(["git", "diff", "--name-only", "--", *SHIP_FILES], checkout)
+        # The first clarification-only submission can create the history file.
+        created = run(
+            ["git", "ls-files", "--others", "--exclude-standard", "--", *SHIP_FILES],
+            checkout,
+        )
+        changed = sorted(set(tracked.splitlines()) | set(created.splitlines()))
         meaningful = {
             "schema/registers/EV_evidence_register.csv",
             "pipeline/metrics/review_log.csv",

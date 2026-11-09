@@ -1624,6 +1624,7 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
         </ol>
         <h4>5.2.3 If something needs attention</h4>
         <ul><li><b>Missing sources:</b> hydrate the corpus and use Recheck. A source-cache presence count is not a completed quote check; submission runs the provenance guardrail.</li><li><b>Missing extraction:</b> use Report missing evidence under More actions and identify the source and location.</li><li><b>Submission failed:</b> decisions remain saved locally. Read the reported error before retrying; do not start a second submission while one is still running.</li><li><b>Interface feedback:</b> use Feedback in the dashboard header. These notes stay in this browser at this address until exported; they do not Keep, Drop, Query or submit an evidence decision.</li></ul>
+        <p><a href="review/browser-backup.html">Back up or restore this browser’s review drafts</a></p>
         <p><a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer">Full reviewer guide, source access and recovery instructions ↗</a></p>
         <div id="review-reference-guide"></div>
       </section>
@@ -2258,35 +2259,109 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
       } else if(el){ el.remove(); document.body.style.paddingTop=''; }
     }).catch(function(){});
   }
-  function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); _vfToggleBanner(); if(window._reviewApi){ vfLoadClarifications(); checkVersion(); checkReadiness(); if(!window._vfVerPoll){window._vfVerPoll=setInterval(checkVersion,60000);} if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); _vfToggleBanner(); }); }
+  async function vfFetchDecisions(){
+    const response=await fetch('/api/state');
+    const state=await response.json();
+    function record(value){ return value!==null && typeof value==='object' && !Array.isArray(value); }
+    if(!response.ok || (state && state.error)){
+      throw Error((state && state.error) || 'Review server returned HTTP '+response.status);
+    }
+    const all=state && state.decisions;
+    if(!record(all) || !Object.values(all).every(byReviewer=>record(byReviewer) && Object.values(byReviewer).every(record))){
+      throw Error('The review server returned an invalid decision store.');
+    }
+    return all;
+  }
+  function vfUseDecisions(all){
+    const me=window._vfReviewer || 'reviewer';
+    const decisions={}, reasons={}, notes={};
+    for(const [eid, byReviewer] of Object.entries(all)){
+      const entry=byReviewer[me];
+      if(entry && entry.decision){
+        decisions[eid]=entry.decision;
+        reasons[eid]=entry.reason || '';
+        notes[eid]=entry.note || '';
+      }
+    }
+    window._vfAllReviews=all;
+    window._vfDecisions=decisions;
+    window._vfReasons=reasons;
+    window._vfNotes=notes;
+    localStorage.setItem('vfDecisions',JSON.stringify(decisions));
+  }
+  async function probeReviewApi(){
+    try{
+      const response=await fetch('/api/health');
+      window._reviewApi=!!(response.ok && (await response.json()).ok);
+    }catch(e){ window._reviewApi=false; }
+    updateVfMode();
+    _vfToggleBanner();
+    if(!window._reviewApi)return;
+    vfLoadClarifications();
+    checkVersion();
+    checkReadiness();
+    if(!window._vfVerPoll)window._vfVerPoll=setInterval(checkVersion,60000);
+    if(window._vfReviewer===undefined)window._vfReviewer=localStorage.getItem('vfReviewer') || '';
+    try{
+      vfUseDecisions(await vfFetchDecisions());
+      renderVfWorklist();
+    }catch(e){
+      vfNotice('Could not load saved reviews. Check the review server and reload to refresh your browser drafts.\n'+e.message,true);
+    }
+  }
   function updateVfMode(){ var ab=document.getElementById('vf-apply-btn'), db=document.getElementById('vf-download-btn'), h=document.getElementById('vf-mode-hint');
     if(window._reviewApi){ if(ab)ab.style.display='inline-block'; if(db)db.style.display='none'; if(h)h.innerHTML='Live review server connected — click ok/drop, then <b>Apply &amp; submit to main</b>: writes to the register, re-gates, and opens a PR including clarification replies. Required checks and approvals still apply.'; }
     else { if(ab)ab.style.display='none'; if(db)db.style.display='inline-block';
       // Offline branch was previously silent — the hint stayed blank on GitHub Pages, so a
       // reviewer had no idea why Apply was missing. Say what to run to get it back.
       if(h)h.innerHTML='<b style="color:var(--accent-amber);">Read-only</b> — decisions stay in this browser. Run the local review server (<code style="font-size:9.5px;">uv run python3 -m nbs_ruralscan.schema_tools.review_server</code>) to enable <b>Apply</b>, or use <b>Download CSV</b>.'; } }
-  async function applyVfDecisions(){ await (window._vfSaveQueue||Promise.resolve()); if(!window._reviewApi){ vfNotice('No review server. Use Download decisions CSV + review.py apply.'); return; }
-    var btn=document.getElementById('vf-apply-btn'); if(btn){btn.disabled=true; btn.textContent='Applying…';}
-    fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer')})}).then(function(r){return r.json();}).then(function(res){
-      if(res.error){ vfNotice('Apply failed. If source files are missing, run uv run python scripts/hydrate-corpus.py (Windows: set NBS_LIBRARY_ROOT), then retry. Saved decisions remain local.\n'+res.error); if(btn){btn.disabled=false;btn.textContent='Submit reviews';} return; }
-      fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision){ d[eid]=m.decision; rs[eid]=m.reason||''; ns[eid]=m.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d));
-        fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(data){
-          // BEST-EFFORT refresh: a render throw here must NOT abort the flow — otherwise the
-          // submit below never runs and the button hangs forever on "Applying…" (the freeze bug).
-          try{ dashboardData=_segregateDropped(data); renderVfWorklist(); if(typeof triggerOverviewFilter==='function')triggerOverviewFilter(); if(typeof renderDiscoveryAudit==='function')renderDiscoveryAudit(); }catch(_e){ console.error('post-apply render failed (non-fatal, submit continues):',_e); }
-          var cf=(res.conflicts||[]);
-          var msg='Applied: '+(res.ok||0)+' ok, '+(res.dropped||0)+' dropped.'
-            +(cf.length?('\n\u26a0 '+cf.length+' CONFLICT(s) pending \u2014 reviewers disagree: '+cf.map(function(c){return c.evidence_id;}).join(', ')):' No conflicts.');
-          // one click \u2192 also submit to main (branch off main \u2192 push \u2192 PR \u2192 auto-merge on green CI)
-          if(btn){btn.textContent='Submitting to main\u2026';}
-          var _today=new Date().toISOString().slice(0,10);
-          fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer'),title:'qaqc: review '+_today})}).then(function(r){return r.json();}).then(function(sb){
-            if(btn){btn.disabled=false;btn.textContent='Submit reviews';}
-            if(sb.ok){ vfLoadClarifications(); vfNotice(msg+(sb.pr_url?'\n\nSubmitted for main — '+sb.pr_url+'\nSubject to checks and required approvals; clarification-history PRs require review.':'\n\nNo new agreed changes to submit. Saved decisions remain available.')); }
-            else { vfNotice(msg+'\n\n\u26a0 Submit to main FAILED \u2014 decisions ARE saved locally; retry submission after resolving the error, or use the Python command in How to review.\n\n'+((sb.error||sb.output)||'').slice(-600)); }
-          }).catch(function(e){ if(btn){btn.disabled=false;btn.textContent='Submit reviews';} vfNotice(msg+'\n\nSubmit error: '+e); }); });
-      });
-    }).catch(function(e){ vfNotice('Apply error: '+e); if(btn){btn.disabled=false;btn.textContent='Submit reviews';} }); }
+  async function applyVfDecisions(){
+    await (window._vfSaveQueue || Promise.resolve());
+    if(!window._reviewApi){ vfNotice('No review server. Use Download decisions CSV + review.py apply.'); return; }
+    const btn=document.getElementById('vf-apply-btn');
+    if(btn){btn.disabled=true; btn.textContent='Applying…';}
+    const reviewer=window._vfReviewer || 'reviewer';
+    const options={method:'POST', headers:{'Content-Type':'application/json'}};
+    let summary='';
+    try{
+      const response=await fetch('/api/apply',{...options,body:JSON.stringify({reviewer})});
+      const res=await response.json();
+      if(!response.ok || res.error){
+        vfNotice('Apply failed. If source files are missing, run uv run python scripts/hydrate-corpus.py (Windows: set NBS_LIBRARY_ROOT), then retry. Saved decisions remain local.\n'+(res.error || 'HTTP '+response.status),true);
+        return;
+      }
+      const conflicts=res.conflicts || [];
+      summary='Applied: '+(res.ok||0)+' ok, '+(res.dropped||0)+' dropped.'
+        +(conflicts.length?'\n⚠ '+conflicts.length+' CONFLICT(s) pending — reviewers disagree: '+conflicts.map(c=>c.evidence_id).join(', '):' No conflicts.');
+      let refreshFailed=false;
+      try{
+        vfUseDecisions(await vfFetchDecisions());
+        const response=await fetch('dashboard_data.json?t='+Date.now());
+        if(!response.ok)throw Error('Dashboard data returned HTTP '+response.status);
+        dashboardData=_segregateDropped(await response.json());
+        renderVfWorklist();
+        if(typeof triggerOverviewFilter==='function')triggerOverviewFilter();
+        if(typeof renderDiscoveryAudit==='function')renderDiscoveryAudit();
+      }catch(e){
+        refreshFailed=true;
+        summary+='\nThe review display could not refresh. Check the review server, then reload. '+e.message;
+      }
+      if(btn)btn.textContent='Submitting to main…';
+      const title='qaqc: review '+new Date().toISOString().slice(0,10);
+      const submitted=await fetch('/api/submit',{...options,body:JSON.stringify({reviewer,title})});
+      const result=await submitted.json();
+      if(!submitted.ok || !result.ok){
+        vfNotice(summary+'\n\nSubmit failed. Retry submission after resolving the error.\n'+String(result.error || result.output || 'HTTP '+submitted.status).slice(-600),true);
+        return;
+      }
+      vfLoadClarifications();
+      vfNotice(summary+(result.pr_url?'\n\nSubmitted for main — '+result.pr_url+'\nSubject to checks and required approvals; clarification-history PRs require review.':'\n\nNo new agreed changes to submit. Saved decisions remain available.'),refreshFailed);
+    }catch(e){
+      vfNotice(summary?summary+'\n\nCould not confirm submission. Check the review server and submission status. '+e.message:'Could not confirm Apply. Check the review server and refresh. '+e.message,true);
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent='Submit reviews';}
+    }
+  }
   function downloadVfDecisions(){
     var rows=window._vfFlagged||[]; var hdr=['evidence_id','source_id','variable','use_role','verdict','flag_reason','quote','relationship','decision','reason','reviewer','note'];
     function q(v){v=(v==null?'':String(v)); return '"'+v.replace(/"/g,'""')+'"';}
@@ -2296,7 +2371,7 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
     var blob=new Blob([lines.join('\n')],{type:'text/csv'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='flag_worklist.csv'; a.click();
   }
   function setVfReviewer(v){ v=(v||'').trim(); window._vfReviewer=v; localStorage.setItem('vfReviewer',v); var sel=document.getElementById('vf-reviewer'); if(sel&&v){ if(!Array.prototype.some.call(sel.options,function(o){return o.value===v;})){ var op=document.createElement('option'); op.value=v; op.textContent=v; sel.insertBefore(op,sel.options[sel.options.length-1]); } sel.value=v; } var all=window._vfAllReviews||{}; var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var m=all[eid][v]; if(m&&m.decision){ d[eid]=m.decision; rs[eid]=m.reason||''; ns[eid]=m.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }
-  function resetVfDecisions(){ var me=(window._vfReviewer||'').trim(); if(!me){ alert('Set your reviewer handle first — reset only clears YOUR decisions.'); return; }
+  async function resetVfDecisions(){ var me=(window._vfReviewer||'').trim(); if(!me){ alert('Set your reviewer handle first — reset only clears YOUR decisions.'); return; }
     // Reset = un-decide your PENDING (not-yet-applied) decisions only. Applied decisions are
     // the durable review record (register + review_log) and are never touched here — the old
     // version counted + cleared applied history too, so the dialog said "237" while Apply
@@ -2306,9 +2381,37 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
     if(!window._reviewApi){ pend=Object.keys(window._vfDecisions||{}); } // offline: local decisions are all unapplied
     if(!pend.length){ alert('Nothing to reset — you have no pending (not-yet-applied) decisions.'); return; }
     if(!confirm('Reset your '+pend.length+' pending decision(s) back to to-review?\n\nPending = decided by you but not yet applied. Already-applied/committed decisions and other reviewers'+String.fromCharCode(39)+' work are untouched.'))return;
-    pend.forEach(function(eid){ if(window._vfDecisions)delete window._vfDecisions[eid]; if(window._vfReasons)delete window._vfReasons[eid]; if(window._vfNotes)delete window._vfNotes[eid]; if(all[eid]){ delete all[eid][me]; if(!Object.keys(all[eid]).length) delete all[eid]; } });
-    localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions||{})); localStorage.setItem('vfReasons',JSON.stringify(window._vfReasons||{})); localStorage.setItem('vfNotes',JSON.stringify(window._vfNotes||{}));
-    if(window._reviewApi){ fetch('/api/clear',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:me})}).then(function(){renderVfWorklist();}); } else { renderVfWorklist(); } }
+    if(window._reviewApi){
+      try{
+        const response=await fetch('/api/clear',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:me})});
+        const result=await response.json();
+        if(!response.ok || !result || result.ok!==true || result.cleared_for!==me){
+          throw Error((result && result.error) || 'The review server did not confirm this reset.');
+        }
+      }catch(e){
+        vfNotice('Could not confirm the reset. Your browser drafts are still available. Check the review server and reload before retrying.\n'+e.message,true);
+        return;
+      }
+    }
+    const sameReviewer=(window._vfReviewer||'').trim()===me;
+    for(const eid of pend){
+      if(sameReviewer){
+        if(window._vfDecisions)delete window._vfDecisions[eid];
+        if(window._vfReasons)delete window._vfReasons[eid];
+        if(window._vfNotes)delete window._vfNotes[eid];
+      }
+      if(all[eid]){
+        delete all[eid][me];
+        if(!Object.keys(all[eid]).length)delete all[eid];
+      }
+    }
+    if(sameReviewer){
+      localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions||{}));
+      localStorage.setItem('vfReasons',JSON.stringify(window._vfReasons||{}));
+      localStorage.setItem('vfNotes',JSON.stringify(window._vfNotes||{}));
+    }
+    renderVfWorklist();
+  }
   function renderQaqcStats(hostEl){
     var s=(dashboardData&&dashboardData.qaqc_stats)||{};
     var fe=s.flag_eval||{}, pe=s.pass_eval||{};
@@ -2350,12 +2453,12 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
     el.style.cssText='padding:8px;margin:6px 0;white-space:pre-wrap;color:var('+(error?'--accent-rose':'--accent-sky')+')';el.textContent=message;
   }
   async function vfRefreshReview(){
-    var responses=await Promise.all([fetch('/api/state'),fetch('dashboard_data.json?t='+Date.now())]);
-    if(responses.some(function(r){return !r.ok;}))throw Error('Could not refresh review state');
-    var state=await responses[0].json();dashboardData=_segregateDropped(await responses[1].json());window._vfAllReviews=state.decisions||{};
-    var me=window._vfReviewer||'reviewer';window._vfDecisions={};
-    Object.keys(window._vfAllReviews).forEach(function(id){var entry=window._vfAllReviews[id][me];if(entry&&entry.decision)window._vfDecisions[id]=entry.decision;});
-    localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));if(window._reviewApi)await vfLoadClarifications();renderVfWorklist();
+    const [all, response]=await Promise.all([vfFetchDecisions(),fetch('dashboard_data.json?t='+Date.now())]);
+    if(!response.ok)throw Error('Could not refresh dashboard data');
+    dashboardData=_segregateDropped(await response.json());
+    vfUseDecisions(all);
+    if(window._reviewApi)await vfLoadClarifications();
+    renderVfWorklist();
   }
   async function reopenVf(eid){
     if(!window._reviewApi){vfNotice('Reopen needs the live review server.',true);return;}

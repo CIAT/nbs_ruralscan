@@ -225,11 +225,11 @@ def test_staging_write_failure_leaves_every_live_record_untouched(
     names = {
         "evidence": "EV_evidence_register.csv",
         "audit": "review_log.csv",
-        "clarification": "clarification_log.tmp",
+        "clarification": "clarification_log.json",
     }
 
     def fail_write(path, mode="r", *args, **kwargs):
-        if path.name == names[failed_write] and mode in {"w", "a"}:
+        if path.name == names[failed_write] and mode in {"w", "a", "wb"}:
             assert not path.is_relative_to(root)
             raise OSError(f"injected {failed_write} write failure")
         return original(path, mode, *args, **kwargs)
@@ -400,3 +400,45 @@ def test_staged_replay_does_not_overwrite_concurrent_record_edit(tmp_path, monke
     after = tree(root)
     del after["pipeline/metrics/review_log.csv"]
     assert after == before
+
+
+@pytest.mark.parametrize("name", ["decisions.json", "clarifications.json"])
+def test_changed_local_store_during_replay_preserves_records(
+    tmp_path, monkeypatch, name
+):
+    root = snapshot(tmp_path)
+    before = tree(root)
+    path = root / "pipeline/review" / name
+    changed = b"{}" if name == "decisions.json" else b"[]"
+    apply = submit.apply_decisions
+
+    def interfering_apply(*args, **kwargs):
+        result = apply(*args, **kwargs)
+        path.write_bytes(changed)
+        return result
+
+    monkeypatch.setattr(submit, "apply_decisions", interfering_apply)
+    with pytest.raises(ValueError, match="changed during preparation"):
+        submit.replay(root)
+    assert tree(root) == dict(before, **{path.relative_to(root).as_posix(): changed})
+
+
+@pytest.mark.parametrize("source", ["decisions.json", "clarifications.json"])
+def test_shipping_refuses_pair_changed_while_copying(tmp_path, monkeypatch, source):
+    root = snapshot(tmp_path)
+    target = root / "pipeline/review" / source
+    original = Path.read_bytes
+    calls = 0
+
+    def racing_read(path):
+        nonlocal calls
+        raw = original(path)
+        if path == target:
+            calls += 1
+            if calls == 2:
+                path.write_bytes(b"[]" if source == "clarifications.json" else b"{}")
+        return raw
+
+    monkeypatch.setattr(Path, "read_bytes", racing_read)
+    with pytest.raises(ValueError, match="changed during preparation"):
+        submit._submission_stores(root)
