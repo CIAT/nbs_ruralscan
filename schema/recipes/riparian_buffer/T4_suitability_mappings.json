@@ -1,1 +1,216 @@
-[]
+[
+  {
+    "mapping_id": "riparian_buffer__natural_restored__distance_to_waterbody",
+    "nbs_id": "riparian_buffer",
+    "dataset_id": "merit_hydro_v1",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "scope": "riparian_buffer__natural_restored__distance_to_waterbody",
+          "status": "held",
+          "reviewer": "Pete",
+          "reviewed_date": "2026-11-09",
+          "reason": "Approved for riparian design and planning only. The source widths and analysis extents do not establish a shared relationship between site distance to water and buffer establishment.",
+          "decision_ref": "methodology/audits/t4_riparian_design_20261109/decision.md",
+          "retained_source_profiles": [
+            {
+              "source_lineage": "Zhao et al. selected the mapping window; Lin et al. (2004) and Maillarda and Pinheiro Santos (2008) are cited for service-specific width evidence.",
+              "applicability": "Liuxihe River basin, Guangdong, China. Nutrient export and buffer condition inform restoration priority.",
+              "evidence_id": "ev_distance_to_waterbody_zhao13_1",
+              "source_id": "spatial_mcda_riparian_priorities_2013",
+              "page": 4,
+              "source_artifact_sha256": "f04aef999a5ccd44b92815332d1934ba04b844f7195b8d01e3cafed5e785e217",
+              "evidence_sha256": "acf7c68bbda512d9ad70576793a4446e704d0819b6ac2a6abf915728b05f3730",
+              "locator": "PDF p. 4, riparian buffer delineation; decision support presented on PDF p. 1.",
+              "source_quote": "In this study, we set a maximum buffer width of 210 m (distance of 7 pixels, Fig. 3) because a buffer width wider than 200 m was necessary to achieve ideal efﬁciency in some cases (Lin et al., 2004; Maillarda and Pinheiro Santos, 2008).",
+              "published_profile": {
+                "role": "Analysis window for spatial prioritisation of riparian restoration",
+                "geometry": {
+                  "analysis_window_m": 210,
+                  "analysis_window_pixels": 7,
+                  "cited_service_width_gt_m": 200
+                },
+                "interpretation": "The authors selected a maximum analysis extent around the channel for mapping restoration priorities. The cited buffer efficiency evidence motivates the window; sites outside were unevaluated."
+              },
+              "disposition": "Keep the seven-pixel restoration-priority window as the chosen analysis extent."
+            },
+            {
+              "source_lineage": "Dala-Corte et al., fish and aquatic-invertebrate analyses across Brazilian biomes.",
+              "applicability": "Study concerned streams up to 10 m wide and used 30 m vegetation data. Recommended reserve width does not prescribe a minimum distance from water for establishing vegetation.",
+              "evidence_id": "ev_distance_to_waterbody_dalacorte20_2",
+              "source_id": "neotropical_riparian_biodiversity_thresholds_2020",
+              "page": 9,
+              "source_artifact_sha256": "e1c98ccafe264e3a3120563af48402d16ab9b75ec82d3378f4cd000f7567b2dd",
+              "evidence_sha256": "4fab02bedb77d083316d84fb708130fa512475f7173c5bc6730cd77652989ce0",
+              "locator": "PDF p. 9, discussion §4.2, reserve retention and spatial-resolution caveat.",
+              "source_quote": "Therefore, maintaining 50 m of ripar-ian reserves on each side of the stream channel (resulting in a 100-m wide strip in total) would most effectively avoid crossing thresholds of aquatic biodiversity loss in Brazil.",
+              "published_profile": {
+                "role": "Riparian reserve retention for aquatic biodiversity in Brazilian small streams",
+                "geometry": {
+                  "per_bank_m": 50,
+                  "total_width_m": 100
+                },
+                "interpretation": "Retain native vegetation on each bank. Wider reserves can benefit additional taxa. The authors used fixed analysis buffers and explicitly qualify the precision of the minimum width and shape."
+              },
+              "disposition": "Keep the native reserve recommendation per bank, the two-bank total, small-stream scope and precision caveat for aquatic biodiversity."
+            },
+            {
+              "source_lineage": "Brazilian Native Vegetation Protection Law (Brasil, 2012), partially adopted by the authors. The paper cites FAO and Welsch (1991) for a 30 m water-quality recommendation.",
+              "applicability": "Study geometry and cited historical design guidance only. Application of a current legal mask requires the relevant law and jurisdiction.",
+              "evidence_id": "ev_distance_to_waterbody_demello18_1",
+              "source_id": "brazil_landuse_loworder_streams_2018",
+              "page": 2,
+              "source_artifact_sha256": "72eb095f5709d64e65b8fe6eb310772fe8f17bead7b121cab4b53b4f9e67f4d9",
+              "evidence_sha256": "c26bd6d137660c06bc93ffad720d2f7a33640c3e2030a2f292302e87b0d17ad0",
+              "locator": "PDF p. 2, methods: selection of the riparian zone.",
+              "source_quote": "We adopted the Permanent Preservation Area (PPA) that is deﬁned by the Native Vegetation Protection Law of Brazil (Brasil, 2012) as a riparian zone. We have adopted partially the law and used a 30 m-buﬀer along the river network and a 50 m buﬀer around springs. We did not consider special cases of the law that allow reducing the PPA to only 5 m. FAO recommendation for riparian zone to water quality protection is also 30 m, as well as proposed by Welsch (1991).",
+              "published_profile": {
+                "role": "Land-cover analysis zones for assessing water quality",
+                "geometry": {
+                  "river_buffer_m": 30,
+                  "spring_radius_m": 50,
+                  "omitted_reduced_case_m": 5
+                },
+                "interpretation": "The study delineated buffers along rivers and around springs. Reduced-width cases in the cited law were excluded from its analysis. The planning profile conveys the study geometry and its historical legal context."
+              },
+              "disposition": "Retain river and spring analysis zones with their Brazilian regulatory context and the stated reduced-width exceptions."
+            }
+          ],
+          "source_count_basis": "Three source publications documenting design or planning. No graded response or source weight is inferred.",
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "mapping_csv": "schema/recipes/riparian_buffer/T4_suitability_mappings.csv",
+            "mapping_id": "riparian_buffer__natural_restored__distance_to_waterbody",
+            "type": "trapezoidal",
+            "params": {
+              "abs_min": 50.0,
+              "abs_max": 210.0
+            },
+            "uncertainty_pct": "40.0"
+          }
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_adjustable": false,
+    "justification": "Approved for riparian design and planning only. The source widths and analysis extents do not establish a shared relationship between site distance to water and buffer establishment. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "variable": "distance_to_waterbody",
+    "suitability_family_id": "riparian_buffer__natural_restored",
+    "evidence_ids": [
+      "ev_distance_to_waterbody_zhao13_1",
+      "ev_distance_to_waterbody_dalacorte20_2",
+      "ev_distance_to_waterbody_demello18_1"
+    ],
+    "n_sources": 3
+  },
+  {
+    "mapping_id": "riparian_buffer__planted__distance_to_waterbody",
+    "nbs_id": "riparian_buffer",
+    "dataset_id": "merit_hydro_v1",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "scope": "riparian_buffer__planted__distance_to_waterbody",
+          "status": "held",
+          "reviewer": "Pete",
+          "reviewed_date": "2026-11-09",
+          "reason": "Approved for riparian design and planning only. The source widths and analysis extents do not establish a shared relationship between site distance to water and buffer establishment.",
+          "decision_ref": "methodology/audits/t4_riparian_design_20261109/decision.md",
+          "retained_source_profiles": [
+            {
+              "source_lineage": "Forest Service and NRCS three-zone models described by Schultz et al.",
+              "applicability": "The Iowa demonstration used a separate 20 m design. Its planted treatment is not the source of the three model widths.",
+              "evidence_id": "ev_distance_to_waterbody_schultz95_1",
+              "source_id": "multispecies_buffer_design_placement_1995",
+              "page": 23,
+              "source_artifact_sha256": "e1d90d74cc92d62bed2a0cef178116e925f333fe51b262cde9ba86640607fb20",
+              "evidence_sha256": "8bf71dfd3d813248691b90f62ecf5e63512f51aa8531dc9465e0be66e37f98bd",
+              "locator": "PDF p. 23, discussion of Forest Service and NRCS models; compare the authors’ demonstration on PDF p. 1.",
+              "source_quote": "The Forest Service and NRCS riparian forest buffer models consist of three zones of management. Zone 1 is the tree (and/or shrub) strip immediately adjacent to the stream edge that is not managed except for the occasional removal of valUable tree species. Its minimal width is ~4.6 m. Zone 2 is a managed strip of trees or shrubs extending another 18.3 m (minimum width) upland, beyond zone 1. This zone is managed for nutrient removal to stimulate efficacy of nutrient uptake. Finally, Zone 3 is a managed strip of grasses and/or forbs with a minimum width of 6.1 m selected to slow surface runoff and convert it to sheet flow.",
+              "published_profile": {
+                "role": "Three successive management zones for a riparian forest buffer",
+                "geometry": {
+                  "near_stream_woody_approx_min_m": 4.6,
+                  "additional_managed_woody_min_m": 18.3,
+                  "outer_grass_forb_min_m": 6.1
+                },
+                "interpretation": "The near-stream woody strip has an approximate minimum width. The managed woody strip extends upland from its edge; the outer grass/forb strip slows surface runoff. Widths describe successive zone components."
+              },
+              "disposition": "Keep the three successive design zones and their cited Forest Service/NRCS lineage apart from the Iowa demonstration."
+            },
+            {
+              "source_lineage": "Tiwari et al. specified the footprint for their calculations, citing field observations of Kuglerová et al. (2014b).",
+              "applicability": "The existing planted-family link preserves review traceability. The source treats retained forest, providing a planning referral only and no evidence of planted-buffer establishment.",
+              "evidence_id": "ev_distance_to_waterbody_tiwari16_1",
+              "source_id": "site_specific_vs_fixed_width_cost_2016",
+              "page": 5,
+              "source_artifact_sha256": "6bac7927177f4be0ad7731f83e966375e5a58ef1eb3e157d29b3b0238262c4c7",
+              "evidence_sha256": "850fa2a12b6c10f73fd3c40f3b40ff1bffc6bce816cc4b0287a02e4f44b6901c",
+              "locator": "PDF p. 5, calculations and Figure 2, groundwater-discharge hotspot approximation.",
+              "source_quote": "In our calculations we deﬁned the groundwater discharge hotspots to extend as far as 30 m from the perennial stream with a width of 10 m along the intermittent stream (Figure 2). In reality, they could be laterally and longitudinally both wider and narrower, but ﬁeld observations conﬁrmed that 30x10 m covers their usual extent",
+              "published_profile": {
+                "role": "Approximate groundwater-discharge hotspot geometry for a retained-forest buffer cost comparison",
+                "geometry": {
+                  "extent_from_perennial_stream_m": 30,
+                  "width_along_intermittent_stream_m": 10
+                },
+                "interpretation": "The dimensions run on different axes. Actual hotspots can be wider or narrower in both directions. Apply a site-specific hydrological assessment if the actual footprint is needed."
+              },
+              "disposition": "Keep both dimensions of the approximate groundwater-hotspot geometry for retained forest. The existing planted-family association confers no evidence for planting."
+            },
+            {
+              "source_lineage": "Cole et al. cite Schmitt et al. (1999) for these two widths.",
+              "applicability": "Implementation design by pollutant target. These widths do not set distance-to-water limits.",
+              "evidence_id": "ev_distance_to_waterbody_cole20_1",
+              "source_id": "managing_buffer_strips_es_review_2020",
+              "page": 3,
+              "source_artifact_sha256": "05c4272b493862654d0cbf493326cedf5d6f500cd0340beec102ee47398539c2",
+              "evidence_sha256": "32024c34c695673fa922121fcf5c3fbc7dd039788ebd1b224a1c5822274403f1",
+              "locator": "PDF p. 3, §2.1, pollutant trapping and width.",
+              "source_quote": "Schmitt et al. (1999) suggested widths of 7.5 m are ef-fective at trapping sediments and sediment-bound pollutants (e.g. non-soluble phosphates), whereas to control soluble pollutants (e.g. nitrates and dissolved phosphorus) widths of 15 m are recommended.",
+              "published_profile": {
+                "role": "Pollutant-specific agricultural buffer-strip design",
+                "geometry": {
+                  "sediment_bound_m": 7.5,
+                  "soluble_m": 15
+                },
+                "interpretation": "Retain the sediment and sediment-bound pollutant strip width separately from the width recommended for soluble pollutants. Performance also depends on slope, soil and vegetation; evidence on width responses varies."
+              },
+              "disposition": "Keep the separate pollutant-specific design widths and attribution to Schmitt et al. (1999)."
+            }
+          ],
+          "source_count_basis": "Three source publications documenting design or planning. No graded response or source weight is inferred.",
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "mapping_csv": "schema/recipes/riparian_buffer/T4_suitability_mappings.csv",
+            "mapping_id": "riparian_buffer__planted__distance_to_waterbody",
+            "type": "trapezoidal",
+            "params": {
+              "abs_max": 30.0
+            },
+            "uncertainty_pct": "10.0"
+          }
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_adjustable": false,
+    "justification": "Approved for riparian design and planning only. The source widths and analysis extents do not establish a shared relationship between site distance to water and buffer establishment. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "variable": "distance_to_waterbody",
+    "suitability_family_id": "riparian_buffer__planted",
+    "evidence_ids": [
+      "ev_distance_to_waterbody_schultz95_1",
+      "ev_distance_to_waterbody_tiwari16_1",
+      "ev_distance_to_waterbody_cole20_1"
+    ],
+    "n_sources": 3
+  }
+]
