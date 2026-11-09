@@ -1,6 +1,10 @@
 # Canning2022: constructed-treatment versus landscape-creation routing
 
-**Decision needed before evidence admission; no family changes made.** Source `wet_constructed_suitability_sugarcane_2022`, Canning et al., online2022/volume2023, DOI10.1007/s00267-022-01734-4. Full17-page main paper read. Queue says `constructed`, currently parked `qualitative_only`. Source describes rural freshwater flood-drainage lagoons within sugarcane farms, not tidal/salt-marsh restoration and not point-source wastewater treatment.
+**Approved by Pete, 9 November 2026.** File this source under wetland creation (`wetland_management__creation`) as documented flood-drainage and fish-habitat implementation. PDF pp. 2–3 describe the excavated freshwater lagoons and arterial drains that directed floodwater from cane fields, their vegetated margins and downstream river connections. The design dimensions describe construction at the selected sites. They supply no T4 siting cutoff or eligibility rule. Treatment wetlands retain their parked status. The held finance candidate and the four inventoried effect groups require separate review.
+
+## Original 5 November routing assessment
+
+Source `wet_constructed_suitability_sugarcane_2022`, Canning et al., online2022/volume2023, DOI10.1007/s00267-022-01734-4. Full17-page main paper read. Queue says `constructed`, currently parked `qualitative_only`. Source describes rural freshwater flood-drainage lagoons within sugarcane farms, not tidal/salt-marsh restoration and not point-source wastewater treatment.
 
 ## Existing definitions
 
