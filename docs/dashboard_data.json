@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-09T11:10:05.319620+00:00",
-  "git_commit": "99539121cd95dcfdf5ad65e9ed6a60cbffcae51e",
+  "timestamp": "2026-11-09T11:46:02.385048+00:00",
+  "git_commit": "e00cd34d9cb218b9a5d6cd911aa9633dfff51928",
   "registers": {
     "SRC_source_register": [
       {
@@ -32095,12 +32095,80 @@
         "suitability_family_id": "water_harvesting__terracing",
         "variable": "annual_precipitation",
         "relationship": {
-          "opt_low": 400,
-          "opt_high": 600,
-          "abs_min": 100,
-          "abs_max": 1200,
-          "unit": "mm",
-          "direction": "rainfall optimum for soil and water conservation techniques is 400-600 mm, still suitable across 200-1000 mm, marginal at 100-200 and 1000-1200, and unsuitable below 100 or above 1200 mm"
+          "opt_low": null,
+          "opt_high": null,
+          "abs_min": null,
+          "abs_max": null,
+          "unit": "mm per October–April rainy season",
+          "direction": "The local model ranks 400–600 mm of rainy-season rainfall highest; the complete local classes are retained. No annual-rainfall response is defined.",
+          "source_classes": [
+            {
+              "seasonal_rainfall_mm_printed": "0–100",
+              "label": "Not suitable",
+              "score": 1
+            },
+            {
+              "seasonal_rainfall_mm_printed": "100–200",
+              "label": "Marginally suitable",
+              "score": 3
+            },
+            {
+              "seasonal_rainfall_mm_printed": "200–400",
+              "label": "Highly suitable",
+              "score": 7
+            },
+            {
+              "seasonal_rainfall_mm_printed": "400–600",
+              "label": "Optimally suitable",
+              "score": 9
+            },
+            {
+              "seasonal_rainfall_mm_printed": "600–800",
+              "label": "Highly suitable",
+              "score": 7
+            },
+            {
+              "seasonal_rainfall_mm_printed": "800–1,000",
+              "label": "Moderately suitable",
+              "score": 5
+            },
+            {
+              "seasonal_rainfall_mm_printed": "1,000–1,200",
+              "label": "Marginally suitable",
+              "score": 3
+            },
+            {
+              "seasonal_rainfall_mm_printed": ">1,200",
+              "label": "Not suitable",
+              "score": 1
+            },
+            {
+              "seasonal_rainfall_mm_printed": "—",
+              "label": "Restricted",
+              "score": 0
+            }
+          ]
+        },
+        "context": {
+          "model_use": {
+            "source_criterion": "rainfall",
+            "weight": 0.04,
+            "weight_scope": "Within-study AHP criterion weight, Table 5, PDF p. 10",
+            "mapped_statistic": "mean seasonal October–April precipitation total",
+            "study_area": "Ronquillo watershed near Cajamarca, northern Peruvian Andes"
+          },
+          "source_table": {
+            "source_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd",
+            "locators": [
+              "PDF p. 5, Rainfall (mapped layer)",
+              "PDF p. 6, Figure 3 (season and statistic)",
+              "PDF p. 9, Table 4 (classes)",
+              "PDF p. 10, Table 5 (weight)"
+            ],
+            "temporal_transfer": "source-specific; annual scoring excluded",
+            "interpretation": "Mean October–April rainfall total (mm per rainy season) used for spatial siting of terraces and bunds in the Ronquillo watershed near Cajamarca in the northern Peruvian Andes. This seasonal ranking and weight have no approved transfer to annual precipitation or other watersheds and seasons.",
+            "ontology_mapping": "No matching seasonal variable is registered. The historical annual_precipitation key is retained for traceability only."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -324794,6 +324862,154 @@
           "n_sources": 3
         },
         {
+          "mapping_id": "water_harvesting__terracing__annual_precipitation",
+          "nbs_id": "water_harvesting_conservation",
+          "dataset_id": "worldclim_v2_precip",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "trapezoidal",
+          "relationship_params": {
+            "reviewed_adaptation": {
+              "numerical_calibration": {
+                "scope": "water_harvesting__terracing__annual_precipitation",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_water_block_20261109/terrace_rainfall.md",
+                "status": "held",
+                "reason": "Keep the Ronquillo seasonal model in its original regional context. Only the forward-sloping bench source supplies terrace-specific annual rainfall guidance. The contour stone-line source concerns a separate water-harvesting technique. No shared annual terrace rainfall score or cutoff is approved.",
+                "retained_source_profiles": [
+                  {
+                    "structure": "Terraces and bunds modelled in the Ronquillo watershed, Peru",
+                    "locator": "PDF p. 5 Rainfall methods, PDF p. 6 Fig. 3, PDF p. 9 Table 4 and PDF p. 10 Table 5.",
+                    "unit": "mm per October–April rainy season",
+                    "statistic": "Mean October–April seasonal precipitation total. The rainfall–altitude relation for seasonal precipitation was used in the spatial MCE.",
+                    "published_classes": [
+                      {
+                        "seasonal_rainfall_mm": [
+                          "400–600"
+                        ],
+                        "label": "Optimally suitable",
+                        "score": 9
+                      },
+                      {
+                        "seasonal_rainfall_mm": [
+                          "200–400",
+                          "600–800"
+                        ],
+                        "label": "Highly suitable",
+                        "score": 7
+                      },
+                      {
+                        "seasonal_rainfall_mm": [
+                          "800–1000"
+                        ],
+                        "label": "Moderately suitable",
+                        "score": 5
+                      },
+                      {
+                        "seasonal_rainfall_mm": [
+                          "100–200",
+                          "1000–1200"
+                        ],
+                        "label": "Marginally suitable",
+                        "score": 3
+                      },
+                      {
+                        "seasonal_rainfall_mm": [
+                          "0–100",
+                          ">1200"
+                        ],
+                        "label": "Not suitable",
+                        "score": 1
+                      },
+                      {
+                        "seasonal_rainfall_mm": [],
+                        "label": "Restricted",
+                        "score": 0
+                      }
+                    ],
+                    "source_criterion_weight": {
+                      "criterion": "rainfall",
+                      "value": 0.04,
+                      "method": "within-study AHP relative importance",
+                      "locator": "Table 5",
+                      "source_row_quote": "Rainfall\n1\n1/3\n1/7\n1/3\n1/5\n1/3\n0.04"
+                    },
+                    "disposition": "local_seasonal_model_excluded_from_annual_terrace_support_and_scoring",
+                    "transfer_scope": "Retain as context-specific evidence for this basin and its rainy season. Transfer to another region or season requires demonstrated comparability and separate review.",
+                    "interpretation": "The annual gauge means provide station context. Endpoints shared by adjacent printed classes are unresolved. Restricted (0) has no rainfall interval.",
+                    "evidence_id": "ev_wh_annual_precipitation_krois14_1",
+                    "source_id": "gismcda_swc_siting_2014",
+                    "evidence_sha256": "4f38df6665143c45b5816c840703d1f55e3c58e24a59dbcbc9ac4a662aae440c",
+                    "source_artifact_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd",
+                    "source_quote": "Table 4\nSuitability levels for SWCTs (terraces and bunds).\nSuitability rating\nOptimally suitable\nHighly suitable\nModerately suitable\nMarginally suitable\nNot suitable\nRestricted\nSuitability level\n9\n7\n5\n3\n1\n0\nRainfall (mm)\n400e600\n200e400\n600e800\n800e1000\n100e200\n1000e1200\n0e100\n>1200\ne\nRunoff coefﬁcient\n>0.9\n0.6e0.9\n0.3e0.6\n0e0.3\ne\ne\nSlope e terraces (\u0006)\n18e30\n10e18 > 30\n5e10\n2e5\n0e2\ne\nSlope e bunds (\u0006)\n<2e5\n5e10\n10e18\n18e30\n>30\ne\nSoil depth (m)\n>1.0\n0.5e1.0\n0.3e0.5\n0.2e0.3\n<0.2\ne\nSoil texture (% clay content)\n15e35\n6e15\n35e55\n0e6\n>55\ne\nLand use\nAgriculture\nMeadows, Shrub land,\nScarce vegetation\nGrassland\nForest\ne\nInfrastructure,\nWater bodies"
+                  },
+                  {
+                    "structure": "Contour stone lines for water harvesting and crop production",
+                    "locator": "FAO manual §§5.7.1–2, Background and Suitability.",
+                    "unit": "mm rainfall",
+                    "rainfall_range_mm": [
+                      200,
+                      750
+                    ],
+                    "conditions": "Arid to semi-arid; agricultural soil, good local stone supply and slopes preferably below 2%.",
+                    "disposition": "stone_line_profile_excluded_from_terrace_support_and_scoring",
+                    "interpretation": "The source expressly distinguishes these water-harvesting stone lines from stone bunding for hillside terracing.",
+                    "evidence_id": "ev_wh_precip_critchley91_stonebunds",
+                    "source_id": "fao_critchley_wh_manual_1991",
+                    "evidence_sha256": "8c799450f3966f8960f52669082a6663c632013cba2250e86a12f54a47c43441",
+                    "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+                    "source_quote": "Suitability Stone bunds for crop production can be used under the following conditions: Rainfall: 200 mm - 750 mm; from arid to semi-arid areas."
+                  },
+                  {
+                    "structure": "Contour forward-sloping bench terraces",
+                    "locator": "WOCAT PDF p. 129, printed p. 116, paragraph on contour forward-sloping bench terraces.",
+                    "unit": "mm/year",
+                    "reported_annual_rainfall_mm": [
+                      200,
+                      600
+                    ],
+                    "conditions": "Runoff is harvested from uncropped upslope inter-terrace areas. Catchment-to-application area ratio 1:1–10:1; slopes up to 60%; mainly for trees and bushes and less for field crops.",
+                    "disposition": "annual_terrace_evidence_scoped_to_forward_sloping_benches",
+                    "interpretation": "The published range describes where this design is used. It supplies no scores inside the range or exclusion threshold beyond it.",
+                    "evidence_id": "ev_wh_precip_wocatgl13_benchterraces",
+                    "source_id": "wocat_wh_guidelines_2013",
+                    "evidence_sha256": "62f3d5c2b75b7c59fceb813482cc56b0d8fe25a9cbe54da09de3c2f2ca48d8c4",
+                    "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+                    "source_quote": "Contour forward sloping bench terraces are constructed or develop over time from vegetative strips, contour earth bunds and stone bunds on steeper slopes (up to 60%). This technology combines soil and water conservation with WH. Runoff is harvested from the sloping non cropped area between the terraces (C:A ratio 1:1 – 10:1). This type of terraces is used in areas with annual rainfall between 200- 600 mm/y"
+                  }
+                ],
+                "excluded_from_annual_terrace_support_and_scoring": [
+                  "ev_wh_annual_precipitation_krois14_1",
+                  "ev_wh_precip_critchley91_stonebunds"
+                ],
+                "held_relationship": {
+                  "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+                  "type": "trapezoidal",
+                  "params": {
+                    "abs_min": 100.0,
+                    "opt_low": 400.0,
+                    "opt_high": 600.0,
+                    "abs_max": 750.0
+                  },
+                  "uncertainty_pct": "60.0"
+                }
+              }
+            }
+          },
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.2,
+          "weight_adjustable": true,
+          "justification": "Keep the Ronquillo seasonal model in its original regional context. Only the forward-sloping bench source supplies terrace-specific annual rainfall guidance. The contour stone-line source concerns a separate water-harvesting technique. No shared annual terrace rainfall score or cutoff is approved. Retained approved calibration hold; no new numeric synthesis or approval.",
+          "variable": "annual_precipitation",
+          "suitability_family_id": "water_harvesting__terracing",
+          "evidence_ids": [
+            "ev_wh_precip_wocatgl13_benchterraces"
+          ],
+          "n_sources": 1
+        },
+        {
           "mapping_id": "water_harvesting__terracing__runoff_potential_index",
           "nbs_id": "water_harvesting_conservation",
           "suitability_dimension": "biophysical_constraint",
@@ -370546,9 +370762,9 @@
     }
   ],
   "qaqc_stats": {
-    "total_reviews": 2460,
+    "total_reviews": 2461,
     "queried": 211,
-    "n_reviewers": 25,
+    "n_reviewers": 26,
     "by_reviewer": {
       "ai_mechanism_rule": 727,
       "orchestrator": 466,
@@ -370574,11 +370790,12 @@
       "ai_t4_clay_source_check": 2,
       "ai_t4_terrace_slope_check": 2,
       "Namita-J,peetmate": 1,
-      "ai_retro_2026-10-29": 1
+      "ai_retro_2026-10-29": 1,
+      "ai_t4_terrace_rainfall_check": 1
     },
     "by_decision": {
       "drop": 1541,
-      "ok": 596,
+      "ok": 597,
       "flag": 210,
       "reclassify": 18,
       "retag": 4,
@@ -370588,7 +370805,7 @@
     },
     "by_reason": {
       "insufficient_context": 695,
-      "accepted_correction": 562,
+      "accepted_correction": 563,
       "unspecified": 312,
       "other": 270,
       "wrong_practice": 167,
@@ -370624,7 +370841,7 @@
       "routing_ruling": 3,
       "variable_ruling": 31,
       "direction_audit": 122,
-      "unit_correction": 85
+      "unit_correction": 86
     },
     "flag_eval": {
       "tp": 64,
@@ -370635,10 +370852,10 @@
       "tp_corrected": 26
     },
     "pass_eval": {
-      "tn": 568,
+      "tn": 569,
       "fn": 10,
       "out_of_remit": 1493,
-      "checked": 2071,
+      "checked": 2072,
       "fn_rate_pct": 1.7
     },
     "recall_est_pct": 86.5,
@@ -402834,6 +403051,16 @@
       "reason": "accepted_correction",
       "note": "context.source_table, relationship.abs_max, relationship.direction, relationship.source_classes: The 30° condition is qualified and specific to zig terraces. Record all six application contexts; remove the inferred shared maximum.",
       "reviewer": "ai_t4_terrace_slope_check"
+    },
+    {
+      "date": "2026-11-09",
+      "evidence_id": "ev_wh_annual_precipitation_krois14_1",
+      "source_id": "gismcda_swc_siting_2014",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.model_use, context.source_table, relationship.abs_max, relationship.abs_min, relationship.direction, relationship.opt_high, relationship.opt_low, relationship.source_classes, relationship.unit: Correct the mapped rainfall statistic from annual to local rainy-season total. Preserve and scope all native classes and AHP weight. Remove scalar thresholds from the annual key.",
+      "reviewer": "ai_t4_terrace_rainfall_check"
     }
   ],
   "family_presentation": {
@@ -404027,8 +404254,8 @@
       "source_id": "fao_critchley_wh_manual_1991",
       "page": "",
       "mapping_id": "water_harvesting__terracing__annual_precipitation",
-      "reason": "Source checked; proposed HOLD (not applied). §5.7.2 states 200–750 mm rainfall for contour stone bunds used in crop-water harvesting. Preceding paragraph explicitly distinguishes this technique from stone bunding for hillside terracing. Current record is assigned to terracing.",
-      "decision_needed": "Hold family assignment for review; keep the full source recommendation and distinguish permeable contour stone lines/bunds from hillside terrace construction. No automatic reassignment or deletion. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. FAO reports 200–750 mm for contour stone lines for crop-water harvesting and distinguishes these from stonework for hillside terracing.",
+      "decision_needed": "Approved, 9 November 2026. Retain full stone-line guidance in its source context outside terrace rainfall scoring and support.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "8c799450f3966f8960f52669082a6663c632013cba2250e86a12f54a47c43441",
@@ -404091,11 +404318,11 @@
       "source_id": "gismcda_swc_siting_2014",
       "page": "9",
       "mapping_id": "water_harvesting__terracing__annual_precipitation",
-      "reason": "Source checked; proposed HOLD (not applied). Table 4 gives 400–600 mm optimal; 200–400 and 600–800 high; 800–1000 moderate; 100–200 and 1000–1200 marginal; 0–100 and >1200 not suitable. Methods/results PDF 5 say the mapped input is mean seasonal October–April rainfall, whereas record labels it annual_precipitation.",
-      "decision_needed": "Hold annual-variable interpretation; preserve full source table and correct the seasonal measurement context through reviewed correction before comparison with annual-rainfall evidence. Source score 1 remains distinct from restricted 0. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. In the Ronquillo watershed near Cajamarca in the northern Peruvian Andes, Krois & Schulte mapped mean October–April rainfall to site terraces and bunds. The seasonal 400–600 mm band scored 9. The full seasonal table and study weight of 0.04 are retained.",
+      "decision_needed": "Approved, 9 November 2026. Use this ranking within its original study context only. Annual terrace rainfall support and scoring exclude this seasonal profile.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "3ad672a092c43d32a5d15993630bc147569bbc794037f1e82ee6546daff443e5",
+      "evidence_sha256": "4f38df6665143c45b5816c840703d1f55e3c58e24a59dbcbc9ac4a662aae440c",
       "source_locator": "",
       "context_changed": false
     },
@@ -404203,8 +404430,8 @@
       "source_id": "wocat_wh_guidelines_2013",
       "page": "129",
       "mapping_id": "water_harvesting__terracing__annual_precipitation",
-      "reason": "Source checked; proposed HOLD (not applied). PDF129 / printed116 states contour forward-sloping bench terraces are used in 200–600 mm/year rainfall, mainly for trees/bushes, with runoff from non-cropped inter-terrace areas. This is a specific terrace type and a use range, not proof all other rainfall is unsuitable.",
-      "decision_needed": "Keep complete 200–600 mm/year source-use range and forward-sloping terrace context; hold hard tails/generalisation to every terrace type. Preserve tree/crop context without creating species envelopes. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. WOCAT reports 200–600 mm/year for forward-sloping benches harvesting water from the uncropped area between terraces. Mainly for trees or bushes, with slopes up to 60% grade.",
+      "decision_needed": "Approved, 9 November 2026. Retain the annual use range by design. No outside-range failure or family-wide rainfall cutoff was established.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "62f3d5c2b75b7c59fceb813482cc56b0d8fe25a9cbe54da09de3c2f2ca48d8c4",
@@ -432155,6 +432382,7 @@
         "dropped_evidence_ids": [],
         "approved_evidence_ids": [],
         "reviewed_evidence_ids": [
+          "ev_wh_annual_precipitation_krois14_1",
           "ev_wh_slope_krois14_terraces",
           "ev_wh_soil_texture_krois14_1"
         ],
@@ -471013,6 +471241,7 @@
         },
         "contributions": {
           "T4": [
+            "ev_wh_precip_wocatgl13_benchterraces",
             "ev_wh_precip_wocatgl13_trapezoidal",
             "ev_wh_slope_wocatgl13_benchterraces",
             "ev_wh_soildepth_wocatgl13_strips"
@@ -486526,7 +486755,7 @@
       }
     ],
     "totals": {
-      "compiled_outputs": 727,
+      "compiled_outputs": 728,
       "evidence_ids": [
         "EV_binam_2017_007",
         "EV_chomba_2020_001",
@@ -492976,7 +493205,7 @@
         "ev_yield_stability_sileshi12_3",
         "ev_yield_stability_silv26_1"
       ],
-      "contributing_excerpts": 3077,
+      "contributing_excerpts": 3078,
       "contributing_sources": 565,
       "known_sources": 946,
       "source_keys": [
@@ -493935,19 +494164,19 @@
       "active_excerpts": 4913,
       "retained_excerpts": 4913,
       "all_excerpts": 6447,
-      "reviewed_excerpts": 2135,
-      "unreviewed_excerpts": 4312,
+      "reviewed_excerpts": 2136,
+      "unreviewed_excerpts": 4311,
       "reviewed_pct": 33.1,
       "approved_excerpts": 414,
       "approved_pct": 19.4,
-      "reviewed_active_excerpts": 606,
+      "reviewed_active_excerpts": 607,
       "reviewed_dropped_excerpts": 1529,
-      "reviewed_unresolved_excerpts": 192,
+      "reviewed_unresolved_excerpts": 193,
       "dropped_excerpts": 1534,
-      "t4_relationships": 42,
+      "t4_relationships": 43,
       "t4_operational_relationships": 8,
-      "t4_structural_relationships": 34,
-      "t4_evidence_backed_relationships": 33,
+      "t4_structural_relationships": 35,
+      "t4_evidence_backed_relationships": 34,
       "t4_contributing_sources": 27,
       "source_mix": {
         "literature": 582,
@@ -518164,7 +518393,7 @@
         "nbs_id": "water_harvesting_conservation",
         "name": "Water harvesting conservation",
         "metrics": {
-          "compiled_outputs": 215,
+          "compiled_outputs": 216,
           "evidence_ids": [
             "ev_accessibility_travel_time_schmidt12_11",
             "ev_accessibility_travel_time_wei16_1_op",
@@ -520796,7 +521025,7 @@
             "ev_yield_stability_seti18_3",
             "ev_yield_stability_silv26_1"
           ],
-          "contributing_excerpts": 1076,
+          "contributing_excerpts": 1077,
           "contributing_sources": 172,
           "known_sources": 259,
           "source_keys": [
@@ -521068,19 +521297,19 @@
           "active_excerpts": 1724,
           "retained_excerpts": 1724,
           "all_excerpts": 2629,
-          "reviewed_excerpts": 1029,
-          "unreviewed_excerpts": 1600,
-          "reviewed_pct": 39.1,
+          "reviewed_excerpts": 1030,
+          "unreviewed_excerpts": 1599,
+          "reviewed_pct": 39.2,
           "approved_excerpts": 40,
           "approved_pct": 3.9,
-          "reviewed_active_excerpts": 125,
+          "reviewed_active_excerpts": 126,
           "reviewed_dropped_excerpts": 904,
-          "reviewed_unresolved_excerpts": 85,
+          "reviewed_unresolved_excerpts": 86,
           "dropped_excerpts": 905,
-          "t4_relationships": 12,
+          "t4_relationships": 13,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 12,
-          "t4_evidence_backed_relationships": 12,
+          "t4_structural_relationships": 13,
+          "t4_evidence_backed_relationships": 13,
           "t4_contributing_sources": 14,
           "source_mix": {
             "literature": 137,
@@ -523944,7 +524173,7 @@
             "scope_kind": "family",
             "scope_definition": "Level or near-level steps cut into a slope to hold water and soil.",
             "metrics": {
-              "compiled_outputs": 25,
+              "compiled_outputs": 26,
               "evidence_ids": [
                 "ev_accessibility_travel_time_wei16_1_op",
                 "ev_adoption_rate_fao13c_1",
@@ -524620,7 +524849,7 @@
                 "ev_yield_stability_kato11_6",
                 "ev_yield_stability_kato11_7"
               ],
-              "contributing_excerpts": 280,
+              "contributing_excerpts": 281,
               "contributing_sources": 57,
               "known_sources": 82,
               "source_keys": [
@@ -524715,19 +524944,19 @@
               "active_excerpts": 421,
               "retained_excerpts": 421,
               "all_excerpts": 673,
-              "reviewed_excerpts": 278,
-              "unreviewed_excerpts": 395,
-              "reviewed_pct": 41.3,
+              "reviewed_excerpts": 279,
+              "unreviewed_excerpts": 394,
+              "reviewed_pct": 41.5,
               "approved_excerpts": 12,
               "approved_pct": 4.3,
-              "reviewed_active_excerpts": 26,
+              "reviewed_active_excerpts": 27,
               "reviewed_dropped_excerpts": 252,
-              "reviewed_unresolved_excerpts": 14,
+              "reviewed_unresolved_excerpts": 15,
               "dropped_excerpts": 252,
-              "t4_relationships": 3,
+              "t4_relationships": 4,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 3,
-              "t4_evidence_backed_relationships": 3,
+              "t4_structural_relationships": 4,
+              "t4_evidence_backed_relationships": 4,
               "t4_contributing_sources": 4,
               "source_mix": {
                 "literature": 43,
@@ -528518,9 +528747,9 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 12,
-            "evidence_backed_outputs": 12,
-            "contributing_excerpts": 32,
+            "output_count": 13,
+            "evidence_backed_outputs": 13,
+            "contributing_excerpts": 33,
             "contributing_sources": 14,
             "evidence_ids": [
               "ev_wh_annual_precipitation_kahinda08_3",
@@ -528534,6 +528763,7 @@
               "ev_wh_drainage_density_singh17_1",
               "ev_wh_precip_critchley91_contourbunds",
               "ev_wh_precip_critchley91_trapezoidal",
+              "ev_wh_precip_wocatgl13_benchterraces",
               "ev_wh_precip_wocatgl13_trapezoidal",
               "ev_wh_runoff_potential_index_alabadi17_1",
               "ev_wh_runoff_potential_index_dewinnaar07_1",
@@ -528763,6 +528993,24 @@
                   "kadam2012_scscn_india_rwh",
                   "mahmoud_2016_mcda_gis_wh_recharge",
                   "mahmoud_2021_checkdam_suitability_topo_drainage_morocco"
+                ]
+              },
+              {
+                "id": "water_harvesting__terracing__annual_precipitation",
+                "label": "water harvesting  terracing  annual precipitation · Terracing",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__terracing"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_precip_wocatgl13_benchterraces"
+                ],
+                "source_keys": [
+                  "wocat_wh_guidelines_2013"
                 ]
               },
               {
@@ -573996,7 +574244,7 @@
         "project_level": false,
         "evidence_tracking": "routed",
         "totals": {
-          "compiled_outputs": 34,
+          "compiled_outputs": 35,
           "evidence_ids": [
             "EV_chomba_2020_001",
             "EV_chomba_2020_002",
@@ -575069,7 +575317,7 @@
             "ev_wh_watertable_wocat7777_1",
             "ev_wh_watertable_wocat7778_1"
           ],
-          "contributing_excerpts": 58,
+          "contributing_excerpts": 59,
           "contributing_sources": 27,
           "known_sources": 210,
           "source_keys": [
@@ -575292,19 +575540,19 @@
           "active_excerpts": 851,
           "retained_excerpts": 851,
           "all_excerpts": 1070,
-          "reviewed_excerpts": 437,
-          "unreviewed_excerpts": 633,
-          "reviewed_pct": 40.8,
+          "reviewed_excerpts": 438,
+          "unreviewed_excerpts": 632,
+          "reviewed_pct": 40.9,
           "approved_excerpts": 215,
-          "approved_pct": 49.2,
-          "reviewed_active_excerpts": 220,
+          "approved_pct": 49.1,
+          "reviewed_active_excerpts": 221,
           "reviewed_dropped_excerpts": 217,
-          "reviewed_unresolved_excerpts": 5,
+          "reviewed_unresolved_excerpts": 6,
           "dropped_excerpts": 219,
-          "t4_relationships": 34,
+          "t4_relationships": 35,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 34,
-          "t4_evidence_backed_relationships": 33,
+          "t4_structural_relationships": 35,
+          "t4_evidence_backed_relationships": 34,
           "t4_contributing_sources": 27,
           "source_mix": {
             "literature": 106,
@@ -579396,7 +579644,7 @@
             "nbs_id": "water_harvesting_conservation",
             "name": "Water harvesting conservation",
             "metrics": {
-              "compiled_outputs": 12,
+              "compiled_outputs": 13,
               "evidence_ids": [
                 "ev_wh5_adham_2018_clay_content",
                 "ev_wh5_adham_2018_land_cover",
@@ -579781,7 +580029,7 @@
                 "ev_wh_watertable_wocat7777_1",
                 "ev_wh_watertable_wocat7778_1"
               ],
-              "contributing_excerpts": 32,
+              "contributing_excerpts": 33,
               "contributing_sources": 14,
               "known_sources": 74,
               "source_keys": [
@@ -579868,19 +580116,19 @@
               "active_excerpts": 367,
               "retained_excerpts": 367,
               "all_excerpts": 382,
-              "reviewed_excerpts": 24,
-              "unreviewed_excerpts": 358,
-              "reviewed_pct": 6.3,
+              "reviewed_excerpts": 25,
+              "unreviewed_excerpts": 357,
+              "reviewed_pct": 6.5,
               "approved_excerpts": 5,
-              "approved_pct": 20.8,
-              "reviewed_active_excerpts": 9,
+              "approved_pct": 20.0,
+              "reviewed_active_excerpts": 10,
               "reviewed_dropped_excerpts": 15,
-              "reviewed_unresolved_excerpts": 4,
+              "reviewed_unresolved_excerpts": 5,
               "dropped_excerpts": 15,
-              "t4_relationships": 12,
+              "t4_relationships": 13,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 12,
-              "t4_evidence_backed_relationships": 12,
+              "t4_structural_relationships": 13,
+              "t4_evidence_backed_relationships": 13,
               "t4_contributing_sources": 14,
               "source_mix": {
                 "literature": 19,
@@ -580837,7 +581085,7 @@
                 "scope_kind": "family",
                 "scope_definition": "Level or near-level steps cut into a slope to hold water and soil.",
                 "metrics": {
-                  "compiled_outputs": 3,
+                  "compiled_outputs": 4,
                   "evidence_ids": [
                     "ev_wh_annual_precipitation_krois14_1",
                     "ev_wh_aridity_wocat1506_1",
@@ -580916,7 +581164,7 @@
                     "ev_wh_watertable_wocat6610_1",
                     "ev_wh_watertable_wocat7553_1"
                   ],
-                  "contributing_excerpts": 8,
+                  "contributing_excerpts": 9,
                   "contributing_sources": 4,
                   "known_sources": 22,
                   "source_keys": [
@@ -580951,19 +581199,19 @@
                   "active_excerpts": 76,
                   "retained_excerpts": 76,
                   "all_excerpts": 76,
-                  "reviewed_excerpts": 5,
-                  "unreviewed_excerpts": 71,
-                  "reviewed_pct": 6.6,
+                  "reviewed_excerpts": 6,
+                  "unreviewed_excerpts": 70,
+                  "reviewed_pct": 7.9,
                   "approved_excerpts": 2,
-                  "approved_pct": 40.0,
-                  "reviewed_active_excerpts": 5,
+                  "approved_pct": 33.3,
+                  "reviewed_active_excerpts": 6,
                   "reviewed_dropped_excerpts": 0,
-                  "reviewed_unresolved_excerpts": 3,
+                  "reviewed_unresolved_excerpts": 4,
                   "dropped_excerpts": 0,
-                  "t4_relationships": 3,
+                  "t4_relationships": 4,
                   "t4_operational_relationships": 0,
-                  "t4_structural_relationships": 3,
-                  "t4_evidence_backed_relationships": 3,
+                  "t4_structural_relationships": 4,
+                  "t4_evidence_backed_relationships": 4,
                   "t4_contributing_sources": 4,
                   "source_mix": {
                     "literature": 3,
@@ -581079,9 +581327,9 @@
                 "label": "Suitability",
                 "unit": "suitability rules",
                 "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-                "output_count": 12,
-                "evidence_backed_outputs": 12,
-                "contributing_excerpts": 32,
+                "output_count": 13,
+                "evidence_backed_outputs": 13,
+                "contributing_excerpts": 33,
                 "contributing_sources": 14,
                 "evidence_ids": [
                   "ev_wh_annual_precipitation_kahinda08_3",
@@ -581095,6 +581343,7 @@
                   "ev_wh_drainage_density_singh17_1",
                   "ev_wh_precip_critchley91_contourbunds",
                   "ev_wh_precip_critchley91_trapezoidal",
+                  "ev_wh_precip_wocatgl13_benchterraces",
                   "ev_wh_precip_wocatgl13_trapezoidal",
                   "ev_wh_runoff_potential_index_alabadi17_1",
                   "ev_wh_runoff_potential_index_dewinnaar07_1",
@@ -581324,6 +581573,24 @@
                       "kadam2012_scscn_india_rwh",
                       "mahmoud_2016_mcda_gis_wh_recharge",
                       "mahmoud_2021_checkdam_suitability_topo_drainage_morocco"
+                    ]
+                  },
+                  {
+                    "id": "water_harvesting__terracing__annual_precipitation",
+                    "label": "water harvesting  terracing  annual precipitation · Terracing",
+                    "nbs_id": "water_harvesting_conservation",
+                    "family_ids": [
+                      "water_harvesting__terracing"
+                    ],
+                    "farming_system": "",
+                    "scope_type": "",
+                    "scope_id": "",
+                    "risk_role": "",
+                    "evidence_ids": [
+                      "ev_wh_precip_wocatgl13_benchterraces"
+                    ],
+                    "source_keys": [
+                      "wocat_wh_guidelines_2013"
                     ]
                   },
                   {
@@ -582175,9 +582442,9 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 34,
-            "evidence_backed_outputs": 33,
-            "contributing_excerpts": 58,
+            "output_count": 35,
+            "evidence_backed_outputs": 34,
+            "contributing_excerpts": 59,
             "contributing_sources": 27,
             "evidence_ids": [
               "EV_wocat_507_2019_008",
@@ -582217,6 +582484,7 @@
               "ev_wh_drainage_density_singh17_1",
               "ev_wh_precip_critchley91_contourbunds",
               "ev_wh_precip_critchley91_trapezoidal",
+              "ev_wh_precip_wocatgl13_benchterraces",
               "ev_wh_precip_wocatgl13_trapezoidal",
               "ev_wh_runoff_potential_index_alabadi17_1",
               "ev_wh_runoff_potential_index_dewinnaar07_1",
@@ -582792,6 +583060,24 @@
                   "kadam2012_scscn_india_rwh",
                   "mahmoud_2016_mcda_gis_wh_recharge",
                   "mahmoud_2021_checkdam_suitability_topo_drainage_morocco"
+                ]
+              },
+              {
+                "id": "water_harvesting__terracing__annual_precipitation",
+                "label": "water harvesting  terracing  annual precipitation · Terracing",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__terracing"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_precip_wocatgl13_benchterraces"
+                ],
+                "source_keys": [
+                  "wocat_wh_guidelines_2013"
                 ]
               },
               {
@@ -646508,9 +646794,9 @@
         "label": "Suitability",
         "unit": "suitability rules",
         "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-        "output_count": 34,
-        "evidence_backed_outputs": 33,
-        "contributing_excerpts": 58,
+        "output_count": 35,
+        "evidence_backed_outputs": 34,
+        "contributing_excerpts": 59,
         "contributing_sources": 27,
         "evidence_ids": [
           "EV_wocat_507_2019_008",
@@ -646550,6 +646836,7 @@
           "ev_wh_drainage_density_singh17_1",
           "ev_wh_precip_critchley91_contourbunds",
           "ev_wh_precip_critchley91_trapezoidal",
+          "ev_wh_precip_wocatgl13_benchterraces",
           "ev_wh_precip_wocatgl13_trapezoidal",
           "ev_wh_runoff_potential_index_alabadi17_1",
           "ev_wh_runoff_potential_index_dewinnaar07_1",
@@ -647125,6 +647412,24 @@
               "kadam2012_scscn_india_rwh",
               "mahmoud_2016_mcda_gis_wh_recharge",
               "mahmoud_2021_checkdam_suitability_topo_drainage_morocco"
+            ]
+          },
+          {
+            "id": "water_harvesting__terracing__annual_precipitation",
+            "label": "water harvesting  terracing  annual precipitation · Terracing",
+            "nbs_id": "water_harvesting_conservation",
+            "family_ids": [
+              "water_harvesting__terracing"
+            ],
+            "farming_system": "",
+            "scope_type": "",
+            "scope_id": "",
+            "risk_role": "",
+            "evidence_ids": [
+              "ev_wh_precip_wocatgl13_benchterraces"
+            ],
+            "source_keys": [
+              "wocat_wh_guidelines_2013"
             ]
           },
           {
@@ -686356,7 +686661,7 @@
         "catalogue": {
           "summary": {
             "structural_claims": 367,
-            "explicitly_linked_claims": 32,
+            "explicitly_linked_claims": 33,
             "focus_claims": 5,
             "selection_only_with_relationship_content": 2,
             "scopes": {
@@ -686463,8 +686768,8 @@
               "claim_scope": "practice_technology",
               "evidence_type": "literature_relationship",
               "reviewer_ok": "false",
-              "relationship": "{\"opt_low\": 400, \"opt_high\": 600, \"abs_min\": 100, \"abs_max\": 1200, \"unit\": \"mm\", \"direction\": \"rainfall optimum for soil and water conservation techniques is 400-600 mm, still suitable across 200-1000 mm, marginal at 100-200 and 1000-1200, and unsuitable below 100 or above 1200 mm\"}",
-              "context": "",
+              "relationship": "{\"opt_low\": null, \"opt_high\": null, \"abs_min\": null, \"abs_max\": null, \"unit\": \"mm per October–April rainy season\", \"direction\": \"The local model ranks 400–600 mm of rainy-season rainfall highest; the complete local classes are retained. No annual-rainfall response is defined.\", \"source_classes\": [{\"seasonal_rainfall_mm_printed\": \"0–100\", \"label\": \"Not suitable\", \"score\": 1}, {\"seasonal_rainfall_mm_printed\": \"100–200\", \"label\": \"Marginally suitable\", \"score\": 3}, {\"seasonal_rainfall_mm_printed\": \"200–400\", \"label\": \"Highly suitable\", \"score\": 7}, {\"seasonal_rainfall_mm_printed\": \"400–600\", \"label\": \"Optimally suitable\", \"score\": 9}, {\"seasonal_rainfall_mm_printed\": \"600–800\", \"label\": \"Highly suitable\", \"score\": 7}, {\"seasonal_rainfall_mm_printed\": \"800–1,000\", \"label\": \"Moderately suitable\", \"score\": 5}, {\"seasonal_rainfall_mm_printed\": \"1,000–1,200\", \"label\": \"Marginally suitable\", \"score\": 3}, {\"seasonal_rainfall_mm_printed\": \">1,200\", \"label\": \"Not suitable\", \"score\": 1}, {\"seasonal_rainfall_mm_printed\": \"—\", \"label\": \"Restricted\", \"score\": 0}]}",
+              "context": "{\"model_use\": {\"source_criterion\": \"rainfall\", \"weight\": 0.04, \"weight_scope\": \"Within-study AHP criterion weight, Table 5, PDF p. 10\", \"mapped_statistic\": \"mean seasonal October–April precipitation total\", \"study_area\": \"Ronquillo watershed near Cajamarca, northern Peruvian Andes\"}, \"source_table\": {\"source_sha256\": \"570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd\", \"locators\": [\"PDF p. 5, Rainfall (mapped layer)\", \"PDF p. 6, Figure 3 (season and statistic)\", \"PDF p. 9, Table 4 (classes)\", \"PDF p. 10, Table 5 (weight)\"], \"temporal_transfer\": \"source-specific; annual scoring excluded\", \"interpretation\": \"Mean October–April rainfall total (mm per rainy season) used for spatial siting of terraces and bunds in the Ronquillo watershed near Cajamarca in the northern Peruvian Andes. This seasonal ranking and weight have no approved transfer to annual precipitation or other watersheds and seasons.\", \"ontology_mapping\": \"No matching seasonal variable is registered. The historical annual_precipitation key is retained for traceability only.\"}}",
               "quote": "Table 4\nSuitability levels for SWCTs (terraces and bunds).\nSuitability rating\nOptimally suitable\nHighly suitable\nModerately suitable\nMarginally suitable\nNot suitable\nRestricted\nSuitability level\n9\n7\n5\n3\n1\n0\nRainfall (mm)\n400e600\n200e400\n600e800\n800e1000\n100e200\n1000e1200\n0e100\n>1200\ne\nRunoff coefﬁcient\n>0.9\n0.6e0.9\n0.3e0.6\n0e0.3\ne\ne\nSlope e terraces (\u0006)\n18e30\n10e18 > 30\n5e10\n2e5\n0e2\ne\nSlope e bunds (\u0006)\n<2e5\n5e10\n10e18\n18e30\n>30\ne\nSoil depth (m)\n>1.0\n0.5e1.0\n0.3e0.5\n0.2e0.3\n<0.2\ne\nSoil texture (% clay content)\n15e35\n6e15\n35e55\n0e6\n>55\ne\nLand use\nAgriculture\nMeadows, Shrub land,\nScarce vegetation\nGrassland\nForest\ne\nInfrastructure,\nWater bodies",
               "page": "9",
               "locator_type": "page",
@@ -686473,9 +686778,9 @@
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "rainfall optimum for soil and water conservation techniques is 400-600 mm, still suitable across 200-1000 mm, marginal at 100-200 and 1000-1200, and unsuitable below 100 or above 1200 mm",
+              "source_direction": "The local model ranks 400–600 mm of rainy-season rainfall highest; the complete local classes are retained. No annual-rainfall response is defined.",
               "has_stated_direction": true,
-              "has_source_classes": false,
+              "has_source_classes": true,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
               "linked_mapping_ids": [],
@@ -689411,7 +689716,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__terracing__annual_precipitation"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -697157,6 +697464,12 @@
                   "sources": [],
                   "function_options": 0,
                   "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation"
+                },
+                {
+                  "family": "water_harvesting__terracing",
+                  "sources": [],
+                  "function_options": 0,
+                  "mapping_id": "water_harvesting__terracing__annual_precipitation"
                 }
               ],
               "evidence_ids": [
@@ -700050,19 +700363,11 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "d7e835455079",
-    "data_id": "338d26c57cc5",
+    "data_id": "55679582a66e",
     "count_definition_version": "4",
-    "built_at": "2026-11-09T11:10:05.319620+00:00",
-    "source_commit": "99539121cd95dcfdf5ad65e9ed6a60cbffcae51e",
+    "built_at": "2026-11-09T11:46:02.385048+00:00",
+    "source_commit": "e00cd34d9cb218b9a5d6cd911aa9633dfff51928",
     "history": [
-      {
-        "release": "1.5.0",
-        "ui_id": "afee041f1a1a",
-        "data_id": "e66a0a52cf58",
-        "count_definition_version": "4",
-        "built_at": "2026-11-05T09:21:58.593834+00:00",
-        "source_commit": "88751d47586d1fb702b231ebb003d2ea21b353f3"
-      },
       {
         "release": "1.5.0",
         "ui_id": "afee041f1a1a",
@@ -700454,6 +700759,14 @@
         "count_definition_version": "4",
         "built_at": "2026-11-09T11:10:05.319620+00:00",
         "source_commit": "99539121cd95dcfdf5ad65e9ed6a60cbffcae51e"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "d7e835455079",
+        "data_id": "55679582a66e",
+        "count_definition_version": "4",
+        "built_at": "2026-11-09T11:46:02.385048+00:00",
+        "source_commit": "e00cd34d9cb218b9a5d6cd911aa9633dfff51928"
       }
     ]
   }
