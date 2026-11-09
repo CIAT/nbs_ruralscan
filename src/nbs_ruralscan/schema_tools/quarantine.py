@@ -11,7 +11,7 @@ the final call (re-open restores the row); the guard just stops junk reaching th
 
 SAFETY — never re-quarantines a row a human has touched:
   * `reviewer_ok=true`           — already signed off
-  * `review_state` already set   — already dropped/quarantined
+  * `review_state=dropped`       — already dropped/quarantined
   * evidence_id in `review_log`  — a human applied a decision (incl. a re-open)
   * evidence_id in `decisions.json` — a human has an in-progress decision
 
@@ -24,56 +24,82 @@ CLI: `python -m nbs_ruralscan.schema_tools.quarantine schema [--apply]` (default
 
 from __future__ import annotations
 
-import csv
-import json
+import argparse
+from dataclasses import dataclass
 from pathlib import Path
 
 from nbs_ruralscan.schema_tools import check_picos, check_scope
+from nbs_ruralscan.schema_tools.record_publication import edit_records
+from nbs_ruralscan.schema_tools.review_inputs import ReviewInputs
+from nbs_ruralscan.schema_tools.review_local import read_decisions
+from nbs_ruralscan.schema_tools.specialist_records import read_table, write_table
 
-ROOT = Path(__file__).resolve().parents[3]
 _MARKER = "[AUTO-QUARANTINE "
 
 
-def _human_touched(schema_root: Path) -> set[str]:
-    """evidence_ids a human has decided on (applied review_log OR in-progress decisions)."""
-    touched: set[str] = set()
-    rl = schema_root.parent / "pipeline" / "metrics" / "review_log.csv"
-    if rl.exists():
-        with rl.open(newline="", encoding="utf-8") as f:
-            for r in csv.DictReader(f):
-                if r.get("evidence_id"):
-                    touched.add(r["evidence_id"])
-    dj = schema_root.parent / "pipeline" / "review" / "decisions.json"
-    if dj.exists():
-        try:
-            touched.update(json.loads(dj.read_text(encoding="utf-8")).keys())
-        except (json.JSONDecodeError, OSError):
-            pass
+@dataclass(frozen=True)
+class QuarantinePaths:
+    evidence: Path
+    sources: Path
+    policy: Path
+    review_log: Path
+    decisions: Path
+
+    def __post_init__(self):
+        for name, path in vars(self).items():
+            object.__setattr__(self, name, Path(path).absolute())
+        if len({str(p.resolve()).casefold() for p in vars(self).values()}) != len(
+            vars(self)
+        ):
+            raise ValueError("Quarantine paths must be distinct")
+
+    @classmethod
+    def from_schema(cls, schema_root):
+        schema = Path(schema_root).resolve()
+        return cls(
+            schema / "registers/EV_evidence_register.csv",
+            schema / "registers/SRC_source_register.csv",
+            schema / "lookups/m2b_variable_policy.csv",
+            schema.parent / "pipeline/metrics/review_log.csv",
+            schema.parent / "pipeline/review/decisions.json",
+        )
+
+
+def _paths(schema_root):
+    return (
+        schema_root
+        if isinstance(schema_root, QuarantinePaths)
+        else QuarantinePaths.from_schema(schema_root)
+    )
+
+
+def _read_rows(path: Path, id_field: str, *required: str, unique: bool = False):
+    fields, rows = read_table(path, [id_field, *required])
+    ids = [row[id_field] for row in rows]
+    if any(not value.strip() for value in ids):
+        raise ValueError(f"Missing {id_field} in {path}")
+    if unique and len(set(ids)) != len(ids):
+        raise ValueError(f"Duplicate {id_field} in {path}")
+    return fields, rows
+
+
+def _read_evidence(paths: QuarantinePaths, ev: Path):
+    # A source register makes the tool exemption available; its join key must
+    # then also be present on EV. Older isolated EV fixtures have no SRC.
+    source_key = ("source_id",) if paths.sources.exists() else ()
+    return _read_rows(
+        ev, "evidence_id", "reviewer_ok", "review_state", *source_key, unique=True
+    )
+
+
+def _human_touched(paths: QuarantinePaths) -> set[str]:
+    """Existing decisions are read without repairing or re-encoding the local store."""
+    decisions, _ = read_decisions(paths.decisions)
+    touched = set(decisions)
+    if paths.review_log.exists():
+        _, log = _read_rows(paths.review_log, "evidence_id")
+        touched.update(row["evidence_id"] for row in log)
     return touched
-
-
-def _tool_evidence_ids(root: Path) -> set[str]:
-    """evidence_ids whose source is a tool — exempt from the paper-section scope signals.
-
-    Tool EV is interrogated differently (code/criteria via file_line/section provenance);
-    its "soil carbon" is a suitability *criterion*, not a carbon-accounting section, so the
-    off-scope/PICOS proxies (built for papers) false-positive on it. Skip tool-channel rows.
-    """
-    src = root / "registers" / "SRC_source_register.csv"
-    tool_sids: set[str] = set()
-    if src.exists():
-        with src.open(newline="", encoding="utf-8") as f:
-            for r in csv.DictReader(f):
-                if (r.get("source_category") or "") == "tool":
-                    tool_sids.add(r.get("source_id", ""))
-    ev = root / "registers" / "EV_evidence_register.csv"
-    ids: set[str] = set()
-    if tool_sids and ev.exists():
-        with ev.open(newline="", encoding="utf-8") as f:
-            for r in csv.DictReader(f):
-                if r.get("source_id") in tool_sids:
-                    ids.add(r.get("evidence_id", ""))
-    return ids
 
 
 # check_scope signals that are REPORTED for reviewer triage but NOT auto-quarantined. The
@@ -88,22 +114,33 @@ def _tool_evidence_ids(root: Path) -> set[str]:
 _ADVISORY_ONLY = {"site_context", "span_bleed", "m2b_flag"}
 
 
-def candidates(schema_root: str | Path = "schema") -> list[dict]:
-    """Eligible auto-quarantine rows: [{evidence_id, kind, signal, snippet}] (no mutation)."""
-    root = Path(schema_root)
-    ev = root / "registers" / "EV_evidence_register.csv"
-    if not ev.exists():
-        return []
+def _screen(paths: QuarantinePaths, ev: Path, rows: list[dict]) -> list[dict]:
+    """Run the paper checks in their historical order, keeping the first signal per ID."""
+    touched = _human_touched(paths)
+    if paths.sources.exists():
+        _, sources = _read_rows(
+            paths.sources, "source_id", "source_category", unique=True
+        )
+        tools = {r["source_id"] for r in sources if r["source_category"] == "tool"}
+        touched.update(
+            row["evidence_id"] for row in rows if row.get("source_id") in tools
+        )
+    if paths.policy.exists():
+        _, policy = _read_rows(
+            paths.policy, "variable", "decision", "reason", unique=True
+        )
+        for row in policy:
+            if row["decision"] not in {"exclude", "flag"}:
+                raise ValueError(
+                    f"Unknown M2b decision for {row['variable']}: {row['decision']!r} in {paths.policy}"
+                )
     flags: dict[str, dict] = {}
-    for f in check_scope.check(
-        ev, policy_path=root / "lookups/m2b_variable_policy.csv"
-    ):
+    for f in check_scope.check(ev, policy_path=paths.policy):
         if f["signal"] in _ADVISORY_ONLY:
             continue  # advisory-only — surfaced for review, not auto-quarantined
         flags.setdefault(f["evidence_id"], {"kind": "off_scope", **f})
     for f in check_picos.check(ev):  # wrong-practice; don't overwrite an off_scope hit
         flags.setdefault(f["evidence_id"], {"kind": "wrong_practice", **f})
-    touched = _human_touched(root) | _tool_evidence_ids(root)
     out = []
     for eid, f in flags.items():
         if eid in touched:
@@ -119,17 +156,29 @@ def candidates(schema_root: str | Path = "schema") -> list[dict]:
     return out
 
 
-def apply(schema_root: str | Path = "schema") -> list[dict]:
-    """Set review_state=dropped + stamp attribution for every candidate. Idempotent."""
-    root = Path(schema_root)
-    ev = root / "registers" / "EV_evidence_register.csv"
-    cands = {c["evidence_id"]: c for c in candidates(root)}
+def candidates(schema_root: str | Path | QuarantinePaths = "schema") -> list[dict]:
+    """Eligible rows in scope-check order. The dry run writes no files."""
+    paths = _paths(schema_root)
+    inputs = ReviewInputs(vars(paths).values())
+    result = []
+    if paths.evidence.exists():
+        _, rows = _read_evidence(paths, paths.evidence)
+        result = _screen(paths, paths.evidence, rows)
+    inputs.verify()
+    return result
+
+
+def _apply_private(paths: QuarantinePaths, ev: Path) -> list[dict]:
+    if not ev.exists():
+        return []
+    fields, rows = _read_evidence(paths, ev)
+    cands = {c["evidence_id"]: c for c in _screen(paths, ev, rows)}
     if not cands:
         return []
-    with ev.open(newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        fields = reader.fieldnames or []
-        rows = list(reader)
+    if not {"review_state", "attribution"}.issubset(fields):
+        raise ValueError(
+            "The evidence register needs review_state and attribution for a soft drop"
+        )
     applied: list[dict] = []
     for r in rows:
         c = cands.get(r.get("evidence_id", ""))
@@ -145,28 +194,42 @@ def apply(schema_root: str | Path = "schema") -> list[dict]:
             ).strip()
         applied.append(c)
     if applied:
-        with ev.open("w", newline="", encoding="utf-8") as f:
-            w = csv.DictWriter(
-                f, fieldnames=fields, extrasaction="ignore", lineterminator="\n"
-            )
-            w.writeheader()
-            w.writerows(rows)
+        write_table(ev, fields, rows)
     return applied
 
 
-def main(argv: list[str] | None = None) -> int:
-    import sys
+def apply(schema_root: str | Path | QuarantinePaths = "schema") -> list[dict]:
+    """Soft-drop eligible evidence in a private copy, then publish the selected EV."""
+    paths = _paths(schema_root)
+    dependencies = ReviewInputs(
+        [paths.sources, paths.policy, paths.review_log, paths.decisions]
+    )
+    return edit_records(
+        [paths.evidence],
+        lambda private: _apply_private(paths, private[paths.evidence]),
+        inputs=dependencies,
+        optional=[paths.evidence],
+    )
 
-    argv = argv if argv is not None else sys.argv[1:]
-    root = next((a for a in argv if not a.startswith("-")), "schema")
-    do_apply = "--apply" in argv
-    if do_apply:
-        applied = apply(root)
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Report or soft-drop automatic quarantine candidates."
+    )
+    parser.add_argument("schema", nargs="?", type=Path, default=Path("schema"))
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--apply", action="store_true")
+    mode.add_argument(
+        "--dry-run", action="store_true", help="Report candidates (default)"
+    )
+    args = parser.parse_args(argv)
+    if args.apply:
+        applied = apply(args.schema)
         print(
             f"AUTO-QUARANTINE: dropped {len(applied)} off-scope/wrong-practice unit(s)."
         )
     else:
-        applied = candidates(root)
+        applied = candidates(args.schema)
         print(f"AUTO-QUARANTINE (dry-run): {len(applied)} candidate(s) — pass --apply:")
     for c in applied:
         print(f"  [{c['kind']}/{c['signal']}] {c['evidence_id']}")

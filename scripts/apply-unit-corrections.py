@@ -15,12 +15,26 @@ exempts those).
 from __future__ import annotations
 
 import argparse
-import csv
+import sys
 import json
 from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+from nbs_ruralscan.schema_tools.record_publication import edit_records  # noqa: E402
+from nbs_ruralscan.schema_tools.review_inputs import ReviewInputs  # noqa: E402
+from nbs_ruralscan.schema_tools.specialist_records import (  # noqa: E402
+    REVIEW_COLUMNS,
+    append_history,
+    evidence,
+    json_field,
+    keyed_records,
+    read_table,
+    rebuild_command,
+    write_table,
+)
+
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 LOG = ROOT / "pipeline" / "metrics" / "review_log.csv"
 TOP = {"claim_basis", "lineage_of"}
@@ -37,15 +51,26 @@ CLAIM_BASES = {
 def apply_change(r: dict, change: dict) -> list[str]:
     """Mutate one EV row; return refusals."""
     bad: list[str] = []
-    rel = json.loads(r.get("relationship") or "{}")
-    ctx = json.loads(r.get("context") or "{}")
+    rel = json_field(r, "relationship")
+    ctx = json_field(r, "context")
     for k, v in change.items():
+        if not k or k.endswith("."):
+            bad.append(f"empty field name in {k!r}")
+            continue
         if k in TOP:
+            if k == "lineage_of" and v is None:
+                v = ""
+            if not isinstance(v, str):
+                bad.append(f"expected text in {k}")
+                continue
             if k == "claim_basis" and v not in CLAIM_BASES:
                 bad.append(f"claim_basis {v!r} not in enum")
                 continue
             r[k] = v
         elif k == "context.note_append":
+            if not isinstance(v, str):
+                bad.append("context.note_append must be text")
+                continue
             prev = str(ctx.get("note") or "")
             if v not in prev:
                 ctx["note"] = (prev + " | " if prev else "") + v
@@ -64,56 +89,74 @@ def apply_change(r: dict, change: dict) -> list[str]:
     return bad
 
 
-def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
-    ap.add_argument("corrections")
-    ap.add_argument("--reviewer", required=True)
-    ap.add_argument("--dry-run", action="store_true")
-    a = ap.parse_args(argv)
-    if not a.reviewer.startswith("ai_"):
-        ap.error("machine-pass reviewer names start with ai_")
-    items = {
-        c["evidence_id"]: c
-        for c in json.loads(Path(a.corrections).read_text(encoding="utf-8"))
-    }
-    with EV.open(newline="", encoding="utf-8") as f:
-        rd = csv.DictReader(f)
-        cols = list(rd.fieldnames or [])
-        rows = list(rd)
+def correct(ev: Path, log_path: Path, corrections: Path, reviewer: str) -> None:
+    items = keyed_records(corrections, array=True)
+    for eid, item in items.items():
+        if item.get("why") is not None and not isinstance(item["why"], str):
+            raise ValueError(f"Expected a text justification for {eid}")
+        if not isinstance(item.get("change"), dict) or not item["change"]:
+            raise ValueError(f"Expected nonempty change object for {eid}")
+    cols, rows = evidence(ev, "relationship", "context", "claim_basis", "lineage_of")
+    history_cols, history = read_table(log_path, REVIEW_COLUMNS)
     today = date.today().isoformat()
     log, seen = [], set()
+    changed = False
+    prior = {tuple(row[k] for k in REVIEW_COLUMNS if k != "date") for row in history}
+
     for r in rows:
         c = items.get(r["evidence_id"])
         if not c:
             continue
         seen.add(r["evidence_id"])
+        previous = r.copy()
         bad = apply_change(r, c["change"])
-        for b in bad:
-            print("REFUSED", r["evidence_id"], b)
-        log.append(
-            {
-                "date": today,
-                "evidence_id": r["evidence_id"],
-                "source_id": r["source_id"],
-                "verdict": "unit_correction",
-                "decision": "ok",
-                "reason": "accepted_correction",
-                "note": f"{', '.join(sorted(c['change']))}: {c.get('why', '')}",
-                "reviewer": a.reviewer,
-            }
-        )
+        if bad:
+            raise ValueError(f"REFUSED {r['evidence_id']}: {', '.join(bad)}")
+        entry = {
+            "date": today,
+            "evidence_id": r["evidence_id"],
+            "source_id": r["source_id"],
+            "verdict": "unit_correction",
+            "decision": "ok",
+            "reason": "accepted_correction",
+            "note": f"{', '.join(sorted(c['change']))}: {c.get('why', '')}",
+            "reviewer": reviewer,
+        }
+        updated = r != previous
+        changed |= updated
+        if (
+            updated
+            or tuple(entry[k] for k in REVIEW_COLUMNS if k != "date") not in prior
+        ):
+            log.append(entry)
     missing = sorted(set(items) - seen)
     print(f"corrected {len(log)} unit(s); missing {missing}")
-    if a.dry_run:
-        return 0
-    with EV.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
-        w.writeheader()
-        w.writerows(rows)
-    with LOG.open("a", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=list(log[0]), lineterminator="\n")
-        w.writerows(log)
-    print("now: python3 src/nbs_ruralscan/schema_tools/generate.py schema")
+    if changed:
+        write_table(ev, cols, rows)
+    append_history(log_path, history_cols, log)
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
+    ap.add_argument(
+        "corrections", type=Path, help="JSON input file; use a path without symlinks"
+    )
+    ap.add_argument("--root", type=Path, default=ROOT, help="Selected data root")
+    ap.add_argument("--reviewer", required=True)
+    ap.add_argument("--dry-run", action="store_true")
+    a = ap.parse_args(argv)
+    if not a.reviewer.startswith("ai_"):
+        ap.error("machine-pass reviewer names start with ai_")
+    root = a.root.resolve()
+    ev, log = (root / path.relative_to(ROOT) for path in (EV, LOG))
+    edit_records(
+        [ev, log],
+        lambda files: correct(files[ev], files[log], a.corrections, a.reviewer),
+        inputs=ReviewInputs([a.corrections]),
+        dry_run=a.dry_run,
+    )
+    if not a.dry_run:
+        print(f"now: {rebuild_command(root)}")
     return 0
 
 
