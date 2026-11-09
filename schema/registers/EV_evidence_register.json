@@ -15828,12 +15828,80 @@
     "suitability_family_id": "water_harvesting__terracing",
     "variable": "annual_precipitation",
     "relationship": {
-      "opt_low": 400,
-      "opt_high": 600,
-      "abs_min": 100,
-      "abs_max": 1200,
-      "unit": "mm",
-      "direction": "rainfall optimum for soil and water conservation techniques is 400-600 mm, still suitable across 200-1000 mm, marginal at 100-200 and 1000-1200, and unsuitable below 100 or above 1200 mm"
+      "opt_low": null,
+      "opt_high": null,
+      "abs_min": null,
+      "abs_max": null,
+      "unit": "mm per October–April rainy season",
+      "direction": "The local model ranks 400–600 mm of rainy-season rainfall highest; the complete local classes are retained. No annual-rainfall response is defined.",
+      "source_classes": [
+        {
+          "seasonal_rainfall_mm_printed": "0–100",
+          "label": "Not suitable",
+          "score": 1
+        },
+        {
+          "seasonal_rainfall_mm_printed": "100–200",
+          "label": "Marginally suitable",
+          "score": 3
+        },
+        {
+          "seasonal_rainfall_mm_printed": "200–400",
+          "label": "Highly suitable",
+          "score": 7
+        },
+        {
+          "seasonal_rainfall_mm_printed": "400–600",
+          "label": "Optimally suitable",
+          "score": 9
+        },
+        {
+          "seasonal_rainfall_mm_printed": "600–800",
+          "label": "Highly suitable",
+          "score": 7
+        },
+        {
+          "seasonal_rainfall_mm_printed": "800–1,000",
+          "label": "Moderately suitable",
+          "score": 5
+        },
+        {
+          "seasonal_rainfall_mm_printed": "1,000–1,200",
+          "label": "Marginally suitable",
+          "score": 3
+        },
+        {
+          "seasonal_rainfall_mm_printed": ">1,200",
+          "label": "Not suitable",
+          "score": 1
+        },
+        {
+          "seasonal_rainfall_mm_printed": "—",
+          "label": "Restricted",
+          "score": 0
+        }
+      ]
+    },
+    "context": {
+      "model_use": {
+        "source_criterion": "rainfall",
+        "weight": 0.04,
+        "weight_scope": "Within-study AHP criterion weight, Table 5, PDF p. 10",
+        "mapped_statistic": "mean seasonal October–April precipitation total",
+        "study_area": "Ronquillo watershed near Cajamarca, northern Peruvian Andes"
+      },
+      "source_table": {
+        "source_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd",
+        "locators": [
+          "PDF p. 5, Rainfall (mapped layer)",
+          "PDF p. 6, Figure 3 (season and statistic)",
+          "PDF p. 9, Table 4 (classes)",
+          "PDF p. 10, Table 5 (weight)"
+        ],
+        "temporal_transfer": "source-specific; annual scoring excluded",
+        "interpretation": "Mean October–April rainfall total (mm per rainy season) used for spatial siting of terraces and bunds in the Ronquillo watershed near Cajamarca in the northern Peruvian Andes. This seasonal ranking and weight have no approved transfer to annual precipitation or other watersheds and seasons.",
+        "ontology_mapping": "No matching seasonal variable is registered. The historical annual_precipitation key is retained for traceability only."
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -18347,9 +18415,28 @@
     "suitability_family_id": "water_harvesting__micro_catchment",
     "variable": "annual_precipitation",
     "relationship": {
-      "abs_min": 150,
+      "abs_min": null,
       "unit": "mm",
-      "direction": "Negarim microcatchments work down to very low rainfall"
+      "direction": "Annual rainfall can be as low as 150 mm in the technical guidance for tree Negarim. FAO separately describes Negev research farms in areas with rainfall as low as 100–150 mm/year.",
+      "source_profile": {
+        "role": "siting recommendation",
+        "rainfall_can_be_as_low_as_mm_per_year": 150
+      }
+    },
+    "context": {
+      "source_table": {
+        "locator": "FAO manual §§5.2.1–2: background and technical details, Suitability",
+        "source_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+        "practice": "Negarim tree microcatchments"
+      },
+      "site_example": {
+        "location": "Negev Desert, Israel",
+        "context": "research farms in areas where annual rainfall is as low as 100–150 mm; area climate, no success rate or recommended minimum",
+        "area_rainfall_mm_per_year": [
+          100,
+          150
+        ]
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -18394,9 +18481,24 @@
     "suitability_family_id": "water_harvesting__micro_catchment",
     "variable": "slope",
     "relationship": {
-      "abs_max": 5.0,
+      "abs_max": null,
       "unit": "percent",
-      "direction": "flat to gentle ground only"
+      "direction": "FAO recommends flat ground to 5% grade for Negarim. Uneven blocks should be subdivided. The upper end describes the recommendation.",
+      "source_profile": {
+        "role": "siting recommendation",
+        "slope_grade_pct": [
+          0,
+          5
+        ],
+        "uneven_terrain": "subdivide the block"
+      }
+    },
+    "context": {
+      "source_table": {
+        "locator": "FAO manual §§5.2.1–2: background and technical details, Suitability",
+        "source_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+        "practice": "Negarim tree microcatchments"
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -19235,12 +19337,34 @@
     "suitability_family_id": "water_harvesting__micro_catchment",
     "variable": "slope",
     "relationship": {
-      "abs_min": 1,
-      "opt_low": 1,
-      "opt_high": 5,
-      "abs_max": 20,
+      "abs_min": null,
+      "opt_low": null,
+      "opt_high": null,
+      "abs_max": null,
       "unit": "percent",
-      "direction": "applied on a wide slope range but most common on gentle slopes"
+      "direction": "WOCAT describes application on 1–20% slopes, commonly 1–5% in areas receiving 150–500 mm/year. Common use supplies no optimum score.",
+      "source_profile": {
+        "role": "reported use",
+        "broader_slope_grade_pct": [
+          1,
+          20
+        ],
+        "common_slope_grade_pct": [
+          1,
+          5
+        ],
+        "rainfall_mm_per_year_in_common_setting": [
+          150,
+          500
+        ]
+      }
+    },
+    "context": {
+      "source_table": {
+        "locator": "PDF p. 125, printed p. 112, Negarim paragraph",
+        "source_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+        "practice": "Negarim tree microcatchments"
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -19261,10 +19385,28 @@
     "suitability_family_id": "water_harvesting__micro_catchment",
     "variable": "annual_precipitation",
     "relationship": {
-      "abs_min": 150,
-      "abs_max": 500,
+      "abs_min": null,
+      "abs_max": null,
       "unit": "mm",
-      "direction": "negarim are commonly found in dry areas"
+      "direction": "WOCAT reports the common combined use context: 150–500 mm/year and 1–5% slopes. No rainfall suitability limits are established.",
+      "source_profile": {
+        "role": "common reported use",
+        "rainfall_mm_per_year": [
+          150,
+          500
+        ],
+        "associated_slope_grade_pct": [
+          1,
+          5
+        ]
+      }
+    },
+    "context": {
+      "source_table": {
+        "locator": "PDF p. 125, printed p. 112, Negarim paragraph",
+        "source_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+        "practice": "Negarim tree microcatchments"
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
