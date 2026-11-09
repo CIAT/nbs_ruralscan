@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evidence Decisions Round 4</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#1b2430;--muted:#5b6675;--line:#dde2e8;--accent:#0f6e5c;--rec:#e7f4f0;--recline:#9ccfc1;--chip:#eef1f5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e131b;--card:#161d28;--ink:#e6ebf2;--muted:#9aa6b6;--line:#2a3443;--accent:#4fc4a8;--rec:#14302a;--recline:#2f6b5c;--chip:#1f2835}}
+:root[data-theme="dark"]{--bg:#0e131b;--card:#161d28;--ink:#e6ebf2;--muted:#9aa6b6;--line:#2a3443;--accent:#4fc4a8;--rec:#14302a;--recline:#2f6b5c;--chip:#1f2835}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:12px 16px}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+h1{font-size:19px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:13px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.bar input[type=text]{padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);min-width:150px}
+button{padding:7px 12px;border-radius:6px;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer;font:inherit;font-size:14px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.progress{font-size:13px;color:var(--muted);margin-left:auto}
+h2{font-size:16px;margin:28px 0 4px}
+.sec-note{color:var(--muted);font-size:13px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0}
+.card.done{border-left:4px solid var(--accent)}
+.code{display:inline-block;font-weight:700;font-size:12px;background:var(--chip);border-radius:4px;padding:1px 6px;margin-right:6px}
+.q{font-weight:600}
+.ctx{color:var(--ink);font-size:14px;margin:8px 0 6px}
+.aff{color:var(--muted);font-size:13px;margin:0 0 6px;border-left:3px solid var(--line);padding-left:8px}
+.opt{display:flex;gap:9px;align-items:flex-start;padding:7px 9px;border:1px solid var(--line);border-radius:7px;margin:5px 0;cursor:pointer}
+.opt.rec{background:var(--rec);border-color:var(--recline)}
+.opt input{margin-top:3px}
+.tag{font-size:11px;font-weight:700;color:var(--accent);margin-left:6px;white-space:nowrap}
+textarea{width:100%;margin-top:6px;min-height:38px;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px}
+.secbtn{font-size:12px;padding:4px 9px}
+footer{color:var(--muted);font-size:12px;padding:30px 0 50px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Evidence decisions — round 4 (9 Nov 2026)</h1>
+  <div class="sub">One card per question. The recommended option is highlighted. Pick an option (add a note if needed), then <b>Export CSV</b> and send the file to Claude. Answers save in this browser as you go.</div>
+  <div class="bar">
+    <input type="text" id="reviewer" placeholder="Your name" aria-label="Reviewer name">
+    <button id="acceptAll">Accept all recommendations</button>
+    <button class="primary" id="export">Export CSV</button>
+    <button id="clear">Clear</button>
+    <span class="progress" id="progress"></span>
+  </div>
+</div></header>
+<main class="wrap" id="main"></main>
+<div class="wrap"><footer>Four questions left open after round 3. Each card says what the paper found, what it feeds today, and what each choice would change. The before → after figures come from a trial run of the scorecard with each option applied; nothing has been changed yet. CSV columns: code, question, choice, choice_label, recommended, note, reviewer, date.</footer></div>
+<script>
+const R="Recommended";
+const SECTIONS=[
+{title:"Four open questions",note:"",items:[
+{code:"t3t6bl_C7",n:"1",q:"Is turning an existing forest into grazed silvopasture a nature-based solution?",
+ctx:"The paper: Orefice and others, 2016, northern New York (USA). The researchers took a 50-year-old hardwood forest and managed it three ways: cleared it to open pasture; thinned it to about a third of its trees, sowed grass and grazed cattle under the remaining trees (silvopasture); or thinned it for wood only. Findings: grass yield under the trees was lower than open pasture in the first year and no different in the second; over 30 years the silvopasture made the most money; clearing cost about $1,060 per hectare; heavy thinning left the remaining trees more likely to blow down. We hold 9 findings from it. The issue: every other agroforestry study we use ADDS trees to farmland. This one REMOVES two-thirds of a forest to make grazing land, so the land ends up with less forest than it started with.",
+affects:"Agroforestry, tree-and-livestock systems: income (currently a strong gain, 6 papers), yields (currently mixed evidence), set-up cost, and storm damage to the trees. It also sets the rule for any future study of the same kind.",
+change:"If you drop it (A): no rating changes. The income row keeps its strong gain on 5 papers instead of 6. The storm-damage row for tree-and-livestock systems falls to a single paper and very low confidence. The agroforestry set-up cost figure rests on one paper instead of two. If you keep it (B): we add a 'managed forest' choice for what a practice is compared with, so the wood-only plot is labelled correctly.",
+why:"Turning forest into grazing land is normally treated as forest loss, not as a nature-based solution, and World Bank safeguards treat it as a risk. Keeping it would let forest clearing count as evidence for agroforestry.",
+opts:[["A","Not a nature-based solution: drop its 9 findings (kept on record, not counted)"],["B","Keep them, and add a 'managed forest' comparison choice"]],rec:"A"},
+{code:"t3t6bl_G1",n:"2",q:"Should results reported for one named tree or plant species count as evidence for the practice?",
+ctx:"45 findings from 24 papers give the result for one named species rather than the practice in general. Examples: crop yields under Faidherbia trees in West African parklands; eucalyptus and casuarina planted to drain waterlogged fields in India; streamflow under pine and eucalyptus plantations; soil carbon after planting conifers versus broadleaves. Since July these have been set aside (kept on record for a possible species-level layer later) and not counted in any rating. On 7 November you said the Mugendi alley-cropping results (leucaena and calliandra hedges) should count. This asks whether to apply the same rule to all of them.",
+affects:"Mostly agroforestry (25 findings) and forest restoration (12); a few in wetlands, riparian buffers, mangroves and water harvesting. Where a practice can grow is not affected: species results still never decide that.",
+change:"If yes (A), most rows just gain one or two papers. The rows that shift: agroforestry protection from waterlogging goes from a strong benefit on 2 papers (medium confidence) to a moderate benefit on 3 papers (high confidence). Agroforestry drought protection on rain-fed cropland stays 'mixed evidence' but confidence rises from medium to high. Forest restoration: confidence in drought damage to new plantings rises from high to very high. Agroforestry yields stay 'mixed evidence' overall, but the breakdown underneath changes: the low-income-country line (strong gain) is replaced by a rain-fed cropland line (moderate gain) and a tree-crop line (mixed). The species name stays on each finding. If case by case (B), I bring the 45 to you on the review page and nothing changes until you have gone through them.",
+why:"Most of these are the practice done with a specific tree, which is how practices are actually done. Leaving them out throws away real evidence, and the Mugendi ruling already went this way.",
+opts:[["A","Yes: count all 45 as practice evidence (species name kept on record)"],["B","Case by case: show them to me on the review page first"]],rec:"A"},
+{code:"t3t6bl_G2",n:"3",q:"Small dry ponds that hold back storm runoff for a few days: are they water harvesting?",
+ctx:"The paper: Fiener and others, 2005, Bavaria (Germany). Farmers raised the downhill edge of fields where runoff collects, making small ponds that fill only during storms and drain within 1 to 5 days through a pipe. Results: the ponds trapped 54 to 85% of the soil washing off the fields, cut peak runoff to a third, never failed, and reduced total runoff by less than 10%. The water is not kept or used for anything. We hold 6 findings from it, filed under water harvesting (runoff collection).",
+affects:"Water harvesting, runoff collection: flood protection (currently a moderate benefit, very high confidence, 10 papers), soil erosion (strong benefit, 15 papers), water quality (moderate benefit, 10 papers), and damage to the structures from heavy rain and silt.",
+change:"If you take it out (A): no headline rating changes. Flood protection for runoff collection stays a moderate benefit, with confidence falling from very high to high (9 papers). The separate flood-protection line for rain-fed cropland under runoff collection disappears. Several small lines for rich countries, built on 2 papers, disappear. Erosion and water quality keep their ratings with one paper fewer. The findings stay on record for a possible future 'storm detention / sediment trap' practice.",
+why:"Water harvesting means collecting and storing water to use for crops, animals or people. These ponds are for flood and erosion control and store nothing, so counting them credits water harvesting with flood control on evidence that is not about harvesting.",
+opts:[["A","Take them out of water harvesting (kept on record, not counted)"],["B","Keep them under water harvesting, runoff collection"]],rec:"A"},
+{code:"t3t6bl_G3",n:"4",q:"A Niger paper whose summary claims soil gains its own table does not show: drop it, or record 'no clear difference'?",
+ctx:"The paper: Boukary and others, 2023, Simiri, Niger, on farmers protecting and pruning trees and shrubs that regrow naturally in their fields. The summary says soil carbon, nitrogen, phosphorus and potassium were 'relatively higher' with this practice. But the paper's own soil table shows fields without the practice equal or higher for carbon, nitrogen and potassium; only available phosphorus is higher with it, and no statistical test is reported. The PDF is a scan. We made it readable with text recognition, but the two-column text came out jumbled, so only the table can be quoted. Nothing from this paper is counted today.",
+affects:"Agroforestry, natural regeneration on farmland: yields (currently a moderate gain, 32 findings) and carbon (moderate gain, 8 findings).",
+change:"If you drop it (A): nothing changes. If you record it (B): a person first checks the table against the page image, then we add 'no clear difference' for carbon, nitrogen and potassium and 'higher' for phosphorus. With 32 and 8 findings already in those rows, the ratings are very unlikely to move.",
+why:"The paper contradicts itself and gives no statistics, so it adds little. Recording the table is the more honest use if you would rather not lose it.",
+opts:[["A","Drop it for these ratings"],["B","Record 'no clear difference' from the table, after a check against the page image"]],rec:"A"}]}];
+
+const KEY="t3t6_decisions_round4_2026-11-09";
+let S={answers:{},notes:{},reviewer:""};
+try{const s=localStorage.getItem(KEY);if(s)S=Object.assign(S,JSON.parse(s));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}progress();}
+const ITEMS=SECTIONS.flatMap(s=>s.items);
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function render(){
+  const m=document.getElementById("main");m.innerHTML="";
+  SECTIONS.forEach((sec,si)=>{
+    const h=document.createElement("h2");h.textContent=sec.title;m.appendChild(h);
+    const p=document.createElement("p");p.className="sec-note";p.innerHTML=(sec.note?esc(sec.note)+" ":"")+`<button class="secbtn" data-sec="${si}">Accept recommendations in this section</button>`;m.appendChild(p);
+    sec.items.forEach(it=>{
+      const c=document.createElement("div");c.className="card"+(S.answers[it.code]?" done":"");c.id="card-"+it.code;
+      let html=`<div><span class="code">${it.n}</span><span class="q">${esc(it.q)}</span></div>`;
+      if(it.ctx)html+=`<div class="ctx">${esc(it.ctx)}</div>`;if(it.affects)html+=`<div class="aff"><b>What it feeds today:</b> ${esc(it.affects)}</div>`;if(it.change)html+=`<div class="aff"><b>What each choice changes:</b> ${esc(it.change)}</div>`;if(it.why)html+=`<div class="aff"><b>Why I recommend ${esc(it.rec)}:</b> ${esc(it.why)}</div>`;html+=`<div style="height:6px"></div>`;
+      it.opts.forEach(([v,l])=>{const id=it.code+"-"+v;html+=`<label class="opt${v===it.rec?" rec":""}" for="${id}"><input type="radio" name="${it.code}" id="${id}" value="${v}" ${S.answers[it.code]===v?"checked":""}><span><b>${v}.</b> ${esc(l)}${v===it.rec?`<span class="tag">${R}</span>`:""}</span></label>`;});
+      html+=`<textarea data-note="${it.code}" placeholder="Note (optional)">${esc(S.notes[it.code]||"")}</textarea>`;
+      c.innerHTML=html;m.appendChild(c);
+    });
+  });
+  m.querySelectorAll("input[type=radio]").forEach(r=>r.addEventListener("change",e=>{S.answers[e.target.name]=e.target.value;document.getElementById("card-"+e.target.name).classList.add("done");save();}));
+  m.querySelectorAll("textarea").forEach(t=>t.addEventListener("input",e=>{S.notes[e.target.dataset.note]=e.target.value;save();}));
+  m.querySelectorAll(".secbtn").forEach(b=>b.addEventListener("click",e=>{SECTIONS[+e.target.dataset.sec].items.forEach(it=>{S.answers[it.code]=it.rec;});save();render();}));
+  progress();
+}
+function progress(){const n=ITEMS.filter(i=>S.answers[i.code]).length;document.getElementById("progress").textContent=`${n} / ${ITEMS.length} answered`;}
+const rv=document.getElementById("reviewer");rv.value=S.reviewer||"";rv.addEventListener("input",()=>{S.reviewer=rv.value;save();});
+document.getElementById("acceptAll").onclick=()=>{ITEMS.forEach(i=>{if(!S.answers[i.code])S.answers[i.code]=i.rec;});save();render();};
+document.getElementById("clear").onclick=()=>{if(confirm("Clear all answers and notes?")){S.answers={};S.notes={};save();render();}};
+document.getElementById("export").onclick=()=>{
+  const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+  const d=new Date().toISOString().slice(0,10);
+  const rows=[["code","question","choice","choice_label","recommended","note","reviewer","date"].join(",")];
+  ITEMS.forEach(i=>{const a=S.answers[i.code]||"";const lab=(i.opts.find(o=>o[0]===a)||["",""])[1];rows.push([i.code,i.q,a,lab,i.rec,S.notes[i.code]||"",S.reviewer||"",d].map(q).join(","));});
+  const blob=new Blob([rows.join("\n")+"\n"],{type:"text/csv"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`decisions_t3t6_round4_2026-11-09_${(S.reviewer||"reviewer").replace(/\W+/g,"_")}.csv`;a.click();
+};
+render();
+</script>
+</body>
+</html>
