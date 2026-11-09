@@ -4,7 +4,7 @@ No discovery, new evidence, scientific approval, family change or live mapping/r
 
 ## Result
 
-39 explicit dispositions: 28 measurement_ontology_hold; 1 family_scope_hold; 1 source_conflict_hold; 3 resolved_method_referral; 1 resolved_conditional_design_referral; 1 parked_family_hold; 1 supplement_not_reviewed; 1 image_only_adapter_hold; 1 closed_off_scope; 1 closed_resolved.
+39 dispositions after Pete’s 9 November Wolka decision: 28 measurement_ontology_hold; 1 source_conflict_hold; 3 resolved_method_referral; 2 resolved_conditional_design_referral; 1 parked_family_hold; 1 supplement_not_reviewed; 1 image_only_adapter_hold; 1 closed_off_scope; 1 closed_resolved.
 
 Existing text resolves the nature of Nooka, Boers, Goyette and Odgaard referrals; it does not supply missing canonical measurements or transferable curves. China’s 23 raw predictors retain Figure 8 importance and remain visible. None can be promoted by substituting a similar canonical variable. Goyette’s unreviewed supplements remain a separate coverage gap.
 
@@ -16,14 +16,13 @@ The >0.5 m soil-depth condition is explicit. Neither limiting layer nor bedrock 
 Remaining action: Retain literal >0.5 m in inventory and approved bund-slope context. Resolve a generic/effective-soil-depth definition through ontology governance or obtain verified source measurement detail; no forced bedrock claim.
 
 ### wolka_graded_bund_scope
-Source `wolka2018_swc_ssa_meta`, PDF pp. 3, 10. **family_scope_hold**.
-Graded bunds explicitly discharge excess runoff in >1400 mm/year areas. The high-rainfall interpretation is confirmed on p.10, but this does not authorize assignment to a rainwater-retaining family.
-Remaining action: Keep the drainage-practice referral pending a separate family decision. The approved level-bund rainfall and slope claims remain unchanged.
+Source `wolka2018_swc_ssa_meta`, PDF pp. 3, 10. **resolved_conditional_design_referral**, approved by Pete on 9 November 2026.
+Table 1 describes graded soil bunds with about a 1% longitudinal grade to discharge excess runoff. The review reports their use in areas receiving >1,400 mm/year. Retain this as drainage and erosion-control design guidance. The grade describes construction and the rainfall describes the source context. Neither enters the suitability calculation. No new family. The approved level-bund rainfall and slope guidance retains its original scope.
 
 ### wolka_drainage_conflict
 Source `wolka2018_swc_ssa_meta`, PDF pp. 3, 9, 10. **source_conflict_hold**.
 Table 1 describes graded bunds on poorly draining soil, then says level/graded bunds fit well-drained soils. Discussion confirms waterlogging risk and discharge function, but does not resolve that categorical conflict.
-Remaining action: Retain both contexts. Do not create a soil-drainage direction or universal class rule from this review; cited-primary clarification is needed if pursued.
+Pete retained both descriptions on 9 November 2026. No soil-drainage score. Revisit only if new evidence resolves the conflict.
 
 ### nooka_soil_properties
 Source `khan_maharjan_2005_checkdam_syi_morphometric`, PDF pp. 7, 8, 9. **measurement_ontology_hold**.
