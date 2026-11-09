@@ -98,6 +98,12 @@
           <button type="button" data-v="climate" aria-pressed="false">Climate adaptation</button><button type="button" data-v="livelihood" aria-pressed="false">Livelihood</button><button type="button" data-v="biodiversity" aria-pressed="false">Biodiversity</button><button type="button" data-v="balanced" aria-pressed="true">Balanced</button><button type="button" data-v="custom" aria-pressed="false">Custom</button>
         </div></div>
     </div>
+    <fieldset><legend>Haiti worked example · rural services</legend>
+      <label><input id="use-services" type="checkbox"> Include rural service protection</label>
+      <p>Try a downstream road-protection priority in two example departments. The example assumes comparable inventory coverage, evidence that the practice reduces flooding, an upstream connection to the roads and a check for overlap with livelihood-risk indicators. Where any check is unresolved, keep exposure as context.</p>
+      <label id="service-weight-control" hidden>Priority weight <input id="service-weight" type="range" min="0" max="50" step="5" value="20"> <output id="service-percent" for="service-weight">20%</output></label>
+      <button type="button" class="btn" id="see-service-ranks">Compare example ranks in 5.4</button>
+    </fieldset>
     <p class="wstat" id="wstat" aria-live="polite"></p>
     <div class="tabwrap"><table class="qt wt" id="t51"></table></div>
   </section>
@@ -121,6 +127,10 @@
   <section class="tabpanel" role="tabpanel" id="tp-4" hidden>
     <div class="tp-head"><div><h2><span class="sec-n">5.4</span>District ranking</h2><p>Which districts hold the most hotspot area, and why. Select a row to read its narrative.</p></div>
       <div class="dl-pair"><span class="export-unavailable" aria-disabled="true" title="Not available in this mock-up">Download CSV · unavailable in mock-up</span></div></div>
+    <div class="tabwrap"><table class="qt"><caption>Haiti example · department ranks with the weight chosen in 5.2</caption>
+      <thead><tr><th>Example department</th><th>Base rank</th><th>Selected weight</th></tr></thead>
+      <tbody><tr><th scope="row">A</th><td>1</td><td id="service-rank-a"></td></tr><tr><th scope="row">B</th><td>2</td><td id="service-rank-b"></td></tr></tbody></table></div>
+    <p class="sub">Illustrative scores for two departments. The Sierra Leone district results below use the main walkthrough.</p>
     <div class="rank-grid">
       <div class="tabwrap"><table class="qt rk" id="t52"></table></div>
       <aside class="why" id="why"></aside>
@@ -368,6 +378,26 @@
 
   t51();
   V1BUI.onControls(function (st) { ST = st; R = F.rollup(st); render(); figs(); t52(); t53(); });
+  var serviceEnabled = document.getElementById('use-services');
+  var serviceWeight = document.getElementById('service-weight');
+  function showServiceRanks() {
+    var weight = serviceEnabled.checked ? Number(serviceWeight.value) / 100 : 0;
+    document.getElementById('service-weight-control').hidden = !serviceEnabled.checked;
+    document.getElementById('service-percent').textContent = serviceWeight.value + '%';
+    // Fixed example scores from the Haiti review sketch, on a common 0–1 scale.
+    var scoreA = 0.72 * (1 - weight) + 0.12 * weight;
+    var scoreB = 0.65 * (1 - weight) + 0.90 * weight;
+    document.getElementById('service-rank-a').textContent = scoreA >= scoreB ? '1' : '2';
+    document.getElementById('service-rank-b').textContent = scoreB > scoreA ? '1' : '2';
+  }
+  serviceEnabled.addEventListener('change', showServiceRanks);
+  serviceWeight.addEventListener('input', showServiceRanks);
+  showServiceRanks();
+  document.getElementById('see-service-ranks').addEventListener('click', function () {
+    var tab = document.querySelector('[aria-controls="tp-4"]');
+    tab.click();
+    tab.focus();
+  });
   V1BUI.tabs(document.querySelector('.subtabs'));
   var q = new URLSearchParams(location.search);
   if (q.get('plate') && q.get('plate') !== 'district') { variant = q.get('plate'); render(); }
