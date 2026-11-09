@@ -8,7 +8,7 @@ An independently installed RuralScan runtime read the pinned six-practice releas
 |---|---|
 | Analytical release SHA-256 | `72a7bddff4778880cbe281117a9fda638a06eb23f624c2e7469d698ae859c507` |
 | Producer source revision | `3eab299d33eae3482e0da9312edee5bd98858d04` |
-| External runtime revision | [`cbed792537fd0436f8c14a372da02b73114f3189`](https://github.com/RuralScan/runtime/tree/cbed792537fd0436f8c14a372da02b73114f3189) |
+| External runtime revision | [`108d9449a69a07dbbc054bbe5ea15962c2e6b2fc`](https://github.com/RuralScan/runtime/tree/108d9449a69a07dbbc054bbe5ea15962c2e6b2fc) |
 | Local release format / analytical schema / T4 readiness contract | `1` / `0.4.0-structure-frozen` / `0.2.0` |
 | Existing agroforestry scoring package | `developer-v0.1.5`, source `b356b2af3861bfed6a4c4afc7f25129cca2cdfec` |
 
@@ -38,6 +38,6 @@ To rebuild the original generation, fetch `refs/pull/636/head` in an authorised 
 - Every practice reported `execution_ready=false`. Forest, mangrove and riparian each loaded a valid empty T4. Water harvesting retained six calibration holds with zero selectable functions, including four that also require matching inputs. The existing agroforestry policy retained its three criterion IDs and function fingerprints. [Release interpretation](m08-recipe-releases.md#first-six-practice-release-9-november-2026)
 - A copy containing only the named generation opened successfully, including with a malformed current pointer. On a disposable copy, one altered byte, one absent table, a wrong source revision and a truncated practice list each stopped the read. A newly hashed generation with inconsistent CSV and JSON or an unsupported schema also failed. Restoring the original bytes restored the read.
 - In the temporary store, publishing revision `9e8587b6` advanced the current pointer to `987b6c3c4b9e74c2bb1b44632c6f8bd0e140e874b74340f82bb499fd7685aaee`. The installed default still read the original six water-harvesting T4 rows and reproduced the complete receipt. Passing a separate test pin for the newer generation returned eight water-harvesting T4 rows. [Later water-harvesting review](https://github.com/CIAT/nbs_ruralscan/pull/640)
-- The previous runtime revision passed all 200 baseline tests. The handoff revision passed 281 tests with geospatial dependencies, its legacy package integrity check and eight installed-package checks. The producer passed 81 release-store, reader and publication tests.
+- The previous runtime revision passed all 200 baseline tests. The handoff revision passed 281 tests with geospatial dependencies, its legacy package integrity check and eight installed-package checks. The independently installed wheel produced the same receipt with Python 3.11, 3.12, 3.13 and 3.14. The producer passed 81 release-store, reader and publication tests.
 
 Evidence review can continue on the existing working repository. A later compilation receives its own ID and needs a compatibility comparison before the runtime adopts its pin. Public redistribution, adoption of a newer developer scoring package and end-to-end spatial validation remain separate migration steps.
