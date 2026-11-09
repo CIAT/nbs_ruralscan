@@ -19,6 +19,16 @@ docs/progress.json             merge=regen
 schema/registers/*.json        merge=regen
 schema/*.json                  merge=regen
 schema/recipes/**/*.json       merge=regen
+docs/table_progress.json       merge=regen
+docs/scorecard.json            merge=regen
+docs/effect_rows_flat.csv      merge=regen
+docs/dashboard-*.csv           merge=regen
+# Generated T3/T6 recipe tables: rebuilt by scripts/synthesise-t3t6.py after a merge
+# (scripts/resolve-pr-conflicts.sh re-synthesises the NbS whose evidence changed).
+schema/recipes/*/T3_nbs_hazard_farming.csv merge=regen
+schema/recipes/*/T6_nbs_scorecard.csv      merge=regen
+schema/recipes/*/T6E_economic_profile.csv  merge=regen
+schema/recipes/*/T3T6_synthesis_report.json merge=regen
 # columns.json is hand-authored (not generated) — keep a normal text merge.
 schema/structure/columns.json  merge=text
 
@@ -38,3 +48,18 @@ schema/structure/columns.json  merge=text
 # T4 audit reports are reproducible outputs; keep source and disposition CSVs visible.
 pipeline/t4_audit/**/report.json linguist-generated=true
 docs/review/t4-*.html linguist-generated=true
+
+# Register-style CSVs (one row per key in the first column): key-level 3-way merge, so two
+# branches that each add or edit different rows never conflict (scripts/git-merge-keycsv.py).
+# Same-row edits on both sides still stop the merge for a human.
+schema/registers/EV_evidence_register.csv  merge=keycsv
+schema/registers/SRC_source_register.csv   merge=keycsv
+pipeline/acquisition_queue.csv             merge=keycsv
+pipeline/cited_originals.csv               merge=keycsv
+methodology/decisions/open_decisions.csv   merge=keycsv
+# Append-only logs: keep both sides' new lines (git's built-in union driver).
+pipeline/metrics/review_log.csv            merge=union
+pipeline/metrics/learnings_log.csv         merge=union
+pipeline/metrics/sweep_log.csv             merge=union
+# Hand-maintained JSON keyed by id: key union, never "take theirs".
+pipeline/t4_audit/*/review_followups.json  merge=jsonunion
