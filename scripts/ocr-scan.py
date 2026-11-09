@@ -20,7 +20,9 @@ import argparse
 import csv
 import io
 import pathlib
+import subprocess
 import sys
+import tempfile
 
 import fitz
 
@@ -33,6 +35,22 @@ QUEUE = ROOT / "pipeline" / "acquisition_queue.csv"
 MIN_TEXT = 50  # characters: below this a page counts as image-only
 
 
+def _ocr_page(page, lang: str, dpi: int) -> bytes:
+    """One page through the Tesseract CLI with full layout analysis (--psm 1), so
+    two-column pages come out column by column. PyMuPDF's built-in OCR call interleaved
+    the columns line by line (Bullock 2003, 2026-11-09), which made them unquotable."""
+    with tempfile.TemporaryDirectory() as tmp:
+        img = pathlib.Path(tmp) / "p.png"
+        page.get_pixmap(dpi=dpi).save(img)
+        base = pathlib.Path(tmp) / "out"
+        subprocess.run(
+            ["tesseract", str(img), str(base), "-l", lang, "--psm", "1", "pdf"],
+            check=True,
+            capture_output=True,
+        )
+        return (base.with_suffix(".pdf")).read_bytes()
+
+
 def ocr_pdf(
     src: pathlib.Path, lang: str = "eng", dpi: int = 300, force: bool = False
 ) -> tuple[bytes, int, int]:
@@ -43,9 +61,7 @@ def ocr_pdf(
         if not force and len(page.get_text().strip()) >= MIN_TEXT:
             out.insert_pdf(doc, from_page=page.number, to_page=page.number)
             continue
-        pix = page.get_pixmap(dpi=dpi)
-        one = fitz.open("pdf", pix.pdfocr_tobytes(language=lang))
-        out.insert_pdf(one)
+        out.insert_pdf(fitz.open("pdf", _ocr_page(page, lang, dpi)))
         n_ocr += 1
     return out.tobytes(garbage=3, deflate=True), len(doc), n_ocr
 
