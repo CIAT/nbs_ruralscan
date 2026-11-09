@@ -23,6 +23,24 @@ Full-corpus comparisons used the same inputs as commit `470945e0`. The baseline 
 
 Requesting all six together reports the holds and keeps the current release intact. Explicitly selecting the three reconciled practices produces a 501-row, four-table collection. The counts exclude the T0 definitions, settings and report entries. Continuity tests cover reading an earlier ID through a pointer change, concurrent publishers, interrupted publication, stale source files, unsupported formats and damaged generations.
 
+## First six-practice release, 9 November 2026
+
+The default release now reconciles every registered practice against the same reviewed corpus. The 791 analytical rows include five water-harvesting records retained to document calibration holds.
+
+| Practice | T3 | T4 | T6 | T6E |
+|---|---:|---:|---:|---:|
+| Agroforestry | 95 | 26 | 112 | 16 |
+| Forest restoration | 56 | 0 | 71 | 16 |
+| Mangrove restoration | 12 | 0 | 14 | 4 |
+| Riparian buffer | 7 | 0 | 22 | 2 |
+| Water harvesting and conservation | 92 | 5 | 111 | 21 |
+| Wetland management | 26 | 4 | 64 | 15 |
+| **Total** | **288** | **35** | **394** | **74** |
+
+Mangrove T0 covers planting and ecological restoration in one tidal-coastal family. Its establishment period, time to a specified benefit and recurrent cost class require local inputs. T6E provides costs with their study context. [Mangrove definition and sources](../../families/mangrove.md)
+
+Neither earlier riparian distance rule had approved numeric support. The six source records remain available for review. For water harvesting, the five held mappings have zero selectable functions, and four also require a matching spatial input. All 49 evidence records behind the 20 earlier draft mappings remain accessible in their review batches. The release preserves the source-specific clay comparison without applying a shared 55% cutoff. [Riparian review](../../../schema/recipes/riparian_buffer/README.md) · [Water-harvesting mapping crosswalk](../../audits/t4_six_practice_release_20261109/water_harvesting.md)
+
 ## Next migration step
 
-Define the acceptance and external runtime contract for a pinned analytical release, including provenance, readiness, full-corpus validation and redistribution rights. Preserve the existing runtime pin while that contract is rehearsed. Resolve missing identity and stale scientific mappings through their existing review lanes.
+Define the acceptance and external runtime contract for a pinned analytical release, including provenance, readiness, full-corpus validation and redistribution rights. Preserve the existing runtime pin while that contract is rehearsed.

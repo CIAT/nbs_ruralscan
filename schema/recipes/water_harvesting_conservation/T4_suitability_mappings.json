@@ -1,287 +1,305 @@
 [
   {
-    "mapping_id": "water_harvesting__in_situ__slope",
+    "mapping_id": "water_harvesting__runoff_catchment__catchment_area",
     "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "srtm_dem_30m",
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "trapezoidal",
     "relationship_params": {
-      "opt_high": 5.0,
-      "abs_max": 30.0
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "status": "held",
+          "reason": "The 1 ha lower bound belongs to the farm-pond range. Kadam gives other area conditions for check dams and percolation tanks and leaves gully-plug area unspecified.",
+          "scope": "water_harvesting__runoff_catchment__catchment_area",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/user_decision.md",
+          "source_profiles_ref": "methodology/audits/t4_drainage_density_hold_20261109/next_catchment_area_decision.json",
+          "held_relationship": {
+            "type": "trapezoidal",
+            "params": {
+              "abs_min": 1.0
+            },
+            "uncertainty_pct": "20.0"
+          },
+          "retained_source_profiles": [
+            {
+              "source_id": "kadam2012_scscn_india_rwh",
+              "evidence_id": "ev_wh_catchment_area_kadam12_1",
+              "table_ref": "PDF page 14",
+              "quantity": "Contributing catchment area associated with the candidate structure, in hectares",
+              "table": "Table 6, PDF14 / printed p2550",
+              "rows": [
+                {
+                  "structure": "farm pond",
+                  "catchment_area_ha": "1 to 2",
+                  "slope_percent": "0–5",
+                  "runoff_potential": "moderate/high",
+                  "land_use": "scrub land",
+                  "stream_order": "1",
+                  "soil": "sandy clay loam"
+                },
+                {
+                  "structure": "check dam",
+                  "catchment_area_ha": ">25",
+                  "slope_percent": "<15",
+                  "runoff_potential": "moderate/high",
+                  "land_use": "scrub land/river bed",
+                  "stream_order": "1 to 4",
+                  "soil": "sandy clay loam"
+                },
+                {
+                  "structure": "percolation tank",
+                  "catchment_area_ha": "25–40",
+                  "slope_percent": "<10",
+                  "runoff_potential": "low",
+                  "land_use": "scrub land",
+                  "stream_order": "1 to 4",
+                  "soil": "clay"
+                },
+                {
+                  "structure": "gully plug",
+                  "catchment_area_ha": "—",
+                  "area_disposition": "unspecified",
+                  "slope_percent": "15–20",
+                  "runoff_potential": "high",
+                  "land_use": "scrub land",
+                  "stream_order": "1",
+                  "soil": "sandy clay loam/clay"
+                }
+              ],
+              "lineage": "Adopted specifications attributed to IMSD (1995) in Table 6. The study applies them in Upper Karha, semi-arid basaltic western India, by intersecting layers and checking derived sites against field observations. One linked study carries this guidance. No independent validation of the area breakpoints is reported here.",
+              "source_weight": "No numeric catchment-area weight or suitability scores reported for the adopted specifications. The recipe default weight does not come from Table 6.",
+              "numeric_plausibility": "One hectare appears in the lower end of the printed farm-pond band. A single family-wide minimum cannot encode the upper end or the other structures. Preserve the literal check-dam >25 comparator, the two printed bands, and the gully-plug dash. The paper does not give an uncertainty tolerance, scores, interpolation, or a general direction across structures.",
+              "spatial_support": "Mapped sites in Fig.8. Methods PDF4 describe 1:50,000 Survey of India topographic sheets and contour-derived DEM, satellite and ArcSWAT-updated drainage. Local contributing-area delineation/outlet handling for individual structures is not fully specified. Catchment is not the installed structure footprint, total watershed extent or distance to a watercourse."
+            }
+          ]
+        }
+      }
     },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.2,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': 5.0, 'abs_max': 30.0}; uncertainty ±60% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "slope",
-    "suitability_family_id": "water_harvesting__in_situ",
-    "evidence_ids": [
-      "ev_wh_slope_krois14_bunds",
-      "ev_wh_slope_critchley91_contourbunds",
-      "ev_wh_slope_slm11_ca"
-    ],
-    "n_sources": 3,
-    "corpus_n": 17,
-    "paper_support_pct": 25.4
-  },
-  {
-    "mapping_id": "water_harvesting__in_situ__annual_precipitation",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "worldclim_v2_precip",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 100.0,
-      "opt_low": 200.0,
-      "opt_high": 400.0,
-      "abs_max": 1000.0
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.2,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0, 'opt_low': 200.0, 'opt_high': 400.0, 'abs_max': 1000.0}; uncertainty ±60% from spread. Collapsed 2 citation echo(es). ",
-    "variable": "annual_precipitation",
-    "suitability_family_id": "water_harvesting__in_situ",
-    "evidence_ids": [
-      "ev_wh_annual_precipitation_kahinda08_3",
-      "ev_wh_precip_critchley91_contourbunds"
-    ],
-    "n_sources": 2,
-    "corpus_n": 17,
-    "paper_support_pct": 16.9
-  },
-  {
-    "mapping_id": "water_harvesting__in_situ__aridity_index",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "global_aridity_index_v3",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 0.05,
-      "opt_low": 0.2,
-      "opt_high": 0.5,
-      "abs_max": 0.65
-    },
-    "uncertainty_pct": 20.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.2,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.05, 'opt_low': 0.2, 'opt_high': 0.5, 'abs_max': 0.65}; uncertainty ±20% from spread. ",
-    "variable": "aridity_index",
-    "suitability_family_id": "water_harvesting__in_situ",
-    "evidence_ids": [
-      "ev_wh_aridity_index_kahinda08_2",
-      "ev_wh_aridity_slm11_ca"
-    ],
-    "n_sources": 2,
-    "corpus_n": 17,
-    "paper_support_pct": 16.9
-  },
-  {
-    "mapping_id": "water_harvesting__in_situ__soil_depth_to_bedrock",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "ssurgo_statsgo",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 20.0,
-      "opt_low": 75.0
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.2,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 20.0, 'opt_low': 75.0}; uncertainty ±60% from spread. ",
-    "variable": "soil_depth_to_bedrock",
-    "suitability_family_id": "water_harvesting__in_situ",
-    "evidence_ids": [
-      "ev_wh_soil_depth_kahinda08_1",
-      "ev_wh_soildepth_critchley91_contourbunds"
-    ],
-    "n_sources": 2,
-    "corpus_n": 17,
-    "paper_support_pct": 16.9
-  },
-  {
-    "mapping_id": "water_harvesting__in_situ__clay_content",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "soilgrids_250m",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "opt_low": 15.1,
-      "opt_high": 35.0,
-      "abs_max": 55.0
-    },
-    "uncertainty_pct": 20.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.2,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 15.1, 'opt_high': 35.0, 'abs_max': 55.0}; uncertainty ±20% from spread. ",
-    "variable": "clay_content",
-    "suitability_family_id": "water_harvesting__in_situ",
-    "evidence_ids": [
-      "ev_wh_clay_content_kahinda08_1"
-    ],
-    "n_sources": 1,
-    "corpus_n": 17,
-    "paper_support_pct": 8.5
-  },
-  {
-    "mapping_id": "water_harvesting__micro_catchment__annual_precipitation",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "worldclim_v2_precip",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 150.0,
-      "abs_max": 500.0
-    },
-    "uncertainty_pct": 30.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.3333,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 150.0, 'abs_max': 500.0}; uncertainty ±30% from spread. Collapsed 5 citation echo(es). ",
-    "variable": "annual_precipitation",
-    "suitability_family_id": "water_harvesting__micro_catchment",
-    "evidence_ids": [
-      "ev_wh_precip_critchley91_negarim",
-      "ev_wh_precip_wocatgl13_negarim"
-    ],
-    "n_sources": 2,
-    "corpus_n": 19,
-    "paper_support_pct": 15.9
-  },
-  {
-    "mapping_id": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "ssurgo_statsgo",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 100.0,
-      "opt_low": 200.0
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.3333,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0, 'opt_low': 200.0}; uncertainty ±60% from spread. ",
-    "variable": "soil_depth_to_bedrock",
-    "suitability_family_id": "water_harvesting__micro_catchment",
-    "evidence_ids": [
-      "ev_wh_soildepth_critchley91_negarim",
-      "ev_wh_soildepth_wocatgl13_strips"
-    ],
-    "n_sources": 2,
-    "corpus_n": 19,
-    "paper_support_pct": 15.9
-  },
-  {
-    "mapping_id": "water_harvesting__micro_catchment__slope",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "srtm_dem_30m",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 0.6,
-      "opt_low": 0.6,
-      "opt_high": 2.9,
-      "abs_max": 2.9
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.3333,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.6, 'opt_low': 0.6, 'opt_high': 2.9, 'abs_max': 2.9}; uncertainty ±60% from spread. Collapsed 6 citation echo(es). ",
-    "variable": "slope",
-    "suitability_family_id": "water_harvesting__micro_catchment",
-    "evidence_ids": [
-      "ev_wh_slope_critchley91_negarim",
-      "ev_wh_slope_wocatgl13_negarim"
-    ],
-    "n_sources": 2,
-    "corpus_n": 19,
-    "paper_support_pct": 15.9
-  },
-  {
-    "mapping_id": "water_harvesting__rooftop__annual_precipitation",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "worldclim_v2_precip",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 200.0,
-      "abs_max": 1000.0
-    },
-    "uncertainty_pct": 30.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 1.0,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 200.0, 'abs_max': 1000.0}; uncertainty ±30% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "annual_precipitation",
-    "suitability_family_id": "water_harvesting__rooftop",
-    "evidence_ids": [
-      "ev_wh_precip_wocatgl13_rooftop"
-    ],
-    "n_sources": 1,
-    "corpus_n": 1,
-    "paper_support_pct": 100.0
-  },
-  {
-    "mapping_id": "water_harvesting__runoff_catchment__slope",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "srtm_dem_30m",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 0.1,
-      "opt_low": 0.0,
-      "opt_high": 2.3,
-      "abs_max": 5.7
-    },
-    "uncertainty_pct": 60.0,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
     "weight_default": 0.1111,
     "weight_adjustable": true,
-    "justification": "Reconciled from 8 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.1, 'opt_low': 0.0, 'opt_high': 2.3, 'abs_max': 5.7}; uncertainty ±60% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "slope",
+    "justification": "Peter approved holding the shared 1 ha contributing-area minimum on 9 November 2026. Retain the complete Kadam Table 6 profile by structure, including the associated siting conditions. The 25–40 ha tank entry documents siting for groundwater recharge. NbS qualification depends on the intervention and its ecosystem and biodiversity benefits.",
+    "variable": "catchment_area",
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
-      "ev_wh_slope_kadam12_1",
-      "ev_wh_slope_singh17_2",
-      "ev_wh_slope_ryan20_1",
-      "ev_wh_slope_alabadi17_1",
-      "ev_wh_slope_karimi19_1",
-      "ev_wh_slope_vema19_1",
-      "ev_wh_slope_critchley91_trapezoidal",
-      "ev_wh_slope_wocatgl13_tanks"
+      "ev_wh_catchment_area_kadam12_1"
     ],
-    "n_sources": 8,
+    "n_sources": 1,
     "corpus_n": 13,
-    "paper_support_pct": 60.4
+    "paper_support_pct": 9.4
+  },
+  {
+    "mapping_id": "water_harvesting__runoff_catchment__drainage_density",
+    "nbs_id": "water_harvesting_conservation",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "dataset_binding": {
+          "status": "requires_matching_input",
+          "reason": "Basin polygons do not provide the required stream-length-per-area density. A compatible river network, area support and derivation must be specified. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-06",
+          "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
+          "scope": "water_harvesting__runoff_catchment__drainage_density",
+          "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
+        },
+        "numerical_calibration": {
+          "status": "held",
+          "reason": "The shared upper optimum bound of 0.25 km/km² combines different purposes and stream networks. Singh places 0.25 in the second class of a catchment potential index. Karimi favors lower densities for potential harvesting sites, and Ettazarini favors higher densities for check dams.",
+          "scope": "water_harvesting__runoff_catchment__drainage_density",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "decision_ref": "methodology/audits/t4_drainage_density_hold_20261109/user_decision.md",
+          "source_profiles_ref": "methodology/audits/t4_stream_order_hold_20261107/next_drainage_density_decision.json",
+          "held_relationship": {
+            "type": "trapezoidal",
+            "params": {
+              "opt_high": 0.25
+            },
+            "uncertainty_pct": "60.0"
+          },
+          "retained_source_profiles": [
+            {
+              "source_id": "karimi_2019_runoff_map_rwh_zones",
+              "evidence_id": "ev_wh_drainage_density_karimi19_1",
+              "evidence_locator": "PDF page 19",
+              "table_ref": "Table 6, PDF page 19",
+              "source_model": "Farm-pond example in an AHP/WLC suitability map for rainwater harvesting sites in the Kakareza watershed, Iran. Authors recommend including system type in future work (PDF7).",
+              "direction": "Lower drainage density preferred locally.",
+              "unit": "km/km² (Fig. 11, caption PDF16, legend PDF17; discussion PDF6).",
+              "classes": [
+                {
+                  "density_km_per_km2": "<0.5",
+                  "rank": 1,
+                  "printed_normalized_feature_weight": 0.03
+                },
+                {
+                  "density_km_per_km2": "0.5–1",
+                  "rank": 2,
+                  "printed_normalized_feature_weight": 0.015
+                },
+                {
+                  "density_km_per_km2": ">1",
+                  "rank": 3,
+                  "printed_normalized_feature_weight": 0.008
+                }
+              ],
+              "source_weight": {
+                "criterion": 0.059,
+                "five_criterion_weights": {
+                  "runoff": 0.427,
+                  "land_use": 0.26,
+                  "slope": 0.158,
+                  "hydrologic_soil_group": 0.096,
+                  "drainage_density": 0.059
+                },
+                "consistency_ratio": 0.03,
+                "locator": "Table 6, PDF19. Feature weights in the table remain as printed."
+              },
+              "source_input": "100 × 100 m DEM derived from 1:50,000 topography, used for slope and drainage density in ArcGIS 10.3. Local stream delineation threshold and density support area unresolved in inspected methods. Grid size alone does not specify density support.",
+              "boundaries_and_prose": "Table 6 and Figure 11 place strictly <0.5 in rank 1; 0.5–1 in rank 2. Discussion PDF6 describes most suitable mapped sites as having drainage density of 0.5, alongside other conditions. That map summary does not add a second numerical optimum. All three classes receive positive printed weights.",
+              "lineage": "Authors attribute lower-density preference to Jha et al. (2014). Preserve local class table and expert AHP weights. Shared literature with Singh limits independent corroboration of mechanism, without demonstrating their class values are copied.",
+              "evidence_comparison": "Current EV preserves ranks, decreasing direction, criterion weight and opt_high=0.5, while the three feature weights are in its registered Table 6 quote. Strict source boundary is <0.5."
+            },
+            {
+              "source_id": "mahmoud_2016_mcda_gis_wh_recharge",
+              "evidence_id": "ev_wh_drainage_density_singh17_1",
+              "evidence_locator": "PDF page 3",
+              "table_ref": "Table 3, PDF page 3",
+              "source_model": "West Bengal, India. Three-theme RWH Potential Index preceding separate structure-specific Boolean siting for farm ponds, stream/ground percolation tanks and check dams.",
+              "direction": "Higher local RWH potential rank at lower micro-watershed drainage density.",
+              "unit": "km/km², Table 3/PDF3, Fig. 11/PDF13; length divided by micro-watershed area, PDF8.",
+              "classes": [
+                {
+                  "density_km_per_km2": "<0.25",
+                  "runoff_prospect": "Very High",
+                  "assigned": 8,
+                  "normalized": 0.327
+                },
+                {
+                  "density_km_per_km2": "0.25–0.50",
+                  "runoff_prospect": "High",
+                  "assigned": 7,
+                  "normalized": 0.286
+                },
+                {
+                  "density_km_per_km2": "0.50–0.75",
+                  "runoff_prospect": "Moderate",
+                  "assigned": 5,
+                  "normalized": 0.204
+                },
+                {
+                  "density_km_per_km2": "0.75–1.00",
+                  "runoff_prospect": "Low",
+                  "assigned": 3,
+                  "normalized": 0.122
+                },
+                {
+                  "density_km_per_km2": ">1.00",
+                  "runoff_prospect": "Very Low",
+                  "assigned": 1.5,
+                  "normalized": 0.061
+                }
+              ],
+              "source_weight": {
+                "theme_assigned": 6,
+                "theme_normalized": 0.261,
+                "criterion_set": {
+                  "runoff_coefficient": {
+                    "assigned": 9,
+                    "normalized": 0.391
+                  },
+                  "slope": {
+                    "assigned": 8,
+                    "normalized": 0.348
+                  },
+                  "drainage_density": {
+                    "assigned": 6,
+                    "normalized": 0.261
+                  }
+                },
+                "consistency": "Reported below 0.10, PDF15.",
+                "locator": "Tables 1–3, PDF3"
+              },
+              "source_input": "ArcHydro drainage from SRTM DEM. Slope and drainage density layers use 90 m SRTM. Density computed from stream length / micro-watershed area and incorporated into a polygon-based WLC index. Local mapped range 0.01–4.86 km/km² (PDF14) describes the input. The 50 m stream-order corridor for installation sites is a different step.",
+              "boundaries_and_prose": "Strict <0.25 is Very High; the row beginning at 0.25 is High. Adjacent closed-looking printed ranges share 0.50 and 0.75; authors report no exact tie convention there. Other classes, including Very Low, have positive feature weights. Table 3 prospect labels order suitability, whereas Fig. 11/PDF13 and PDF14 describe density magnitude itself in the opposite verbal order. The two scales agree.",
+              "lineage": "Method section PDF8 cites Jha et al. (2014) for selection of themes. Local weights arise from expert judgments. No source establishes this particular class break as a universal requirement.",
+              "evidence_comparison": "Corrected current EV already stores all five classes, both sets of weights and use limitation. The inherited scalar numerically matches this study’s first break. Origin of the historical weighted-median calculation has not been reconstructed."
+            },
+            {
+              "source_id": "mahmoud_2021_checkdam_suitability_topo_drainage_morocco",
+              "evidence_id": "ev_wh_drainage_density_mahmoud21_1",
+              "evidence_locator": "PDF page 8",
+              "table_ref": "Table 1, PDF page 6; Eq. 7, PDF page 7",
+              "source_model": "Ettazarini (2021). Eight-factor AHP model for check-dam site selection in Khenifra province, Morocco, favouring surface-water accumulation.",
+              "direction": "Higher drainage density receives higher suitability scores for check dams in this model.",
+              "unit": "km/km², defined in PDF8 as total stream length divided by drainage area. Table 1 omits the unit in its factor label.",
+              "classes": [
+                {
+                  "density_km_per_km2": "<0.2",
+                  "score": 1,
+                  "label": "Low"
+                },
+                {
+                  "density_km_per_km2": "0.2–0.4",
+                  "score": 2,
+                  "label": "Medium"
+                },
+                {
+                  "density_km_per_km2": "0.4–0.6",
+                  "score": 3,
+                  "label": "High"
+                },
+                {
+                  "density_km_per_km2": ">0.6",
+                  "score": 4,
+                  "label": "Very high"
+                }
+              ],
+              "source_weight": {
+                "criterion": 0.07,
+                "eight_factor_weights": {
+                  "slope": 0.32,
+                  "drainage_density": 0.07,
+                  "stream_order": 0.1,
+                  "stream_power_index": 0.25,
+                  "topographic_wetness_index": 0.05,
+                  "sediment_transport_index": 0.16,
+                  "terrain_roughness_index": 0.03,
+                  "topographic_position_index": 0.02
+                },
+                "consistency_ratio": 0.07,
+                "locator": "Table 2 and Eq. 7, PDF7; CR PDF12."
+              },
+              "source_input": "ASTER-based 30 m DEM and flow-accumulation-derived streams. ArcGIS line density applied with a 500 m stream-length threshold for including streamlines. The 500 m criterion defines the stream network. Density neighborhood/search radius is unresolved in the cited text. Local maximum 1.94 km/km² describes the input.",
+              "boundaries_and_prose": "Table 1/PDF6, discussion PDF8 and Figure 5B/PDF10 agree on increasing ranking. Middle ranges share 0.4 without a printed tie rule. Lowest category receives 1. Accuracy checks of the combined map against terrain depressions do not validate individual drainage-density breakpoints.",
+              "lineage": "PDF8 cites Horton (1945) for runoff/infiltration interpretation and Rahmati et al. (2019) for dam-siting preference. Four class scores and 0.07 AHP weight are attributed to Ettazarini’s applied model.",
+              "evidence_comparison": "Existing EV retains direction. Table 1 class boundaries/scores, scale-dependent network specification and Table 2 criterion weight are surfaced here pending evidence review."
+            }
+          ]
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.1111,
+    "weight_adjustable": true,
+    "justification": "Peter approved holding the shared 0.25 km/km² drainage-density calibration on 9 November 2026. Retain the Karimi, Singh and Ettazarini profiles by mapping purpose, structure and network definition. Preserve each study’s full class table, source weights, units, network derivation, spatial support and transfer limits. Dataset binding unresolved; requires matching input: Basin polygons do not provide the required stream-length-per-area density. A compatible river network, area support and derivation must be specified. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
+    "variable": "drainage_density",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": [
+      "ev_wh_drainage_density_karimi19_1",
+      "ev_wh_drainage_density_singh17_1",
+      "ev_wh_drainage_density_mahmoud21_1"
+    ],
+    "n_sources": 3,
+    "corpus_n": 13,
+    "paper_support_pct": 17.0
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
@@ -324,7 +342,7 @@
     "has_future_projection": false,
     "weight_default": 0.1111,
     "weight_adjustable": true,
-    "justification": "Reviewed numerical calibration hold (Peter, 2026-11-06): inherited 75/80 function and its derived uncertainty are historical only, archived in reviewed_adaptation.numerical_calibration. All five source profiles, native classes/ranges, directions, labelled weights and evidence links are retained for compatible synthesis. No replacement or source approval. Separate approved dataset-binding hold remains in force.",
+    "justification": "Reviewed numerical calibration hold (Peter, 2026-11-06): inherited 75/80 function and its derived uncertainty are historical only, archived in reviewed_adaptation.numerical_calibration. All five source profiles, native classes/ranges, directions, labelled weights and evidence links are retained for compatible synthesis. No replacement or source approval. Separate approved dataset-binding hold remains in force. Dataset binding unresolved; requires matching input: The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
     "variable": "runoff_potential_index",
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
@@ -337,37 +355,6 @@
     "n_sources": 5,
     "corpus_n": 13,
     "paper_support_pct": 35.8
-  },
-  {
-    "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "worldclim_v2_precip",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 200.0,
-      "opt_low": 600.0,
-      "opt_high": 800.0,
-      "abs_max": 500.0
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.1111,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 4 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 200.0, 'opt_low': 600.0, 'opt_high': 800.0, 'abs_max': 500.0}; uncertainty ±60% from spread. Collapsed 3 citation echo(es). ",
-    "variable": "annual_precipitation",
-    "suitability_family_id": "water_harvesting__runoff_catchment",
-    "evidence_ids": [
-      "ev_wh_annual_precipitation_kahinda08_4",
-      "ev_wh_annual_precipitation_ryan20_1",
-      "ev_wh_precip_critchley91_trapezoidal",
-      "ev_wh_precip_wocatgl13_trapezoidal"
-    ],
-    "n_sources": 4,
-    "corpus_n": 13,
-    "paper_support_pct": 34.0
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__stream_order",
@@ -586,558 +573,6 @@
     "n_sources": 3,
     "corpus_n": 13,
     "paper_support_pct": 20.8
-  },
-  {
-    "mapping_id": "water_harvesting__runoff_catchment__aridity_index",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "global_aridity_index_v3",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 0.05,
-      "opt_low": 0.5,
-      "opt_high": 0.65
-    },
-    "uncertainty_pct": 20.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.1111,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.05, 'opt_low': 0.5, 'opt_high': 0.65}; uncertainty ±20% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "aridity_index",
-    "suitability_family_id": "water_harvesting__runoff_catchment",
-    "evidence_ids": [
-      "ev_wh_aridity_index_kahinda08_3",
-      "ev_wh_aridity_slm11_macro"
-    ],
-    "n_sources": 2,
-    "corpus_n": 13,
-    "paper_support_pct": 18.9
-  },
-  {
-    "mapping_id": "water_harvesting__runoff_catchment__drainage_density",
-    "nbs_id": "water_harvesting_conservation",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "reviewed_adaptation": {
-        "dataset_binding": {
-          "status": "requires_matching_input",
-          "reason": "Basin polygons do not provide the required stream-length-per-area density. A compatible river network, area support and derivation must be specified. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
-          "reviewer": "Peter",
-          "reviewed_date": "2026-11-06",
-          "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
-          "scope": "water_harvesting__runoff_catchment__drainage_density",
-          "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
-        },
-        "numerical_calibration": {
-          "status": "held",
-          "reason": "The shared upper optimum bound of 0.25 km/km² combines different purposes and stream networks. Singh places 0.25 in the second class of a catchment potential index. Karimi favors lower densities for potential harvesting sites, and Ettazarini favors higher densities for check dams.",
-          "scope": "water_harvesting__runoff_catchment__drainage_density",
-          "reviewer": "Peter",
-          "reviewed_date": "2026-11-09",
-          "decision_ref": "methodology/audits/t4_drainage_density_hold_20261109/user_decision.md",
-          "source_profiles_ref": "methodology/audits/t4_stream_order_hold_20261107/next_drainage_density_decision.json",
-          "held_relationship": {
-            "type": "trapezoidal",
-            "params": {
-              "opt_high": 0.25
-            },
-            "uncertainty_pct": "60.0"
-          },
-          "retained_source_profiles": [
-            {
-              "source_id": "karimi_2019_runoff_map_rwh_zones",
-              "evidence_id": "ev_wh_drainage_density_karimi19_1",
-              "evidence_locator": "PDF page 19",
-              "table_ref": "Table 6, PDF page 19",
-              "source_model": "Farm-pond example in an AHP/WLC suitability map for rainwater harvesting sites in the Kakareza watershed, Iran. Authors recommend including system type in future work (PDF7).",
-              "direction": "Lower drainage density preferred locally.",
-              "unit": "km/km² (Fig. 11, caption PDF16, legend PDF17; discussion PDF6).",
-              "classes": [
-                {
-                  "density_km_per_km2": "<0.5",
-                  "rank": 1,
-                  "printed_normalized_feature_weight": 0.03
-                },
-                {
-                  "density_km_per_km2": "0.5–1",
-                  "rank": 2,
-                  "printed_normalized_feature_weight": 0.015
-                },
-                {
-                  "density_km_per_km2": ">1",
-                  "rank": 3,
-                  "printed_normalized_feature_weight": 0.008
-                }
-              ],
-              "source_weight": {
-                "criterion": 0.059,
-                "five_criterion_weights": {
-                  "runoff": 0.427,
-                  "land_use": 0.26,
-                  "slope": 0.158,
-                  "hydrologic_soil_group": 0.096,
-                  "drainage_density": 0.059
-                },
-                "consistency_ratio": 0.03,
-                "locator": "Table 6, PDF19. Feature weights in the table remain as printed."
-              },
-              "source_input": "100 × 100 m DEM derived from 1:50,000 topography, used for slope and drainage density in ArcGIS 10.3. Local stream delineation threshold and density support area unresolved in inspected methods. Grid size alone does not specify density support.",
-              "boundaries_and_prose": "Table 6 and Figure 11 place strictly <0.5 in rank 1; 0.5–1 in rank 2. Discussion PDF6 describes most suitable mapped sites as having drainage density of 0.5, alongside other conditions. That map summary does not add a second numerical optimum. All three classes receive positive printed weights.",
-              "lineage": "Authors attribute lower-density preference to Jha et al. (2014). Preserve local class table and expert AHP weights. Shared literature with Singh limits independent corroboration of mechanism, without demonstrating their class values are copied.",
-              "evidence_comparison": "Current EV preserves ranks, decreasing direction, criterion weight and opt_high=0.5, while the three feature weights are in its registered Table 6 quote. Strict source boundary is <0.5."
-            },
-            {
-              "source_id": "mahmoud_2016_mcda_gis_wh_recharge",
-              "evidence_id": "ev_wh_drainage_density_singh17_1",
-              "evidence_locator": "PDF page 3",
-              "table_ref": "Table 3, PDF page 3",
-              "source_model": "West Bengal, India. Three-theme RWH Potential Index preceding separate structure-specific Boolean siting for farm ponds, stream/ground percolation tanks and check dams.",
-              "direction": "Higher local RWH potential rank at lower micro-watershed drainage density.",
-              "unit": "km/km², Table 3/PDF3, Fig. 11/PDF13; length divided by micro-watershed area, PDF8.",
-              "classes": [
-                {
-                  "density_km_per_km2": "<0.25",
-                  "runoff_prospect": "Very High",
-                  "assigned": 8,
-                  "normalized": 0.327
-                },
-                {
-                  "density_km_per_km2": "0.25–0.50",
-                  "runoff_prospect": "High",
-                  "assigned": 7,
-                  "normalized": 0.286
-                },
-                {
-                  "density_km_per_km2": "0.50–0.75",
-                  "runoff_prospect": "Moderate",
-                  "assigned": 5,
-                  "normalized": 0.204
-                },
-                {
-                  "density_km_per_km2": "0.75–1.00",
-                  "runoff_prospect": "Low",
-                  "assigned": 3,
-                  "normalized": 0.122
-                },
-                {
-                  "density_km_per_km2": ">1.00",
-                  "runoff_prospect": "Very Low",
-                  "assigned": 1.5,
-                  "normalized": 0.061
-                }
-              ],
-              "source_weight": {
-                "theme_assigned": 6,
-                "theme_normalized": 0.261,
-                "criterion_set": {
-                  "runoff_coefficient": {
-                    "assigned": 9,
-                    "normalized": 0.391
-                  },
-                  "slope": {
-                    "assigned": 8,
-                    "normalized": 0.348
-                  },
-                  "drainage_density": {
-                    "assigned": 6,
-                    "normalized": 0.261
-                  }
-                },
-                "consistency": "Reported below 0.10, PDF15.",
-                "locator": "Tables 1–3, PDF3"
-              },
-              "source_input": "ArcHydro drainage from SRTM DEM. Slope and drainage density layers use 90 m SRTM. Density computed from stream length / micro-watershed area and incorporated into a polygon-based WLC index. Local mapped range 0.01–4.86 km/km² (PDF14) describes the input. The 50 m stream-order corridor for installation sites is a different step.",
-              "boundaries_and_prose": "Strict <0.25 is Very High; the row beginning at 0.25 is High. Adjacent closed-looking printed ranges share 0.50 and 0.75; authors report no exact tie convention there. Other classes, including Very Low, have positive feature weights. Table 3 prospect labels order suitability, whereas Fig. 11/PDF13 and PDF14 describe density magnitude itself in the opposite verbal order. The two scales agree.",
-              "lineage": "Method section PDF8 cites Jha et al. (2014) for selection of themes. Local weights arise from expert judgments. No source establishes this particular class break as a universal requirement.",
-              "evidence_comparison": "Corrected current EV already stores all five classes, both sets of weights and use limitation. The inherited scalar numerically matches this study’s first break. Origin of the historical weighted-median calculation has not been reconstructed."
-            },
-            {
-              "source_id": "mahmoud_2021_checkdam_suitability_topo_drainage_morocco",
-              "evidence_id": "ev_wh_drainage_density_mahmoud21_1",
-              "evidence_locator": "PDF page 8",
-              "table_ref": "Table 1, PDF page 6; Eq. 7, PDF page 7",
-              "source_model": "Ettazarini (2021). Eight-factor AHP model for check-dam site selection in Khenifra province, Morocco, favouring surface-water accumulation.",
-              "direction": "Higher drainage density receives higher suitability scores for check dams in this model.",
-              "unit": "km/km², defined in PDF8 as total stream length divided by drainage area. Table 1 omits the unit in its factor label.",
-              "classes": [
-                {
-                  "density_km_per_km2": "<0.2",
-                  "score": 1,
-                  "label": "Low"
-                },
-                {
-                  "density_km_per_km2": "0.2–0.4",
-                  "score": 2,
-                  "label": "Medium"
-                },
-                {
-                  "density_km_per_km2": "0.4–0.6",
-                  "score": 3,
-                  "label": "High"
-                },
-                {
-                  "density_km_per_km2": ">0.6",
-                  "score": 4,
-                  "label": "Very high"
-                }
-              ],
-              "source_weight": {
-                "criterion": 0.07,
-                "eight_factor_weights": {
-                  "slope": 0.32,
-                  "drainage_density": 0.07,
-                  "stream_order": 0.1,
-                  "stream_power_index": 0.25,
-                  "topographic_wetness_index": 0.05,
-                  "sediment_transport_index": 0.16,
-                  "terrain_roughness_index": 0.03,
-                  "topographic_position_index": 0.02
-                },
-                "consistency_ratio": 0.07,
-                "locator": "Table 2 and Eq. 7, PDF7; CR PDF12."
-              },
-              "source_input": "ASTER-based 30 m DEM and flow-accumulation-derived streams. ArcGIS line density applied with a 500 m stream-length threshold for including streamlines. The 500 m criterion defines the stream network. Density neighborhood/search radius is unresolved in the cited text. Local maximum 1.94 km/km² describes the input.",
-              "boundaries_and_prose": "Table 1/PDF6, discussion PDF8 and Figure 5B/PDF10 agree on increasing ranking. Middle ranges share 0.4 without a printed tie rule. Lowest category receives 1. Accuracy checks of the combined map against terrain depressions do not validate individual drainage-density breakpoints.",
-              "lineage": "PDF8 cites Horton (1945) for runoff/infiltration interpretation and Rahmati et al. (2019) for dam-siting preference. Four class scores and 0.07 AHP weight are attributed to Ettazarini’s applied model.",
-              "evidence_comparison": "Existing EV retains direction. Table 1 class boundaries/scores, scale-dependent network specification and Table 2 criterion weight are surfaced here pending evidence review."
-            }
-          ]
-        }
-      }
-    },
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.1111,
-    "weight_adjustable": true,
-    "justification": "Peter approved holding the shared 0.25 km/km² drainage-density calibration on 9 November 2026. Retain the Karimi, Singh and Ettazarini profiles by mapping purpose, structure and network definition. Preserve each study’s full class table, source weights, units, network derivation, spatial support and transfer limits. Dataset binding unresolved; requires matching input: Basin polygons do not provide the required stream-length-per-area density. A compatible river network, area support and derivation must be specified. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
-    "variable": "drainage_density",
-    "suitability_family_id": "water_harvesting__runoff_catchment",
-    "evidence_ids": [
-      "ev_wh_drainage_density_karimi19_1",
-      "ev_wh_drainage_density_singh17_1",
-      "ev_wh_drainage_density_mahmoud21_1"
-    ],
-    "n_sources": 3,
-    "corpus_n": 13,
-    "paper_support_pct": 17.0
-  },
-  {
-    "mapping_id": "water_harvesting__runoff_catchment__catchment_area",
-    "nbs_id": "water_harvesting_conservation",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "reviewed_adaptation": {
-        "numerical_calibration": {
-          "status": "held",
-          "reason": "The 1 ha lower bound belongs to the farm-pond range. Kadam gives other area conditions for check dams and percolation tanks and leaves gully-plug area unspecified.",
-          "scope": "water_harvesting__runoff_catchment__catchment_area",
-          "reviewer": "Peter",
-          "reviewed_date": "2026-11-09",
-          "decision_ref": "methodology/audits/t4_water_block_20261109/user_decision.md",
-          "source_profiles_ref": "methodology/audits/t4_drainage_density_hold_20261109/next_catchment_area_decision.json",
-          "held_relationship": {
-            "type": "trapezoidal",
-            "params": {
-              "abs_min": 1.0
-            },
-            "uncertainty_pct": "20.0"
-          },
-          "retained_source_profiles": [
-            {
-              "source_id": "kadam2012_scscn_india_rwh",
-              "evidence_id": "ev_wh_catchment_area_kadam12_1",
-              "table_ref": "PDF page 14",
-              "quantity": "Contributing catchment area associated with the candidate structure, in hectares",
-              "table": "Table 6, PDF14 / printed p2550",
-              "rows": [
-                {
-                  "structure": "farm pond",
-                  "catchment_area_ha": "1 to 2",
-                  "slope_percent": "0–5",
-                  "runoff_potential": "moderate/high",
-                  "land_use": "scrub land",
-                  "stream_order": "1",
-                  "soil": "sandy clay loam"
-                },
-                {
-                  "structure": "check dam",
-                  "catchment_area_ha": ">25",
-                  "slope_percent": "<15",
-                  "runoff_potential": "moderate/high",
-                  "land_use": "scrub land/river bed",
-                  "stream_order": "1 to 4",
-                  "soil": "sandy clay loam"
-                },
-                {
-                  "structure": "percolation tank",
-                  "catchment_area_ha": "25–40",
-                  "slope_percent": "<10",
-                  "runoff_potential": "low",
-                  "land_use": "scrub land",
-                  "stream_order": "1 to 4",
-                  "soil": "clay"
-                },
-                {
-                  "structure": "gully plug",
-                  "catchment_area_ha": "—",
-                  "area_disposition": "unspecified",
-                  "slope_percent": "15–20",
-                  "runoff_potential": "high",
-                  "land_use": "scrub land",
-                  "stream_order": "1",
-                  "soil": "sandy clay loam/clay"
-                }
-              ],
-              "lineage": "Adopted specifications attributed to IMSD (1995) in Table 6. The study applies them in Upper Karha, semi-arid basaltic western India, by intersecting layers and checking derived sites against field observations. One linked study carries this guidance. No independent validation of the area breakpoints is reported here.",
-              "source_weight": "No numeric catchment-area weight or suitability scores reported for the adopted specifications. The recipe default weight does not come from Table 6.",
-              "numeric_plausibility": "One hectare appears in the lower end of the printed farm-pond band. A single family-wide minimum cannot encode the upper end or the other structures. Preserve the literal check-dam >25 comparator, the two printed bands, and the gully-plug dash. The paper does not give an uncertainty tolerance, scores, interpolation, or a general direction across structures.",
-              "spatial_support": "Mapped sites in Fig.8. Methods PDF4 describe 1:50,000 Survey of India topographic sheets and contour-derived DEM, satellite and ArcSWAT-updated drainage. Local contributing-area delineation/outlet handling for individual structures is not fully specified. Catchment is not the installed structure footprint, total watershed extent or distance to a watercourse."
-            }
-          ]
-        }
-      }
-    },
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.1111,
-    "weight_adjustable": true,
-    "justification": "Peter approved holding the shared 1 ha contributing-area minimum on 9 November 2026. Retain the complete Kadam Table 6 profile by structure, including the associated siting conditions. The 25–40 ha tank entry documents siting for groundwater recharge. NbS qualification depends on the intervention and its ecosystem and biodiversity benefits.",
-    "variable": "catchment_area",
-    "suitability_family_id": "water_harvesting__runoff_catchment",
-    "evidence_ids": [
-      "ev_wh_catchment_area_kadam12_1"
-    ],
-    "n_sources": 1,
-    "corpus_n": 13,
-    "paper_support_pct": 9.4
-  },
-  {
-    "mapping_id": "water_harvesting__runoff_catchment__clay_content",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "soilgrids_250m",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "opt_low": 35.1,
-      "opt_high": 55.0
-    },
-    "uncertainty_pct": 20.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.1111,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 35.1, 'opt_high': 55.0}; uncertainty ±20% from spread. ",
-    "variable": "clay_content",
-    "suitability_family_id": "water_harvesting__runoff_catchment",
-    "evidence_ids": [
-      "ev_wh_clay_content_kahinda08_2"
-    ],
-    "n_sources": 1,
-    "corpus_n": 13,
-    "paper_support_pct": 9.4
-  },
-  {
-    "mapping_id": "water_harvesting__runoff_catchment__soil_permeability",
-    "nbs_id": "water_harvesting_conservation",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "opt_high": 5.0,
-      "abs_max": 20.0
-    },
-    "uncertainty_pct": 30.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.1111,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': 5.0, 'abs_max': 20.0}; uncertainty ±30% from spread. ",
-    "variable": "soil_permeability",
-    "suitability_family_id": "water_harvesting__runoff_catchment",
-    "evidence_ids": [
-      "ev_wh_soil_permeability_vema19_1"
-    ],
-    "n_sources": 1,
-    "corpus_n": 13,
-    "paper_support_pct": 9.4
-  },
-  {
-    "mapping_id": "water_harvesting__spate__annual_precipitation",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "worldclim_v2_precip",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 100.0,
-      "abs_max": 700.0
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0, 'abs_max': 700.0}; uncertainty ±60% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "annual_precipitation",
-    "suitability_family_id": "water_harvesting__spate",
-    "evidence_ids": [
-      "ev_wh_precip_critchley91_rockdams",
-      "ev_wh_precip_wocatgl13_floodwh"
-    ],
-    "n_sources": 2,
-    "corpus_n": 4,
-    "paper_support_pct": 62.5
-  },
-  {
-    "mapping_id": "water_harvesting__spate__slope",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "srtm_dem_30m",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "opt_high": 1.1,
-      "abs_max": 1.7
-    },
-    "uncertainty_pct": 30.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': 1.1, 'abs_max': 1.7}; uncertainty ±30% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "slope",
-    "suitability_family_id": "water_harvesting__spate",
-    "evidence_ids": [
-      "ev_wh_slope_critchley91_rockdams",
-      "ev_wh_slope_wocatgl13_tabia"
-    ],
-    "n_sources": 2,
-    "corpus_n": 4,
-    "paper_support_pct": 62.5
-  },
-  {
-    "mapping_id": "water_harvesting__terracing__slope",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "srtm_dem_30m",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 2.0,
-      "opt_low": 18.0,
-      "opt_high": 30.0,
-      "abs_max": 30.0
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.2,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 5 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 2.0, 'opt_low': 18.0, 'opt_high': 30.0, 'abs_max': 30.0}; uncertainty ±60% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "slope",
-    "suitability_family_id": "water_harvesting__terracing",
-    "evidence_ids": [
-      "ev_wh_slope_krois14_terraces",
-      "ev_wh_slope_chen17_1",
-      "ev_wh_slope_critchley91_stonebunds",
-      "ev_wh_slope_slm11_fanyajuu",
-      "ev_wh_slope_wocatgl13_benchterraces"
-    ],
-    "n_sources": 5,
-    "corpus_n": 14,
-    "paper_support_pct": 48.1
-  },
-  {
-    "mapping_id": "water_harvesting__terracing__annual_precipitation",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "worldclim_v2_precip",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 100.0,
-      "opt_low": 400.0,
-      "opt_high": 600.0,
-      "abs_max": 750.0
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.2,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0, 'opt_low': 400.0, 'opt_high': 600.0, 'abs_max': 750.0}; uncertainty ±60% from spread. ",
-    "variable": "annual_precipitation",
-    "suitability_family_id": "water_harvesting__terracing",
-    "evidence_ids": [
-      "ev_wh_annual_precipitation_krois14_1",
-      "ev_wh_precip_critchley91_stonebunds",
-      "ev_wh_precip_wocatgl13_benchterraces"
-    ],
-    "n_sources": 3,
-    "corpus_n": 14,
-    "paper_support_pct": 28.8
-  },
-  {
-    "mapping_id": "water_harvesting__terracing__soil_depth_to_bedrock",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "ssurgo_statsgo",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 15.0,
-      "opt_low": 100.0
-    },
-    "uncertainty_pct": 33.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.2,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 15.0, 'opt_low': 100.0}; uncertainty ±33% from spread. ",
-    "variable": "soil_depth_to_bedrock",
-    "suitability_family_id": "water_harvesting__terracing",
-    "evidence_ids": [
-      "ev_wh_soil_depth_krois14_1",
-      "ev_wh_soil_depth_chen17_1",
-      "ev_wh_soildepth_slm11_terraces"
-    ],
-    "n_sources": 3,
-    "corpus_n": 14,
-    "paper_support_pct": 28.8
-  },
-  {
-    "mapping_id": "water_harvesting__terracing__clay_content",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "soilgrids_250m",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "opt_low": 15.0,
-      "opt_high": 35.0,
-      "abs_max": 55.0
-    },
-    "uncertainty_pct": 20.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.2,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 15.0, 'opt_high': 35.0, 'abs_max': 55.0}; uncertainty ±20% from spread. ",
-    "variable": "clay_content",
-    "suitability_family_id": "water_harvesting__terracing",
-    "evidence_ids": [
-      "ev_wh_soil_texture_krois14_1"
-    ],
-    "n_sources": 1,
-    "corpus_n": 14,
-    "paper_support_pct": 9.6
   },
   {
     "mapping_id": "water_harvesting__terracing__runoff_potential_index",

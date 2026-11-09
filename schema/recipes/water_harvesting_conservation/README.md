@@ -1,64 +1,21 @@
-# recipes/water_harvesting_conservation/ — draft-0 example
+# Water Harvesting and Conservation
 
-**Status: draft 0 — worked example, not yet review-signed.** Populated schema tables for Water Harvesting &
-Conservation (`nbs_id = water_harvesting_conservation`, cluster `soil_water`). Demonstrates the schema spec
-([`../../spec.md`](../../spec.md)) and is the second worked recipe alongside agroforestry.
+This recipe uses the practice ID `water_harvesting_conservation`. T0 defines the practice and the family register describes the siting context for in-situ measures, micro-catchments, runoff catchments, spate harvesting and terracing. Rooftop harvesting has a qualitative-only designation. [Practice definition](T0_nbs_registry.csv) · [Family register](../../registers/FAM_family_registry.csv)
 
-## What's here (per-NbS tables — carry `nbs_id`)
+## Suitability
 
-| File | Table | Rows |
-|---|---|---|
-| `T0_nbs_registry.{csv,json}` | T0 — NbS Registry | 1 |
-| `T3_nbs_hazard_farming.{csv,json}` | T3 — NbS × Hazard × Farming | 20 (generated 2026-10-05, re-run 2026-10-06 by `scripts/synthesise-t3t6.py`; draft-0 seeds frozen in `schema/design/seed_benchmark/`) |
-| `T4_suitability_mappings.{csv,json}` | T4 — Suitability Mappings | 9 |
-| `T6_nbs_scorecard.{csv,json}` | T6 — NbS Scorecard | 53 (generated 2026-10-05, re-run 2026-10-06; see `T3T6_BENCHMARK.md`) |
+T4 has five mappings on numerical calibration hold. For runoff catchments these cover contributing area, drainage density, runoff potential and stream order. For terracing the hold covers runoff potential. Four also require a matching spatial input. Each mapping preserves its supporting source evidence and the reasons for its hold. The five rows currently supply **zero executable suitability functions**. [Reviewed T4 mappings](T4_suitability_mappings.csv) · [Authored settings and holds](../../recipe_inputs/t4/water_harvesting_conservation/)
 
-The cross-NbS tables this recipe joins to — `T1_data_registry`, `T2_climate_risk`, `T5_opportunity_space`,
-`T7_geographic_context` — live at the [schema root](../../) and merge rows from every recipe. The water-harvesting
-T4 introduces hydrological variables (drainage density, Strahler stream order, hydrologic soil group, land-cover
-eligibility) on top of the shared biophysical datasets.
+Twenty draft mappings from the earlier recipe await evidence review. Their historical values, source cards and release dispositions are linked individually. For clay content, the two reviewed source corrections preserve the native classes and descriptive mean ranks across studies. A family-level response still requires review. [Mapping crosswalk](../../../methodology/audits/t4_six_practice_release_20261109/water_harvesting.md) · [Clay rank comparison](../../../methodology/audits/t4_water_block_20261109/clay_rank_comparison.csv)
 
-## Provenance
+## Other recipe tables
 
-Generated from `RuralNbS_WaterHarvesting_Tables_T0-T7.xlsx` (archived at [`../../design/`](../../design/)).
-This recipe also corresponds to Benson's existing water-harvesting methodology recipe
-([`methodology/recipes/water_harvesting.md`](../../../methodology/recipes/water_harvesting.md)), the source of
-several framework primitives (fuzzy membership functions, hybrid AHP + CRITIC + Entropy weighting).
+| Table | Contents |
+| --- | --- |
+| [T3](T3_nbs_hazard_farming.csv) | Hazard responses by family and farming context |
+| [T6](T6_nbs_scorecard.csv) | Scorecard effects |
+| [T6E](T6E_economic_profile.csv) | Economic profiles |
 
-Both formats describe the same content: **JSON is the machine-readable source of truth; CSV is the
-human-editing view.** Fix the JSON, then regenerate the CSV.
+The effect synthesis report records how the evidence contributed to T3, T6 and T6E. The release reader loads compiled tables, authored settings and readiness reports together by version. [Effect synthesis report](T3T6_synthesis_report.json) · [Release guide](../../../docs/RECIPE_RELEASES.md)
 
-## Naming note (for reconciliation)
-
-The workbook sets `nbs_id = water_harvesting_conservation`, so this recipe folder matches that ID. The
-methodology file is `methodology/recipes/water_harvesting.md` and `AGENTS.md` cites `water_harvesting` as the
-NbS-ID example. **These should be reconciled to a single canonical `nbs_id`** before the schema stabilises —
-raise an issue rather than silently editing.
-
-## Shared-layer deduplication (June 2026)
-
-This workbook was authored standalone and aliased shared framework entities (datasets, risk variables,
-priority layers, geographic contexts) with a `_wh` suffix. Those clones have been collapsed into the canonical
-shared rows at the [schema root](../../) so the framework layer is one source of truth — e.g. this recipe's
-T6 now references `rural_poverty_headcount` and `climate_drought_hazard`, not the `_wh` aliases. Genuinely
-water-specific entries (e.g. `srtm_dem_30m`, `runoff_potential_index`, `groundwater_recharge_potential`,
-`agricultural_water_deficit`, `flood_risk`, `dryland_south_asia`) were retained. Full log:
-[`../../DEDUP_NOTES.md`](../../DEDUP_NOTES.md). Three items await Brayden's M2 sign-off (T2 weight reconciliation,
-flood-hazard method, erosion-vs-degradation).
-
-## Structure & validation status
-
-Conformant to the **frozen v0.2 structure** ([`../../structure/columns.json`](../../structure/columns.json)).
-Verify with `python3 src/nbs_ruralscan/schema_tools/structure.py schema` (expect 0 errors).
-
-- Columns match the manifest; FKs resolve to VONT (`variable`), FAM (`suitability_family_id`), T1 (`dataset_id`)
-  — including nested `context_overrides`, `baseline_dataset_id` and `future_dataset_ids`.
-- A pre-existing dangling reference (`chelsa_precip_ssp245_2050_wh`, never catalogued in T1) was repointed to
-  `chelsa_bioclim_ssp245_2050`.
-
-**Content still pending (not structural):**
-- All 9 T4 rows are tagged to the placeholder family `water_harvesting__runoff_catchment`; the full family scheme
-  awaits Namita + MFL review. No row carries real evidence yet — `evidence_ids` are empty pending extraction.
-- Free-text `references`/`justification` were replaced by `evidence_ids` (→ EV) in the v0.2 trim.
-
-> Draft-0 content still needs literature-team review before the pilot review milestone.
+The initial worked example came from the water-harvesting design workbook. Rebuild current evidence-based T4 tables with the recipe compiler and regenerate the typed JSON from the CSV. [Design workbook](../../design/RuralNbS_WaterHarvesting_Tables_T0-T7.xlsx) · [Water-harvesting method](../../../methodology/recipes/water_harvesting.md) · [T4 synthesis instructions](../../../.agents/skills/source-command-t4-synthesise/SKILL.md)

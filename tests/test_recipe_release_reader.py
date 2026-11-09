@@ -283,6 +283,41 @@ def test_invalid_bundles_refused_by_shared_validation_and_reader(tmp_path, probl
         load_recipe_release(store)
 
 
+@pytest.mark.parametrize(
+    "state,functions", [("defined", {}), ("blocked", {"invented": "a" * 64})]
+)
+def test_reader_checks_calibration_hold_against_readiness(tmp_path, state, functions):
+    practice = "wetland"
+    files = example((practice,))
+    csv_path = table_path(practice, "T4", ".csv")
+    json_path = table_path(practice, "T4", ".json")
+    rows = json.loads(files[json_path])
+    row = rows[0]
+    params = {
+        "reviewed_adaptation": {
+            "numerical_calibration": {
+                "status": "held",
+                "reason": "Resolve the source scale.",
+            }
+        }
+    }
+    row["relationship_params"] = params
+    files[json_path] = encoded(rows)
+    files[csv_path] = csv_bytes(
+        TABLE_FIELDS["T4"], [{**row, "relationship_params": json.dumps(params)}]
+    )
+    path = report_path(practice, "T4_readiness.json")
+    report = json.loads(files[path])
+    rule = report["rows"][0]
+    rule["readiness"]["state"] = state
+    rule["functions"] = functions
+    report["implementation_readiness"] = {state: 1}
+    files[path] = encoded(report)
+    publish_release(tmp_path, files)
+    with pytest.raises(ValueError, match="calibration hold"):
+        load_recipe_release(tmp_path)
+
+
 def test_declared_prose_and_reference_only_rule(tmp_path):
     files = example(("forest",))
     key = setting_path("forest", "T4_settings.json")

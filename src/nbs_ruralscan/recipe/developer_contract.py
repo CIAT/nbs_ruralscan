@@ -480,6 +480,11 @@ def build_contract(
         )
     corpus = rebuild(root, nbs)
     evidence = {r["evidence_id"]: r for r in corpus["evidence"]}
+    unresolved = {
+        r["evidence_id"]
+        for r in corpus["synthesis_report"]["evidence_dispositions"]
+        if r["disposition"] == "unresolved_review"
+    }
     completion_policies = {
         r["evidence_id"]: r
         for r in read_csv(root / "schema/lookups/t4_numeric_compilation_policy.csv")
@@ -710,24 +715,40 @@ def build_contract(
                 "Final criterion set and normalized runtime weight remain a run-level decision"
             )
         linked = obj(raw["evidence_ids"], [])
+        pending_references = []
         for eid in linked:
-            u = evidence.get(eid)
-            if (
-                not u
-                or u["review_state"] == "dropped"
-                or (
-                    u["reviewer_ok"].lower() != "true"
-                    and not (
-                        eid in completion_units
-                        and source_completion(
-                            completion_units[eid], completion_units, completion_policies
-                        )
-                    )
+            unit = evidence.get(eid)
+            error = f"Recipe links unapproved, dropped or missing evidence: {eid}"
+            if not unit or unit["review_state"] == "dropped":
+                raise ValueError(error)
+            if unit["reviewer_ok"].lower() == "true" or (
+                eid in completion_units
+                and source_completion(
+                    completion_units[eid], completion_units, completion_policies
                 )
             ):
-                raise ValueError(
-                    f"Recipe links unapproved, dropped or missing evidence: {eid}"
-                )
+                continue
+            # Held responses can document the sources behind a review decision.
+            # No pending record can authorize a selectable response.
+            if (
+                not calibration_hold
+                or role != "suitability_score"
+                or options
+                or selected
+                or eid not in unresolved
+                or unit["nbs_id"] != nbs
+                or unit["use_role"] != "structural_suitability"
+                or unit["claim_scope"] != "practice_technology"
+                or unit["variable"] != raw["variable"]
+                or unit["suitability_family_id"] != system
+            ):
+                raise ValueError(error)
+            pending_references.append(eid)
+        if pending_references:
+            notes.append(
+                "Source evidence awaiting review, retained only to document the calibration hold: "
+                + ", ".join(pending_references)
+            )
         notes.append(
             "Native units, scaling, time reduction and data access must be verified in the developer's dataset adapter"
         )
