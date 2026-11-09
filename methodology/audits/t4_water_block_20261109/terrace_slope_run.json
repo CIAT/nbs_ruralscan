@@ -1,0 +1,121 @@
+{
+  "decision_date": "2026-11-09",
+  "decision_ref": "terrace_slope.md",
+  "reviewer": "Pete",
+  "input_revision": "7c74a43dfd71acb604862813e0b44de93c0d6c17",
+  "legacy_curve_reference": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+  "baseline": "Eleven accepted water-harvesting rows before this decision. No shared terrace slope score. This run also corrects the source encoding of the former shared 30-degree bound on two evidence records.",
+  "agents": [
+    {
+      "role": "Codex /root – source corrections, dashboard, provenance and release checks",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "settings_source": "Codex turn_context.model and turn_context.effort",
+      "prompt": "ok keep all five slope profiles by design and in their original units. keep Krois’s full table and 0.39 study weight, leave the stone-line guidance out of terrace scoring. no shared terrace slope maximum. next"
+    },
+    {
+      "role": "Codex /root/slope_apply – reviewed configuration and replay",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "settings_source": "Codex turn_context.model and turn_context.effort",
+      "prompt": "Apply approved five terrace SLOPE profiles by design, original units, no shared maximum, in /Users/pstewarda/.codex/worktrees/t4-riparian-recovery/nbs_ruralscan current PR642 branch. Own declared CSV recipe settings/hold and compiler generation of T4 CSV/family JSON only. Use T4 synthesis skill and current accepted baseline; preserve eleven prior mappings and avoid invented dataset holds if slope layer supported. Verify native tables incl all Krois terrace ranks incl >30° high + within-study weight 0.39, Chen all six design conditions, FAO Fanya juu/chini and dry use, WOCAT forward-sloping bench conditions, FAO contour stone line <2% preference retained and explicitly excluded from terrace calibration/scoring and eligible support count. Distinguish evidence lineage from eligible source count; inspect existing compiler behavior. Link methodology/audits/t4_water_block_20261109/terrace_slope.md. Verify replay and fail-closed numeric/options; no general generator, no dashboard edits, no commit. Notify when recipe ready.",
+      "followups": [
+        "Two EV records themselves still encode abs_max=30 (Krois and Chen). I am fixing them via audited correction workflow and refreshing dashboard fingerprints now. Please use corrected EV fingerprints in authored input. If code already ran, reconcile these two fingerprints against final EV & regenerate before final verification. I'll notify when ready.",
+        "Corrections and updated priority fingerprints complete. Use live corrected EVs for Krois and Chen. Registered scores/0.39 and full six-design native guidance now recorded."
+      ]
+    },
+    {
+      "role": "Codex /root/next_rain_terrace – independent source check of next rainfall block",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "settings_source": "Codex turn_context.model and turn_context.effort",
+      "prompt": "Read-only next coherent T4 block after terrace slope, preferably 3 terrace rainfall cards if undecided. Use source checks, native sources and prior decisions in /Users/pstewarda/.codex/worktrees/t4-riparian-recovery/nbs_ruralscan current worktree. Report complete most relevant native quantities, source purpose, weights and ambiguity, practical example and dashboard IDs. Discriminate scope from previous runoff/in-field rainfall and current executable rules. Verify direct text vs inference. No edits."
+    }
+  ],
+  "replay": {
+    "file_sha256": {
+      "AGENTS.md": "6d32ed199cf4ce3c262b50804dd5dc3a7eaf5d1c5a8fd8eba736ba80a4794c57",
+      ".agents/skills/source-command-t4-synthesise/SKILL.md": "a87b41ea4a9ef9c25c21b8260f3d15f62d016c514ff6b170453676dc9fd694ff",
+      ".agents/skills/extraction_contracts/T4_review_contract.md": "86ca001a35d80214f53362fa2f99293524615afb299f509782491688da024542",
+      "methodology/T4_generation_method.md": "2c5c177001b212a2f5d03730e3a5dfe10547926a095bc90658f350ed2a127818",
+      "schema/lookups/crop_scope_policy.csv": "62f6bf68b618116e63d4bee57d7b01c6710b4a2ba62b4405bf7daf1662f9a5b4",
+      "schema/lookups/t4_numeric_compilation_policy.csv": "e3af05d083e8ae3f17cb3a69995591f8c80df9f3e1b0c87aad023357ab96e3dd",
+      "schema/T1_data_registry.csv": "1746c118f1c13594e18baf884238718e67d8f528d2c1ac25d2c6d0ca2e55e5b0",
+      "schema/registers/BIND_dataset_binding.csv": "6aeb5481a121cca768efd69ebe277b95a85e2c7f1ef9941e9cc74536c9bcfa35",
+      "schema/registers/EV_evidence_register.csv": "31afc7e50373bd21786630bedef481538c6593e2dd88edcdf7d3140c85183c76",
+      "schema/registers/SRC_source_register.csv": "d1a6743c8cf64524619895c36cf5d48e6821b52cb984594fe560325dfeb501ed",
+      "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
+      "schema/registers/VONT_variable_ontology.csv": "5c53fb4873449ce787052b0f0b3effe8070d7ebfc8dd34920c211f4a522736ea",
+      "schema/recipe_inputs/t4/water_harvesting_conservation/review_holds.csv": "636c4335a6e658c6460dc44912570e2d2c1b59cf2af6d10a44072c5e609bff66",
+      "schema/recipe_inputs/t4/water_harvesting_conservation/mapping_settings.csv": "260da42b941df7b0ef50b2b18913621944286b410752320273f6a0d91ffe9ad5"
+    },
+    "compiler": "scripts/synthesise-recipe.py and src/nbs_ruralscan/recipe/t4_build.py at input_revision",
+    "command": "candidate=$(mktemp -d) && PYTHONPATH=src python scripts/synthesise-recipe.py water_harvesting_conservation --output-dir \"$candidate\"",
+    "row_hash_convention": "SHA-256 over all CSV fields keyed by column name, serialized as UTF-8 JSON with sorted keys, compact separators and unescaped Unicode.",
+    "mapping_csv": "schema/recipes/water_harvesting_conservation/T4_suitability_mappings.csv"
+  },
+  "decisions": [
+    {
+      "mapping_id": "water_harvesting__terracing__slope",
+      "result_sha256": "9b2d1405ae2f60d6b411a6338757be9bc28170ec55d078ebf80a4990f906ff48",
+      "dataset_id": "srtm_dem_30m",
+      "disposition": "Retain slope evidence by terrace design in the published units. The stone-line preference applies to a separate water-harvesting technique. The source profiles do not support a shared terrace slope maximum.",
+      "source_profiles": [
+        {
+          "source_id": "gismcda_swc_siting_2014",
+          "evidence_id": "ev_wh_slope_krois14_terraces",
+          "evidence_sha256": "390d221a415f41474e48efbfd0681b4727fc86870e62d074f015420540e76120",
+          "source_artifact_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd",
+          "locator": "PDF p. 9 Table 4, slope – terraces; PDF p. 10 Table 5, slope criterion eigenvalue.",
+          "unit": "degrees",
+          "extraction_ruleset": "v1.5.1",
+          "included_in_terrace_support": true
+        },
+        {
+          "source_id": "terracing_water_erosion_metaanalysis_china_2017",
+          "evidence_id": "ev_wh_slope_chen17_1",
+          "evidence_sha256": "7bd3aa381b97c13c169c88742d5061df9013486c9e5760d902bb598ce7667ef3",
+          "source_artifact_sha256": "00e0131089d16f5ece432390aae8681f967dbd511b4b77555b23ce9f1e74b80d",
+          "locator": "PDF p. 4 (printed p. 112), Table 1, scope of application by terrace type.",
+          "unit": "degrees",
+          "extraction_ruleset": "v1.5.1",
+          "included_in_terrace_support": true
+        },
+        {
+          "source_id": "fao_critchley_wh_manual_1991",
+          "evidence_id": "ev_wh_slope_critchley91_stonebunds",
+          "evidence_sha256": "05966d5d66341509ce869bbffb748e0486057bc474061e5fba3915b4406d5d02",
+          "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+          "locator": "FAO manual §5.7.1 Background and §5.7.2 Technical details, i. Suitability.",
+          "unit": "percent_grade",
+          "extraction_ruleset": "v1.6.0",
+          "included_in_terrace_support": false
+        },
+        {
+          "source_id": "fao_slm_in_practice_2011",
+          "evidence_id": "ev_wh_slope_slm11_fanyajuu",
+          "evidence_sha256": "773ef671b099b735a876606a5cf4fcdd2c9fdd2900180e4140fdb5a752f3f54b",
+          "source_artifact_sha256": "a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3",
+          "locator": "PDF p. 113 (printed p. 116), Cross-slope barriers, Applicability, ecological conditions and terrain.",
+          "unit": "percent_grade",
+          "extraction_ruleset": "v1.6.0",
+          "included_in_terrace_support": true
+        },
+        {
+          "source_id": "wocat_wh_guidelines_2013",
+          "evidence_id": "ev_wh_slope_wocatgl13_benchterraces",
+          "evidence_sha256": "1c15c96436366c341a01ec7188d577b0097cce0cb968d10212e5604cf3d84619",
+          "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+          "locator": "PDF p. 129 (printed p. 116), paragraph on contour forward-sloping bench terraces.",
+          "unit": "percent_grade",
+          "extraction_ruleset": "v1.6.0",
+          "included_in_terrace_support": true
+        }
+      ]
+    }
+  ],
+  "release_check_base_revision": "30a0beb4850dca3a68ce912dc93af0ee70bbac4d"
+}
