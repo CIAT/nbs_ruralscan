@@ -1079,6 +1079,154 @@
     "n_sources": 3
   },
   {
+    "mapping_id": "water_harvesting__terracing__annual_precipitation",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "worldclim_v2_precip",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "scope": "water_harvesting__terracing__annual_precipitation",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/terrace_rainfall.md",
+          "status": "held",
+          "reason": "Keep the Ronquillo seasonal model in its original regional context. Only the forward-sloping bench source supplies terrace-specific annual rainfall guidance. The contour stone-line source concerns a separate water-harvesting technique. No shared annual terrace rainfall score or cutoff is approved.",
+          "retained_source_profiles": [
+            {
+              "structure": "Terraces and bunds modelled in the Ronquillo watershed, Peru",
+              "locator": "PDF p. 5 Rainfall methods, PDF p. 6 Fig. 3, PDF p. 9 Table 4 and PDF p. 10 Table 5.",
+              "unit": "mm per October–April rainy season",
+              "statistic": "Mean October–April seasonal precipitation total. The rainfall–altitude relation for seasonal precipitation was used in the spatial MCE.",
+              "published_classes": [
+                {
+                  "seasonal_rainfall_mm": [
+                    "400–600"
+                  ],
+                  "label": "Optimally suitable",
+                  "score": 9
+                },
+                {
+                  "seasonal_rainfall_mm": [
+                    "200–400",
+                    "600–800"
+                  ],
+                  "label": "Highly suitable",
+                  "score": 7
+                },
+                {
+                  "seasonal_rainfall_mm": [
+                    "800–1000"
+                  ],
+                  "label": "Moderately suitable",
+                  "score": 5
+                },
+                {
+                  "seasonal_rainfall_mm": [
+                    "100–200",
+                    "1000–1200"
+                  ],
+                  "label": "Marginally suitable",
+                  "score": 3
+                },
+                {
+                  "seasonal_rainfall_mm": [
+                    "0–100",
+                    ">1200"
+                  ],
+                  "label": "Not suitable",
+                  "score": 1
+                },
+                {
+                  "seasonal_rainfall_mm": [],
+                  "label": "Restricted",
+                  "score": 0
+                }
+              ],
+              "source_criterion_weight": {
+                "criterion": "rainfall",
+                "value": 0.04,
+                "method": "within-study AHP relative importance",
+                "locator": "Table 5",
+                "source_row_quote": "Rainfall\n1\n1/3\n1/7\n1/3\n1/5\n1/3\n0.04"
+              },
+              "disposition": "local_seasonal_model_excluded_from_annual_terrace_support_and_scoring",
+              "transfer_scope": "Retain as context-specific evidence for this basin and its rainy season. Transfer to another region or season requires demonstrated comparability and separate review.",
+              "interpretation": "The annual gauge means provide station context. Endpoints shared by adjacent printed classes are unresolved. Restricted (0) has no rainfall interval.",
+              "evidence_id": "ev_wh_annual_precipitation_krois14_1",
+              "source_id": "gismcda_swc_siting_2014",
+              "evidence_sha256": "4f38df6665143c45b5816c840703d1f55e3c58e24a59dbcbc9ac4a662aae440c",
+              "source_artifact_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd",
+              "source_quote": "Table 4\nSuitability levels for SWCTs (terraces and bunds).\nSuitability rating\nOptimally suitable\nHighly suitable\nModerately suitable\nMarginally suitable\nNot suitable\nRestricted\nSuitability level\n9\n7\n5\n3\n1\n0\nRainfall (mm)\n400e600\n200e400\n600e800\n800e1000\n100e200\n1000e1200\n0e100\n>1200\ne\nRunoff coefﬁcient\n>0.9\n0.6e0.9\n0.3e0.6\n0e0.3\ne\ne\nSlope e terraces (\u0006)\n18e30\n10e18 > 30\n5e10\n2e5\n0e2\ne\nSlope e bunds (\u0006)\n<2e5\n5e10\n10e18\n18e30\n>30\ne\nSoil depth (m)\n>1.0\n0.5e1.0\n0.3e0.5\n0.2e0.3\n<0.2\ne\nSoil texture (% clay content)\n15e35\n6e15\n35e55\n0e6\n>55\ne\nLand use\nAgriculture\nMeadows, Shrub land,\nScarce vegetation\nGrassland\nForest\ne\nInfrastructure,\nWater bodies"
+            },
+            {
+              "structure": "Contour stone lines for water harvesting and crop production",
+              "locator": "FAO manual §§5.7.1–2, Background and Suitability.",
+              "unit": "mm rainfall",
+              "rainfall_range_mm": [
+                200,
+                750
+              ],
+              "conditions": "Arid to semi-arid; agricultural soil, good local stone supply and slopes preferably below 2%.",
+              "disposition": "stone_line_profile_excluded_from_terrace_support_and_scoring",
+              "interpretation": "The source expressly distinguishes these water-harvesting stone lines from stone bunding for hillside terracing.",
+              "evidence_id": "ev_wh_precip_critchley91_stonebunds",
+              "source_id": "fao_critchley_wh_manual_1991",
+              "evidence_sha256": "8c799450f3966f8960f52669082a6663c632013cba2250e86a12f54a47c43441",
+              "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+              "source_quote": "Suitability Stone bunds for crop production can be used under the following conditions: Rainfall: 200 mm - 750 mm; from arid to semi-arid areas."
+            },
+            {
+              "structure": "Contour forward-sloping bench terraces",
+              "locator": "WOCAT PDF p. 129, printed p. 116, paragraph on contour forward-sloping bench terraces.",
+              "unit": "mm/year",
+              "reported_annual_rainfall_mm": [
+                200,
+                600
+              ],
+              "conditions": "Runoff is harvested from uncropped upslope inter-terrace areas. Catchment-to-application area ratio 1:1–10:1; slopes up to 60%; mainly for trees and bushes and less for field crops.",
+              "disposition": "annual_terrace_evidence_scoped_to_forward_sloping_benches",
+              "interpretation": "The published range describes where this design is used. It supplies no scores inside the range or exclusion threshold beyond it.",
+              "evidence_id": "ev_wh_precip_wocatgl13_benchterraces",
+              "source_id": "wocat_wh_guidelines_2013",
+              "evidence_sha256": "62f3d5c2b75b7c59fceb813482cc56b0d8fe25a9cbe54da09de3c2f2ca48d8c4",
+              "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+              "source_quote": "Contour forward sloping bench terraces are constructed or develop over time from vegetative strips, contour earth bunds and stone bunds on steeper slopes (up to 60%). This technology combines soil and water conservation with WH. Runoff is harvested from the sloping non cropped area between the terraces (C:A ratio 1:1 – 10:1). This type of terraces is used in areas with annual rainfall between 200- 600 mm/y"
+            }
+          ],
+          "excluded_from_annual_terrace_support_and_scoring": [
+            "ev_wh_annual_precipitation_krois14_1",
+            "ev_wh_precip_critchley91_stonebunds"
+          ],
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "type": "trapezoidal",
+            "params": {
+              "abs_min": 100.0,
+              "opt_low": 400.0,
+              "opt_high": 600.0,
+              "abs_max": 750.0
+            },
+            "uncertainty_pct": "60.0"
+          }
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.2,
+    "weight_adjustable": true,
+    "justification": "Keep the Ronquillo seasonal model in its original regional context. Only the forward-sloping bench source supplies terrace-specific annual rainfall guidance. The contour stone-line source concerns a separate water-harvesting technique. No shared annual terrace rainfall score or cutoff is approved. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "variable": "annual_precipitation",
+    "suitability_family_id": "water_harvesting__terracing",
+    "evidence_ids": [
+      "ev_wh_precip_wocatgl13_benchterraces"
+    ],
+    "n_sources": 1
+  },
+  {
     "mapping_id": "water_harvesting__terracing__runoff_potential_index",
     "nbs_id": "water_harvesting_conservation",
     "suitability_dimension": "biophysical_constraint",
