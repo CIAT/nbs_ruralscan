@@ -9,6 +9,7 @@ from pathlib import Path
 import shutil
 import subprocess
 
+from nbs_ruralscan.recipe.calibration_requirements import calibration_requirement
 from nbs_ruralscan.runtime.binding import Binding, resolve_binding
 from nbs_ruralscan.schema_tools.t4_review_view import interval_text
 
@@ -121,14 +122,18 @@ def build(root, destination, version=VERSION):
     rules = []
     selected_datasets = set()
     referenced = set()
+    documentary = set()
     for row in t4:
         variable = row["variable"]
         ont = ontology.get(variable, {})
         params = json.loads(row["relationship_params"] or "{}")
-        profiles = params.get("profiles", [])
+        hold = calibration_requirement(row)
+        profiles = [] if hold else params.get("profiles", [])
         operational = row["is_scenario_candidate"].lower() == "true"
         kind = (
-            "Operational scenario"
+            "Source profile (unscored)"
+            if hold
+            else "Operational scenario"
             if operational
             else "Categorical host gate"
             if "class_map" in params
@@ -152,7 +157,9 @@ def build(root, destination, version=VERSION):
                 f"Existing default threshold: {params['threshold']}; source responses require explicit selection."
             )
         status = (
-            "Source response and geographic transfer must be selected; gaps remain unknown"
+            hold["reason"]
+            if hold
+            else "Source response and geographic transfer must be selected; gaps remain unknown"
             if profiles
             else "Configured; requires aligned inputs"
             if kind == "Categorical host gate"
@@ -180,7 +187,10 @@ def build(root, destination, version=VERSION):
             binding_note += "; BIND differs from recipe dataset: resolve in runtime, do not silently substitute units/bands"
         ds = catalog.get(default, {})
         ids = json.loads(row["evidence_ids"] or "[]")
-        referenced.update(ids)
+        if hold:
+            documentary.update(ids)
+        else:
+            referenced.update(ids)
         missing = set(ids) - ev.keys()
         if missing:
             raise ValueError(f"Missing evidence: {sorted(missing)}")
@@ -236,8 +246,10 @@ def build(root, destination, version=VERSION):
                 time_period=ds.get("time_period", ""),
                 dataset_choice_note=binding_note,
                 dataset_limitations=ds.get("limitations", ""),
-                weight_default=row["weight_default"],
-                weight_note="Configured runtime weight; source-relative importance is reported separately",
+                weight_default="" if hold else row["weight_default"],
+                weight_note="No scoring weight applies"
+                if hold
+                else "Configured runtime weight; source-relative importance is reported separately",
                 contributing_source_ids="; ".join(sids),
                 evidence_ids="; ".join(ids),
                 source_citations=" | ".join(src[sid]["citation"] for sid in sids),
@@ -384,6 +396,8 @@ def build(root, destination, version=VERSION):
             if row["review_state"] == "dropped"
             else "live_T4_reference"
             if row["evidence_id"] in referenced
+            else "documentary_source_profile"
+            if row["evidence_id"] in documentary
             else prior.get("final_disposition", "needs_reconciliation")
         )
         accounting.append(

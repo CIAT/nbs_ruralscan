@@ -25,6 +25,22 @@ def test_release_is_exact_accounted_snapshot_with_dataset_differences(tmp_path):
     rainfall = next(r for r in rows if r["variable"] == "annual_precipitation")
     assert rainfall["global_binding_dataset"] == "chelsa_bioclim_v21_baseline"
     assert "reconcile" in rainfall["status"]
+    held = next(
+        r
+        for r in rows
+        if r["mapping_id"] == "agroforestry__cross_family__soil_organic_carbon"
+    )
+    assert held["kind"] == "Source profile (unscored)"
+    assert held["weight_default"] == ""
+    assert held["contributing_source_ids"] == "haile_2024"
+    ids = {"ev_T4_soc_haile2024_1", "ev_T4_soc_haile2024_continuation"}
+    assert set(held["evidence_ids"].split("; ")) == ids
+    accounting = {
+        r["evidence_id"]: r for r in release.read(tmp_path / "evidence_accounting.csv")
+    }
+    assert all(
+        accounting[eid]["disposition"] == "documentary_source_profile" for eid in ids
+    )
     legal = next(r for r in rows if r["kind"] == "Hard exclusion")
     assert "not executable" in legal["status"]
     assert "field_boundary_zone" in manifest["required_local_inputs"]

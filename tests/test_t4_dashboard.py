@@ -11,6 +11,7 @@ from nbs_ruralscan.recipe.developer_view import render_developer_view
 
 ROOT = Path(__file__).resolve().parents[1]
 SOC = "agroforestry__cross_family__soil_organic_carbon"
+PLANTED_SOC = "agroforestry__planted_silvoarable__soil_organic_carbon"
 
 
 @pytest.fixture(scope="module")
@@ -18,19 +19,36 @@ def result():
     return dc.build_contract(ROOT)
 
 
-def test_completed_source_preserves_human_status(result):
+def test_regional_parkland_profile_keeps_two_pages_and_no_score(result):
     row = next(r for r in result["contract"]["rows"] if r["rule_id"] == SOC)
-    option = row["function_options"][0]
-    assert len(option["intervals"]) == 4
-    assert not option["completeness"]["missing_continuations"]
-    assert option["source_completions"][0]["kind"] == "verified_table_continuation"
-    assert "Source table completed" in render_developer_view(result["contract"])
-    record = next(
-        u
+    assert row["function_id"] is None and row["function_options"] == []
+    assert row["selected_evidence_ids"] == []
+    hold = row["declared_relationship"]["params"]["reviewed_adaptation"][
+        "numerical_calibration"
+    ]
+    [source] = hold["retained_source_profiles"]
+    pages = ["ev_T4_soc_haile2024_1", "ev_T4_soc_haile2024_continuation"]
+    assert source["source_id"] == "haile_2024" and source["evidence_ids"] == pages
+    profile = source["published_profile"]
+    assert profile["practice"] == "Traditional parkland agroforestry"
+    assert profile["unit_as_printed"] is None
+    assert profile["source_criterion_weight_pct"] == 20
+    assert [
+        (c["value_as_printed"], c["rank"], c["suitability_as_printed"], c["pdf_page"])
+        for c in profile["classes"]
+    ] == [
+        ("<0.5", 1, "Low", 5),
+        ("0.5-0.7", 2, "Medium", 5),
+        ("0.7-0.75", 3, "High", 6),
+        (">0.75", 4, "Very high", 6),
+    ]
+    active = {
+        u["evidence_id"]
         for u in result["evidence"]
-        if u["evidence_id"] == "ev_T4_soc_haile2024_continuation"
-    )
-    assert record["reviewer_ok"] == "false"
+        if u["reviewer_ok"] == "true" and u["review_state"] != "dropped"
+    }
+    assert set(pages) <= active
+    assert "Numerical calibration" in render_developer_view(result["contract"])
 
 
 def test_unresolved_partial_option_cannot_be_selected(result, monkeypatch):
@@ -44,12 +62,12 @@ def test_unresolved_partial_option_cannot_be_selected(result, monkeypatch):
 
     monkeypatch.setattr(dc, "_options", partial)
     result = dc.build_contract(ROOT)
-    row = next(r for r in result["contract"]["rows"] if r["rule_id"] == SOC)
+    row = next(r for r in result["contract"]["rows"] if r["rule_id"] == PLANTED_SOC)
     option = row["function_options"][0]
     pick = {
         "contract_version": dc.VERSION,
         "selections": {
-            SOC: {
+            PLANTED_SOC: {
                 "function_id": option["function_id"],
                 "function_fingerprint": option["fingerprint"],
                 "target_system": "agroforestry__planted_silvoarable",
@@ -76,7 +94,7 @@ def test_evidence_accounting_keeps_linked_uncompiled_and_dropped_distinct(result
 def test_study_and_global_panels_do_not_promote_partial_or_unpooled_curves(result):
     studies = view._studies(result)
     combined = view._global(result)
-    assert "Source table completed" in studies
+    assert "no cross-family" in studies
     assert "high:0.7-0.75" in studies
     assert "Whole-model share" in studies
     assert "Versus hierarchy equal share" in studies
