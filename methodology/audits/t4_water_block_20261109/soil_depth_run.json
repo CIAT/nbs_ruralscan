@@ -1,0 +1,110 @@
+{
+  "decision_date": "2026-11-09",
+  "decision_ref": "soil_depth.md",
+  "reviewer": "Pete",
+  "input_revision": "9e8587b68ee1840cf8ffbe28bf919459ceff3875",
+  "legacy_curve_reference": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+  "baseline": "Eight accepted water-harvesting rows before this decision. Neither in-field nor microcatchment had a soil-depth mapping. Historical params at legacy_curve_reference are archived only.",
+  "agents": [
+    {
+      "role": "Codex /root – dataset fitness, dashboard, validation and provenance",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "settings_source": "Codex turn_context.model and turn_context.effort",
+      "prompt": "ok keep all four soil depth profiles by technique, keep FAO’s minimum and preferred depths separate, and check whether depth to bedrock represents the soil depth each source uses before scoring. next"
+    },
+    {
+      "role": "Codex /root/soil_depth_apply – authored decisions and compiler replay",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "settings_source": "Codex turn_context.model and turn_context.effort",
+      "prompt": "Apply approved four depth profiles per technique and explicit per-mapping matching-input/calibration holds (no scoring) in /Users/pstewarda/.codex/worktrees/t4-riparian-recovery/nbs_ruralscan on codex/t4-soil-depth-profiles, using T4 synthesis skill. Own only declared recipe settings, compiler T4 CSV/family output and necessary binding fixture updates if required. Prior in_field_climate workflow is reference. Preserve all other rows. Include IDs, native quotes/locators/fingerprints, exact full conditional profiles for 2 family rows (in-situ and microcatchment); user kept minimum/preference distinct. In metadata record per-profile required measurement, scope, no default bound dataset, no proven equivalence to bedrock/rootable depth. No legacy cutoffs reintroduced. Link methodology/audits/t4_water_block_20261109/soil_depth.md. Confirm independent approved-only replay and runtime/developer options/binding rejection. No commit, no general generator or dashboard edits. Notify when ready."
+    },
+    {
+      "role": "Codex /root/next_review – read-only check of next three terrace cards",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "settings_source": "Codex turn_context.model and turn_context.effort",
+      "prompt": "Read-only next block after the four approved soil depth profiles. In /Users/pstewarda/.codex/worktrees/t4-riparian-recovery/nbs_ruralscan on latest main-based branch, examine pending T4 terracing soil-depth profiles (all dashboard mapped cards including Krois) if sensible. Verify original full tables/units/purpose plus conditions, distinct weighting, family-specific applicability (cut/fill vs stone etc), existing release and any existing approvals. Provide concise recommendation grouped as next decision, explicit site example if supported, links/IDs and issue if any; verify native pages. No edits or approvals."
+    }
+  ],
+  "replay": {
+    "file_sha256": {
+      "AGENTS.md": "6d32ed199cf4ce3c262b50804dd5dc3a7eaf5d1c5a8fd8eba736ba80a4794c57",
+      ".agents/skills/source-command-t4-synthesise/SKILL.md": "a87b41ea4a9ef9c25c21b8260f3d15f62d016c514ff6b170453676dc9fd694ff",
+      ".agents/skills/extraction_contracts/T4_review_contract.md": "86ca001a35d80214f53362fa2f99293524615afb299f509782491688da024542",
+      "methodology/T4_generation_method.md": "2c5c177001b212a2f5d03730e3a5dfe10547926a095bc90658f350ed2a127818",
+      "schema/lookups/crop_scope_policy.csv": "62f6bf68b618116e63d4bee57d7b01c6710b4a2ba62b4405bf7daf1662f9a5b4",
+      "schema/lookups/t4_numeric_compilation_policy.csv": "e3af05d083e8ae3f17cb3a69995591f8c80df9f3e1b0c87aad023357ab96e3dd",
+      "schema/T1_data_registry.csv": "1746c118f1c13594e18baf884238718e67d8f528d2c1ac25d2c6d0ca2e55e5b0",
+      "schema/registers/BIND_dataset_binding.csv": "6aeb5481a121cca768efd69ebe277b95a85e2c7f1ef9941e9cc74536c9bcfa35",
+      "schema/registers/EV_evidence_register.csv": "a1187c19ba8ecfe6dbcae8a097bda1af078691452d7a607140070d9b04b8af44",
+      "schema/registers/SRC_source_register.csv": "d1a6743c8cf64524619895c36cf5d48e6821b52cb984594fe560325dfeb501ed",
+      "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
+      "schema/registers/VONT_variable_ontology.csv": "5c53fb4873449ce787052b0f0b3effe8070d7ebfc8dd34920c211f4a522736ea",
+      "schema/recipe_inputs/t4/water_harvesting_conservation/review_holds.csv": "005d53ef72df02a3f9da5cfc7cf28d16b1c39c4aeddb76d9525eee3e8b790874",
+      "schema/recipe_inputs/t4/water_harvesting_conservation/mapping_settings.csv": "edd892139208cd870c0836822efb830dfd56714d01e88b16c6cc9f41ee396126"
+    },
+    "compiler": "scripts/synthesise-recipe.py and src/nbs_ruralscan/recipe/t4_build.py at input_revision",
+    "command": "candidate=$(mktemp -d) && PYTHONPATH=src python scripts/synthesise-recipe.py water_harvesting_conservation --output-dir \"$candidate\"",
+    "row_hash_convention": "SHA-256 over all CSV fields keyed by column name, serialized as UTF-8 JSON with sorted keys, compact separators and unescaped Unicode.",
+    "mapping_csv": "schema/recipes/water_harvesting_conservation/T4_suitability_mappings.csv"
+  },
+  "decisions": [
+    {
+      "mapping_id": "water_harvesting__in_situ__soil_depth_to_bedrock",
+      "result_sha256": "8f6f50ce62dd775a9113e03b09e91dfae6724d854166770097f934d0bb170063",
+      "dataset_id": null,
+      "disposition": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+      "source_profiles": [
+        {
+          "source_id": "kahinda2008_sa_rwh_suitability",
+          "evidence_id": "ev_wh_soil_depth_kahinda08_1",
+          "evidence_sha256": "848543eec66956f20335f31fb85306728f3710108242d2a9a6840f33523fa8c8",
+          "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+          "locator": "PDF p. 4 (printed p. 791) Table 5, IRWH column; PDF p. 3 §2.2.1.5 for the depth measure.",
+          "required_measurement": "Total topsoil plus subsoil horizon thickness (m), as defined in the study.",
+          "extraction_ruleset": "v1.5.1"
+        },
+        {
+          "source_id": "fao_critchley_wh_manual_1991",
+          "evidence_id": "ev_wh_soildepth_critchley91_contourbunds",
+          "evidence_sha256": "ab36659671ed6bba256b4a19c4b0e3b3cefce3e685c342a375a75efcc6828dd3",
+          "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+          "locator": "FAO manual §5.3.2 Technical details, i. Suitability.",
+          "required_measurement": "Soil depth available to tree roots and for storage of harvested water.",
+          "extraction_ruleset": "v1.6.0"
+        }
+      ]
+    },
+    {
+      "mapping_id": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
+      "result_sha256": "455a4d3dde9a86ef1dbdadd7bf43074b0f4221e0b15ba31d582a609a864ebd84",
+      "dataset_id": null,
+      "disposition": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+      "source_profiles": [
+        {
+          "source_id": "fao_critchley_wh_manual_1991",
+          "evidence_id": "ev_wh_soildepth_critchley91_negarim",
+          "evidence_sha256": "0661426bb7adfe1bab47617a1cd754fc6c6466cd64282a2b52676203b4806215",
+          "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+          "locator": "FAO manual §5.2.2 Technical details, i. Suitability.",
+          "required_measurement": "Soil depth available to tree roots and for storage of harvested water.",
+          "extraction_ruleset": "v1.6.0"
+        },
+        {
+          "source_id": "wocat_wh_guidelines_2013",
+          "evidence_id": "ev_wh_soildepth_wocatgl13_strips",
+          "evidence_sha256": "e29d09299c88a0c1d1d0e1a79fc99e5052f68289492d3bb73e37246ac7d33c31",
+          "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+          "locator": "PDF p. 127 (printed p. 114), Cultivated strips.",
+          "required_measurement": "Soil depth at the cultivated strips, as described in the guidance; the lower boundary is unspecified.",
+          "extraction_ruleset": "v1.6.0"
+        }
+      ]
+    }
+  ]
+}

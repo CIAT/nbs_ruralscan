@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-09T09:14:05.387575+00:00",
-  "git_commit": "f75e54c769513ac20718786372b66ee310f345f5",
+  "timestamp": "2026-11-09T09:24:18.952294+00:00",
+  "git_commit": "9e8587b68ee1840cf8ffbe28bf919459ceff3875",
   "registers": {
     "SRC_source_register": [
       {
@@ -323819,6 +323819,192 @@
           "n_sources": 2
         },
         {
+          "mapping_id": "water_harvesting__in_situ__soil_depth_to_bedrock",
+          "nbs_id": "water_harvesting_conservation",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "trapezoidal",
+          "relationship_params": {
+            "reviewed_adaptation": {
+              "dataset_binding": {
+                "status": "requires_matching_input",
+                "scope": "water_harvesting__in_situ__soil_depth_to_bedrock",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_water_block_20261109/soil_depth.md",
+                "reason": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+                "unmatched_dataset_id": "ssurgo_statsgo",
+                "required_measurements": [
+                  {
+                    "evidence_id": "ev_wh_soil_depth_kahinda08_1",
+                    "measure": "Total topsoil plus subsoil horizon thickness (m), as defined in the study."
+                  },
+                  {
+                    "evidence_id": "ev_wh_soildepth_critchley91_contourbunds",
+                    "measure": "Soil depth available to tree roots and for storage of harvested water."
+                  }
+                ]
+              },
+              "numerical_calibration": {
+                "status": "held",
+                "scope": "water_harvesting__in_situ__soil_depth_to_bedrock",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_water_block_20261109/soil_depth.md",
+                "reason": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+                "retained_source_profiles": [
+                  {
+                    "structure": "In-field rainwater harvesting in South Africa",
+                    "locator": "PDF p. 4 (printed p. 791) Table 5, IRWH column; PDF p. 3 §2.2.1.5 for the depth measure.",
+                    "required_measurement": "Total topsoil plus subsoil horizon thickness (m), as defined in the study.",
+                    "published_depth_ranks_m": {
+                      "<0.2": 1,
+                      "0.2–0.3": 2,
+                      "0.3–0.4": 3,
+                      "0.4–0.75": 4,
+                      ">0.75": 5
+                    },
+                    "interpretation": "At exactly 0.75 m the published rank is 4. For 0.3 m and 0.4 m the printed bands share endpoints. The shallowest soil has rank 1. No rank-to-score conversion was approved.",
+                    "binding_assessment": "Bedrock depth does not identify the combined thickness of the two specified horizons. A local profile layer or documented equivalence to those horizons is needed.",
+                    "evidence_id": "ev_wh_soil_depth_kahinda08_1",
+                    "source_id": "kahinda2008_sa_rwh_suitability",
+                    "evidence_sha256": "848543eec66956f20335f31fb85306728f3710108242d2a9a6840f33523fa8c8",
+                    "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+                    "source_quote": "Table 5\nSoil depth suitability ranking\nNo.\nSoil depth class\nDepth\nIRWH suitability\n1\nVery deep\n>0.75\n5\n2\nDeep\n0.4–0.75\n4\n3\nModerately shallow\n0.3–0.4\n3\n4\nShallow\n0.2–0.3\n2\n5\nVery shallow\n<0.2\n1"
+                  },
+                  {
+                    "structure": "Contour bunds for tree planting",
+                    "locator": "FAO manual §5.3.2 Technical details, i. Suitability.",
+                    "required_measurement": "Soil depth available to tree roots and for storage of harvested water.",
+                    "minimum_soil_depth_m": 1.5,
+                    "preferred_soil_depth_m": 2,
+                    "associated_conditions": "Rainfall 200–750 mm in arid to semi-arid areas, flat to 5% slope and even terrain without gullies or rills.",
+                    "binding_assessment": "Depth to bedrock alone cannot identify shallower restrictions on roots or storage. Establish adequate usable soil depth in this application.",
+                    "evidence_id": "ev_wh_soildepth_critchley91_contourbunds",
+                    "source_id": "fao_critchley_wh_manual_1991",
+                    "evidence_sha256": "ab36659671ed6bba256b4a19c4b0e3b3cefce3e685c342a375a75efcc6828dd3",
+                    "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+                    "source_quote": "Suitability Contour bunds for tree planting can be used under the following conditions: Rainfall: 200 - 750 mm; from semi-arid to arid areas. Soils: Must be at least 1.5 m and preferably 2 m deep to ensure adequate root development and water storage."
+                  }
+                ],
+                "held_relationship": {
+                  "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+                  "type": "trapezoidal",
+                  "params": {
+                    "abs_min": 20.0,
+                    "opt_low": 75.0
+                  },
+                  "uncertainty_pct": "60.0"
+                }
+              }
+            }
+          },
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.2,
+          "weight_adjustable": true,
+          "justification": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation. Retained approved calibration hold; no new numeric synthesis or approval. Dataset binding unresolved; requires matching input: Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+          "variable": "soil_depth_to_bedrock",
+          "suitability_family_id": "water_harvesting__in_situ",
+          "evidence_ids": [
+            "ev_wh_soil_depth_kahinda08_1",
+            "ev_wh_soildepth_critchley91_contourbunds"
+          ],
+          "n_sources": 2
+        },
+        {
+          "mapping_id": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
+          "nbs_id": "water_harvesting_conservation",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "trapezoidal",
+          "relationship_params": {
+            "reviewed_adaptation": {
+              "dataset_binding": {
+                "status": "requires_matching_input",
+                "scope": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_water_block_20261109/soil_depth.md",
+                "reason": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+                "unmatched_dataset_id": "ssurgo_statsgo",
+                "required_measurements": [
+                  {
+                    "evidence_id": "ev_wh_soildepth_critchley91_negarim",
+                    "measure": "Soil depth available to tree roots and for storage of harvested water."
+                  },
+                  {
+                    "evidence_id": "ev_wh_soildepth_wocatgl13_strips",
+                    "measure": "Soil depth at the cultivated strips, as described in the guidance; the lower boundary is unspecified."
+                  }
+                ]
+              },
+              "numerical_calibration": {
+                "status": "held",
+                "scope": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_water_block_20261109/soil_depth.md",
+                "reason": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+                "retained_source_profiles": [
+                  {
+                    "structure": "Negarim tree microcatchments",
+                    "locator": "FAO manual §5.2.2 Technical details, i. Suitability.",
+                    "required_measurement": "Soil depth available to tree roots and for storage of harvested water.",
+                    "minimum_soil_depth_m": 1.5,
+                    "preferred_soil_depth_m": 2,
+                    "associated_conditions": "Arid and semi-arid tree growing, rainfall can be as low as 150 mm per year, flat to 5% slopes, subdivide the block on uneven ground.",
+                    "binding_assessment": "Depth to bedrock alone cannot identify shallower restrictions on roots or storage. Establish adequate usable soil depth in this application.",
+                    "evidence_id": "ev_wh_soildepth_critchley91_negarim",
+                    "source_id": "fao_critchley_wh_manual_1991",
+                    "evidence_sha256": "0661426bb7adfe1bab47617a1cd754fc6c6466cd64282a2b52676203b4806215",
+                    "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+                    "source_quote": "Suitability Negarim microcatchments are mainly used for tree growing in arid and semi-arid areas. Rainfall: can be as low as 150 mm per annum. Soils: should be at least 1.5 m but preferably 2 m deep in order to ensure adequate root development and storage of the water harvested."
+                  },
+                  {
+                    "structure": "Cultivated strips fed by alternating contour catchment strips",
+                    "locator": "PDF p. 127 (printed p. 114), Cultivated strips.",
+                    "required_measurement": "Soil depth at the cultivated strips, as described in the guidance; the lower boundary is unspecified.",
+                    "minimum_soil_depth_m": 1,
+                    "maximum_slope_pct": 4,
+                    "annual_rainfall_mm": {
+                      "relation": ">",
+                      "value": 200
+                    },
+                    "binding_assessment": "The guidance does not define its soil depth by a bedrock interface. Verify the layer’s lower boundary and the soil thickness available to the cultivated strips.",
+                    "evidence_id": "ev_wh_soildepth_wocatgl13_strips",
+                    "source_id": "wocat_wh_guidelines_2013",
+                    "evidence_sha256": "e29d09299c88a0c1d1d0e1a79fc99e5052f68289492d3bb73e37246ac7d33c31",
+                    "source_artifact_sha256": "32d277e3cfa5756a598ba1d8eb98798cea42dfa06c94915c37c8d5251e934aea",
+                    "source_quote": "Cultivated strips: On gentle slopes alternating cropping strips along the contour are built: the upper one is used as a catchment and the lower one is cropped. The width of the cropped strip ranges from 1 – 3 m. The C:A ratio is usually 1:1 but can reach 1:5 depending on rainfall and the crop. Often on the sides and the lower end of the cropped area soil bunds are constructed to impede runoff from the cropped area. Cultivated strips are used on flat land or on gentle slopes of up to 4% with at least 1 m deep soils and that receive rainfall of more than 200 mm/y."
+                  }
+                ],
+                "held_relationship": {
+                  "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+                  "type": "trapezoidal",
+                  "params": {
+                    "abs_min": 100.0,
+                    "opt_low": 200.0
+                  },
+                  "uncertainty_pct": "60.0"
+                }
+              }
+            }
+          },
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.3333,
+          "weight_adjustable": true,
+          "justification": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation. Retained approved calibration hold; no new numeric synthesis or approval. Dataset binding unresolved; requires matching input: Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+          "variable": "soil_depth_to_bedrock",
+          "suitability_family_id": "water_harvesting__micro_catchment",
+          "evidence_ids": [
+            "ev_wh_soildepth_critchley91_negarim",
+            "ev_wh_soildepth_wocatgl13_strips"
+          ],
+          "n_sources": 2
+        },
+        {
           "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
           "nbs_id": "water_harvesting_conservation",
           "dataset_id": "worldclim_v2_precip",
@@ -402712,8 +402898,8 @@
       "source_id": "fao_critchley_wh_manual_1991",
       "page": "",
       "mapping_id": "water_harvesting__in_situ__soil_depth_to_bedrock",
-      "reason": "Source checked; proposed HOLD (not applied). §5.3.2 states soil must be at least 1.5 m, preferably 2 m, for roots and water storage. Stored canonical variable is depth to bedrock, but the passage describes usable soil depth, not a measured bedrock interface; preferred 2 m is not a calibrated optimum plateau.",
-      "decision_needed": "Hold current bedrock-depth interpretation pending input-definition review; retain the complete ≥1.5 m, preferably 2 m guidance for tree-planting contour bunds. Confirm whether rootable/storage depth can be represented by the selected dataset. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. Tree-planting contour bunds: at least 1.5 m soil for roots and water storage, preferably 2 m. FAO also specifies 200–750 mm rainfall, even ground without gullies/rills and flat to 5% slope.",
+      "decision_needed": "Approved, 9 November 2026. Retain minimum and preference separately. Verify usable depth for tree roots and harvested water before scoring. Depth-to-bedrock equivalence has not been established.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "ab36659671ed6bba256b4a19c4b0e3b3cefce3e685c342a375a75efcc6828dd3",
@@ -402824,8 +403010,8 @@
       "source_id": "kahinda2008_sa_rwh_suitability",
       "page": "4",
       "mapping_id": "water_harvesting__in_situ__soil_depth_to_bedrock",
-      "reason": "Source checked, 9 November 2026. The evidence locator correctly points to Table 5 on PDF p. 4. PDF p. 3 defines total soil depth as topsoil plus subsoil thickness. In-field ranks increase from 1 below 0.2 m to 5 above 0.75 m. External catchments omit this layer. The latest release contains no in-field soil-depth score.",
-      "decision_needed": "Proposed for review: retain the five published in-field depth ranks, including rank 1 in the shallowest class. Check whether a spatial layer represents total soil profile depth before translating ranks to scores. The table leaves shared internal endpoints unresolved.",
+      "reason": "Source profile retained, 9 November 2026. Kahinda defines soil depth as topsoil plus subsoil thickness (PDF p. 3). Table 5 (PDF p. 4) ranks <0.2, 0.2–0.3, 0.3–0.4, 0.4–0.75 and >0.75 m as 1, 2, 3, 4 and 5.",
+      "decision_needed": "Approved, 9 November 2026. Retain all five in-field ranks. Validate summed horizon thickness before scoring. Exactly 0.75 m is rank 4. Depth-to-bedrock equivalence has not been established.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "848543eec66956f20335f31fb85306728f3710108242d2a9a6840f33523fa8c8",
@@ -402872,8 +403058,8 @@
       "source_id": "fao_critchley_wh_manual_1991",
       "page": "",
       "mapping_id": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
-      "reason": "Source checked; proposed HOLD (not applied). §5.2.2 gives at least 1.5 m soil, preferably 2 m, for root development and harvested-water storage. This is useful soil-depth guidance; source does not identify depth to bedrock or a numerical membership curve.",
-      "decision_needed": "Hold bedrock-variable/optimum interpretation pending measurement review; preserve full ≥1.5 m, preferably 2 m recommendation for Negarim tree pits. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. Negarim tree microcatchments: at least 1.5 m soil for roots and water storage, preferably 2 m. FAO allows flat to 5% slopes and rainfall as low as 150 mm/year. Uneven blocks should be subdivided.",
+      "decision_needed": "Approved, 9 November 2026. Retain minimum and preference separately for this technique. Verify usable soil depth in the receiving area before scoring. Depth-to-bedrock equivalence has not been established.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "0661426bb7adfe1bab47617a1cd754fc6c6466cd64282a2b52676203b4806215",
@@ -402920,8 +403106,8 @@
       "source_id": "wocat_wh_guidelines_2013",
       "page": "127",
       "mapping_id": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
-      "reason": "Source checked; proposed KEEP (not applied). Cultivated-strips subsection, PDF127 / printed114, specifies at least 1 m deep soil, flat/gentle slopes up to 4%, and >200 mm/year. Upper strip is catchment; lower cropped strip receives runoff, often with soil bunds. Numeric minimum is explicitly recommended for this technique, not all microcatchments. Soil depth is not explicitly identified as depth to bedrock.",
-      "decision_needed": "Keep full conditional 1 m soil-depth requirement for cultivated strips, with accompanying slope/rainfall conditions. Review measured soil-depth versus bedrock-depth binding and technique scope before recipe implementation. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. For cultivated strips WOCAT gives soil at least 1 m deep, slopes up to 4%, and rainfall greater than 200 mm/year (PDF p. 127). The guide leaves the soil lower boundary unspecified.",
+      "decision_needed": "Approved, 9 November 2026. Keep all three siting conditions together. Verify a candidate soil-depth layer for the cropped strip before scoring. Depth-to-bedrock equivalence has not been established.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "e29d09299c88a0c1d1d0e1a79fc99e5052f68289492d3bb73e37246ac7d33c31",
@@ -428883,7 +429069,9 @@
         "contributions": {
           "T4": [
             "ev_wh_precip_critchley91_contourbunds",
-            "ev_wh_precip_critchley91_trapezoidal"
+            "ev_wh_precip_critchley91_trapezoidal",
+            "ev_wh_soildepth_critchley91_contourbunds",
+            "ev_wh_soildepth_critchley91_negarim"
           ],
           "T3": [],
           "T6": [],
@@ -436413,7 +436601,8 @@
           "T4": [
             "ev_wh_annual_precipitation_kahinda08_3",
             "ev_wh_annual_precipitation_kahinda08_4",
-            "ev_wh_aridity_index_kahinda08_2"
+            "ev_wh_aridity_index_kahinda08_2",
+            "ev_wh_soil_depth_kahinda08_1"
           ],
           "T3": [],
           "T6": [],
@@ -470357,7 +470546,8 @@
         },
         "contributions": {
           "T4": [
-            "ev_wh_precip_wocatgl13_trapezoidal"
+            "ev_wh_precip_wocatgl13_trapezoidal",
+            "ev_wh_soildepth_wocatgl13_strips"
           ],
           "T3": [],
           "T6": [
@@ -485868,7 +486058,7 @@
       }
     ],
     "totals": {
-      "compiled_outputs": 723,
+      "compiled_outputs": 725,
       "evidence_ids": [
         "EV_binam_2017_007",
         "EV_chomba_2020_001",
@@ -492318,7 +492508,7 @@
         "ev_yield_stability_sileshi12_3",
         "ev_yield_stability_silv26_1"
       ],
-      "contributing_excerpts": 3066,
+      "contributing_excerpts": 3070,
       "contributing_sources": 564,
       "known_sources": 946,
       "source_keys": [
@@ -493286,10 +493476,10 @@
       "reviewed_dropped_excerpts": 1529,
       "reviewed_unresolved_excerpts": 190,
       "dropped_excerpts": 1534,
-      "t4_relationships": 38,
+      "t4_relationships": 40,
       "t4_operational_relationships": 8,
-      "t4_structural_relationships": 30,
-      "t4_evidence_backed_relationships": 29,
+      "t4_structural_relationships": 32,
+      "t4_evidence_backed_relationships": 31,
       "t4_contributing_sources": 26,
       "source_mix": {
         "literature": 582,
@@ -517506,7 +517696,7 @@
         "nbs_id": "water_harvesting_conservation",
         "name": "Water harvesting conservation",
         "metrics": {
-          "compiled_outputs": 211,
+          "compiled_outputs": 213,
           "evidence_ids": [
             "ev_accessibility_travel_time_schmidt12_11",
             "ev_accessibility_travel_time_wei16_1_op",
@@ -520138,7 +520328,7 @@
             "ev_yield_stability_seti18_3",
             "ev_yield_stability_silv26_1"
           ],
-          "contributing_excerpts": 1065,
+          "contributing_excerpts": 1069,
           "contributing_sources": 171,
           "known_sources": 259,
           "source_keys": [
@@ -520419,10 +520609,10 @@
           "reviewed_dropped_excerpts": 904,
           "reviewed_unresolved_excerpts": 83,
           "dropped_excerpts": 905,
-          "t4_relationships": 8,
+          "t4_relationships": 10,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 8,
-          "t4_evidence_backed_relationships": 8,
+          "t4_structural_relationships": 10,
+          "t4_evidence_backed_relationships": 10,
           "t4_contributing_sources": 13,
           "source_mix": {
             "literature": 137,
@@ -520838,7 +521028,7 @@
             "scope_kind": "family",
             "scope_definition": "Earthen bunds or ridges on the contour that hold rain where it falls on the field.",
             "metrics": {
-              "compiled_outputs": 24,
+              "compiled_outputs": 25,
               "evidence_ids": [
                 "ev_adoption_rate_arsl15_op1",
                 "ev_adoption_rate_arsl15_op2",
@@ -521454,7 +521644,7 @@
                 "ev_yield_stability_ndun23_1",
                 "ev_yield_stability_seti18_3"
               ],
-              "contributing_excerpts": 259,
+              "contributing_excerpts": 261,
               "contributing_sources": 50,
               "known_sources": 105,
               "source_keys": [
@@ -521581,10 +521771,10 @@
               "reviewed_dropped_excerpts": 252,
               "reviewed_unresolved_excerpts": 24,
               "dropped_excerpts": 252,
-              "t4_relationships": 2,
+              "t4_relationships": 3,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 2,
-              "t4_evidence_backed_relationships": 2,
+              "t4_structural_relationships": 3,
+              "t4_evidence_backed_relationships": 3,
               "t4_contributing_sources": 3,
               "source_mix": {
                 "literature": 72,
@@ -521646,7 +521836,7 @@
             "scope_kind": "family",
             "scope_definition": "Crescent bunds catching runoff from a short bare micro-catchment upslope.",
             "metrics": {
-              "compiled_outputs": 15,
+              "compiled_outputs": 16,
               "evidence_ids": [
                 "ev_asset_drought_wocat_1613_2014_drought",
                 "ev_asset_drought_wocat_1614_2014_drought",
@@ -521849,8 +522039,8 @@
                 "ev_windbreak_protection_wocat_1613_2014_wind_velocity",
                 "ev_windbreak_protection_wocat_1614_2014_wind_velocity"
               ],
-              "contributing_excerpts": 50,
-              "contributing_sources": 17,
+              "contributing_excerpts": 52,
+              "contributing_sources": 19,
               "known_sources": 41,
               "source_keys": [
                 "biazin_2012",
@@ -521912,11 +522102,11 @@
               "reviewed_dropped_excerpts": 90,
               "reviewed_unresolved_excerpts": 0,
               "dropped_excerpts": 90,
-              "t4_relationships": 0,
+              "t4_relationships": 1,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 0,
-              "t4_evidence_backed_relationships": 0,
-              "t4_contributing_sources": 0,
+              "t4_structural_relationships": 1,
+              "t4_evidence_backed_relationships": 1,
+              "t4_contributing_sources": 2,
               "source_mix": {
                 "literature": 29,
                 "grey": 9,
@@ -527860,9 +528050,9 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 8,
-            "evidence_backed_outputs": 8,
-            "contributing_excerpts": 21,
+            "output_count": 10,
+            "evidence_backed_outputs": 10,
+            "contributing_excerpts": 25,
             "contributing_sources": 13,
             "evidence_ids": [
               "ev_wh_annual_precipitation_kahinda08_3",
@@ -527883,6 +528073,10 @@
               "ev_wh_runoff_potential_index_krois14_1",
               "ev_wh_runoff_potential_index_singh17_1",
               "ev_wh_runoff_potential_index_vema19_1",
+              "ev_wh_soil_depth_kahinda08_1",
+              "ev_wh_soildepth_critchley91_contourbunds",
+              "ev_wh_soildepth_critchley91_negarim",
+              "ev_wh_soildepth_wocatgl13_strips",
               "ev_wh_stream_order_kadam12_1",
               "ev_wh_stream_order_mahmoud21_1",
               "ev_wh_stream_order_singh17_1"
@@ -527941,6 +528135,46 @@
                 "source_keys": [
                   "fao_slm_in_practice_2011",
                   "kahinda2008_sa_rwh_suitability"
+                ]
+              },
+              {
+                "id": "water_harvesting__in_situ__soil_depth_to_bedrock",
+                "label": "water harvesting  in situ  soil depth to bedrock · In situ",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__in_situ"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_soil_depth_kahinda08_1",
+                  "ev_wh_soildepth_critchley91_contourbunds"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "kahinda2008_sa_rwh_suitability"
+                ]
+              },
+              {
+                "id": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
+                "label": "water harvesting  micro catchment  soil depth to bedrock · Micro catchment",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__micro_catchment"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_soildepth_critchley91_negarim",
+                  "ev_wh_soildepth_wocatgl13_strips"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "wocat_wh_guidelines_2013"
                 ]
               },
               {
@@ -573240,7 +573474,7 @@
         "project_level": false,
         "evidence_tracking": "routed",
         "totals": {
-          "compiled_outputs": 30,
+          "compiled_outputs": 32,
           "evidence_ids": [
             "EV_chomba_2020_001",
             "EV_chomba_2020_002",
@@ -574313,7 +574547,7 @@
             "ev_wh_watertable_wocat7777_1",
             "ev_wh_watertable_wocat7778_1"
           ],
-          "contributing_excerpts": 47,
+          "contributing_excerpts": 51,
           "contributing_sources": 26,
           "known_sources": 210,
           "source_keys": [
@@ -574545,10 +574779,10 @@
           "reviewed_dropped_excerpts": 217,
           "reviewed_unresolved_excerpts": 3,
           "dropped_excerpts": 219,
-          "t4_relationships": 30,
+          "t4_relationships": 32,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 30,
-          "t4_evidence_backed_relationships": 29,
+          "t4_structural_relationships": 32,
+          "t4_evidence_backed_relationships": 31,
           "t4_contributing_sources": 26,
           "source_mix": {
             "literature": 106,
@@ -578640,7 +578874,7 @@
             "nbs_id": "water_harvesting_conservation",
             "name": "Water harvesting conservation",
             "metrics": {
-              "compiled_outputs": 8,
+              "compiled_outputs": 10,
               "evidence_ids": [
                 "ev_wh5_adham_2018_clay_content",
                 "ev_wh5_adham_2018_land_cover",
@@ -579025,7 +579259,7 @@
                 "ev_wh_watertable_wocat7777_1",
                 "ev_wh_watertable_wocat7778_1"
               ],
-              "contributing_excerpts": 21,
+              "contributing_excerpts": 25,
               "contributing_sources": 13,
               "known_sources": 74,
               "source_keys": [
@@ -579121,10 +579355,10 @@
               "reviewed_dropped_excerpts": 15,
               "reviewed_unresolved_excerpts": 2,
               "dropped_excerpts": 15,
-              "t4_relationships": 8,
+              "t4_relationships": 10,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 8,
-              "t4_evidence_backed_relationships": 8,
+              "t4_structural_relationships": 10,
+              "t4_evidence_backed_relationships": 10,
               "t4_contributing_sources": 13,
               "source_mix": {
                 "literature": 19,
@@ -579264,7 +579498,7 @@
                 "scope_kind": "family",
                 "scope_definition": "Earthen bunds or ridges on the contour that hold rain where it falls on the field.",
                 "metrics": {
-                  "compiled_outputs": 2,
+                  "compiled_outputs": 3,
                   "evidence_ids": [
                     "ev_wh_annual_precipitation_kahinda08_2",
                     "ev_wh_annual_precipitation_kahinda08_3",
@@ -579330,7 +579564,7 @@
                     "ev_wh_watertable_wocat1219_1",
                     "ev_wh_watertable_wocat1587_1"
                   ],
-                  "contributing_excerpts": 4,
+                  "contributing_excerpts": 6,
                   "contributing_sources": 3,
                   "known_sources": 15,
                   "source_keys": [
@@ -579367,10 +579601,10 @@
                   "reviewed_dropped_excerpts": 15,
                   "reviewed_unresolved_excerpts": 1,
                   "dropped_excerpts": 15,
-                  "t4_relationships": 2,
+                  "t4_relationships": 3,
                   "t4_operational_relationships": 0,
-                  "t4_structural_relationships": 2,
-                  "t4_evidence_backed_relationships": 2,
+                  "t4_structural_relationships": 3,
+                  "t4_evidence_backed_relationships": 3,
                   "t4_contributing_sources": 3,
                   "source_mix": {
                     "literature": 4,
@@ -579432,7 +579666,7 @@
                 "scope_kind": "family",
                 "scope_definition": "Crescent bunds catching runoff from a short bare micro-catchment upslope.",
                 "metrics": {
-                  "compiled_outputs": 0,
+                  "compiled_outputs": 1,
                   "evidence_ids": [
                     "ev_wh_aridity_slm11_micro",
                     "ev_wh_aridity_wocat1528_1",
@@ -579477,8 +579711,8 @@
                     "ev_wh_watertable_wocat2895_1",
                     "ev_wh_watertable_wocat5860_1"
                   ],
-                  "contributing_excerpts": 0,
-                  "contributing_sources": 0,
+                  "contributing_excerpts": 2,
+                  "contributing_sources": 2,
                   "known_sources": 9,
                   "source_keys": [
                     "boers_1986_mcwh_arid",
@@ -579508,11 +579742,11 @@
                   "reviewed_dropped_excerpts": 0,
                   "reviewed_unresolved_excerpts": 0,
                   "dropped_excerpts": 0,
-                  "t4_relationships": 0,
+                  "t4_relationships": 1,
                   "t4_operational_relationships": 0,
-                  "t4_structural_relationships": 0,
-                  "t4_evidence_backed_relationships": 0,
-                  "t4_contributing_sources": 0,
+                  "t4_structural_relationships": 1,
+                  "t4_evidence_backed_relationships": 1,
+                  "t4_contributing_sources": 2,
                   "source_mix": {
                     "literature": 1,
                     "grey": 8,
@@ -580323,9 +580557,9 @@
                 "label": "Suitability",
                 "unit": "suitability rules",
                 "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-                "output_count": 8,
-                "evidence_backed_outputs": 8,
-                "contributing_excerpts": 21,
+                "output_count": 10,
+                "evidence_backed_outputs": 10,
+                "contributing_excerpts": 25,
                 "contributing_sources": 13,
                 "evidence_ids": [
                   "ev_wh_annual_precipitation_kahinda08_3",
@@ -580346,6 +580580,10 @@
                   "ev_wh_runoff_potential_index_krois14_1",
                   "ev_wh_runoff_potential_index_singh17_1",
                   "ev_wh_runoff_potential_index_vema19_1",
+                  "ev_wh_soil_depth_kahinda08_1",
+                  "ev_wh_soildepth_critchley91_contourbunds",
+                  "ev_wh_soildepth_critchley91_negarim",
+                  "ev_wh_soildepth_wocatgl13_strips",
                   "ev_wh_stream_order_kadam12_1",
                   "ev_wh_stream_order_mahmoud21_1",
                   "ev_wh_stream_order_singh17_1"
@@ -580404,6 +580642,46 @@
                     "source_keys": [
                       "fao_slm_in_practice_2011",
                       "kahinda2008_sa_rwh_suitability"
+                    ]
+                  },
+                  {
+                    "id": "water_harvesting__in_situ__soil_depth_to_bedrock",
+                    "label": "water harvesting  in situ  soil depth to bedrock · In situ",
+                    "nbs_id": "water_harvesting_conservation",
+                    "family_ids": [
+                      "water_harvesting__in_situ"
+                    ],
+                    "farming_system": "",
+                    "scope_type": "",
+                    "scope_id": "",
+                    "risk_role": "",
+                    "evidence_ids": [
+                      "ev_wh_soil_depth_kahinda08_1",
+                      "ev_wh_soildepth_critchley91_contourbunds"
+                    ],
+                    "source_keys": [
+                      "fao_critchley_wh_manual_1991",
+                      "kahinda2008_sa_rwh_suitability"
+                    ]
+                  },
+                  {
+                    "id": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
+                    "label": "water harvesting  micro catchment  soil depth to bedrock · Micro catchment",
+                    "nbs_id": "water_harvesting_conservation",
+                    "family_ids": [
+                      "water_harvesting__micro_catchment"
+                    ],
+                    "farming_system": "",
+                    "scope_type": "",
+                    "scope_id": "",
+                    "risk_role": "",
+                    "evidence_ids": [
+                      "ev_wh_soildepth_critchley91_negarim",
+                      "ev_wh_soildepth_wocatgl13_strips"
+                    ],
+                    "source_keys": [
+                      "fao_critchley_wh_manual_1991",
+                      "wocat_wh_guidelines_2013"
                     ]
                   },
                   {
@@ -581321,9 +581599,9 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 30,
-            "evidence_backed_outputs": 29,
-            "contributing_excerpts": 47,
+            "output_count": 32,
+            "evidence_backed_outputs": 31,
+            "contributing_excerpts": 51,
             "contributing_sources": 26,
             "evidence_ids": [
               "EV_wocat_507_2019_008",
@@ -581370,6 +581648,10 @@
               "ev_wh_runoff_potential_index_krois14_1",
               "ev_wh_runoff_potential_index_singh17_1",
               "ev_wh_runoff_potential_index_vema19_1",
+              "ev_wh_soil_depth_kahinda08_1",
+              "ev_wh_soildepth_critchley91_contourbunds",
+              "ev_wh_soildepth_critchley91_negarim",
+              "ev_wh_soildepth_wocatgl13_strips",
               "ev_wh_stream_order_kadam12_1",
               "ev_wh_stream_order_mahmoud21_1",
               "ev_wh_stream_order_singh17_1"
@@ -581774,6 +582056,46 @@
                 "source_keys": [
                   "fao_slm_in_practice_2011",
                   "kahinda2008_sa_rwh_suitability"
+                ]
+              },
+              {
+                "id": "water_harvesting__in_situ__soil_depth_to_bedrock",
+                "label": "water harvesting  in situ  soil depth to bedrock · In situ",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__in_situ"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_soil_depth_kahinda08_1",
+                  "ev_wh_soildepth_critchley91_contourbunds"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "kahinda2008_sa_rwh_suitability"
+                ]
+              },
+              {
+                "id": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
+                "label": "water harvesting  micro catchment  soil depth to bedrock · Micro catchment",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__micro_catchment"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_soildepth_critchley91_negarim",
+                  "ev_wh_soildepth_wocatgl13_strips"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "wocat_wh_guidelines_2013"
                 ]
               },
               {
@@ -645556,9 +645878,9 @@
         "label": "Suitability",
         "unit": "suitability rules",
         "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-        "output_count": 30,
-        "evidence_backed_outputs": 29,
-        "contributing_excerpts": 47,
+        "output_count": 32,
+        "evidence_backed_outputs": 31,
+        "contributing_excerpts": 51,
         "contributing_sources": 26,
         "evidence_ids": [
           "EV_wocat_507_2019_008",
@@ -645605,6 +645927,10 @@
           "ev_wh_runoff_potential_index_krois14_1",
           "ev_wh_runoff_potential_index_singh17_1",
           "ev_wh_runoff_potential_index_vema19_1",
+          "ev_wh_soil_depth_kahinda08_1",
+          "ev_wh_soildepth_critchley91_contourbunds",
+          "ev_wh_soildepth_critchley91_negarim",
+          "ev_wh_soildepth_wocatgl13_strips",
           "ev_wh_stream_order_kadam12_1",
           "ev_wh_stream_order_mahmoud21_1",
           "ev_wh_stream_order_singh17_1"
@@ -646009,6 +646335,46 @@
             "source_keys": [
               "fao_slm_in_practice_2011",
               "kahinda2008_sa_rwh_suitability"
+            ]
+          },
+          {
+            "id": "water_harvesting__in_situ__soil_depth_to_bedrock",
+            "label": "water harvesting  in situ  soil depth to bedrock · In situ",
+            "nbs_id": "water_harvesting_conservation",
+            "family_ids": [
+              "water_harvesting__in_situ"
+            ],
+            "farming_system": "",
+            "scope_type": "",
+            "scope_id": "",
+            "risk_role": "",
+            "evidence_ids": [
+              "ev_wh_soil_depth_kahinda08_1",
+              "ev_wh_soildepth_critchley91_contourbunds"
+            ],
+            "source_keys": [
+              "fao_critchley_wh_manual_1991",
+              "kahinda2008_sa_rwh_suitability"
+            ]
+          },
+          {
+            "id": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
+            "label": "water harvesting  micro catchment  soil depth to bedrock · Micro catchment",
+            "nbs_id": "water_harvesting_conservation",
+            "family_ids": [
+              "water_harvesting__micro_catchment"
+            ],
+            "farming_system": "",
+            "scope_type": "",
+            "scope_id": "",
+            "risk_role": "",
+            "evidence_ids": [
+              "ev_wh_soildepth_critchley91_negarim",
+              "ev_wh_soildepth_wocatgl13_strips"
+            ],
+            "source_keys": [
+              "fao_critchley_wh_manual_1991",
+              "wocat_wh_guidelines_2013"
             ]
           },
           {
@@ -685306,7 +685672,7 @@
         "catalogue": {
           "summary": {
             "structural_claims": 367,
-            "explicitly_linked_claims": 21,
+            "explicitly_linked_claims": 25,
             "focus_claims": 5,
             "selection_only_with_relationship_content": 2,
             "scopes": {
@@ -686461,7 +686827,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__in_situ__soil_depth_to_bedrock"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -686968,7 +687336,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__micro_catchment__soil_depth_to_bedrock"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -687057,7 +687427,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__in_situ__soil_depth_to_bedrock"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -688252,7 +688624,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__micro_catchment__soil_depth_to_bedrock"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -696766,7 +697140,20 @@
               "weight_summary": [],
               "study_weights": [],
               "mapped_group_weights": [],
-              "function_support": [],
+              "function_support": [
+                {
+                  "family": "water_harvesting__in_situ",
+                  "sources": [],
+                  "function_options": 0,
+                  "mapping_id": "water_harvesting__in_situ__soil_depth_to_bedrock"
+                },
+                {
+                  "family": "water_harvesting__micro_catchment",
+                  "sources": [],
+                  "function_options": 0,
+                  "mapping_id": "water_harvesting__micro_catchment__soil_depth_to_bedrock"
+                }
+              ],
               "evidence_ids": [
                 "ev_wh_soil_depth_krois14_1",
                 "ev_wh_soil_depth_chen17_1",
@@ -698952,19 +699339,11 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "d7e835455079",
-    "data_id": "cdbb231eb0ab",
+    "data_id": "308d61df52a7",
     "count_definition_version": "4",
-    "built_at": "2026-11-09T09:14:05.387575+00:00",
-    "source_commit": "f75e54c769513ac20718786372b66ee310f345f5",
+    "built_at": "2026-11-09T09:24:18.952294+00:00",
+    "source_commit": "9e8587b68ee1840cf8ffbe28bf919459ceff3875",
     "history": [
-      {
-        "release": "1.5.0",
-        "ui_id": "c7a44300908c",
-        "data_id": "16d73c9398e3",
-        "count_definition_version": "4",
-        "built_at": "2026-11-05T07:16:41.710762+00:00",
-        "source_commit": "39c58cb034f7d9372caa9bf9846249b8f35cad97"
-      },
       {
         "release": "1.5.0",
         "ui_id": "e8eb227814ef",
@@ -699356,6 +699735,14 @@
         "count_definition_version": "4",
         "built_at": "2026-11-09T09:14:05.387575+00:00",
         "source_commit": "f75e54c769513ac20718786372b66ee310f345f5"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "d7e835455079",
+        "data_id": "308d61df52a7",
+        "count_definition_version": "4",
+        "built_at": "2026-11-09T09:24:18.952294+00:00",
+        "source_commit": "9e8587b68ee1840cf8ffbe28bf919459ceff3875"
       }
     ]
   }

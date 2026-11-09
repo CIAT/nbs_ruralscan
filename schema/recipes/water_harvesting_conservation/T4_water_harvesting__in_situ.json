@@ -190,5 +190,102 @@
     "n_sources": 2,
     "corpus_n": null,
     "paper_support_pct": null
+  },
+  {
+    "mapping_id": "water_harvesting__in_situ__soil_depth_to_bedrock",
+    "nbs_id": "water_harvesting_conservation",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "dataset_binding": {
+          "status": "requires_matching_input",
+          "scope": "water_harvesting__in_situ__soil_depth_to_bedrock",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/soil_depth.md",
+          "reason": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+          "unmatched_dataset_id": "ssurgo_statsgo",
+          "required_measurements": [
+            {
+              "evidence_id": "ev_wh_soil_depth_kahinda08_1",
+              "measure": "Total topsoil plus subsoil horizon thickness (m), as defined in the study."
+            },
+            {
+              "evidence_id": "ev_wh_soildepth_critchley91_contourbunds",
+              "measure": "Soil depth available to tree roots and for storage of harvested water."
+            }
+          ]
+        },
+        "numerical_calibration": {
+          "status": "held",
+          "scope": "water_harvesting__in_situ__soil_depth_to_bedrock",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/soil_depth.md",
+          "reason": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+          "retained_source_profiles": [
+            {
+              "structure": "In-field rainwater harvesting in South Africa",
+              "locator": "PDF p. 4 (printed p. 791) Table 5, IRWH column; PDF p. 3 §2.2.1.5 for the depth measure.",
+              "required_measurement": "Total topsoil plus subsoil horizon thickness (m), as defined in the study.",
+              "published_depth_ranks_m": {
+                "<0.2": 1,
+                "0.2–0.3": 2,
+                "0.3–0.4": 3,
+                "0.4–0.75": 4,
+                ">0.75": 5
+              },
+              "interpretation": "At exactly 0.75 m the published rank is 4. For 0.3 m and 0.4 m the printed bands share endpoints. The shallowest soil has rank 1. No rank-to-score conversion was approved.",
+              "binding_assessment": "Bedrock depth does not identify the combined thickness of the two specified horizons. A local profile layer or documented equivalence to those horizons is needed.",
+              "evidence_id": "ev_wh_soil_depth_kahinda08_1",
+              "source_id": "kahinda2008_sa_rwh_suitability",
+              "evidence_sha256": "848543eec66956f20335f31fb85306728f3710108242d2a9a6840f33523fa8c8",
+              "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+              "source_quote": "Table 5\nSoil depth suitability ranking\nNo.\nSoil depth class\nDepth\nIRWH suitability\n1\nVery deep\n>0.75\n5\n2\nDeep\n0.4–0.75\n4\n3\nModerately shallow\n0.3–0.4\n3\n4\nShallow\n0.2–0.3\n2\n5\nVery shallow\n<0.2\n1"
+            },
+            {
+              "structure": "Contour bunds for tree planting",
+              "locator": "FAO manual §5.3.2 Technical details, i. Suitability.",
+              "required_measurement": "Soil depth available to tree roots and for storage of harvested water.",
+              "minimum_soil_depth_m": 1.5,
+              "preferred_soil_depth_m": 2,
+              "associated_conditions": "Rainfall 200–750 mm in arid to semi-arid areas, flat to 5% slope and even terrain without gullies or rills.",
+              "binding_assessment": "Depth to bedrock alone cannot identify shallower restrictions on roots or storage. Establish adequate usable soil depth in this application.",
+              "evidence_id": "ev_wh_soildepth_critchley91_contourbunds",
+              "source_id": "fao_critchley_wh_manual_1991",
+              "evidence_sha256": "ab36659671ed6bba256b4a19c4b0e3b3cefce3e685c342a375a75efcc6828dd3",
+              "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+              "source_quote": "Suitability Contour bunds for tree planting can be used under the following conditions: Rainfall: 200 - 750 mm; from semi-arid to arid areas. Soils: Must be at least 1.5 m and preferably 2 m deep to ensure adequate root development and water storage."
+            }
+          ],
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "type": "trapezoidal",
+            "params": {
+              "abs_min": 20.0,
+              "opt_low": 75.0
+            },
+            "uncertainty_pct": "60.0"
+          }
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.2,
+    "weight_adjustable": true,
+    "justification": "Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation. Retained approved calibration hold; no new numeric synthesis or approval. Dataset binding unresolved; requires matching input: Source profiles describe different soil-depth measures by technique. The available depth-to-bedrock proxy has no demonstrated equivalence to those measures. Preserve the published guidance pending a matching layer and technique-specific interpretation.",
+    "variable": "soil_depth_to_bedrock",
+    "suitability_family_id": "water_harvesting__in_situ",
+    "evidence_ids": [
+      "ev_wh_soil_depth_kahinda08_1",
+      "ev_wh_soildepth_critchley91_contourbunds"
+    ],
+    "n_sources": 2,
+    "corpus_n": null,
+    "paper_support_pct": null,
+    "dataset_id": ""
   }
 ]
