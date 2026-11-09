@@ -1,10 +1,10 @@
 {
  "batch": {
   "id": "ocr_check_2026-11-07",
-  "title": "OCR quote check: Hey 1995 and Fiener 2005",
-  "date": "2026-11-07",
-  "notes": "Scanned PDFs, text layer made by OCR (decision F1). Compare each highlighted quote with the page image.",
-  "n": 7
+  "title": "OCR quote check: Hey 1995, Fiener 2005, Bullock 2003",
+  "date": "2026-11-09",
+  "notes": "These quotes come from scanned pages read by OCR. Compare each highlighted quote with the page image.",
+  "n": 11
  },
  "reasons": [
   "smuggled_number",
@@ -61,7 +61,7 @@
     "practice_as_described": "Wetland restoration: 'strategically placing at least 13 million acres of wetlands on hydric soils in the basin' (abstract), i.e. restoring riverine and palustrine wetlands on drained hydric soils (former beaver ponds and wetlands) by 'low-scale engineering techniques' so that they 'intercept and hold precipitation where it falls and store floodwaters where they occur' (abstract; p10). Mechanism: storage of excess flood volume at about a three-foot depth (deep marsh). BASELINE (comparator): the present drained and levee-confined basin (wetland area reduced from about 45 to under 20 million acres since 1780).",
     "note": "Commentary (Restoration Ecology 3(1):4-17), not a hydrological study. The 13-million-acre figure is a storage-volume calculation (p10: 111 million acre-feet passed St. Louis in 80 days; bank-full discharge 450,000 cfs; excess approximately 40 million acre-feet; 'Distributed at a three-foot depth (the approximate depth of a deep marsh), these waters would have covereda little more than 13 million acres'). No flood routing, no peak/stage modelling, no siting: the authors say 'Hydrologically, of course, this argument is incomplete. The key to the effectiveness of an additional 13 million acres of flood storage is in its location' (p11) and 'Generating the figure of 13 million acres involved some facile number crunching ... The hard work - producing the hydrologic assessments and computer analyses - remains to be done' (p12). Treat as a volume-capacity estimate (STAGE/VOLUME, not PEAK). Severity cue from p5: 'Such a land area, it appears, could have easily contained most of the floodwaters that devastated the valley in 1993.' Magnitude from p10 and p13 ('If the 100-year flood flow, as recorded in 1993, were to be treated'). claim_basis=modelled per lane brief; strength left unspecified (no reduction metric)."
    },
-   "question": "OCR text layer: does the quote match the page image word for word (numbers especially)? Approve if yes; reject with table_error if the OCR misread it.",
+   "question": "This quote was read by OCR (text recognition from a scanned page). Does it match the page image word for word, numbers especially? Approve = it matches. Reject = the OCR misread it.",
    "ai": null,
    "crop": "review/img/ev_flood_hazard_hey95_1.png",
    "crop_note": "quote highlighted",
@@ -85,8 +85,15 @@
       "T3 — hazard table, the flood cell for this NbS and farming system: does the practice reduce the impact of flood on rural livelihoods? Counted direct, because the unit states that hazard. Read by Module 5 (NbS response) and the M2b screen.",
       "T6 — NbS scorecard, the 'Flood hazard' priority: how this NbS scores for a Task Team Leader who prioritises flood hazard. Counted direct. Read by the Module 4 hotspot / NbS comparison, one row per NbS (no farming-system split)."
      ],
-     "now": [],
-     "none_reason": "It is not in any generated row yet — the cell it would join needs at least two independent sources, or a gate (stated hazard, income band, significance) kept it out."
+     "now": [
+      "T3 — hazard table: wetland_management__flood__all — the NbS roll-up row. That row draws on 70 units from 17 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T3 — hazard table: wetland_management__restoration_rewetting__flood__all — the restoration rewetting family row. That row draws on 53 units from 16 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T3 — hazard table: wetland_management__flood__cropping_rainfed — the NbS roll-up row. That row draws on 70 units from 17 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T3 — hazard table: wetland_management__restoration_rewetting__flood__cropping_rainfed — the restoration rewetting family row. That row draws on 53 units from 16 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T6 — NbS scorecard: wetland_management__flood_hazard — the NbS roll-up row. That row draws on 69 units from 17 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T6 — NbS scorecard: wetland_management__restoration_rewetting__flood_hazard — the restoration rewetting family row. That row draws on 53 units from 16 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say."
+     ],
+     "none_reason": ""
     },
     "compared": "What the paper compared: a back-of-envelope storage calculation: the excess water that passed St. Louis in the 1993 flood would have covered a little more than 13 million acres (at deep-marsh depth), so placing at least 13 million acres of restored wetlands on hydric soils would solve the basin's flooding problems.",
     "role": "an EFFECT of the practice on people or land (routed to relevant effect tables by the variable crosswalk)",
@@ -110,9 +117,11 @@
     "practice": "wetland management → restoration rewetting",
     "variable": "Flood hazard (return-period flood depth/extent)",
     "tables": [
-     "T3 · flood",
-     "T6 · Flood hazard"
-    ]
+     "Livelihood rating for flood (T3)",
+     "Scorecard: Flood hazard (T6)"
+    ],
+    "not_used_reason": "",
+    "as_of": "2026-11-09"
    },
    "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/5_Wetlands_Constructed/upper_mississippi_flood_reduction_1995_ocr.pdf",
    "cited_original": ""
@@ -151,7 +160,7 @@
     "practice_as_described": "Small dry detention ponds at field borders: where runoff concentrates in slope depressions and overtops the downslope field border, the border was raised by earth embankments (1.25-1.66 m high at the pour point) to create a detention pond holding water only during storms, drained by a perforated standpipe into an underground tile outlet with an orifice plate; outflow routed through a grassed waterway or pipes to the toe slope (p2 abstract; p4-5). Fields upslope farmed under integrated farming with mulch tillage and mustard cover crops (potato - winter wheat - maize - winter wheat rotation) (p3). BASELINE (comparator): sediment entering the pond from the upslope field (inflow vs delivered sediment), i.e. without the pond the incoming sediment would leave the field.",
     "note": "Agriculture, Ecosystems & Environment 110:132-142. OCR'd scan; body pages are two-column and interleaved in the text layer, so all quotes come from the single-column abstract (cached PDF p2; p1 is a repository cover page). Trapping efficiency = deposited / incoming sediment, measured with erosion pins and outflow samplers. Per p8 (interleaved, not quotable) the 54-85% was measured in 1993 only (first year after landscape redesign, 15 major erosion events; total trapping up to 15.3 t/ha/yr); after dredging in early 1994 sedimentation became too small to measure because on-site mulch-tillage erosion control became effective, and the authors estimate long-term trapping at about 50-80% (p8, p11). Sediment trapping (54-85%) exceeded nutrient trapping (35-70%) because delivered sediment was enriched in fines (p8; the line is interleaved with Fig. 4 labels, not quotable). Pond volume is 30-260 m3 per ha of watershed."
    },
-   "question": "OCR text layer: does the quote match the page image word for word (numbers especially)? Approve if yes; reject with table_error if the OCR misread it.",
+   "question": "This quote was read by OCR (text recognition from a scanned page). Does it match the page image word for word, numbers especially? Approve = it matches. Reject = the OCR misread it.",
    "ai": null,
    "crop": "review/img/ev_sediment_retention_fien05_1.png",
    "crop_note": "quote highlighted",
@@ -175,8 +184,16 @@
       "T6 — NbS scorecard, the 'Soil erosion risk' priority: how this NbS scores for a Task Team Leader who prioritises soil erosion risk. Counted as a component, weight ×0.7. Read by the Module 4 hotspot / NbS comparison, one row per NbS (no farming-system split).",
       "T6 — NbS scorecard, the 'Water quality risk' priority: how this NbS scores for a Task Team Leader who prioritises water quality risk. Counted as a component, weight ×0.7. Read by the Module 4 hotspot / NbS comparison, one row per NbS (no farming-system split)."
      ],
-     "now": [],
-     "none_reason": "It is not in any generated row yet — the cell it would join needs at least two independent sources, or a gate (stated hazard, income band, significance) kept it out."
+     "now": [
+      "T6 — NbS scorecard: water_harvesting_conservation__soil_erosion_risk — the NbS roll-up row. That row draws on 154 units from 49 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T6 — NbS scorecard: water_harvesting_conservation__soil_erosion_risk__income_group-high — the NbS roll-up row, high rows only. That row draws on 14 units from 7 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T6 — NbS scorecard: water_harvesting_conservation__water_harvesting__runoff_catchment__soil_erosion_risk — the runoff catchment family row. That row draws on 39 units from 15 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T6 — NbS scorecard: water_harvesting_conservation__water_quality_risk — the NbS roll-up row. That row draws on 28 units from 16 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T6 — NbS scorecard: water_harvesting_conservation__water_quality_risk__income_group-high — the NbS roll-up row, high rows only. That row draws on 6 units from 4 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T6 — NbS scorecard: water_harvesting_conservation__water_quality_risk__farming_system-cropping_rainfed — the NbS roll-up row, cropping_rainfed rows only. That row draws on 2 units from 2 sources.",
+      "T6 — NbS scorecard: water_harvesting_conservation__water_harvesting__runoff_catchment__water_quality_risk — the runoff catchment family row. That row draws on 18 units from 10 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say."
+     ],
+     "none_reason": ""
     },
     "compared": "What the paper compared: the detention ponds trapped 54-85% of the incoming sediment.",
     "role": "an EFFECT of the practice on people or land (routed to relevant effect tables by the variable crosswalk)",
@@ -200,9 +217,11 @@
     "practice": "water harvesting conservation → runoff catchment",
     "variable": "Sediment retention / trapping by a buffer",
     "tables": [
-     "T6 · Soil erosion risk (proxy)",
-     "T6 · Water quality risk (proxy)"
-    ]
+     "Scorecard: Soil erosion risk (T6) (indirect measure)",
+     "Scorecard: Water quality risk (T6) (indirect measure)"
+    ],
+    "not_used_reason": "",
+    "as_of": "2026-11-09"
    },
    "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/3_Water_Harvesting/fiener_2005_cited_ocr.pdf",
    "cited_original": ""
@@ -238,7 +257,7 @@
     "practice_as_described": "Small dry detention ponds at field borders: where runoff concentrates in slope depressions and overtops the downslope field border, the border was raised by earth embankments (1.25-1.66 m high at the pour point) to create a detention pond holding water only during storms, drained by a perforated standpipe into an underground tile outlet with an orifice plate; outflow routed through a grassed waterway or pipes to the toe slope (p2 abstract; p4-5). Fields upslope farmed under integrated farming with mulch tillage and mustard cover crops (potato - winter wheat - maize - winter wheat rotation) (p3). BASELINE (comparator): inflow volume to the pond (water balance: inflow vs outflow plus infiltration and evaporation).",
     "note": "Agriculture, Ecosystems & Environment 110:132-142. OCR'd scan; body pages are two-column and interleaved in the text layer, so all quotes come from the single-column abstract (cached PDF p2; p1 is a repository cover page). Near-null volume effect, kept as such. Encoded as narrative because the source gives only an upper bound ('less than'). The conclusions (p11, interleaved) state 'no significant reduction of runoff volume can be expected'; the example event at pond P02 (p10) gave a 10% volume reduction, described as the maximum to expect for all ponds. Contrast with the large peak-flow effect (ev_flood_hazard_fien05_1): the ponds delay and attenuate runoff, they do not remove it."
    },
-   "question": "OCR text layer: does the quote match the page image word for word (numbers especially)? Approve if yes; reject with table_error if the OCR misread it.",
+   "question": "This quote was read by OCR (text recognition from a scanned page). Does it match the page image word for word, numbers especially? Approve = it matches. Reject = the OCR misread it.",
    "ai": null,
    "crop": "review/img/ev_runoff_reduction_fien05_1.png",
    "crop_note": "quote highlighted",
@@ -262,8 +281,12 @@
       "T3 — no hazard cell: the unit names no hazard, so it is not hazard-year evidence.",
       "T6 — NbS scorecard, the 'Soil erosion risk' priority: how this NbS scores for a Task Team Leader who prioritises soil erosion risk. Counted as a component, weight ×0.7. Read by the Module 4 hotspot / NbS comparison, one row per NbS (no farming-system split)."
      ],
-     "now": [],
-     "none_reason": "It is not in any generated row yet — the cell it would join needs at least two independent sources, or a gate (stated hazard, income band, significance) kept it out."
+     "now": [
+      "T6 — NbS scorecard: water_harvesting_conservation__soil_erosion_risk — the NbS roll-up row. That row draws on 154 units from 49 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T6 — NbS scorecard: water_harvesting_conservation__soil_erosion_risk__income_group-high — the NbS roll-up row, high rows only. That row draws on 14 units from 7 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T6 — NbS scorecard: water_harvesting_conservation__water_harvesting__runoff_catchment__soil_erosion_risk — the runoff catchment family row. That row draws on 39 units from 15 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say."
+     ],
+     "none_reason": ""
     },
     "compared": "What the paper compared: infiltration and evaporation in the ponds reduced runoff volume by less than 10% for large events, because the pond bottom silts up, ponds are filled only briefly (1-5 days) and the water-covered area is small.",
     "role": "an EFFECT of the practice on people or land (routed to relevant effect tables by the variable crosswalk)",
@@ -287,8 +310,10 @@
     "practice": "water harvesting conservation → runoff catchment",
     "variable": "Surface runoff reduction rate",
     "tables": [
-     "T6 · Soil erosion risk (proxy)"
-    ]
+     "Scorecard: Soil erosion risk (T6) (indirect measure)"
+    ],
+    "not_used_reason": "",
+    "as_of": "2026-11-09"
    },
    "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/3_Water_Harvesting/fiener_2005_cited_ocr.pdf",
    "cited_original": ""
@@ -326,7 +351,7 @@
     "practice_as_described": "Small dry detention ponds at field borders: where runoff concentrates in slope depressions and overtops the downslope field border, the border was raised by earth embankments (1.25-1.66 m high at the pour point) to create a detention pond holding water only during storms, drained by a perforated standpipe into an underground tile outlet with an orifice plate; outflow routed through a grassed waterway or pipes to the toe slope (p2 abstract; p4-5). Fields upslope farmed under integrated farming with mulch tillage and mustard cover crops (potato - winter wheat - maize - winter wheat rotation) (p3). BASELINE (comparator): peak inflow rate into the pond (computed from the storage water balance) vs measured peak outflow.",
     "note": "Agriculture, Ecosystems & Environment 110:132-142. OCR'd scan; body pages are two-column and interleaved in the text layer, so all quotes come from the single-column abstract (cached PDF p2; p1 is a repository cover page). Mechanism: temporary storage of 200-500 m3 of runoff behind the raised field border, released through a throttled tile outlet (abstract; p5). Flood here = on-farm and downstream runoff peaks / muddy floods at field-watershed scale (1.6-7.8 ha), not river flooding. Fold change direction-only per the 2026-10-20 ruling; the baseline exists in the body (p9: P02 peak 'reduced from 15.1 to' a value the OCR renders as '4.91s—'' [about 4.9 l/s]) but the outflow number is OCR-garbled, so it is not used. Response range: dampening approaches zero for broad snowmelt peaks (p9, interleaved), and 'during the study period no events with a re-occurrence time >5 years were observed' (p10, interleaved), so the effect is untested in larger floods; the authors expect lower efficacy in larger events without on-site soil conservation (p10). hazard_magnitude not stated in the abstract; the largest events were one of the 10 heaviest of 1423 rains (43.3 mm, 5 June 1995, p7)."
    },
-   "question": "OCR text layer: does the quote match the page image word for word (numbers especially)? Approve if yes; reject with table_error if the OCR misread it.",
+   "question": "This quote was read by OCR (text recognition from a scanned page). Does it match the page image word for word, numbers especially? Approve = it matches. Reject = the OCR misread it.",
    "ai": null,
    "crop": "review/img/ev_flood_hazard_fien05_1.png",
    "crop_note": "quote highlighted",
@@ -350,8 +375,19 @@
       "T3 — hazard table, the flood cell for this NbS and farming system: does the practice reduce the impact of flood on rural livelihoods? Counted direct, because the unit states that hazard. Read by Module 5 (NbS response) and the M2b screen.",
       "T6 — NbS scorecard, the 'Flood hazard' priority: how this NbS scores for a Task Team Leader who prioritises flood hazard. Counted direct. Read by the Module 4 hotspot / NbS comparison, one row per NbS (no farming-system split)."
      ],
-     "now": [],
-     "none_reason": "It is not in any generated row yet — the cell it would join needs at least two independent sources, or a gate (stated hazard, income band, significance) kept it out."
+     "now": [
+      "T3 — hazard table: water_harvesting_conservation__flood__all — the NbS roll-up row. That row draws on 32 units from 23 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T3 — hazard table: water_harvesting_conservation__flood__all__income_group-high — the NbS roll-up row, high rows only. That row draws on 2 units from 2 sources.",
+      "T3 — hazard table: water_harvesting_conservation__water_harvesting__runoff_catchment__flood__all — the runoff catchment family row. That row draws on 12 units from 10 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T3 — hazard table: water_harvesting_conservation__flood__cropping_rainfed — the NbS roll-up row. That row draws on 29 units from 22 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T3 — hazard table: water_harvesting_conservation__flood__cropping_rainfed__income_group-high — the NbS roll-up row, high rows only. That row draws on 2 units from 2 sources.",
+      "T3 — hazard table: water_harvesting_conservation__water_harvesting__runoff_catchment__flood__cropping_rainfed — the runoff catchment family row. That row draws on 10 units from 8 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T6 — NbS scorecard: water_harvesting_conservation__flood_hazard — the NbS roll-up row. That row draws on 28 units from 21 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T6 — NbS scorecard: water_harvesting_conservation__flood_hazard__income_group-high — the NbS roll-up row, high rows only. That row draws on 2 units from 2 sources.",
+      "T6 — NbS scorecard: water_harvesting_conservation__flood_hazard__farming_system-cropping_rainfed — the NbS roll-up row, cropping_rainfed rows only. That row draws on 2 units from 2 sources.",
+      "T6 — NbS scorecard: water_harvesting_conservation__water_harvesting__runoff_catchment__flood_hazard — the runoff catchment family row. That row draws on 12 units from 10 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say."
+     ],
+     "none_reason": ""
     },
     "compared": "What the paper compared: peak runoff rate leaving the field during heavy rains was lowered by a factor of three by temporary storage in the detention ponds (fold change with no baseline in the quote: direction only).",
     "role": "an EFFECT of the practice on people or land (routed to relevant effect tables by the variable crosswalk)",
@@ -375,9 +411,11 @@
     "practice": "water harvesting conservation → runoff catchment",
     "variable": "Flood hazard (return-period flood depth/extent)",
     "tables": [
-     "T3 · flood",
-     "T6 · Flood hazard"
-    ]
+     "Livelihood rating for flood (T3)",
+     "Scorecard: Flood hazard (T6)"
+    ],
+    "not_used_reason": "",
+    "as_of": "2026-11-09"
    },
    "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/3_Water_Harvesting/fiener_2005_cited_ocr.pdf",
    "cited_original": ""
@@ -413,7 +451,7 @@
     "practice_as_described": "Small dry detention ponds at field borders: where runoff concentrates in slope depressions and overtops the downslope field border, the border was raised by earth embankments (1.25-1.66 m high at the pour point) to create a detention pond holding water only during storms, drained by a perforated standpipe into an underground tile outlet with an orifice plate; outflow routed through a grassed waterway or pipes to the toe slope (p2 abstract; p4-5). Fields upslope farmed under integrated farming with mulch tillage and mustard cover crops (potato - winter wheat - maize - winter wheat rotation) (p3). BASELINE (comparator): the same thalwegs before the ponds, which carried ephemeral gullies up to several metres wide and 80 cm deep after an August 1992 thunderstorm, plus GIS erosion/deposition modelling assuming no ponds (p5, p7-8).",
     "note": "Agriculture, Ecosystems & Environment 110:132-142. OCR'd scan; body pages are two-column and interleaved in the text layer, so all quotes come from the single-column abstract (cached PDF p2; p1 is a repository cover page). Per p7-8 (interleaved, not quotable): 'No linear erosion along the thalwegs downslope the ponds was observed between 1994 and 2001, although those thalwegs were heavily prone to erosion before establishing the ponds'; the authors state 'The prevention of linear erosion results not only from the ponds itself, but from their combination with a drainage via a grassed waterway or pipes to the toe slope', hence attribution=bundled (share unstated). Before/after field observation without replication or statistics -> unreplicated (#57). Upslope fields were under mulch tillage throughout."
    },
-   "question": "OCR text layer: does the quote match the page image word for word (numbers especially)? Approve if yes; reject with table_error if the OCR misread it.",
+   "question": "This quote was read by OCR (text recognition from a scanned page). Does it match the page image word for word, numbers especially? Approve = it matches. Reject = the OCR misread it.",
    "ai": null,
    "crop": "review/img/ev_erosion_hazard_fien05_1.png",
    "crop_note": "quote highlighted",
@@ -437,8 +475,12 @@
       "T3 — no hazard cell: the unit names no hazard, so it is not hazard-year evidence.",
       "T6 — NbS scorecard, the 'Soil erosion risk' priority: how this NbS scores for a Task Team Leader who prioritises soil erosion risk. Counted direct. Read by the Module 4 hotspot / NbS comparison, one row per NbS (no farming-system split)."
      ],
-     "now": [],
-     "none_reason": "It is not in any generated row yet — the cell it would join needs at least two independent sources, or a gate (stated hazard, income band, significance) kept it out."
+     "now": [
+      "T6 — NbS scorecard: water_harvesting_conservation__soil_erosion_risk — the NbS roll-up row. That row draws on 154 units from 49 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T6 — NbS scorecard: water_harvesting_conservation__soil_erosion_risk__income_group-high — the NbS roll-up row, high rows only. That row draws on 14 units from 7 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T6 — NbS scorecard: water_harvesting_conservation__water_harvesting__runoff_catchment__soil_erosion_risk — the runoff catchment family row. That row draws on 39 units from 15 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say."
+     ],
+     "none_reason": ""
     },
     "compared": "What the paper compared: detention ponds created by raising the downslope field borders at the pour point efficiently reduced erosion (linear erosion / ephemeral gullies) downslope of the eroding site.",
     "role": "an EFFECT of the practice on people or land (routed to relevant effect tables by the variable crosswalk)",
@@ -462,8 +504,10 @@
     "practice": "water harvesting conservation → runoff catchment",
     "variable": "Soil erosion / land degradation hazard",
     "tables": [
-     "T6 · Soil erosion risk"
-    ]
+     "Scorecard: Soil erosion risk (T6)"
+    ],
+    "not_used_reason": "",
+    "as_of": "2026-11-09"
    },
    "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/3_Water_Harvesting/fiener_2005_cited_ocr.pdf",
    "cited_original": ""
@@ -501,7 +545,7 @@
     "practice_as_described": "Small dry detention ponds at field borders: where runoff concentrates in slope depressions and overtops the downslope field border, the border was raised by earth embankments (1.25-1.66 m high at the pour point) to create a detention pond holding water only during storms, drained by a perforated standpipe into an underground tile outlet with an orifice plate; outflow routed through a grassed waterway or pipes to the toe slope (p2 abstract; p4-5). Fields upslope farmed under integrated farming with mulch tillage and mustard cover crops (potato - winter wheat - maize - winter wheat rotation) (p3).",
     "note": "Agriculture, Ecosystems & Environment 110:132-142. OCR'd scan; body pages are two-column and interleaved in the text layer, so all quotes come from the single-column abstract (cached PDF p2; p1 is a repository cover page). Asset-side null: no structural failure in 8 years. Per the body (interleaved, not quotable): overtopping or emergency-overflow use was never observed (p9), but 'during the study period no events with a re-occurrence time >5 years were observed' (p10) and dams 'had to be inspected regularly' for burrowing-animal weaknesses and orifice clogging (p7). So the no-failure record covers events up to about a 5-year return period only."
    },
-   "question": "OCR text layer: does the quote match the page image word for word (numbers especially)? Approve if yes; reject with table_error if the OCR misread it.",
+   "question": "This quote was read by OCR (text recognition from a scanned page). Does it match the page image word for word, numbers especially? Approve = it matches. Reject = the OCR misread it.",
    "ai": null,
    "crop": "review/img/ev_climate_shock_fien05_1_av.png",
    "crop_note": "quote highlighted",
@@ -521,8 +565,12 @@
     },
     "feeds": {
      "lead": "",
-     "now": [],
-     "none_reason": "It is not in any generated row yet — the cell it would join needs at least two independent sources, or a gate (stated hazard, income band, significance) kept it out.",
+     "now": [
+      "T3 — hazard table: water_harvesting_conservation__asset_threat__extreme_rainfall — the NbS roll-up row (asset threat). That row draws on 44 units from 37 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T3 — hazard table: water_harvesting_conservation__asset_threat__extreme_rainfall__income_group-high — the NbS roll-up row, high rows only (asset threat). That row draws on 2 units from 2 sources.",
+      "T3 — hazard table: water_harvesting_conservation__water_harvesting__runoff_catchment__asset_threat__extreme_rainfall — the runoff catchment family row (asset threat). That row draws on 12 units from 9 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say."
+     ],
+     "none_reason": "",
      "items": [
       "T3 — hazard table, asset-threat row for extreme rainfall: can extreme rainfall damage the works themselves? Read by the Module 2b project-risk screen, never by the livelihood cells."
      ]
@@ -548,9 +596,9 @@
    "identity": {
     "practice": "water harvesting conservation → runoff catchment",
     "variable": "Climate shock / variability exposure",
-    "tables": [
-     "T3 asset threat · extreme rainfall"
-    ]
+    "tables": [],
+    "not_used_reason": "Not used in any rating: what it measures (Climate shock / variability exposure) is not yet linked to any scorecard or hazard row.",
+    "as_of": "2026-11-09"
    },
    "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/3_Water_Harvesting/fiener_2005_cited_ocr.pdf",
    "cited_original": ""
@@ -588,7 +636,7 @@
     "practice_as_described": "Small dry detention ponds at field borders: where runoff concentrates in slope depressions and overtops the downslope field border, the border was raised by earth embankments (1.25-1.66 m high at the pour point) to create a detention pond holding water only during storms, drained by a perforated standpipe into an underground tile outlet with an orifice plate; outflow routed through a grassed waterway or pipes to the toe slope (p2 abstract; p4-5). Fields upslope farmed under integrated farming with mulch tillage and mustard cover crops (potato - winter wheat - maize - winter wheat rotation) (p3). The pond's own sediment load depends on the upslope on-site erosion control (mulch tillage).",
     "note": "Agriculture, Ecosystems & Environment 110:132-142. OCR'd scan; body pages are two-column and interleaved in the text layer, so all quotes come from the single-column abstract (cached PDF p2; p1 is a repository cover page). Asset threat = siltation of the pond itself. Per p7 (interleaved): first-year siltation reached more than 0.5 m and damaged crops on less than 100 m2 per pond; dredging was done with on-farm machinery at low cost. This is the pond doing its job (trapping sediment), not a failing service (#27); it is recorded because it sets a maintenance need that depends on upslope erosion control."
    },
-   "question": "OCR text layer: does the quote match the page image word for word (numbers especially)? Approve if yes; reject with table_error if the OCR misread it.",
+   "question": "This quote was read by OCR (text recognition from a scanned page). Does it match the page image word for word, numbers especially? Approve = it matches. Reject = the OCR misread it.",
    "ai": null,
    "crop": "review/img/ev_climate_shock_fien05_2_av.png",
    "crop_note": "quote highlighted",
@@ -608,8 +656,12 @@
     },
     "feeds": {
      "lead": "",
-     "now": [],
-     "none_reason": "It is not in any generated row yet — the cell it would join needs at least two independent sources, or a gate (stated hazard, income band, significance) kept it out.",
+     "now": [
+      "T3 — hazard table: water_harvesting_conservation__asset_threat__sedimentation — the NbS roll-up row (asset threat). That row draws on 19 units from 17 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+      "T3 — hazard table: water_harvesting_conservation__asset_threat__sedimentation__income_group-high — the NbS roll-up row, high rows only (asset threat). That row draws on 2 units from 2 sources.",
+      "T3 — hazard table: water_harvesting_conservation__water_harvesting__runoff_catchment__asset_threat__sedimentation — the runoff catchment family row (asset threat). That row draws on 17 units from 15 sources — the weighting counts sources, not units, so several findings from one paper do not multiply its say."
+     ],
+     "none_reason": "",
      "items": [
       "T3 — hazard table, asset-threat row for sedimentation: can sedimentation damage the works themselves? Read by the Module 2b project-risk screen, never by the livelihood cells."
      ]
@@ -635,11 +687,340 @@
    "identity": {
     "practice": "water harvesting conservation → runoff catchment",
     "variable": "Climate shock / variability exposure",
-    "tables": [
-     "T3 asset threat · sedimentation"
-    ]
+    "tables": [],
+    "not_used_reason": "Not used in any rating: what it measures (Climate shock / variability exposure) is not yet linked to any scorecard or hazard row.",
+    "as_of": "2026-11-09"
    },
    "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/3_Water_Harvesting/fiener_2005_cited_ocr.pdf",
+   "cited_original": ""
+  },
+  {
+   "evidence_id": "ev_flood_hazard_bull03_1",
+   "source_id": "bullock_2003",
+   "citation": "Bullock et al. (2003). The role of wetlands in the hydrological cycle. Hydrology and Earth System Sciences.",
+   "benchmark_tier": "high",
+   "nbs_id": "wetland_management",
+   "use_role": "nbs_effect",
+   "variable": "flood_hazard",
+   "suitability_family_id": "wetland_management__restoration_rewetting",
+   "claim_scope": "practice_technology",
+   "claim_basis": "cited_secondary",
+   "page": 9,
+   "locator": "",
+   "quote": "Most, but not all, \nstudies (23 of 28) show that floodplain wetlands reduce \nor delay floods, with examples from all regions of the \nworld.",
+   "relationship": {
+    "direction": "negative",
+    "strength_class": "unspecified",
+    "metric": "narrative",
+    "design": "review",
+    "significance": "not_reported",
+    "outcome_raw": "floods reduced or delayed by floodplain wetlands in 23 of 28 studies, with examples from all regions of the world"
+   },
+   "context": {
+    "hazard_type": "flood",
+    "hazard_severity": "unspecified",
+    "comparator": "existing_wetland",
+    "practice_as_described": "EXISTING floodplain wetlands (review type 'FP': wetlands whose inputs are dominantly upstream river flows; local terms include Sudd, river valley swamp, inland delta, dambo, inland valley swamps and bolis, pantanal - Tables 1 and 6, pp3 and 9). No intervention: studies of what existing wetlands do, inferred mostly by comparing basins with/without wetland, before/after drainage, inflow/outflow or modelling (Table 3, p4). BASELINE: the same or a comparable catchment without the wetland (or after drainage).",
+    "note": "Vote count of functional statements from the review's database (Table 5, pp7-8, 'number of functional statements for each wetland type'); the table's OCR is not in row/column order, so the counts are taken from the Conclusions text. A count of studies is not an effect size: strength unspecified. The authors warn (p5) that counts are not inter-compared, that some functions are studied more than others, and that the sample is dominated by North America. Comparator existing_wetland: home family per comparator_policy, out of the roll-up. Floodplain column of Table 5d (p8): 3 floods increased/advanced, 23 reduced/delayed, 2 neutral (OCR legible for the FP column only). Mechanism is not stated in the quoted sentence; the review's conclusion (p10) is 'The over-riding picture appears to be a reduction in flood peaks by floodplains'. Peak and timing pooled (the count covers 'reduce or delay')."
+   },
+   "question": "This quote was read by OCR (text recognition from a scanned page). Does it match the page image word for word, numbers especially? Approve = it matches. Reject = the OCR misread it.",
+   "ai": null,
+   "crop": "review/img/ev_flood_hazard_bull03_1.png",
+   "crop_note": "quote highlighted",
+   "pdf_url": "https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/Shared%20Documents/ClimateActionNetZero/1_Projects/D591_Rural-Scan_NBS/2_Technical_%26_Data/library/5_Wetlands_Constructed/bullock_2003_ocr.pdf#page=9",
+   "plain": {
+    "direction_reads": "↓ less flooding · benefit of the practice",
+    "practice": "Practice: wetland management → restoration rewetting (Wetland restoration / rewetting; Drainage blocking / re-flooding; Floodplain wetland reconnection).",
+    "described": "The source describes what was done as: “EXISTING floodplain wetlands (review type 'FP': wetlands whose inputs are dominantly upstream river flows; local terms include Sudd, river valley swamp, inland delta, dambo, inland valley swamps and bolis, pantanal - Tables 1 and 6, pp3 and 9). No intervention: studies of what existing wetlands do, inferred mostly by comparing basins with/without wetland, before/after drainage, inflow/outflow or modelling (Table 3, p4). BASELINE: the same or a comparable catchment without the wetland (or after drainage).”.",
+    "band": {
+     "value": "no size recorded",
+     "class_claimed": "unspecified",
+     "class_by_rule": "",
+     "rule": "the unit records a direction but no size, so no band applies and the row's strength rests on the other units in the cell",
+     "band_id": "",
+     "basis": "",
+     "verdict": "no_size"
+    },
+    "feeds": {
+     "lead": "The same finding answers two different questions, so it is used in both tables. They are never added together:",
+     "items": [
+      "T3 — hazard table, the flood cell for this NbS and farming system: does the practice reduce the impact of flood on rural livelihoods? Counted direct, because the unit states that hazard. Read by Module 5 (NbS response) and the M2b screen.",
+      "T6 — NbS scorecard, the 'Flood hazard' priority: how this NbS scores for a Task Team Leader who prioritises flood hazard. Counted direct. Read by the Module 4 hotspot / NbS comparison, one row per NbS (no farming-system split)."
+     ],
+     "now": [],
+     "none_reason": "It is 'existing wetland' evidence, so it is deliberately kept out of the NbS roll-up and belongs only in the restoration rewetting family row — and that row is not generated yet, because a family row needs at least two independent sources. Right now this unit sets no score anywhere."
+    },
+    "compared": "What the paper compared: floods reduced or delayed by floodplain wetlands in 23 of 28 studies, with examples from all regions of the world.",
+    "role": "an EFFECT of the practice on people or land (routed to relevant effect tables by the variable crosswalk)",
+    "claim": "Wetland management REDUCES the impact of Flood (return-period flood depth/extent) — size not stated; stated in words only, no number; significance not reported.",
+    "how": "This is a review citing other studies; cited by the authors from another study (not their own measurement); about the practice in general.",
+    "where": "Context: under flood (intensity not characterised by the authors); measured on EXISTING wetlands, not on a restoration."
+   },
+   "picos": {
+    "P": "not recorded — where/for whom does this hold?",
+    "I": "wetland management → restoration rewetting (Wetland restoration / rewetting; Drainage blocking / re-flooding; Floodplain wetland reconnection) — the source calls it: “EXISTING floodplain wetlands (review type 'FP': wetlands whose inputs are dominantly upstream river flows; local terms include Sudd, river valley swamp, inland delta, dambo, inland valley swamps and bolis, pantanal - Tables 1 and 6, pp3 and 9). No intervention: studies of what existing wetlands do, inferred mostly by comparing basins with/without wetland, before/after drainage, inflow/outflow or modelling (Table 3, p4). BASELINE: the same or a comparable catchment without the wetland (or after drainage).”",
+    "I_named": true,
+    "I_note": "the practice is named in the quote",
+    "C": "EXISTING wetlands, not a restoration",
+    "O": "Flood hazard (return-period flood depth/extent) — floods reduced or delayed by floodplain wetlands in 23 of 28 studies, with examples from all regions of the world — stated in words only, no number — significance not reported",
+    "S": "a review citing other studies; cited by the authors from another study (not their own measurement); source type: review; source tier: high",
+    "gaps": [
+     "P"
+    ]
+   },
+   "identity": {
+    "practice": "wetland management → restoration rewetting",
+    "variable": "Flood hazard (return-period flood depth/extent)",
+    "tables": [],
+    "not_used_reason": "Not used in a rating yet: it has a place to go but was held out (open 'Where this lands' below for the rule that kept it out).",
+    "as_of": "2026-11-09"
+   },
+   "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/5_Wetlands_Constructed/bullock_2003_ocr.pdf",
+   "cited_original": ""
+  },
+  {
+   "evidence_id": "ev_water_yield_bull03_5",
+   "source_id": "bullock_2003",
+   "citation": "Bullock et al. (2003). The role of wetlands in the hydrological cycle. Hydrology and Earth System Sciences.",
+   "benchmark_tier": "high",
+   "nbs_id": "wetland_management",
+   "use_role": "nbs_effect",
+   "variable": "water_yield",
+   "suitability_family_id": "wetland_management__restoration_rewetting",
+   "claim_scope": "practice_technology",
+   "claim_basis": "cited_secondary",
+   "page": 10,
+   "locator": "",
+   "quote": "There is strong evidence that wetlands evaporate more \nwater that other land types, such as forests, savannah \ngrassland or arable land. Two thirds of studies (48 of \n74) conclude that wetlands increase average annual \nevaporation or reduce average annual river flow. About \n10% of studies (7) conclude the opposite; for example \nsome woodlands in Zambia had greater evaporation than \nthe adjacent wetlands. The remaining 25% are neutral. \nThere is no obvious distinction amongst different \nwetland sub-types or geographical regions of the world.",
+   "relationship": {
+    "direction": "negative",
+    "strength_class": "unspecified",
+    "metric": "narrative",
+    "design": "review",
+    "significance": "not_reported",
+    "outcome_raw": "mean annual river flow reduced (or annual evaporation increased) by wetlands in 48 of 74 studies (two thirds), with no obvious difference between wetland sub-types or regions"
+   },
+   "context": {
+    "comparator": "existing_wetland",
+    "practice_as_described": "EXISTING freshwater wetlands of all hydrological types (floodplain and headwater; lakes excluded, p2). No intervention: studies of what existing wetlands do. BASELINE: other land types or non-wetland parts of the catchment (forest, savannah grassland, arable land), or the catchment without the wetland.",
+    "note": "Vote count of functional statements from the review's database (Table 5, pp7-8, 'number of functional statements for each wetland type'); the table's OCR is not in row/column order, so the counts are taken from the Conclusions text. A count of studies is not an effect size: strength unspecified. The authors warn (p5) that counts are not inter-compared, that some functions are studied more than others, and that the sample is dominated by North America. Comparator existing_wetland: home family per comparator_policy, out of the roll-up. Mechanism in the quote: wetlands evaporate more water than forest, savannah grassland or arable land, so less water leaves as river flow. Annual water balance; no hazard_type. water_yield direction is 'context' (more flow is good or bad by setting)."
+   },
+   "question": "This quote was read by OCR (text recognition from a scanned page). Does it match the page image word for word, numbers especially? Approve = it matches. Reject = the OCR misread it.",
+   "ai": null,
+   "crop": "review/img/ev_water_yield_bull03_5.png",
+   "crop_note": "quote highlighted",
+   "pdf_url": "https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/Shared%20Documents/ClimateActionNetZero/1_Projects/D591_Rural-Scan_NBS/2_Technical_%26_Data/library/5_Wetlands_Constructed/bullock_2003_ocr.pdf#page=10",
+   "plain": {
+    "direction_reads": "↓ less water yield · good or bad depends on context of the practice",
+    "practice": "Practice: wetland management → restoration rewetting (Wetland restoration / rewetting; Drainage blocking / re-flooding; Floodplain wetland reconnection).",
+    "described": "The source describes what was done as: “EXISTING freshwater wetlands of all hydrological types (floodplain and headwater; lakes excluded, p2). No intervention: studies of what existing wetlands do. BASELINE: other land types or non-wetland parts of the catchment (forest, savannah grassland, arable land), or the catchment without the wetland.”.",
+    "band": {
+     "value": "no size recorded",
+     "class_claimed": "unspecified",
+     "class_by_rule": "",
+     "rule": "the unit records a direction but no size, so no band applies and the row's strength rests on the other units in the cell",
+     "band_id": "",
+     "basis": "",
+     "verdict": "no_size"
+    },
+    "feeds": {
+     "lead": "",
+     "items": [
+      "T3 — no hazard cell: the unit names no hazard, so it is not hazard-year evidence.",
+      "T6 — NbS scorecard, the 'Catchment water yield' priority: how this NbS scores for a Task Team Leader who prioritises catchment water yield. Counted direct. Read by the Module 4 hotspot / NbS comparison, one row per NbS (no farming-system split)."
+     ],
+     "now": [],
+     "none_reason": "It is 'existing wetland' evidence, so it is deliberately kept out of the NbS roll-up and belongs only in the restoration rewetting family row — and that row is not generated yet, because a family row needs at least two independent sources. Right now this unit sets no score anywhere."
+    },
+    "compared": "What the paper compared: mean annual river flow reduced (or annual evaporation increased) by wetlands in 48 of 74 studies (two thirds), with no obvious difference between wetland sub-types or regions.",
+    "role": "an EFFECT of the practice on people or land (routed to relevant effect tables by the variable crosswalk)",
+    "claim": "Wetland management DECREASES Water yield / streamflow — size not stated; stated in words only, no number; significance not reported.",
+    "how": "This is a review citing other studies; cited by the authors from another study (not their own measurement); about the practice in general.",
+    "where": "Context: measured on EXISTING wetlands, not on a restoration."
+   },
+   "picos": {
+    "P": "not recorded — where/for whom does this hold?",
+    "I": "wetland management → restoration rewetting (Wetland restoration / rewetting; Drainage blocking / re-flooding; Floodplain wetland reconnection) — the source calls it: “EXISTING freshwater wetlands of all hydrological types (floodplain and headwater; lakes excluded, p2). No intervention: studies of what existing wetlands do. BASELINE: other land types or non-wetland parts of the catchment (forest, savannah grassland, arable land), or the catchment without the wetland.”",
+    "I_named": true,
+    "I_note": "the practice is named in the quote",
+    "C": "EXISTING wetlands, not a restoration",
+    "O": "Water yield / streamflow — mean annual river flow reduced (or annual evaporation increased) by wetlands in 48 of 74 studies (two thirds), with no obvious difference between wetland sub-types or regions — stated in words only, no number — significance not reported",
+    "S": "a review citing other studies; cited by the authors from another study (not their own measurement); source type: review; source tier: high",
+    "gaps": [
+     "P"
+    ]
+   },
+   "identity": {
+    "practice": "wetland management → restoration rewetting",
+    "variable": "Water yield / streamflow",
+    "tables": [],
+    "not_used_reason": "Not used in a rating yet: it has a place to go but was held out (open 'Where this lands' below for the rule that kept it out).",
+    "as_of": "2026-11-09"
+   },
+   "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/5_Wetlands_Constructed/bullock_2003_ocr.pdf",
+   "cited_original": ""
+  },
+  {
+   "evidence_id": "ev_water_yield_bull03_9",
+   "source_id": "bullock_2003",
+   "citation": "Bullock et al. (2003). The role of wetlands in the hydrological cycle. Hydrology and Earth System Sciences.",
+   "benchmark_tier": "high",
+   "nbs_id": "wetland_management",
+   "use_role": "nbs_effect",
+   "variable": "water_yield",
+   "suitability_family_id": "wetland_management__restoration_rewetting",
+   "claim_scope": "practice_technology",
+   "claim_basis": "cited_secondary",
+   "page": 10,
+   "locator": "",
+   "quote": "Two-thirds of studies (47 of 71) conclude that wetlands \nreduce the flow of water in downstream rivers during \ndry periods. Evidence is mainly from North America \nand Europe, but includes floodplains in Sierra Leone \nand wetlands in Southern Africa. This is backed by \noverwhelming evidence (22 of 23 studies) that shows \nevaporation from wetlands to be higher than from non- \nwetland portions of the catchment during dry periods. \nThere is no discernible difference for different wetland \nsub-types. In 20% of cases, wetlands increase river \nflows during the dry season.",
+   "relationship": {
+    "direction": "positive",
+    "strength_class": "unspecified",
+    "metric": "narrative",
+    "design": "review",
+    "significance": "not_reported",
+    "outcome_raw": "dry-season river flow increased by wetlands in 20% of cases"
+   },
+   "context": {
+    "comparator": "existing_wetland",
+    "practice_as_described": "EXISTING freshwater wetlands of all hydrological types (floodplain and headwater; lakes excluded, p2). No intervention: studies of what existing wetlands do. BASELINE: other land types or non-wetland parts of the catchment (forest, savannah grassland, arable land), or the catchment without the wetland.",
+    "note": "Vote count of functional statements from the review's database (Table 5, pp7-8, 'number of functional statements for each wetland type'); the table's OCR is not in row/column order, so the counts are taken from the Conclusions text. A count of studies is not an effect size: strength unspecified. The authors warn (p5) that counts are not inter-compared, that some functions are studied more than others, and that the sample is dominated by North America. Comparator existing_wetland: home family per comparator_policy, out of the roll-up. Dry-period (low) flows. Mechanism in the quote: evaporation from wetlands is higher than from non-wetland parts of the catchment during dry periods (22 of 23 studies). An ordinary dry season is not a drought (catalogue #38): no hazard_type, although water_yield also routes to T3 drought as a proxy. Reversal (the 'sponge' function) kept."
+   },
+   "question": "This quote was read by OCR (text recognition from a scanned page). Does it match the page image word for word, numbers especially? Approve = it matches. Reject = the OCR misread it.",
+   "ai": null,
+   "crop": "review/img/ev_water_yield_bull03_9.png",
+   "crop_note": "quote highlighted",
+   "pdf_url": "https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/Shared%20Documents/ClimateActionNetZero/1_Projects/D591_Rural-Scan_NBS/2_Technical_%26_Data/library/5_Wetlands_Constructed/bullock_2003_ocr.pdf#page=10",
+   "plain": {
+    "direction_reads": "↑ more water yield · good or bad depends on context of the practice",
+    "practice": "Practice: wetland management → restoration rewetting (Wetland restoration / rewetting; Drainage blocking / re-flooding; Floodplain wetland reconnection).",
+    "described": "The source describes what was done as: “EXISTING freshwater wetlands of all hydrological types (floodplain and headwater; lakes excluded, p2). No intervention: studies of what existing wetlands do. BASELINE: other land types or non-wetland parts of the catchment (forest, savannah grassland, arable land), or the catchment without the wetland.”.",
+    "band": {
+     "value": "no size recorded",
+     "class_claimed": "unspecified",
+     "class_by_rule": "",
+     "rule": "the unit records a direction but no size, so no band applies and the row's strength rests on the other units in the cell",
+     "band_id": "",
+     "basis": "",
+     "verdict": "no_size"
+    },
+    "feeds": {
+     "lead": "",
+     "items": [
+      "T3 — no hazard cell: the unit names no hazard, so it is not hazard-year evidence.",
+      "T6 — NbS scorecard, the 'Catchment water yield' priority: how this NbS scores for a Task Team Leader who prioritises catchment water yield. Counted direct. Read by the Module 4 hotspot / NbS comparison, one row per NbS (no farming-system split)."
+     ],
+     "now": [],
+     "none_reason": "It is 'existing wetland' evidence, so it is deliberately kept out of the NbS roll-up and belongs only in the restoration rewetting family row — and that row is not generated yet, because a family row needs at least two independent sources. Right now this unit sets no score anywhere."
+    },
+    "compared": "What the paper compared: dry-season river flow increased by wetlands in 20% of cases.",
+    "role": "an EFFECT of the practice on people or land (routed to relevant effect tables by the variable crosswalk)",
+    "claim": "Wetland management INCREASES Water yield / streamflow — size not stated; stated in words only, no number; significance not reported.",
+    "how": "This is a review citing other studies; cited by the authors from another study (not their own measurement); about the practice in general.",
+    "where": "Context: measured on EXISTING wetlands, not on a restoration."
+   },
+   "picos": {
+    "P": "not recorded — where/for whom does this hold?",
+    "I": "wetland management → restoration rewetting (Wetland restoration / rewetting; Drainage blocking / re-flooding; Floodplain wetland reconnection) — the source calls it: “EXISTING freshwater wetlands of all hydrological types (floodplain and headwater; lakes excluded, p2). No intervention: studies of what existing wetlands do. BASELINE: other land types or non-wetland parts of the catchment (forest, savannah grassland, arable land), or the catchment without the wetland.”",
+    "I_named": true,
+    "I_note": "the practice is named in the quote",
+    "C": "EXISTING wetlands, not a restoration",
+    "O": "Water yield / streamflow — dry-season river flow increased by wetlands in 20% of cases — stated in words only, no number — significance not reported",
+    "S": "a review citing other studies; cited by the authors from another study (not their own measurement); source type: review; source tier: high",
+    "gaps": [
+     "P"
+    ]
+   },
+   "identity": {
+    "practice": "wetland management → restoration rewetting",
+    "variable": "Water yield / streamflow",
+    "tables": [],
+    "not_used_reason": "Not used in a rating yet: it has a place to go but was held out (open 'Where this lands' below for the rule that kept it out).",
+    "as_of": "2026-11-09"
+   },
+   "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/5_Wetlands_Constructed/bullock_2003_ocr.pdf",
+   "cited_original": ""
+  },
+  {
+   "evidence_id": "ev_water_regulation_bull03_13",
+   "source_id": "bullock_2003",
+   "citation": "Bullock et al. (2003). The role of wetlands in the hydrological cycle. Hydrology and Earth System Sciences.",
+   "benchmark_tier": "high",
+   "nbs_id": "wetland_management",
+   "use_role": "nbs_effect",
+   "variable": "water_regulation",
+   "suitability_family_id": "wetland_management__restoration_rewetting",
+   "claim_scope": "practice_technology",
+   "claim_basis": "cited_secondary",
+   "page": 9,
+   "locator": "",
+   "quote": "six of seven conclusions from studies \nof floodplains conclude that flow variability is reduced by \nwetlands (including the Sudd and Okavango in Africa and \nBarito in Indonesia). But ambiguity still exists: amongst 19 \nstudies of headwater wetlands (all from USA and Europe), \n10 studies conclude that flow variability is increased; 5 that \nthe wetland influence is neutral; and 4 that variability is \nreduced.",
+   "relationship": {
+    "direction": "negative",
+    "strength_class": "unspecified",
+    "metric": "narrative",
+    "design": "review",
+    "significance": "not_reported",
+    "outcome_raw": "flow variability increased by headwater wetlands in 10 of 19 studies (all USA and Europe)"
+   },
+   "context": {
+    "comparator": "existing_wetland",
+    "practice_as_described": "EXISTING headwater wetlands (review types SW/D, SW/S, GW/D, GW/S: surface-water or groundwater-fed depressions and slopes not fed by significant stream sources, e.g. bogs, blanket and raised peat, fens, prairie potholes, dambos, river-margin wetlands - Tables 1 and 6, pp3 and 9). No intervention: studies of what existing wetlands do. BASELINE: the same or a comparable catchment without the wetland (or after drainage).",
+    "note": "Vote count of functional statements from the review's database (Table 5, pp7-8, 'number of functional statements for each wetland type'); the table's OCR is not in row/column order, so the counts are taken from the Conclusions text. A count of studies is not an effect size: strength unspecified. The authors warn (p5) that counts are not inter-compared, that some functions are studied more than others, and that the sample is dominated by North America. Comparator existing_wetland: home family per comparator_policy, out of the roll-up. Flow variability encoded on water_regulation (reduced variability = more regulation). The overall count (p8) is 28 statements: 10 increased, 11 reduced, 6 neutral. HARM / reversal. Mechanism (justification_quote, p10): saturated headwater wetlands convey rainfall rapidly to the river; p10 adds that increased flood flows combine with decreased dry-season flows to widen the range of flows."
+   },
+   "question": "This quote was read by OCR (text recognition from a scanned page). Does it match the page image word for word, numbers especially? Approve = it matches. Reject = the OCR misread it.",
+   "ai": null,
+   "crop": "review/img/ev_water_regulation_bull03_13.png",
+   "crop_note": "quote highlighted",
+   "pdf_url": "https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/Shared%20Documents/ClimateActionNetZero/1_Projects/D591_Rural-Scan_NBS/2_Technical_%26_Data/library/5_Wetlands_Constructed/bullock_2003_ocr.pdf#page=9",
+   "plain": {
+    "direction_reads": "↓ less regulation · harm of the practice",
+    "practice": "Practice: wetland management → restoration rewetting (Wetland restoration / rewetting; Drainage blocking / re-flooding; Floodplain wetland reconnection).",
+    "described": "The source describes what was done as: “EXISTING headwater wetlands (review types SW/D, SW/S, GW/D, GW/S: surface-water or groundwater-fed depressions and slopes not fed by significant stream sources, e.g. bogs, blanket and raised peat, fens, prairie potholes, dambos, river-margin wetlands - Tables 1 and 6, pp3 and 9). No intervention: studies of what existing wetlands do. BASELINE: the same or a comparable catchment without the wetland (or after drainage).”.",
+    "band": {
+     "value": "no size recorded",
+     "class_claimed": "unspecified",
+     "class_by_rule": "",
+     "rule": "the unit records a direction but no size, so no band applies and the row's strength rests on the other units in the cell",
+     "band_id": "",
+     "basis": "",
+     "verdict": "no_size"
+    },
+    "feeds": {
+     "lead": "",
+     "items": [
+      "T6 — NbS scorecard, the 'Water stress' priority: how this NbS scores for a Task Team Leader who prioritises water stress. Counted as a component, weight ×0.7. Read by the Module 4 hotspot / NbS comparison, one row per NbS (no farming-system split)."
+     ],
+     "now": [],
+     "none_reason": "It is 'existing wetland' evidence, so it is deliberately kept out of the NbS roll-up and belongs only in the restoration rewetting family row — and that row is not generated yet, because a family row needs at least two independent sources. Right now this unit sets no score anywhere."
+    },
+    "compared": "What the paper compared: flow variability increased by headwater wetlands in 10 of 19 studies (all USA and Europe).",
+    "role": "an EFFECT of the practice on people or land (routed to relevant effect tables by the variable crosswalk)",
+    "claim": "Wetland management DECREASES Water regulation capacity — size not stated; stated in words only, no number; significance not reported.",
+    "how": "This is a review citing other studies; cited by the authors from another study (not their own measurement); about the practice in general.",
+    "where": "Context: measured on EXISTING wetlands, not on a restoration."
+   },
+   "picos": {
+    "P": "not recorded — where/for whom does this hold?",
+    "I": "wetland management → restoration rewetting (Wetland restoration / rewetting; Drainage blocking / re-flooding; Floodplain wetland reconnection) — the source calls it: “EXISTING headwater wetlands (review types SW/D, SW/S, GW/D, GW/S: surface-water or groundwater-fed depressions and slopes not fed by significant stream sources, e.g. bogs, blanket and raised peat, fens, prairie potholes, dambos, river-margin wetlands - Tables 1 and 6, pp3 and 9). No intervention: studies of what existing wetlands do. BASELINE: the same or a comparable catchment without the wetland (or after drainage).”",
+    "I_named": true,
+    "I_note": "the practice is named in the quote",
+    "C": "EXISTING wetlands, not a restoration",
+    "O": "Water regulation capacity — flow variability increased by headwater wetlands in 10 of 19 studies (all USA and Europe) — stated in words only, no number — significance not reported",
+    "S": "a review citing other studies; cited by the authors from another study (not their own measurement); source type: review; source tier: high",
+    "gaps": [
+     "P"
+    ]
+   },
+   "identity": {
+    "practice": "wetland management → restoration rewetting",
+    "variable": "Water regulation capacity",
+    "tables": [],
+    "not_used_reason": "Not used in a rating yet: it has a place to go but was held out (open 'Where this lands' below for the rule that kept it out).",
+    "as_of": "2026-11-09"
+   },
+   "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/5_Wetlands_Constructed/bullock_2003_ocr.pdf",
    "cited_original": ""
   }
  ]
