@@ -147,9 +147,9 @@ def publish(root, *, local_events=None):
 
 def build(root):
     paths = _paths(root)
-    with paths.evidence.open() as f:
+    with paths.evidence.open(encoding="utf-8", newline="") as f:
         evidence = {r["evidence_id"]: r for r in csv.DictReader(f)}
-    with paths.review_log.open() as f:
+    with paths.review_log.open(encoding="utf-8", newline="") as f:
         log = list(csv.DictReader(f))
     latest = {}
     for r in log:
