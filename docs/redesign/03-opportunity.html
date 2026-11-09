@@ -171,13 +171,19 @@ body.classification-open{padding-right:440px}
 
   <section class="tabpanel" role="tabpanel" id="tp-5" aria-labelledby="tab-5" hidden>
     <h2><span class="sec-n">3.5</span>Which rural services are exposed?</h2>
-    <p>Haiti design example · fixed illustrative footprint in one example department. Figures show how the team could report mapped road length and facility counts by department.</p>
-    <label>Hazard <select id="service-hazard"><option>River flood</option><option>Landslide</option><option>Wildfire</option></select></label>
+    <p>Haiti design example · fixed illustrative footprint across two fictional departments. Select a practice for this Haiti example. The roads, lengths and drainage links are invented.</p>
+    <label>Hazard <select id="service-hazard"><option value="flood">River flood</option><option value="landslide">Landslide</option><option value="fire">Wildfire</option></select></label>
+    <label>Haiti example practice <select id="service-practice"><option value="buffer">Natural or restored riparian buffer</option><option value="trees">Planted silvoarable agroforestry</option></select></label>
     <p id="service-layer"></p>
     <div class="tabwrap"><table class="qt"><caption>Illustrative assets within the suitable footprint</caption>
     <thead><tr><th>Mapped infrastructure</th><th>Exposed</th><th>Assessed</th><th>Missing hazard coverage</th></tr></thead>
     <tbody id="service-assets"></tbody></table></div>
     <p>Exposed assets are part of the assessed total. Rural inventory completeness is unknown. Source vintage is unverified for this illustration. Unmapped facilities are outside all three counts.</p>
+    <h3 id="road-trace">Which exposed road sections could benefit?</h3>
+    <p id="road-result" aria-live="polite"></p>
+    <div class="tabwrap"><table class="qt"><caption>Road sections screened for the selected hazard</caption><thead><tr><th>Example section</th><th>Department</th><th>Exposed km</th><th>Why it counts or stays out</th></tr></thead><tbody id="road-sections"></tbody></table></div>
+    <p>The <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/schema/recipes/riparian_buffer/T3_nbs_hazard_farming.csv">T3 natural/restored buffer flood row</a> rates mitigation potential low with medium confidence. It supports a plausible flow mechanism. Confirm drainage, intervention scale and hydraulic effect before estimating avoided road damage.</p>
+    <a class="btn" href="05-hotspots.html?tab=2#service-priority">Use these road sections in 5.2</a>
     <details class="acc"><summary>Candidate sources and interpretation</summary><div class="a-body"><p>Check road coverage against the Geofabrik OpenStreetMap extract, health facilities against Haiti’s MSPP Carte Sanitaire, and schools against the CNIGS inventory. Record each release date during pilot preparation. Hazard candidates include JRC GloFAS river flooding, NASA LHASA rainfall-triggered landslides, and MODIS MCD64A1 historical burns. Fire weather is a separate measure.</p><p>Exposure identifies an overlap. Estimating damage requires vulnerability data. Claiming service protection also requires evidence of a practice effect and a spatial connection, such as an upstream catchment.</p></div></details>
   </section>
   <div class="nextstage">
@@ -190,6 +196,7 @@ body.classification-open{padding-right:440px}
 <script src="v1b-versions.js?v=20261106-brand"></script>
 <script src="v1b-map.js?v=20261106-nav"></script>
 <script src="v1b-fixture.js"></script>
+<script src="v1b-road-example.js"></script>
 <script src="v1b-classification.js?v=20261105-risk"></script>
 <script>
 (function () {
@@ -491,24 +498,6 @@ body.classification-open{padding-right:440px}
   V1BUI.segmented(document.getElementById('context-view'),function(view){document.getElementById('context-table-wrap').hidden=view!=='table';document.getElementById('context-plot').hidden=view!=='plot';});
   window.addEventListener('pageshow',function(e){if(e.persisted){CL.refresh();livelihoods();contextMap();}});
   window.addEventListener('storage',function(e){if(e.key==='v2-variable-classification' || e.key===null){CL.refresh();livelihoods();contextMap();}});
-
-  var serviceHazard = document.getElementById('service-hazard');
-  var examples = [
-    { layer: '1-in-100-year river inundation', exposed: [18, 3, 1] },
-    { layer: 'High modelled landslide hazard', exposed: [12, 2, 2] },
-    { layer: 'Historical detected burn footprint', exposed: [7, 1, 0] }
-  ];
-  function showServiceExposure() {
-    var example = examples[serviceHazard.selectedIndex];
-    document.getElementById('service-layer').textContent = example.layer;
-    document.getElementById('service-assets').innerHTML = [
-      ['Rural roads (km)', 100, 6], ['Schools', 20, 2], ['Health facilities', 8, 1]
-    ].map(function (asset, i) {
-      return '<tr><th scope="row">' + asset[0] + '</th><td>' + example.exposed[i] + '</td><td>' + asset[1] + '</td><td>' + asset[2] + '</td></tr>';
-    }).join('');
-  }
-  serviceHazard.addEventListener('change', showServiceExposure);
-  showServiceExposure();
 
   /* ---- tabs ---- */
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.subtabs [role=tab]'));
