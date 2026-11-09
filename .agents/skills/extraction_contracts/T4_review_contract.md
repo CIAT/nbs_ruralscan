@@ -108,3 +108,15 @@ Review cards must show: extracted values/direction, source-specific weight when 
 ## Ahmad 2020 worked review expectation
 
 Table 2 supports increasing suitability with temperature, precipitation, aridity index and NDVI, and decreasing suitability with slope. Its six soil properties also carry directions: nutrient availability, nutrient retention, rooting conditions and root-zone oxygen availability increase suitability; toxicity and excess salts decrease it. Soil group weight remains combined. The table's categorical exclusions require their own mapping. These are source readings to capture and review, not globally transferable thresholds or an implicit human approval. Temperature map/table endpoint discrepancies and aridity scaling remain explicit calibration questions.
+
+### Review of occurrence ranges and multi-page ranks
+
+For a reported distribution, ask what the source establishes immediately outside
+its endpoints. If it only describes where farmers implemented the practice, keep
+the raw range as observed presence. An executable exclusion requires independent
+support. For example, the 100–950 mm/year range reported for FMNR leaves sites
+above 950 mm unevaluated. For a split table, link all printed ranks to one
+study profile and check which column carries the unit. Haile’s 20% belongs to the
+criterion weight. The soil-carbon value column gives no unit. A dashboard Keep
+retains the evidence within its reviewed scope. Consult the synthesis decision
+before changing an executable mapping.

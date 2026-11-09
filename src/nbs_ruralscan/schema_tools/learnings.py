@@ -100,6 +100,13 @@ def status(
         digest = hashlib.sha256(data).hexdigest()
         if f"feedback_snapshot_sha256={digest}" in latest.get("note", ""):
             previous = json.loads(data)
+            # Bounded retrospectives account for individual decisions against this
+            # baseline. A later full retrospective supersedes these receipts.
+            scoped = _learnings_rows(snapshot.with_suffix(".scoped.csv"))
+            for row in scoped:
+                if row["baseline_sha256"] == digest and row["lesson"].strip():
+                    key = json.dumps([row["evidence_id"], row["reviewer"]])
+                    previous[key] = row["feedback_sha256"]
             unprocessed = sum(
                 previous.get(k) != v for k, v in _fingerprints(rl).items()
             )

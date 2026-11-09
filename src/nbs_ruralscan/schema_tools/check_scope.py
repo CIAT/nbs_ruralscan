@@ -25,6 +25,7 @@ skipped — they've had their human call.
 from __future__ import annotations
 
 import csv
+import json
 import re
 from pathlib import Path
 
@@ -139,9 +140,8 @@ _LC_CLASS = re.compile(
 # pure-quote `study_site` signal above misses — the AI's own `direction` tell (site_envelope
 # / fmnr_occurs_on…), figure captions, and region-extent context. GATE: FRAME (or site-
 # occurrence direction) AND NOT a suitability CRITERION AND NOT a distributional
-# GENERALisation — because "FMNR occurs ACROSS the 100–950 mm band" (a review envelope) and
-# "suitable where…" ARE rules and must be kept. Tuned to 6/6 of Pete's 2026-07 FMNR site-
-# context drops with 0 genuine-rule false-positives. Advisory, like the signals above.
+# GENERALisation. A reported practice distribution remains useful evidence. The separate
+# observed_suitability_bound check identifies its possible misuse as a limit.
 _SITE_FRAME = re.compile(
     r"study\s+(area|site|sites|region|plots?)"
     r"|\bis\s+located\s+in\b|\blocated\s+in\s+the\b|characteri[sz]ed\s+by"
@@ -179,6 +179,28 @@ def _is_site_context(quote: str, relationship: str) -> bool:
     if _SITE_GENERAL.search(quote) or _SITE_GENERAL.search(direction):
         return False
     return bool(_SITE_FRAME.search(quote) or _SITE_OCC_DIR.search(direction))
+
+
+_PRACTICE_DISTRIBUTION = re.compile(
+    r"\b(?:largely|mainly|commonly|typically|widely)\s+"
+    r"(?:being\s+)?(?:practi[cs]ed|implemented|used|adopted)\s+(?:in|across)\b",
+    re.I,
+)
+
+
+def _observed_suitability_bound(quote: str, relationship: str) -> bool:
+    """Flag a proposed limit attached to reported practice occurrence (catalogue #58)."""
+    try:
+        rel = json.loads(relationship)
+    except (TypeError, ValueError):
+        return False
+    if not isinstance(rel, dict) or not any(
+        rel.get(k) is not None for k in ("abs_min", "abs_max", "opt_low", "opt_high")
+    ):
+        return False
+    return rel.get("type") == "observed_presence" or bool(
+        _PRACTICE_DISTRIBUTION.search(quote) and not _SITE_CRITERION.search(quote)
+    )
 
 
 M2B_POLICY = ROOT / "schema" / "lookups" / "m2b_variable_policy.csv"
@@ -225,6 +247,14 @@ def check(
             if r.get("use_role") != "structural_suitability":
                 continue
             quote = r.get("quote") or ""
+            if _observed_suitability_bound(quote, r.get("relationship") or ""):
+                flags.append(
+                    {
+                        "evidence_id": r["evidence_id"],
+                        "signal": "observed_suitability_bound",
+                        "snippet": quote[:80].strip(),
+                    }
+                )
             matched = False
             for name, pat in _SIGNALS.items():
                 m = pat.search(quote)

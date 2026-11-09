@@ -574,7 +574,7 @@ def test_acquisition_retry_keeps_existing_artifact_on_failure(tmp_path, monkeypa
 
 def test_active_rules_have_complete_matching_snapshot():
     active = ROOT / ".agents/skills/source-command-extract-evidence"
-    snapshot = ROOT / ".agents/skills/_versions/v1.9.9"
+    snapshot = ROOT / ".agents/skills/_versions/v1.10.0"
     for relative in ["SKILL.md", "references/defects.md"]:
         assert (active / relative).read_bytes() == (snapshot / relative).read_bytes()
     for name in [
@@ -916,3 +916,38 @@ def test_quarantine_drops_m2b_exclude_but_not_m2b_flag(tmp_path):
         for c in quarantine.candidates(tmp_path / "schema")
     }
     assert got == {"a": "m2b_exclude"}
+
+
+def test_scoped_retro_accounts_only_for_read_feedback_on_its_baseline(
+    tmp_path, monkeypatch
+):
+    from nbs_ruralscan.schema_tools import learnings
+
+    review, log = tmp_path / "reviews.csv", tmp_path / "learnings.csv"
+    monkeypatch.setattr(learnings, "REVIEW_LOG", review)
+    monkeypatch.setattr(learnings, "LEARNINGS_LOG", log)
+    base = dict(evidence_id="one", reviewer="A", decision="ok", reason="", note="")
+    named = {**base, "evidence_id": "two"}
+    other = {**named, "reviewer": "B"}
+    write_csv(review, [base])
+    learnings.record("Initial full retrospective")
+    snapshot = log.with_suffix(".feedback.json")
+    baseline = snapshot.read_bytes()
+    write_csv(review, [base, named, other])
+    receipt = dict(
+        baseline_sha256=hashlib.sha256(baseline).hexdigest(),
+        evidence_id="two",
+        reviewer="A",
+        feedback_sha256=next(iter(learnings._fingerprints([named]).values())),
+        lesson="Keep the source range in the observed-presence record.",
+    )
+    write_csv(snapshot.with_suffix(".scoped.csv"), [receipt])
+    assert learnings.status()["unprocessed"] == 1
+    assert snapshot.read_bytes() == baseline
+    changed = {**named, "note": "changed"}
+    write_csv(review, [base, changed, other])
+    assert learnings.status()["unprocessed"] == 2
+    learnings.record("Read all amended feedback")
+    assert learnings.status()["unprocessed"] == 0
+    write_csv(review, [base, named, other])
+    assert learnings.status()["unprocessed"] == 1

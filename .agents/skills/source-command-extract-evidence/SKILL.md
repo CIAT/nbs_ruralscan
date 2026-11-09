@@ -1,12 +1,12 @@
 ---
 name: "source-command-extract-evidence"
 description: "Extract and verify source-provenanced evidence for an authorised T4 suitability, T3/T6 effect, or operational-risk lane."
-version: "v1.9.9"
+version: "v1.10.0"
 ---
 
 # Evidence extraction
 
-Current ruleset: **v1.9.9**. Stamp new units with the version actually used; never restamp
+Current ruleset: **v1.10.0**. Stamp new units with the version actually used; never restamp
 historical evidence. Version log: `methodology/RULESET_VERSIONS.md`. This skill is the
 canonical extraction instruction; `.claude/commands/extract-evidence.md` delegates here.
 
@@ -78,7 +78,8 @@ operational-risk extraction. Retain supported direction even when calibration is
   is incomplete if the same table also reports direction or classes. Do not turn raw map
   extrema, site observations, source rank scores or importance weights into suitability curves.
 - For T4, apply the numeric plausibility gate in `../extraction_contracts/T4_review_contract.md`
-  before proposing calibration. Report narrow bands, false precision, unsupported jumps,
+  before proposing calibration. Reported practice distributions stay as observations.
+  A bound needs a cited implementation criterion or performance evidence at the limit (#58). Report narrow bands, false precision, unsupported jumps,
   proxy meanings and transfer limits even when every number matches its source. Preserve
   unresolved values as source context; no silent widening, scoring or promotion (defect #55).
   Regional origin alone does not justify direction-only retention: preserve full numeric
@@ -88,7 +89,8 @@ operational-risk extraction. Retain supported direction even when calibration is
   MCDA weights; record enough of the original criterion set to explain relative importance.
 - Validate `EvidenceUnit` objects with `validate_units`, then save staging only.
   Native-language quote anchors must stand on their own before any English translation.
-  Supplementary rationale quotes must match their own cited pages. Reject duplicate JSON
+  For different editions of the same paper, re-slice quotations and locate them on the
+  matching pages in the team’s registered copy. Supplementary rationale quotes must match their own cited pages. Reject duplicate JSON
   keys, non-finite numeric values, Boolean-as-number values and ambiguous identifier types. New extraction
   never grants `reviewer_ok` or overwrites a reviewed record. A changed existing ID requires an
   audited correction. Retain ambiguities and source conflicts visibly; do not manufacture agreement.
