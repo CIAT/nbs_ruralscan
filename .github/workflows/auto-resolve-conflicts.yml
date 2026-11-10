@@ -102,7 +102,8 @@ jobs:
         env:
           LIST: ${{ steps.find.outputs.list }}
         run: |
-          set -uo pipefail
+          # GitHub runs steps with bash -e; turn it off so one PR's non-zero exit is handled below.
+          set +e -uo pipefail
           # Run a copy: the script checks out each PR branch, which may rewrite the file
           # bash is still reading.
           cp scripts/resolve-pr-conflicts.sh "$RUNNER_TEMP/resolve.sh"
