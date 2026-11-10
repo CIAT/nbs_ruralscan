@@ -95,3 +95,5 @@ The build credits that exact decision. An amended note, reason or decision
 returns to the backlog. The next full retrospective supersedes those receipts.
 
 [9 November 2026 retrospective of Namita’s 40 decisions](audits/namita_review_20261109.md).
+
+[10 November 2026 retrospective of 187 decisions](audits/retro_2026-11-10.md): inferred hard limits (#59), design geometry (#60), one dataset one unit (#61), corrections pass the number check (#62); ruleset v1.10.1.

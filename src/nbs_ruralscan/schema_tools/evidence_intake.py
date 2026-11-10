@@ -89,6 +89,8 @@ _RULESETS = {
     "v1.9.9",
     # v1.10.0: reported practice ranges and reviewed calibration are distinct
     "v1.10.0",
+    # v1.10.1: catalogue #59-#62, inferred limits, design geometry, one dataset one unit
+    "v1.10.1",
 }
 
 

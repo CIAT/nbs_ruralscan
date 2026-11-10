@@ -521,3 +521,53 @@ predictor, significant associations, direction among those studies, or farmers
 adopting). Identify the outcome and comparison for a predictor, including whether
 it measures adoption or subsequent management. Source-specific exclusions and
 holds remain visible in their review records.
+
+## Limits, geometry and duplicates — retrospective 2026-11-10 (v1.10.1)
+
+Reviewers removed 23 inferred `abs_min`/`abs_max` values in one round (Pete's 5 November
+decisions and the 9 November source checks). The quote was real each time; the limit was not.
+
+59. **A hard limit needs the source to say what lies beyond it is excluded** (extends #2,
+#17, #58). Put a value in `abs_min`/`abs_max` only when the source says land past it is
+unsuitable, excluded, not possible or should not be used. Three tells that it is not a limit:
+- **The edge of a scored or ranked class.** The last printed class (">30°", "80–160 cm
+  marginal", ">55% clay") still carries a score or a "marginal"/"low priority" label. Krois
+  2014 rates terraces *above* 30° as highly suitable (7), so 30° is not a maximum; Brouwer's
+  160 cm ends the marginal class, not suitability; Russell 1997 gives sites under 1 ha or
+  beyond 120 m a *low priority*, not an exclusion. Keep the classes and scores in
+  `source_classes`/`source_profile`.
+- **A recommended or commonly used range.** "Can be used under the following conditions:
+  rainfall 200–750 mm", "commonly 1–5% slopes", "can be as low as 150 mm", "tanks are built on
+  gentle slopes (1–10%)" describe guidance or common use. Keep the range in `source_profile`
+  with its role (`siting recommendation`, `common use`), not as executable limits.
+- **A maximum taken across several structures or designs.** Kadam's 20% is the gully-plug
+  upper value; Chen 2017's 30° belongs to zig terraces only. Keep one profile per structure.
+`check_scope` raises advisory `ranked_class_limit` (a ranked/scored class table or a
+low-priority cue with a limit) and `recommended_range_limit` (a limit with no exclusion
+wording in the quote). 20 of the 23 corrected units would have been flagged. Advisory only:
+a real exclusion ("slopes above 16% are unsuitable") passes, and the reviewer decides.
+
+60. **A buffer width, reserve width or analysis window is design geometry, not a distance
+limit** (Pete, 6 and 9 November; riparian). "Maintain 50 m of riparian reserve on each side",
+"we used a 30 m buffer along the river network", "we set a maximum buffer width of 210 m",
+"hotspots extend as far as 30 m" are planning or study geometry. Record them in
+`source_profile.geometry` with what they were for; never as `distance_to_waterbody`
+`abs_min`/`abs_max`. They give no establishment cutoff, ecological maximum or shared
+distance-to-water score for planted or naturally restored buffers. `check_scope` raises
+advisory `design_geometry_limit` for a distance-to-water limit whose quote describes a buffer,
+strip, reserve, zone, corridor or width.
+
+61. **One dataset, one unit** (Pete, T3/T6 backlog A5/B8, 6 November). Do not emit several
+effect units for the same data: five returns from one simulation (Ehui 1990), a season summary
+beside the per-technique rows of the same season (Botoni & Reij 2009), or a projected
+time-averaged carbon value from the same plots as the measured comparison (Roshetko 2002).
+Keep the most direct measured unit and note the others in its `context.note`. Separate
+units are right for genuinely separate sites, seasons, practices or designs (#48 still applies).
+
+62. **A correction must pass the same number check as an extraction** (9 November source
+checks). Rewritten `direction`/`source_profile` text added numbers that are not in the quote:
+criterion weights from another table (Krois 0.39), citation years, other pages' values, and
+"flat" turned into 0. Eleven corrected units newly fail `check_numbers`. Put numbers from
+elsewhere in the source in `context` (`model_use`, `note`, `reported_values`) with their page;
+keep `relationship` to numbers in the quote. Run `check_numbers` on corrected units before
+applying them.

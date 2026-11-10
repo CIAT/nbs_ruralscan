@@ -116,6 +116,10 @@ _ADVISORY_ONLY = {
     "span_bleed",
     "m2b_flag",
     "observed_suitability_bound",
+    # catalogue #59/#60 (retro 2026-11-10): a proposed limit to check, not a wrong claim
+    "design_geometry_limit",
+    "ranked_class_limit",
+    "recommended_range_limit",
 }
 
 
