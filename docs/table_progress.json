@@ -767,15 +767,14 @@
         },
         "stages": {
           "searched": {
-            "status": "in_progress",
+            "status": "done",
             "categories_done": [
               "stock",
               "updated_lit",
-              "grey"
-            ],
-            "categories_missing": [
+              "grey",
               "tool"
             ],
+            "categories_missing": [],
             "by_category": {
               "stock": {
                 "ledger_searched": "done",
@@ -791,11 +790,11 @@
                 "ledger_searched": "done",
                 "ledger_screened": "done",
                 "ledger_verified": "in_progress",
-                "srch_rows": 1,
-                "n_retrieved": 0,
-                "n_screened": 0,
-                "n_included": 8,
-                "latest_search_date": "2026-10-06"
+                "srch_rows": 2,
+                "n_retrieved": 136,
+                "n_screened": 136,
+                "n_included": 20,
+                "latest_search_date": "2026-11-10"
               },
               "grey": {
                 "ledger_searched": "done",
@@ -808,64 +807,64 @@
                 "latest_search_date": "2026-10-06"
               },
               "tool": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 0,
-                "n_retrieved": 0,
-                "n_screened": 0,
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 1,
+                "n_retrieved": 15,
+                "n_screened": 15,
                 "n_included": 0,
-                "latest_search_date": ""
+                "latest_search_date": "2026-11-10"
               }
             },
             "families_searched": []
           },
           "acquired": {
             "status": "in_progress",
-            "discovered": 59,
-            "pending": 7,
-            "acquired": 0,
+            "discovered": 71,
+            "pending": 15,
+            "acquired": 4,
             "extracted": 52,
             "duplicate": 2,
-            "pct_in_hand": 88
+            "pct_in_hand": 79
           },
           "extracted": {
-            "status": "done",
-            "units_active": 308,
+            "status": "in_progress",
+            "units_active": 327,
             "units_dropped": 123,
-            "sources": 83,
+            "sources": 89,
             "by_role": {
               "asset_vulnerability": 50,
-              "nbs_effect": 258
+              "nbs_effect": 277
             },
             "by_basis_bucket": {
-              "cited": 111,
+              "cited": 120,
               "expert": 68,
-              "measured": 111,
-              "modelled": 18
+              "measured": 120,
+              "modelled": 19
             },
             "by_claim_basis": {
-              "cited_secondary": 111,
+              "cited_secondary": 120,
               "expert_assertion": 68,
-              "modelled": 18,
-              "primary_measured": 109,
+              "modelled": 19,
+              "primary_measured": 118,
               "primary_measurement": 2
             },
-            "queue_in_hand_unextracted": 0
+            "queue_in_hand_unextracted": 4
           },
           "reviewed": {
             "status": "in_progress",
             "reviewed_ok": 8,
             "reviewed_rejected": 123,
-            "unreviewed": 300,
-            "pct_reviewed": 30
+            "unreviewed": 319,
+            "pct_reviewed": 29
           },
           "synthesised": {
             "status": "in_progress",
             "rows": 56,
             "report_rows": 56,
             "report_stale": false,
-            "n_units_pooled": 521,
+            "n_units_pooled": 593,
             "families": {
               "_rollup": 18,
               "forest_restoration__active_planting": 7,
@@ -878,8 +877,8 @@
             "confidence": {
               "high": 12,
               "medium": 11,
-              "very_high": 5,
-              "very_low": 28
+              "very_high": 6,
+              "very_low": 27
             },
             "flags": {
               "intensity_limited": 11,
@@ -889,12 +888,12 @@
               "landscape_scale_only": 50,
               "severe_end": {
                 "mostly_no_gain": 2,
-                "tested_gain": 5,
-                "untested": 12
+                "tested_gain": 6,
+                "untested": 11
               }
             },
-            "synth_dropped": 846,
-            "collapsed": 2,
+            "synth_dropped": 886,
+            "collapsed": 3,
             "excluded_economics": 25,
             "unmapped_variables": [
               [
@@ -903,7 +902,7 @@
               ],
               [
                 "soil_permeability",
-                2
+                3
               ],
               [
                 "tree_canopy_cover",
@@ -930,11 +929,23 @@
         },
         "blockers": {
           "pending_by_reason": {
-            "needs_human": 4,
+            "needs_human": 12,
             "paywalled": 3
           },
-          "acquired_not_extracted": 0,
+          "acquired_not_extracted": 4,
           "top": [
+            {
+              "source_id": "alkama_2016_forest_cover_biophysical",
+              "citation": "Alkama et al. (2016). Biophysical climate impacts of recent changes in global forest cover. Science.",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "fisher_shively_2005_income_shocks_forest_malawi",
+              "citation": "Fisher et al. (2005). Can Income Programs Reduce Tropical Forest Pressure? Income Shocks and Forest Use in Malawi. World",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
             {
               "source_id": "hewlett_1982_cited",
               "citation": "Hewlett JD (1982) Forests and ﬂoods in the light of recent investigation. In: Proceedings, Canadian Hydrology Symposium ",
@@ -942,10 +953,34 @@
               "blocker": "tool acquisition failed — no URL/DOI route; human browser download / OA web-search recovery"
             },
             {
+              "source_id": "lazos_chavero_2018_hurricane_jova_forests_livelihoods",
+              "citation": "Lazos-Chavero et al. (2018). Uncovering links between livelihoods, land-use practices, vulnerability and forests after h",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
               "source_id": "nat_rev_biodiv_nr_drivers",
               "citation": "Chazdon et al. (2025). Drivers and benefits of natural regeneration in tropical forests. Nature Reviews Biodiversity.",
               "reason": "needs_human",
               "blocker": "OA web-search 2026-10-07 found no copy: Unpaywall lists WUR research portal submitted version but the WUR record has no downloadable file (likely embargoed). Sc"
+            },
+            {
+              "source_id": "noack_2019_droughts_biodiversity_rural_incomes",
+              "citation": "Noack et al. (2019). Droughts, Biodiversity, and Rural Incomes in the Tropics. Journal of the Association of Environment",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "parsons_2021_deforestation_safe_work_hours",
+              "citation": "Parsons et al. (2021). Tropical deforestation accelerates local warming and loss of safe outdoor working hours. One Eart",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "peng_2014_afforestation_china_lst",
+              "citation": "Peng et al. (2014). Afforestation in China cools local land surface temperature. Proceedings of the National Academy of ",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
             },
             {
               "source_id": "sheng_1986_cited",
@@ -958,24 +993,6 @@
               "citation": "Smith et al. (2017). Levee setbacks : an innovative, cost-effective, and sustainable solution for improved flood risk ma",
               "reason": "needs_human",
               "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery | BROWSER DOW"
-            },
-            {
-              "source_id": "didy_2026_mangroves_sainte_marie_reboisement_vs_rna",
-              "citation": "Didy et al. (2026). Reboisement classique versus régénération assistée : efficacité comparée de deux méthodes de restaur",
-              "reason": "paywalled",
-              "blocker": "unobtainable — no OA copy and no institutional access (Pete + Namita); evidence gap. Reopen only via CGIAR library document delivery or an author request"
-            },
-            {
-              "source_id": "reforestation_drought_west_africa_2017",
-              "citation": "Diasso et al. (2017). Future impacts of global warming and reforestation on drought patterns over West Africa. Theoretic",
-              "reason": "paywalled",
-              "blocker": "unobtainable — no OA copy and no institutional access (Pete + Namita); evidence gap. Reopen only via CGIAR library document delivery or an author request"
-            },
-            {
-              "source_id": "spruce_drought_succession",
-              "citation": "Svobodová et al. (2019). Increased sensitivity to drought across successional stages in natural Norway spruce (Picea abi",
-              "reason": "paywalled",
-              "blocker": "unobtainable — no OA copy and no institutional access (Pete + Namita); evidence gap. Reopen only via CGIAR library document delivery or an author request"
             }
           ],
           "unmapped_variables": [
@@ -985,7 +1002,7 @@
             ],
             [
               "soil_permeability",
-              2
+              3
             ],
             [
               "tree_canopy_cover",
@@ -997,14 +1014,18 @@
           "ledger_notes": [
             {
               "family": "",
+              "note": "discovery round 2026-11-10; see SRCH fr_t3t6_tool_gaps_20261110_* rows + discovery logs",
+              "last_run_id": "fr_t3t6_tool_gaps_20261110",
+              "updated": "2026-11-10"
+            },
+            {
+              "family": "",
               "note": "synthesis-first round 2026-10-06; see SRCH forest_synthesis_first_2026-10-06_* rows + discovery logs",
               "last_run_id": "forest_synthesis_first_2026-10-06",
               "updated": "2026-10-06"
             }
           ],
-          "warnings": [
-            "search not logged for: tool"
-          ]
+          "warnings": []
         }
       },
       "T6": {
@@ -1015,15 +1036,14 @@
         },
         "stages": {
           "searched": {
-            "status": "in_progress",
+            "status": "done",
             "categories_done": [
               "stock",
               "updated_lit",
-              "grey"
-            ],
-            "categories_missing": [
+              "grey",
               "tool"
             ],
+            "categories_missing": [],
             "by_category": {
               "stock": {
                 "ledger_searched": "done",
@@ -1039,11 +1059,11 @@
                 "ledger_searched": "done",
                 "ledger_screened": "done",
                 "ledger_verified": "in_progress",
-                "srch_rows": 1,
-                "n_retrieved": 0,
-                "n_screened": 0,
-                "n_included": 8,
-                "latest_search_date": "2026-10-06"
+                "srch_rows": 2,
+                "n_retrieved": 204,
+                "n_screened": 204,
+                "n_included": 27,
+                "latest_search_date": "2026-11-10"
               },
               "grey": {
                 "ledger_searched": "done",
@@ -1056,89 +1076,89 @@
                 "latest_search_date": "2026-10-06"
               },
               "tool": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 0,
-                "n_retrieved": 0,
-                "n_screened": 0,
-                "n_included": 0,
-                "latest_search_date": ""
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 1,
+                "n_retrieved": 15,
+                "n_screened": 15,
+                "n_included": 4,
+                "latest_search_date": "2026-11-10"
               }
             },
             "families_searched": []
           },
           "acquired": {
             "status": "in_progress",
-            "discovered": 80,
-            "pending": 6,
-            "acquired": 0,
-            "extracted": 74,
+            "discovered": 99,
+            "pending": 16,
+            "acquired": 10,
+            "extracted": 73,
             "duplicate": 2,
-            "pct_in_hand": 92
+            "pct_in_hand": 84
           },
           "extracted": {
-            "status": "done",
-            "units_active": 454,
+            "status": "in_progress",
+            "units_active": 524,
             "units_dropped": 175,
-            "sources": 95,
+            "sources": 107,
             "by_role": {
-              "nbs_effect": 454
+              "nbs_effect": 524
             },
             "by_basis_bucket": {
-              "cited": 153,
-              "expert": 72,
-              "measured": 202,
-              "modelled": 27
+              "cited": 181,
+              "expert": 73,
+              "measured": 237,
+              "modelled": 33
             },
             "by_claim_basis": {
-              "cited_secondary": 153,
-              "expert_assertion": 72,
-              "modelled": 27,
-              "primary_measured": 176,
+              "cited_secondary": 181,
+              "expert_assertion": 73,
+              "modelled": 33,
+              "primary_measured": 211,
               "primary_measurement": 26
             },
-            "queue_in_hand_unextracted": 0
+            "queue_in_hand_unextracted": 10
           },
           "reviewed": {
             "status": "in_progress",
             "reviewed_ok": 13,
             "reviewed_rejected": 175,
-            "unreviewed": 441,
-            "pct_reviewed": 30
+            "unreviewed": 511,
+            "pct_reviewed": 27
           },
           "synthesised": {
             "status": "in_progress",
-            "rows": 71,
-            "report_rows": 71,
+            "rows": 74,
+            "report_rows": 74,
             "report_stale": false,
-            "n_units_pooled": 521,
+            "n_units_pooled": 593,
             "families": {
-              "_rollup": 24,
+              "_rollup": 26,
               "forest_restoration__active_planting": 10,
               "forest_restoration__assisted_regeneration": 4,
               "forest_restoration__cross_family": 8,
               "forest_restoration__passive_regeneration": 9,
               "forest_restoration__plantation": 5,
-              "forest_restoration__protection_cbfm": 11
+              "forest_restoration__protection_cbfm": 12
             },
             "confidence": {
-              "high": 13,
+              "high": 15,
               "low": 2,
               "medium": 22,
-              "very_high": 19,
-              "very_low": 15
+              "very_high": 21,
+              "very_low": 14
             },
             "flags": {
               "intensity_limited": 0,
-              "maladaptation": 13,
-              "modelled_capped": 0,
+              "maladaptation": 15,
+              "modelled_capped": 1,
               "proxy_capped": 2,
               "landscape_scale_only": 0,
               "severe_end": {}
             },
-            "synth_dropped": 846,
-            "collapsed": 2,
+            "synth_dropped": 886,
+            "collapsed": 3,
             "excluded_economics": 25,
             "unmapped_variables": [
               [
@@ -1147,7 +1167,7 @@
               ],
               [
                 "soil_permeability",
-                2
+                3
               ],
               [
                 "tree_canopy_cover",
@@ -1156,20 +1176,20 @@
             ],
             "parked_families": [],
             "effect_direction": {
-              "": 10,
+              "": 11,
               "conflicting_evidence": 7,
               "moderate_positive": 21,
               "no_relationship": 2,
-              "slight_negative": 3,
-              "slight_positive": 12,
+              "slight_negative": 4,
+              "slight_positive": 13,
               "strong_negative": 1,
               "strong_positive": 15
             }
           },
           "prose": {
             "status": "done",
-            "with_prose": 71,
-            "total": 71,
+            "with_prose": 74,
+            "total": 74,
             "pct": 100
           },
           "benchmarked": {
@@ -1180,17 +1200,59 @@
         },
         "blockers": {
           "pending_by_reason": {
-            "needs_human": 3,
+            "needs_human": 13,
             "oa_not_fetched": 1,
             "paywalled": 2
           },
-          "acquired_not_extracted": 0,
+          "acquired_not_extracted": 10,
           "top": [
+            {
+              "source_id": "alkama_2016_forest_cover_biophysical",
+              "citation": "Alkama et al. (2016). Biophysical climate impacts of recent changes in global forest cover. Science.",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "atkinson_2022_terrestrial_restoration_biodiv",
+              "citation": "Atkinson et al. (2022). Terrestrial ecosystem restoration increases biodiversity and reduces its variability, but not to",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "bonner_2013_secondary_vs_plantation_agb_meta",
+              "citation": "Bonner et al. (2013). A meta-analytical global comparison of aboveground biomass accumulation between tropical secondary",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
             {
               "source_id": "hewlett_1982_cited",
               "citation": "Hewlett JD (1982) Forests and ﬂoods in the light of recent investigation. In: Proceedings, Canadian Hydrology Symposium ",
               "reason": "needs_human",
               "blocker": "tool acquisition failed — no URL/DOI route; human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "ncs_nat_for_regen_c_accumulation_repo",
+              "citation": "naturalclimatesolutions/nat_for_regen_c_accumulation: Carbon Accumulation Curves from Natural Forest Regeneration (GitHu",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "parsons_2021_deforestation_safe_work_hours",
+              "citation": "Parsons et al. (2021). Tropical deforestation accelerates local warming and loss of safe outdoor working hours. One Eart",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "peng_2014_afforestation_china_lst",
+              "citation": "Peng et al. (2014). Afforestation in China cools local land surface temperature. Proceedings of the National Academy of ",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "rey_benayas_2009_restoration_biodiv_es",
+              "citation": "Benayas et al. (2009). Enhancement of Biodiversity and Ecosystem Services by Ecological Restoration: A Meta-Analysis. Sc",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
             },
             {
               "source_id": "sheng_1986_cited",
@@ -1199,28 +1261,10 @@
               "blocker": "tool acquisition failed — no URL/DOI route; human browser download / OA web-search recovery | identity problem: Real but obscure 1986 conference/edited volume, "
             },
             {
-              "source_id": "smith_2017_cited",
-              "citation": "Smith et al. (2017). Levee setbacks : an innovative, cost-effective, and sustainable solution for improved flood risk ma",
+              "source_id": "silver_2000_reforestation_carbon_tropical",
+              "citation": "Silver et al. (2000). The Potential for Carbon Sequestration Through Reforestation of Abandoned Tropical Agricultural an",
               "reason": "needs_human",
-              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery | BROWSER DOW"
-            },
-            {
-              "source_id": "didy_2026_mangroves_sainte_marie_reboisement_vs_rna",
-              "citation": "Didy et al. (2026). Reboisement classique versus régénération assistée : efficacité comparée de deux méthodes de restaur",
-              "reason": "paywalled",
-              "blocker": "unobtainable — no OA copy and no institutional access (Pete + Namita); evidence gap. Reopen only via CGIAR library document delivery or an author request"
-            },
-            {
-              "source_id": "rojas_2011_psa_plantaciones_costa_rica",
-              "citation": "Rojas (2011). El pago por servicios ambientales y su impacto socioeconómico: El caso del programa de PSA en plantaciones",
-              "reason": "paywalled",
-              "blocker": "unobtainable — no OA copy and no institutional access (Pete + Namita); evidence gap. Reopen only via CGIAR library document delivery or an author request"
-            },
-            {
-              "source_id": "steward_2023_nbs_economics_rproject",
-              "citation": "Steward, P.R., Rosenstock, T.S., Joshi, N., Magnan, N., Ombewa, B.V.A., Mumo, E.M. (2023). Economics of Nature Based Sol",
-              "reason": "oa_not_fetched",
-              "blocker": "DATASET/CODE INTAKE PAUSED (AGENTS lock): R project + data behind steward_2023_nbs_economics_wp. Needs a dataset-intake adapter (or the code route, ingest/githu"
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
             }
           ],
           "unmapped_variables": [
@@ -1230,7 +1274,7 @@
             ],
             [
               "soil_permeability",
-              2
+              3
             ],
             [
               "tree_canopy_cover",
@@ -1242,14 +1286,18 @@
           "ledger_notes": [
             {
               "family": "",
+              "note": "discovery round 2026-11-10; see SRCH fr_t3t6_tool_gaps_20261110_* rows + discovery logs",
+              "last_run_id": "fr_t3t6_tool_gaps_20261110",
+              "updated": "2026-11-10"
+            },
+            {
+              "family": "",
               "note": "synthesis-first round 2026-10-06; see SRCH forest_synthesis_first_2026-10-06_* rows + discovery logs",
               "last_run_id": "forest_synthesis_first_2026-10-06",
               "updated": "2026-10-06"
             }
           ],
-          "warnings": [
-            "search not logged for: tool"
-          ]
+          "warnings": []
         }
       }
     },
@@ -1262,112 +1310,112 @@
         },
         "stages": {
           "searched": {
-            "status": "in_progress",
-            "categories_done": [],
-            "categories_missing": [
+            "status": "done",
+            "categories_done": [
               "stock",
               "updated_lit",
               "grey",
               "tool"
             ],
+            "categories_missing": [],
             "by_category": {
               "stock": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 0,
-                "n_retrieved": 0,
-                "n_screened": 0,
-                "n_included": 0,
-                "latest_search_date": ""
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 1,
+                "n_retrieved": 130,
+                "n_screened": 130,
+                "n_included": 17,
+                "latest_search_date": "2026-11-10"
               },
               "updated_lit": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 0,
-                "n_retrieved": 0,
-                "n_screened": 0,
-                "n_included": 0,
-                "latest_search_date": ""
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 1,
+                "n_retrieved": 368,
+                "n_screened": 368,
+                "n_included": 20,
+                "latest_search_date": "2026-11-10"
               },
               "grey": {
-                "ledger_searched": "not_started",
-                "ledger_screened": "not_started",
-                "ledger_verified": "in_progress",
-                "srch_rows": 1,
-                "n_retrieved": 2,
-                "n_screened": 2,
-                "n_included": 2,
-                "latest_search_date": "2026-10-30"
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 2,
+                "n_retrieved": 60,
+                "n_screened": 60,
+                "n_included": 13,
+                "latest_search_date": "2026-11-10"
               },
               "tool": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 0,
-                "n_retrieved": 0,
-                "n_screened": 0,
-                "n_included": 0,
-                "latest_search_date": ""
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 1,
+                "n_retrieved": 15,
+                "n_screened": 15,
+                "n_included": 1,
+                "latest_search_date": "2026-11-10"
               }
             },
             "families_searched": []
           },
           "acquired": {
             "status": "in_progress",
-            "discovered": 24,
-            "pending": 2,
-            "acquired": 0,
+            "discovered": 66,
+            "pending": 28,
+            "acquired": 16,
             "extracted": 22,
             "duplicate": 1,
-            "pct_in_hand": 92
+            "pct_in_hand": 58
           },
           "extracted": {
-            "status": "done",
-            "units_active": 88,
+            "status": "in_progress",
+            "units_active": 120,
             "units_dropped": 15,
-            "sources": 23,
+            "sources": 41,
             "by_role": {
-              "asset_vulnerability": 19,
-              "nbs_effect": 69
+              "asset_vulnerability": 31,
+              "nbs_effect": 89
             },
             "by_basis_bucket": {
-              "cited": 25,
-              "expert": 15,
-              "measured": 41,
-              "modelled": 7
+              "cited": 31,
+              "expert": 19,
+              "measured": 60,
+              "modelled": 10
             },
             "by_claim_basis": {
-              "cited_secondary": 25,
-              "expert_assertion": 15,
-              "modelled": 7,
-              "primary_measured": 39,
+              "cited_secondary": 31,
+              "expert_assertion": 19,
+              "modelled": 10,
+              "primary_measured": 58,
               "table": 2
             },
-            "queue_in_hand_unextracted": 0
+            "queue_in_hand_unextracted": 16
           },
           "reviewed": {
             "status": "in_progress",
             "reviewed_ok": 7,
             "reviewed_rejected": 13,
-            "unreviewed": 81,
-            "pct_reviewed": 20
+            "unreviewed": 113,
+            "pct_reviewed": 15
           },
           "synthesised": {
             "status": "in_progress",
-            "rows": 12,
-            "report_rows": 12,
+            "rows": 15,
+            "report_rows": 15,
             "report_stale": false,
-            "n_units_pooled": 149,
+            "n_units_pooled": 215,
             "families": {
               "_rollup": 8,
-              "mangrove_restoration__tidal_coastal": 4
+              "mangrove_restoration__tidal_coastal": 7
             },
             "confidence": {
-              "high": 2,
-              "medium": 3,
-              "very_high": 4,
+              "high": 3,
+              "medium": 2,
+              "very_high": 7,
               "very_low": 3
             },
             "flags": {
@@ -1381,25 +1429,25 @@
                 "untested": 2
               }
             },
-            "synth_dropped": 84,
-            "collapsed": 3,
-            "excluded_economics": 10,
+            "synth_dropped": 177,
+            "collapsed": 5,
+            "excluded_economics": 13,
             "unmapped_variables": [
               [
                 "ecosystem_service",
-                3
+                7
               ]
             ],
             "parked_families": [],
             "risk_role": {
-              "asset_threat": 6,
+              "asset_threat": 9,
               "livelihood_mitigation": 6
             }
           },
           "prose": {
             "status": "done",
-            "with_prose": 12,
-            "total": 12,
+            "with_prose": 15,
+            "total": 15,
             "pct": 100
           },
           "benchmarked": {
@@ -1410,27 +1458,75 @@
         },
         "blockers": {
           "pending_by_reason": {
-            "needs_human": 2
+            "needs_human": 28
           },
-          "acquired_not_extracted": 0,
+          "acquired_not_extracted": 16,
           "top": [
             {
-              "source_id": "quartel_2007_cited",
-              "citation": "Quartel et al. (2007). Wave attenuation in coastal mangroves in the Red River Delta, Vietnam. Journal of Asian Earth Sci",
+              "source_id": "asbridge_2018_cyclone_yasi_recovery",
+              "citation": "Asbridge et al. (2018). The extent of mangrove change and potential for recovery following severe Tropical Cyclone Yasi,",
               "reason": "needs_human",
               "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
             },
             {
-              "source_id": "tri_1998_cited",
-              "citation": "Hoang Tri et al. (1998). Natural resource management in mitigating climate impacts: the example of mangrove restoration ",
+              "source_id": "barnuevo_2017_large_scale_plantation_drawbacks",
+              "citation": "Barnuevo et al. (2017). Drawbacks of mangrove rehabilitation schemes: Lessons learned from the large-scale mangrove plan",
               "reason": "needs_human",
-              "blocker": "tool acquisition failed — no URL/DOI route; human browser download / OA web-search recovery"
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "bayraktarov_2016_cost_feasibility_coastal_restoration",
+              "citation": "Bayraktarov et al. (2016). The cost and feasibility of marine coastal restoration. Ecological Applications.",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "blankespoor_2017_mangroves_surge_changing_climate",
+              "citation": "Blankespoor et al. (2016). Mangroves as a protection from storm surges in a changing climate. Ambio.",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "das_crepin_2013_wind_damage",
+              "citation": "Das et al. (2013). Mangroves can provide protection against wind damage during storms. Estuarine, Coastal and Shelf Scie",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "duke_2017_gulf_carpentaria_dieback",
+              "citation": "Duke et al. (2017). Large-scale dieback of mangroves in Australia’s Gulf of Carpentaria: a severe ecosystem response, co",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "duncan_2014_bhitarkanika_rice_cyclone",
+              "citation": "Duncan, J., Dash, J. & Tompkins, E.L. (2014). India: Mangrove forests enhance rice cropland resilience to tropical cyclo",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "ellison_2000_do_we_know_enough",
+              "citation": "Ellison (2000). Mangrove Restoration: Do We Know Enough?. Restoration Ecology.",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "gao_2025_typhoon_recovery_nbs_projects",
+              "citation": "Gao et al. (2025). Assessing typhoon impacts on mangroves and post-typhoon recovery patterns to inform projects using ma",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "horstman_2014_wave_attenuation_field",
+              "citation": "Horstman et al. (2014). Wave attenuation in mangroves: A quantitative approach to field observations. Coastal Engineerin",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
             }
           ],
           "unmapped_variables": [
             [
               "ecosystem_service",
-              3
+              7
             ]
           ],
           "parked_families": [],
@@ -1439,15 +1535,25 @@
           ],
           "ledger_notes": [
             {
+              "family": "",
+              "note": "discovery round 2026-11-10; see SRCH mangrove_t3t6_gaps_20261110_* rows + discovery logs",
+              "last_run_id": "mangrove_t3t6_gaps_20261110",
+              "updated": "2026-11-10"
+            },
+            {
+              "family": "",
+              "note": "discovery round 2026-11-10; see SRCH mangrove_t3t6_lit_20261110_* rows + discovery logs",
+              "last_run_id": "mangrove_t3t6_lit_20261110",
+              "updated": "2026-11-10"
+            },
+            {
               "family": "mangrove_restoration__tidal_coastal",
               "note": "Bounded coastal-guide effect pass;4 active narrative units,2 newly quarantined summaries. Human review and original-source recovery incomplete; no search completion claimed.",
               "last_run_id": "mangrove_coastal_effects_20261030",
               "updated": "2026-10-30"
             }
           ],
-          "warnings": [
-            "search not logged for: stock, updated_lit, tool"
-          ]
+          "warnings": []
         }
       },
       "T6": {
@@ -1458,143 +1564,143 @@
         },
         "stages": {
           "searched": {
-            "status": "in_progress",
-            "categories_done": [],
-            "categories_missing": [
+            "status": "done",
+            "categories_done": [
               "stock",
               "updated_lit",
               "grey",
               "tool"
             ],
+            "categories_missing": [],
             "by_category": {
               "stock": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 0,
-                "n_retrieved": 0,
-                "n_screened": 0,
-                "n_included": 0,
-                "latest_search_date": ""
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 1,
+                "n_retrieved": 130,
+                "n_screened": 130,
+                "n_included": 10,
+                "latest_search_date": "2026-11-10"
               },
               "updated_lit": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 1,
-                "n_retrieved": 2,
-                "n_screened": 2,
-                "n_included": 2,
-                "latest_search_date": "2026-10-30"
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 2,
+                "n_retrieved": 521,
+                "n_screened": 521,
+                "n_included": 23,
+                "latest_search_date": "2026-11-10"
               },
               "grey": {
-                "ledger_searched": "not_started",
-                "ledger_screened": "not_started",
-                "ledger_verified": "in_progress",
-                "srch_rows": 1,
-                "n_retrieved": 3,
-                "n_screened": 3,
-                "n_included": 3,
-                "latest_search_date": "2026-10-30"
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 2,
+                "n_retrieved": 61,
+                "n_screened": 61,
+                "n_included": 15,
+                "latest_search_date": "2026-11-10"
               },
               "tool": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 0,
-                "n_retrieved": 0,
-                "n_screened": 0,
-                "n_included": 0,
-                "latest_search_date": ""
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 1,
+                "n_retrieved": 15,
+                "n_screened": 15,
+                "n_included": 3,
+                "latest_search_date": "2026-11-10"
               }
             },
             "families_searched": []
           },
           "acquired": {
             "status": "in_progress",
-            "discovered": 28,
-            "pending": 2,
-            "acquired": 0,
+            "discovered": 69,
+            "pending": 23,
+            "acquired": 20,
             "extracted": 26,
             "duplicate": 1,
-            "pct_in_hand": 93
+            "pct_in_hand": 67
           },
           "extracted": {
-            "status": "done",
-            "units_active": 97,
+            "status": "in_progress",
+            "units_active": 146,
             "units_dropped": 13,
-            "sources": 27,
+            "sources": 46,
             "by_role": {
-              "nbs_effect": 97
+              "nbs_effect": 146
             },
             "by_basis_bucket": {
-              "cited": 31,
-              "expert": 14,
-              "measured": 33,
-              "modelled": 19
+              "cited": 43,
+              "expert": 21,
+              "measured": 56,
+              "modelled": 26
             },
             "by_claim_basis": {
-              "cited_secondary": 31,
-              "expert_assertion": 14,
-              "modelled": 19,
-              "primary_measured": 28,
-              "table": 5
+              "cited_secondary": 43,
+              "expert_assertion": 21,
+              "modelled": 26,
+              "primary_measured": 46,
+              "table": 10
             },
-            "queue_in_hand_unextracted": 0
+            "queue_in_hand_unextracted": 20
           },
           "reviewed": {
             "status": "in_progress",
             "reviewed_ok": 4,
             "reviewed_rejected": 12,
-            "unreviewed": 93,
-            "pct_reviewed": 15
+            "unreviewed": 142,
+            "pct_reviewed": 10
           },
           "synthesised": {
             "status": "in_progress",
-            "rows": 14,
-            "report_rows": 14,
+            "rows": 19,
+            "report_rows": 19,
             "report_stale": false,
-            "n_units_pooled": 149,
+            "n_units_pooled": 215,
             "families": {
-              "_rollup": 8,
-              "mangrove_restoration__tidal_coastal": 6
+              "_rollup": 12,
+              "mangrove_restoration__tidal_coastal": 7
             },
             "confidence": {
-              "high": 3,
-              "medium": 4,
-              "very_high": 5,
-              "very_low": 2
+              "high": 5,
+              "low": 1,
+              "medium": 3,
+              "very_high": 9,
+              "very_low": 1
             },
             "flags": {
               "intensity_limited": 0,
               "maladaptation": 6,
               "modelled_capped": 0,
-              "proxy_capped": 3,
+              "proxy_capped": 2,
               "landscape_scale_only": 0,
               "severe_end": {}
             },
-            "synth_dropped": 84,
-            "collapsed": 3,
-            "excluded_economics": 10,
+            "synth_dropped": 177,
+            "collapsed": 5,
+            "excluded_economics": 13,
             "unmapped_variables": [
               [
                 "ecosystem_service",
-                3
+                7
               ]
             ],
             "parked_families": [],
             "effect_direction": {
-              "": 1,
               "conflicting_evidence": 1,
-              "moderate_positive": 4,
-              "slight_positive": 3,
-              "strong_positive": 5
+              "moderate_positive": 7,
+              "slight_positive": 8,
+              "strong_positive": 3
             }
           },
           "prose": {
             "status": "done",
-            "with_prose": 14,
-            "total": 14,
+            "with_prose": 19,
+            "total": 19,
             "pct": 100
           },
           "benchmarked": {
@@ -1605,27 +1711,76 @@
         },
         "blockers": {
           "pending_by_reason": {
-            "needs_human": 2
+            "needs_human": 20,
+            "other": 3
           },
-          "acquired_not_extracted": 0,
+          "acquired_not_extracted": 20,
           "top": [
             {
-              "source_id": "quartel_2007_cited",
-              "citation": "Quartel et al. (2007). Wave attenuation in coastal mangroves in the Red River Delta, Vietnam. Journal of Asian Earth Sci",
+              "source_id": "adger_1997_valuing_mangrove_restoration",
+              "citation": "Adger, W.N., Kelly, P.M. & Tri, N.H. (1997). Valuing the products and services of mangrove restoration. Commonwealth For",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no URL/DOI route; human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "arifanti_2022_indonesia_mangrove_management_review",
+              "citation": "Arifanti et al. (2022). Challenges and Strategies for Sustainable Mangrove Management in Indonesia: A Review. Forests.",
               "reason": "needs_human",
               "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
             },
             {
-              "source_id": "tri_1998_cited",
-              "citation": "Hoang Tri et al. (1998). Natural resource management in mitigating climate impacts: the example of mangrove restoration ",
+              "source_id": "bayraktarov_2016_cost_feasibility_coastal_restoration",
+              "citation": "Bayraktarov et al. (2016). The cost and feasibility of marine coastal restoration. Ecological Applications.",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "beck_2022_roi_mangrove_reef_flood",
+              "citation": "Beck et al. (2022). Return on investment for mangrove and reef flood protection. Ecosystem Services.",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "carrasquilla_2017_fisheries_meta",
+              "citation": "Carrasquilla‐Henao et al. (2016). Mangroves enhance local fisheries catches: a global meta‐analysis. Fish and Fisheries.",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "cormier_salem_2016_senegal_greening_grabbing",
+              "citation": "Cormier-Salem et al. (2016). Mangrove reforestation: greening or grabbing coastal zones and deltas? Case studies in Sene",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "das_2017_planted_mangroves_fisheries",
+              "citation": "Das (2017). Ecological Restoration and Livelihood: Contribution of Planted Mangroves as Nursery and Habitat for Artisana",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "duncan_2016_pond_reversion_ecosystem_services",
+              "citation": "Duncan et al. (2016). Rehabilitating mangrove ecosystem services: A case study on the relative benefits of abandoned pon",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "fernandez_2007_reforestation_net_benefits_guimaras",
+              "citation": "Fernández, C.J.J., Subade, R.F. & Parreño, P.E.T. (2007). Will Mangrove Reforestation Provide Net Benefits: A case in Si",
               "reason": "needs_human",
               "blocker": "tool acquisition failed — no URL/DOI route; human browser download / OA web-search recovery"
+            },
+            {
+              "source_id": "lai_2022_shrimp_yield_mangrove_ratio",
+              "citation": "Lai et al. (2022). A closer look into shrimp yields and mangrove coverage ratio in integrated mangrove-shrimp farming sy",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
             }
           ],
           "unmapped_variables": [
             [
               "ecosystem_service",
-              3
+              7
             ]
           ],
           "parked_families": [],
@@ -1634,15 +1789,25 @@
           ],
           "ledger_notes": [
             {
+              "family": "",
+              "note": "discovery round 2026-11-10; see SRCH mangrove_t3t6_gaps_20261110_* rows + discovery logs",
+              "last_run_id": "mangrove_t3t6_gaps_20261110",
+              "updated": "2026-11-10"
+            },
+            {
+              "family": "",
+              "note": "discovery round 2026-11-10; see SRCH mangrove_t3t6_lit_20261110_* rows + discovery logs",
+              "last_run_id": "mangrove_t3t6_lit_20261110",
+              "updated": "2026-11-10"
+            },
+            {
               "family": "mangrove_restoration__tidal_coastal",
               "note": "Bounded coastal-guide effect pass;4 active narrative units,2 newly quarantined summaries. Human review and original-source recovery incomplete; no search completion claimed.",
               "last_run_id": "mangrove_coastal_effects_20261030",
               "updated": "2026-10-30"
             }
           ],
-          "warnings": [
-            "search not logged for: stock, tool"
-          ]
+          "warnings": []
         }
       }
     },
@@ -2659,25 +2824,24 @@
         },
         "stages": {
           "searched": {
-            "status": "in_progress",
+            "status": "done",
             "categories_done": [
-              "updated_lit",
-              "grey"
-            ],
-            "categories_missing": [
               "stock",
+              "updated_lit",
+              "grey",
               "tool"
             ],
+            "categories_missing": [],
             "by_category": {
               "stock": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 0,
-                "n_retrieved": 0,
-                "n_screened": 0,
-                "n_included": 0,
-                "latest_search_date": ""
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 1,
+                "n_retrieved": 238,
+                "n_screened": 238,
+                "n_included": 10,
+                "latest_search_date": "2026-11-10"
               },
               "updated_lit": {
                 "ledger_searched": "done",
@@ -2700,92 +2864,92 @@
                 "latest_search_date": "2026-10-19"
               },
               "tool": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 0,
-                "n_retrieved": 0,
-                "n_screened": 0,
-                "n_included": 0,
-                "latest_search_date": ""
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 1,
+                "n_retrieved": 31,
+                "n_screened": 16,
+                "n_included": 1,
+                "latest_search_date": "2026-11-10"
               }
             },
             "families_searched": []
           },
           "acquired": {
             "status": "in_progress",
-            "discovered": 71,
-            "pending": 11,
-            "acquired": 0,
+            "discovered": 78,
+            "pending": 12,
+            "acquired": 6,
             "extracted": 60,
             "duplicate": 0,
             "pct_in_hand": 85
           },
           "extracted": {
-            "status": "done",
-            "units_active": 220,
+            "status": "in_progress",
+            "units_active": 251,
             "units_dropped": 4,
-            "sources": 59,
+            "sources": 72,
             "by_role": {
-              "asset_vulnerability": 17,
-              "nbs_effect": 203
+              "asset_vulnerability": 19,
+              "nbs_effect": 232
             },
             "by_basis_bucket": {
-              "cited": 61,
-              "expert": 28,
-              "measured": 93,
-              "modelled": 38
+              "cited": 68,
+              "expert": 33,
+              "measured": 106,
+              "modelled": 44
             },
             "by_claim_basis": {
-              "cited_secondary": 61,
-              "expert_assertion": 28,
-              "modelled": 38,
-              "primary_measured": 93
+              "cited_secondary": 68,
+              "expert_assertion": 33,
+              "modelled": 44,
+              "primary_measured": 106
             },
-            "queue_in_hand_unextracted": 0
+            "queue_in_hand_unextracted": 6
           },
           "reviewed": {
             "status": "in_progress",
             "reviewed_ok": 20,
             "reviewed_rejected": 4,
-            "unreviewed": 200,
-            "pct_reviewed": 11
+            "unreviewed": 231,
+            "pct_reviewed": 9
           },
           "synthesised": {
             "status": "in_progress",
-            "rows": 26,
-            "report_rows": 26,
+            "rows": 30,
+            "report_rows": 30,
             "report_stale": false,
-            "n_units_pooled": 599,
+            "n_units_pooled": 666,
             "families": {
-              "_rollup": 14,
+              "_rollup": 15,
               "wetland_management__coastal": 3,
-              "wetland_management__creation": 1,
-              "wetland_management__peatland": 3,
-              "wetland_management__restoration_rewetting": 5
+              "wetland_management__creation": 2,
+              "wetland_management__peatland": 4,
+              "wetland_management__restoration_rewetting": 6
             },
             "confidence": {
-              "high": 7,
-              "low": 2,
-              "medium": 9,
-              "very_high": 3,
-              "very_low": 5
+              "high": 9,
+              "low": 3,
+              "medium": 7,
+              "very_high": 5,
+              "very_low": 6
             },
             "flags": {
-              "intensity_limited": 14,
-              "maladaptation": 12,
-              "modelled_capped": 3,
+              "intensity_limited": 15,
+              "maladaptation": 13,
+              "modelled_capped": 0,
               "proxy_capped": 0,
-              "landscape_scale_only": 26,
+              "landscape_scale_only": 30,
               "severe_end": {
                 "tested_gain": 9,
                 "tested_no_gain": 3,
-                "untested": 3
+                "untested": 7
               }
             },
-            "synth_dropped": 436,
+            "synth_dropped": 565,
             "collapsed": 7,
-            "excluded_economics": 24,
+            "excluded_economics": 30,
             "unmapped_variables": [
               [
                 "ecosystem_service",
@@ -2801,13 +2965,13 @@
             ],
             "risk_role": {
               "asset_threat": 8,
-              "livelihood_mitigation": 18
+              "livelihood_mitigation": 22
             }
           },
           "prose": {
             "status": "done",
-            "with_prose": 26,
-            "total": 26,
+            "with_prose": 30,
+            "total": 30,
             "pct": 100
           },
           "benchmarked": {
@@ -2818,11 +2982,11 @@
         },
         "blockers": {
           "pending_by_reason": {
-            "needs_human": 8,
+            "needs_human": 9,
             "other": 1,
             "paywalled": 2
           },
-          "acquired_not_extracted": 0,
+          "acquired_not_extracted": 6,
           "top": [
             {
               "source_id": "couwenberg_2010_cited",
@@ -2873,14 +3037,14 @@
               "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
             },
             {
-              "source_id": "fang_2022",
-              "citation": "Fang et al. (2022). Fifteen-year analysis of constructed wetland clogging: A critical review. Journal of Cleaner Product",
-              "reason": "paywalled",
-              "blocker": "paywalled (verified: Unpaywall + web search found no copy) → institutional"
+              "source_id": "wtl_invest_coastal_vulnerability",
+              "citation": "Natural Capital Project (software, commit f02f5e2). InVEST Coastal Vulnerability model — source src/natcap/invest/coasta",
+              "reason": "needs_human",
+              "blocker": "tool acquisition failed — no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery"
             },
             {
-              "source_id": "gourevitch_2026",
-              "citation": "Gourevitch et al. (2026). The economic value of wetlands in reducing riverine flood losses in the USA. Nature Water.",
+              "source_id": "fang_2022",
+              "citation": "Fang et al. (2022). Fifteen-year analysis of constructed wetland clogging: A critical review. Journal of Cleaner Product",
               "reason": "paywalled",
               "blocker": "paywalled (verified: Unpaywall + web search found no copy) → institutional"
             }
@@ -2904,6 +3068,12 @@
           "ledger_notes": [
             {
               "family": "",
+              "note": "discovery round 2026-11-10; see SRCH wetland_t3t6_gaps_20261110_* rows + discovery logs",
+              "last_run_id": "wetland_t3t6_gaps_20261110",
+              "updated": "2026-11-10"
+            },
+            {
+              "family": "",
               "note": "synthesis-first round 2026-10-14; see SRCH wet_t3t6_2026-10-14_* rows + discovery logs",
               "last_run_id": "wet_t3t6_2026-10-14",
               "updated": "2026-10-14"
@@ -2915,9 +3085,7 @@
               "updated": "2026-10-16"
             }
           ],
-          "warnings": [
-            "search not logged for: stock, tool"
-          ]
+          "warnings": []
         }
       },
       "T6": {
@@ -2928,25 +3096,24 @@
         },
         "stages": {
           "searched": {
-            "status": "in_progress",
+            "status": "done",
             "categories_done": [
-              "updated_lit",
-              "grey"
-            ],
-            "categories_missing": [
               "stock",
+              "updated_lit",
+              "grey",
               "tool"
             ],
+            "categories_missing": [],
             "by_category": {
               "stock": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 0,
-                "n_retrieved": 0,
-                "n_screened": 0,
-                "n_included": 0,
-                "latest_search_date": ""
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 1,
+                "n_retrieved": 238,
+                "n_screened": 238,
+                "n_included": 21,
+                "latest_search_date": "2026-11-10"
               },
               "updated_lit": {
                 "ledger_searched": "done",
@@ -2969,63 +3136,63 @@
                 "latest_search_date": "2026-10-19"
               },
               "tool": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 0,
-                "n_retrieved": 0,
-                "n_screened": 0,
-                "n_included": 0,
-                "latest_search_date": ""
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 1,
+                "n_retrieved": 31,
+                "n_screened": 16,
+                "n_included": 5,
+                "latest_search_date": "2026-11-10"
               }
             },
             "families_searched": []
           },
           "acquired": {
             "status": "in_progress",
-            "discovered": 97,
-            "pending": 14,
-            "acquired": 0,
+            "discovered": 118,
+            "pending": 24,
+            "acquired": 11,
             "extracted": 83,
             "duplicate": 3,
-            "pct_in_hand": 86
+            "pct_in_hand": 80
           },
           "extracted": {
-            "status": "done",
-            "units_active": 566,
+            "status": "in_progress",
+            "units_active": 619,
             "units_dropped": 10,
-            "sources": 104,
+            "sources": 118,
             "by_role": {
-              "nbs_effect": 566
+              "nbs_effect": 619
             },
             "by_basis_bucket": {
-              "cited": 153,
-              "expert": 38,
-              "measured": 294,
-              "modelled": 81
+              "cited": 169,
+              "expert": 42,
+              "measured": 311,
+              "modelled": 97
             },
             "by_claim_basis": {
-              "cited_secondary": 153,
-              "expert_assertion": 38,
-              "modelled": 81,
-              "primary_measured": 288,
+              "cited_secondary": 169,
+              "expert_assertion": 42,
+              "modelled": 97,
+              "primary_measured": 305,
               "table": 6
             },
-            "queue_in_hand_unextracted": 0
+            "queue_in_hand_unextracted": 11
           },
           "reviewed": {
             "status": "in_progress",
             "reviewed_ok": 17,
             "reviewed_rejected": 10,
-            "unreviewed": 549,
-            "pct_reviewed": 5
+            "unreviewed": 602,
+            "pct_reviewed": 4
           },
           "synthesised": {
             "status": "in_progress",
             "rows": 64,
             "report_rows": 64,
             "report_stale": false,
-            "n_units_pooled": 599,
+            "n_units_pooled": 666,
             "families": {
               "_rollup": 31,
               "wetland_management__coastal": 8,
@@ -3034,23 +3201,23 @@
               "wetland_management__restoration_rewetting": 11
             },
             "confidence": {
-              "high": 14,
-              "low": 7,
-              "medium": 16,
-              "very_high": 13,
-              "very_low": 14
+              "high": 15,
+              "low": 4,
+              "medium": 22,
+              "very_high": 15,
+              "very_low": 8
             },
             "flags": {
               "intensity_limited": 0,
-              "maladaptation": 27,
+              "maladaptation": 30,
               "modelled_capped": 2,
-              "proxy_capped": 4,
+              "proxy_capped": 1,
               "landscape_scale_only": 0,
               "severe_end": {}
             },
-            "synth_dropped": 436,
+            "synth_dropped": 565,
             "collapsed": 7,
-            "excluded_economics": 24,
+            "excluded_economics": 30,
             "unmapped_variables": [
               [
                 "ecosystem_service",
@@ -3065,13 +3232,12 @@
               "wetland_management__constructed"
             ],
             "effect_direction": {
-              "": 6,
-              "conflicting_evidence": 6,
-              "moderate_negative": 1,
-              "moderate_positive": 13,
-              "no_relationship": 3,
-              "slight_negative": 4,
-              "slight_positive": 19,
+              "": 3,
+              "conflicting_evidence": 5,
+              "moderate_positive": 18,
+              "no_relationship": 2,
+              "slight_negative": 3,
+              "slight_positive": 21,
               "strong_positive": 12
             }
           },
@@ -3089,11 +3255,12 @@
         },
         "blockers": {
           "pending_by_reason": {
-            "needs_human": 10,
+            "needs_human": 19,
             "oa_not_fetched": 1,
+            "other": 1,
             "paywalled": 3
           },
-          "acquired_not_extracted": 0,
+          "acquired_not_extracted": 11,
           "top": [
             {
               "source_id": "chu_zhang_2025_wetland_park_did_habitat",
@@ -3175,6 +3342,12 @@
           "ledger_notes": [
             {
               "family": "",
+              "note": "discovery round 2026-11-10; see SRCH wetland_t3t6_gaps_20261110_* rows + discovery logs",
+              "last_run_id": "wetland_t3t6_gaps_20261110",
+              "updated": "2026-11-10"
+            },
+            {
+              "family": "",
               "note": "synthesis-first round 2026-10-14; see SRCH wet_t3t6_2026-10-14_* rows + discovery logs",
               "last_run_id": "wet_t3t6_2026-10-14",
               "updated": "2026-10-14"
@@ -3186,9 +3359,7 @@
               "updated": "2026-10-16"
             }
           ],
-          "warnings": [
-            "search not logged for: stock, tool"
-          ]
+          "warnings": []
         }
       }
     }
@@ -4563,6 +4734,78 @@
         "picos_flagged": 0,
         "disagreements": []
       },
+      "effects_agroforestry_2026-11-10": {
+        "units": 112,
+        "decided": 0,
+        "reviewers": [],
+        "by_decision": {
+          "approve": 0,
+          "hold": 0,
+          "reject": 0
+        },
+        "picos_flagged": 0,
+        "disagreements": []
+      },
+      "effects_forest_restoration_2026-11-10": {
+        "units": 171,
+        "decided": 0,
+        "reviewers": [],
+        "by_decision": {
+          "approve": 0,
+          "hold": 0,
+          "reject": 0
+        },
+        "picos_flagged": 0,
+        "disagreements": []
+      },
+      "effects_mangrove_restoration_2026-11-10": {
+        "units": 34,
+        "decided": 0,
+        "reviewers": [],
+        "by_decision": {
+          "approve": 0,
+          "hold": 0,
+          "reject": 0
+        },
+        "picos_flagged": 0,
+        "disagreements": []
+      },
+      "effects_riparian_buffer_2026-11-10": {
+        "units": 23,
+        "decided": 0,
+        "reviewers": [],
+        "by_decision": {
+          "approve": 0,
+          "hold": 0,
+          "reject": 0
+        },
+        "picos_flagged": 0,
+        "disagreements": []
+      },
+      "effects_water_harvesting_conservation_2026-11-10": {
+        "units": 248,
+        "decided": 0,
+        "reviewers": [],
+        "by_decision": {
+          "approve": 0,
+          "hold": 0,
+          "reject": 0
+        },
+        "picos_flagged": 0,
+        "disagreements": []
+      },
+      "effects_wetland_management_2026-11-10": {
+        "units": 131,
+        "decided": 0,
+        "reviewers": [],
+        "by_decision": {
+          "approve": 0,
+          "hold": 0,
+          "reject": 0
+        },
+        "picos_flagged": 0,
+        "disagreements": []
+      },
       "ocr_check_2026-11-07": {
         "units": 11,
         "decided": 0,
@@ -4637,6 +4880,18 @@
         "picos_flagged": 0,
         "disagreements": []
       },
+      "t4_limits_2026-11-10": {
+        "units": 47,
+        "decided": 0,
+        "reviewers": [],
+        "by_decision": {
+          "approve": 0,
+          "hold": 0,
+          "reject": 0
+        },
+        "picos_flagged": 0,
+        "disagreements": []
+      },
       "wocat_mechanism_2026-10-24": {
         "units": 15,
         "decided": 0,
@@ -4652,7 +4907,7 @@
     },
     "nbs": {
       "agroforestry": {
-        "units": 315,
+        "units": 427,
         "decided": 76,
         "by_decision": {
           "approve": 34,
@@ -4669,13 +4924,14 @@
           "agroforestry-t4-final-audit-oct19",
           "agroforestry-t4-holds-oct19",
           "direction_audit_2026-10-23",
+          "effects_agroforestry_2026-11-10",
           "primaries_round_2026-10-21",
           "recovered_2026-10-08",
           "sign_defects_2026-10-16"
         ]
       },
       "wetland_management": {
-        "units": 50,
+        "units": 182,
         "decided": 2,
         "by_decision": {
           "approve": 0,
@@ -4686,14 +4942,16 @@
         "batches": [
           "af_qa_2026-10-22",
           "direction_audit_2026-10-23",
+          "effects_wetland_management_2026-11-10",
           "ocr_check_2026-11-07",
           "qa_queue_2026-10-19",
           "recovered_2026-10-08",
-          "sign_defects_2026-10-16"
+          "sign_defects_2026-10-16",
+          "t4_limits_2026-11-10"
         ]
       },
       "riparian_buffer": {
-        "units": 23,
+        "units": 51,
         "decided": 0,
         "by_decision": {
           "approve": 0,
@@ -4703,11 +4961,13 @@
         "picos_flagged": 0,
         "batches": [
           "direction_audit_2026-10-23",
-          "sign_defects_2026-10-16"
+          "effects_riparian_buffer_2026-11-10",
+          "sign_defects_2026-10-16",
+          "t4_limits_2026-11-10"
         ]
       },
       "water_harvesting_conservation": {
-        "units": 75,
+        "units": 358,
         "decided": 16,
         "by_decision": {
           "approve": 6,
@@ -4717,16 +4977,18 @@
         "picos_flagged": 0,
         "batches": [
           "direction_audit_2026-10-23",
+          "effects_water_harvesting_conservation_2026-11-10",
           "ocr_check_2026-11-07",
           "primaries_round_2026-10-21",
           "prose_review_2026-10-06",
           "qa_queue_2026-10-19",
           "recovered_2026-10-08",
+          "t4_limits_2026-11-10",
           "wocat_mechanism_2026-10-24"
         ]
       },
       "forest_restoration": {
-        "units": 51,
+        "units": 228,
         "decided": 7,
         "by_decision": {
           "approve": 0,
@@ -4736,14 +4998,16 @@
         "picos_flagged": 0,
         "batches": [
           "direction_audit_2026-10-23",
+          "effects_forest_restoration_2026-11-10",
           "primaries_round_2026-10-21",
           "qa_queue_2026-10-19",
           "recovered_2026-10-08",
+          "t4_limits_2026-11-10",
           "wocat_mechanism_2026-10-24"
         ]
       },
       "mangrove_restoration": {
-        "units": 10,
+        "units": 44,
         "decided": 6,
         "by_decision": {
           "approve": 3,
@@ -4753,6 +5017,7 @@
         "picos_flagged": 0,
         "batches": [
           "direction_audit_2026-10-23",
+          "effects_mangrove_restoration_2026-11-10",
           "primaries_round_2026-10-21",
           "recovered_2026-10-08"
         ]
