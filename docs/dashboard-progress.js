@@ -356,7 +356,7 @@
   }
   function renderBuild() {
     const b=data.build || {};
-    $('dashboard-build').innerHTML=`<span>Dashboard <b>v${esc(b.release || 'unversioned')}</b> · UI ${esc(b.ui_id || '—')} · Data ${esc(b.data_id || '—')}</span><details><summary>Build ${esc((b.built_at || data.timestamp || '').slice(0,16).replace('T',' '))} · history</summary><div><p>Counts v${esc(b.count_definition_version || '—')} · Source revision ${esc((b.source_commit || '').slice(0,12))}</p>${(data.dashboard_releases||[]).map(r=>`<p><b>v${esc(r.version)}</b> · ${esc(r.changes)}</p>`).join('')}<ul>${(b.history||[]).slice().reverse().map(h=>`<li>${esc(h.built_at)} · v${esc(h.release)} · UI ${esc(h.ui_id)} · Data ${esc(h.data_id)}</li>`).join('')}</ul><small>Latest 50 builds retained here; older builds remain in project history.</small></div></details>`;
+    $('dashboard-build').innerHTML=`<span>Dashboard <b>v${esc(b.release || 'unversioned')}</b> · UI ${esc(b.ui_id || '—')} · Data ${esc(b.data_id || '—')}</span><details><summary>Releases</summary><div><p>Counts v${esc(b.count_definition_version || '—')}. Earlier builds are in the project's change history for docs/dashboard_data.json.</p>${(data.dashboard_releases||[]).map(r=>`<p><b>v${esc(r.version)}</b> · ${esc(r.changes)}</p>`).join('')}</div></details>`;
   }
   function dispatch(e) {
     const b=e.target.closest('[data-action]');if(!b||!b.closest('.dp-shell,.dp-drawer'))return;

@@ -27,8 +27,6 @@ from __future__ import annotations
 
 import csv
 import json
-import subprocess
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -439,44 +437,18 @@ def build(schema_root: str | Path) -> dict[str, Any]:
     }
 
 
-def _git_commit(root: Path | None = None) -> str:
-    if root is not None:
-        from nbs_ruralscan.schema_tools.build_paths import source_revision
-
-        return source_revision(root, short=True)
-    try:
-        return subprocess.run(
-            ["git", "rev-parse", "--short", "HEAD"],
-            capture_output=True,
-            text=True,
-            cwd=ROOT,
-        ).stdout.strip()
-    except Exception:
-        return ""
-
-
 def write(
     schema_root: str | Path, check: bool = False, dest: Path | None = None
 ) -> list[Path]:
-    """(Re)write `docs/scorecard.json`; the stamp only moves when the content does."""
+    """(Re)write `docs/scorecard.json`. No build time or commit sha is stamped (they made
+    every open PR conflict), so the same inputs always give the same bytes."""
     schema_root = Path(schema_root)
     dest = Path(dest) if dest else schema_root.parent / "docs" / "scorecard.json"
-    payload = build(schema_root)
+    out = build(schema_root)
     cur = _j(dest.read_text(encoding="utf-8"), None) if dest.exists() else None
-    if (
-        isinstance(cur, dict)
-        and cur.get("meta") == payload["meta"]
-        and cur.get("nbs") == payload["nbs"]
-    ):
+    if cur == json.loads(json.dumps(out, ensure_ascii=False)):
         return []
     if not check:
-        out = {
-            "build": {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-                "git_commit": _git_commit(schema_root.parent),
-            },
-            **payload,
-        }
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(
             json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

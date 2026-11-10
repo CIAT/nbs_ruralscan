@@ -59,7 +59,7 @@
       scope = Object.assign({}, scope, {view: subview.dataset[tabId === 'tab-methods' ? 'methodView' : 'reviewView']});
     }
     return { tab: tab ? clean(tab.textContent) : '', scope: scope,
-      build: typeof dashboardData !== 'undefined' && dashboardData ? dashboardData.git_commit : '' };
+      build: typeof dashboardData !== 'undefined' && dashboardData ? ((dashboardData.build || {}).data_id || '') : '' };
   }
   function labelFor(e) {
     if (!e) return 'Page';

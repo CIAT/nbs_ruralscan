@@ -1755,9 +1755,9 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
   </div>
 
   <div class="meta-timestamp">
-    <span>Last compiled: <strong id="meta-timestamp-val">2026-06-12</strong></span>
+    <span>Published: <strong id="meta-timestamp-val">—</strong></span>
     <span>•</span>
-    <span>Git commit: <code id="meta-commit-val" style="font-family:ui-monospace, monospace; font-size:11px; background-color:var(--bg-tertiary); padding:2px 5px; border-radius:3px;">abcdefg</code></span>
+    <span>Data version: <code id="meta-commit-val" style="font-family:ui-monospace, monospace; font-size:11px; background-color:var(--bg-tertiary); padding:2px 5px; border-radius:3px;">—</code></span>
   </div>
 </main>
 
@@ -1896,6 +1896,9 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
     fetch('dashboard_data.json')
       .then(response => {
         if (!response.ok) throw new Error('Network error loading database');
+        // The data file carries no build time (it made every PR conflict); the web
+        // server's Last-Modified header says when this copy was published.
+        window._dataLastModified = response.headers.get('Last-Modified') || '';
         return response.json();
       })
       .then(data => {
@@ -3303,9 +3306,9 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
     if(window._cropSharePointMap===undefined){ window._cropSharePointMap={}; }
     fetch('crops/manifest.json').then(function(r){return r.ok?r.json():null;}).then(function(j){ if(j&&Array.isArray(j.eids)){ window._cropManifest=new Set(j.eids); } if(j&&j.sharepoint&&typeof j.sharepoint==='object'){ window._cropSharePointMap=j.sharepoint; window._cropSharePoint=new Set(Object.keys(j.sharepoint)); } if(j&&(Array.isArray(j.eids)||j.sharepoint)){ if(typeof renderVfWorklist==='function' && window._vfMode){ try{renderVfWorklist();}catch(e){} } } }).catch(function(){});
     // 1. Meta fields
-    const formattedDate = new Date(dashboardData.timestamp).toLocaleString();
-    document.getElementById('meta-timestamp-val').textContent = formattedDate;
-    document.getElementById('meta-commit-val').textContent = dashboardData.git_commit.slice(0, 8);
+    const published = window._dataLastModified ? new Date(window._dataLastModified) : null;
+    document.getElementById('meta-timestamp-val').textContent = published && !isNaN(published) ? published.toLocaleString() : '—';
+    document.getElementById('meta-commit-val').textContent = ((dashboardData.build || {}).data_id || '—');
 
     // 2. High-level stats counters & lists
     const sources = dashboardData.registers.SRC_source_register || [];
