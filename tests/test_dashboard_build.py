@@ -2,7 +2,6 @@
 
 import csv
 import json
-from datetime import datetime, timezone
 from types import SimpleNamespace
 
 import pytest
@@ -108,27 +107,36 @@ def test_presentation_labels_are_generated_without_rewriting_registry(repo):
     assert generate.generate_dashboard_data(repo, check=True) == []
 
 
-def test_repeat_build_is_byte_stable_and_retains_history(repo, monkeypatch):
+def test_repeat_build_is_byte_stable_and_unstamped(repo, monkeypatch):
+    import subprocess
+
     path = repo.parent / "docs" / "dashboard_data.json"
     assert generate.generate_dashboard_data(repo) == [path]
     first_bytes = path.read_bytes()
     first = read_build(repo)
     assert first["recipes"]["trees"]["T3_nbs_hazard_farming"]
     assert first["progress_overview"]["totals"]["known_sources"] == 2
-    assert len(first["build"]["history"]) == 1
+    # No wall-clock or commit stamps: they made every open PR conflict on this file.
+    assert not {"timestamp", "git_commit"} & set(first)
+    assert set(first["build"]) == {
+        "release",
+        "ui_id",
+        "data_id",
+        "count_definition_version",
+    }
 
-    class Later(datetime):
-        @classmethod
-        def now(cls, tz=None):
-            return cls(2099, 1, 1, tzinfo=timezone.utc)
-
-    monkeypatch.setattr(generate, "datetime", Later)
+    # A different HEAD must not change a byte.
+    monkeypatch.setattr(
+        subprocess, "run", lambda *args, **kwargs: SimpleNamespace(stdout="commit-two")
+    )
+    path.unlink()
+    assert generate.generate_dashboard_data(repo) == [path]
+    assert path.read_bytes() == first_bytes
     assert generate.generate_dashboard_data(repo) == []
     assert generate.generate_dashboard_data(repo, check=True) == []
-    assert path.read_bytes() == first_bytes
 
 
-def test_ui_change_updates_ui_identity_and_appends_one_history_entry(repo):
+def test_ui_change_updates_ui_identity(repo):
     generate.generate_dashboard_data(repo)
     first = read_build(repo)
     (repo.parent / "docs" / "dashboard.html").write_text(
@@ -142,7 +150,6 @@ def test_ui_change_updates_ui_identity_and_appends_one_history_entry(repo):
     second = read_build(repo)
     assert first["build"]["ui_id"] != second["build"]["ui_id"]
     assert first["build"]["data_id"] == second["build"]["data_id"]
-    assert len(second["build"]["history"]) == 2
     assert generate.generate_dashboard_data(repo) == []
 
 
@@ -185,7 +192,6 @@ def test_data_inputs_invalidate_snapshot_without_ui_change(repo, section):
     second = read_build(repo)
     assert first["build"]["ui_id"] == second["build"]["ui_id"]
     assert first["build"]["data_id"] != second["build"]["data_id"]
-    assert len(second["build"]["history"]) == 2
 
 
 def test_tampered_payload_fails_even_with_unchanged_stored_hashes(repo):
@@ -217,22 +223,21 @@ def test_new_release_and_count_definition_are_logged(repo):
     second = read_build(repo)
     assert second["build"]["release"] == "1.1.0"
     assert second["build"]["count_definition_version"] == "2"
-    assert second["build"]["history"][0] == first["build"]["history"][0]
     assert second["build"]["data_id"] != first["build"]["data_id"]
 
 
-def test_build_history_is_bounded(repo):
+def test_legacy_stamps_are_stale_and_dropped_on_rebuild(repo):
     generate.generate_dashboard_data(repo)
     path = repo.parent / "docs" / "dashboard_data.json"
+    clean = path.read_bytes()
     data = read_build(repo)
-    data["build"]["history"] = [{"release": f"old-{i}"} for i in range(60)]
+    data["timestamp"] = "2026-01-01T00:00:00+00:00"
+    data["git_commit"] = "abc"
+    data["build"]["history"] = [{"release": f"old-{i}"} for i in range(3)]
     path.write_text(json.dumps(data))
-    (repo.parent / "docs" / "dashboard.html").write_text("changed")
-    generate.generate_dashboard_data(repo)
-    history = read_build(repo)["build"]["history"]
-    assert len(history) == 50
-    assert history[0]["release"] == "old-11"
-    assert history[-1]["release"] == "1.0.0"
+    assert generate.generate_dashboard_data(repo, check=True) == [path]
+    assert generate.generate_dashboard_data(repo) == [path]
+    assert path.read_bytes() == clean
 
 
 def test_decoded_class_tuples_compare_as_serialised_json(repo, monkeypatch):

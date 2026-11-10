@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import csv
 import json
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -163,13 +162,10 @@ def write_decisions(
         current = json.loads(dest.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         current = None
-    if (
-        isinstance(current, dict)
-        and current.get("decisions") == payload["decisions"]
-        and current.get("summary") == payload["summary"]
-    ):
+    # No build-time stamp: it changed on every rebuild and made every open PR conflict.
+    out = json.loads(json.dumps(payload, ensure_ascii=False))
+    if current == out:
         return []
-    out = {"built": datetime.now(timezone.utc).isoformat(), **payload}
     if not check:
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(

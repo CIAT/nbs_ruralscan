@@ -464,7 +464,7 @@
   var S = {
     index: [], batchId: null, batch: null, kind: 'units', units: [], reasons: DEFAULT_REASONS.slice(),
     reviewer: '', decisions: {}, filtered: [], pos: 0, pendingReject: false,
-    shared: {}, sharedBuilt: ''
+    shared: {}
   };
 
   function $(id) { return document.getElementById(id); }
@@ -539,7 +539,6 @@
   // ---------- shared decisions (docs/review/decisions.json, read-only) ----------
   function setShared(data) {
     S.shared = (data && data.decisions) || {};
-    S.sharedBuilt = (data && data.built) || '';
     return S.shared;
   }
   function loadShared() {

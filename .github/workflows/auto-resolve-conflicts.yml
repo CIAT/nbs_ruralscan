@@ -1,0 +1,174 @@
+name: Auto-resolve PR conflicts
+
+# Every merge to main used to leave the other open PRs "conflicting", almost always only in
+# generated files (dashboard/progress JSON, register JSON, synthesised T3/T6 tables) that are
+# rebuilt from the CSVs anyway. GitHub's own merge check does not use our merge drivers, so it
+# cannot see that. This workflow does what scripts/resolve-pr-conflicts.sh does by hand:
+# merge main into each conflicting PR branch with the regen / keycsv / jsonunion drivers,
+# rebuild once, run the quick gates, and push.
+#
+# It never approves or merges anything (auto-merge-review.yml keeps that job), never touches
+# drafts or PRs from forks, and never pushes when a person is needed: a row edited both here
+# and on main, rows needing new prose, a failed gate, or a rebuild that would change a
+# hand-edited file. Those PRs get a plain-language comment and the "needs-manual-merge" label.
+#
+# Token: pushes made with the default GITHUB_TOKEN do not start CI on the pushed commit, so
+# the PR's required "checks" status would never appear. Two options:
+#   1. (recommended) add a repo secret AUTO_RESOLVE_TOKEN: a fine-grained personal access
+#      token or GitHub App token for this repo with Contents: read/write, Pull requests:
+#      read/write, Issues: read/write. Its pushes start CI like anyone else's.
+#   2. no secret: the workflow falls back to GITHUB_TOKEN and then starts CI itself on the
+#      branch with `gh workflow run ci.yml` (ci.yml has a workflow_dispatch trigger for this).
+# Opt a PR out by adding the label "no-auto-resolve".
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "Only this PR number (blank = every conflicting PR)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
+
+concurrency:
+  group: auto-resolve-conflicts
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ secrets.AUTO_RESOLVE_TOKEN || github.token }}
+      HAS_PAT: ${{ secrets.AUTO_RESOLVE_TOKEN != '' }}
+      REPO: ${{ github.repository }}
+      ONLY_PR: ${{ github.event.inputs.pr }}
+      LABEL: needs-manual-merge
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.AUTO_RESOLVE_TOKEN || github.token }}
+
+      # Same Python tooling as CI. The PDF cache (.cache/corpus) is gitignored and absent
+      # here, exactly as in CI: the build then skips quote verification with a note and
+      # still rebuilds every generated file.
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dev tools
+        run: uv sync --no-install-project --only-group dev
+
+      - name: Git identity and merge drivers
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          bash scripts/setup-repo.sh
+
+      - name: Find conflicting PRs
+        id: find
+        run: |
+          set -euo pipefail
+          query='.[] | select(.isDraft | not) | select(.isCrossRepository | not)
+                 | select([.labels[].name] | index("no-auto-resolve") | not)'
+          # GitHub works out "mergeable" lazily after a push to main; ask again while any is UNKNOWN.
+          for attempt in 1 2 3 4 5 6; do
+            gh pr list --repo "$REPO" --state open --limit 100 \
+              --json number,isDraft,isCrossRepository,mergeable,labels > prs.json
+            unknown=$(jq -r "[$query | select(.mergeable == \"UNKNOWN\")] | length" prs.json)
+            [ "$unknown" = 0 ] && break
+            echo "$unknown PR(s) still being checked by GitHub; waiting ($attempt)"
+            sleep 20
+          done
+          list=$(jq -r "$query | select(.mergeable == \"CONFLICTING\") | .number" prs.json | sort -n | tr '\n' ' ')
+          if [ -n "$ONLY_PR" ]; then
+            case " $list " in *" $ONLY_PR "*) list="$ONLY_PR" ;; *) list="" ;; esac
+          fi
+          echo "conflicting PRs: ${list:-none}"
+          echo "list=$list" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve each conflicting PR
+        if: steps.find.outputs.list != ''
+        env:
+          LIST: ${{ steps.find.outputs.list }}
+        run: |
+          set -uo pipefail
+          # Run a copy: the script checks out each PR branch, which may rewrite the file
+          # bash is still reading.
+          cp scripts/resolve-pr-conflicts.sh "$RUNNER_TEMP/resolve.sh"
+          gh label create "$LABEL" --repo "$REPO" --color D93F0B \
+            --description "Main moved on and this PR needs a person to merge it" 2>/dev/null || true
+
+          has_label() { gh pr view "$1" --repo "$REPO" --json labels -q '.labels[].name' | grep -qx "$LABEL"; }
+
+          for pr in $LIST; do
+            echo "::group::PR #$pr"
+            branch=$(gh pr view "$pr" --repo "$REPO" --json headRefName -q .headRefName)
+            git fetch -q origin "+refs/heads/$branch:refs/remotes/origin/$branch" main
+            bash "$RUNNER_TEMP/resolve.sh" "$pr" --no-push --generated-only > "$RUNNER_TEMP/pr.log" 2>&1
+            rc=$?
+            cat "$RUNNER_TEMP/pr.log"
+            case $rc in
+              0)
+                if [ "$(git rev-parse HEAD)" = "$(git rev-parse "origin/$branch")" ]; then
+                  echo "nothing to push"
+                elif git push -q origin "HEAD:refs/heads/$branch"; then
+                  echo "pushed $branch"
+                  if [ "$HAS_PAT" != "true" ]; then
+                    gh workflow run ci.yml --repo "$REPO" --ref "$branch" || echo "::warning::could not start CI on $branch"
+                  fi
+                  if has_label "$pr"; then gh pr edit "$pr" --repo "$REPO" --remove-label "$LABEL" || true; fi
+                else
+                  echo "::warning::push to $branch failed (it probably moved); the next run will retry"
+                fi
+                ;;
+              2|3|4|5)
+                case $rc in
+                  2) why="The same row or line was changed both in this pull request and on main, in different ways, so it can't be merged automatically. Someone needs to choose which version to keep." ;;
+                  3) why="Merging main changed some generated table rows, and those rows need new written explanations before this can go in." ;;
+                  4) why="Main merged in cleanly, but one of the checks failed afterwards, so nothing was pushed." ;;
+                  5) why="Main merged in cleanly, but rebuilding would also have changed hand-edited files (for example the evidence register), so nothing was pushed." ;;
+                esac
+                if has_label "$pr"; then
+                  echo "already labelled $LABEL; not commenting again"
+                else
+                  {
+                    echo "**This pull request needs a person to bring it up to date with main.**"
+                    echo
+                    echo "$why"
+                    echo
+                    echo "To fix it on your computer, run \`bash scripts/resolve-pr-conflicts.sh $pr\` (or \`/fix-pr-conflicts $pr\` in Claude Code), sort out the files it lists, then commit and push. This label comes off automatically once the branch merges cleanly."
+                    echo
+                    echo "<details><summary>What the automatic attempt printed</summary>"
+                    echo
+                    echo '```'
+                    tail -n 30 "$RUNNER_TEMP/pr.log"
+                    echo '```'
+                    echo "</details>"
+                  } > "$RUNNER_TEMP/comment.md"
+                  gh pr comment "$pr" --repo "$REPO" --body-file "$RUNNER_TEMP/comment.md" || true
+                  gh pr edit "$pr" --repo "$REPO" --add-label "$LABEL" || true
+                fi
+                ;;
+              *)
+                echo "::warning::PR #$pr: the resolver stopped unexpectedly (exit $rc); nothing pushed"
+                ;;
+            esac
+            # Leave a clean tree for the next PR.
+            git merge --abort 2>/dev/null || true
+            git reset -q --hard
+            git clean -fdq
+            rm -f "$(git rev-parse --git-dir)/REGEN_NEEDED"
+            git checkout -q --detach origin/main
+            echo "::endgroup::"
+          done

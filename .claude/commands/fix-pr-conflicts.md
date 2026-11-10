@@ -15,3 +15,10 @@ Run `bash scripts/resolve-pr-conflicts.sh $ARGUMENTS` from the repo root and rep
 
 Do not run the full pytest suite locally unless asked (`--full-tests`); CI runs it.
 Check the PR is still OPEN first (the script refuses merged PRs).
+- Exit 5 (only with `--generated-only`, used by the auto-resolve workflow): the rebuild would
+  change a hand-edited file (e.g. auto-quarantine touching the evidence register). Run the
+  script without that flag locally and review the change before pushing.
+
+Conflicting PRs are normally fixed automatically after every merge to main by
+`.github/workflows/auto-resolve-conflicts.yml`; PRs it cannot fix carry the
+`needs-manual-merge` label and a comment explaining why.

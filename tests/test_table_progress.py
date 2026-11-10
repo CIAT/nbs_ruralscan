@@ -133,14 +133,23 @@ def test_iter_queue(tmp_path):
     assert tables == {"T3", "T6"}
 
 
-def test_write_check_ignores_build_stamp(tmp_path):
+def test_write_is_unstamped_and_byte_stable(tmp_path):
     dest = tmp_path / "table_progress.json"
     shutil.copy(COMMITTED, dest)
+    assert tp.write(SCHEMA, check=True, dest=dest) == []
+    assert "build" not in json.loads(dest.read_text(encoding="utf-8"))
+    first = dest.read_bytes()
+    dest.unlink()
+    assert tp.write(SCHEMA, check=False, dest=dest) == [dest]
+    assert dest.read_bytes() == first  # same inputs, same bytes
+    # A legacy build stamp is stale and is dropped on the next write.
     data = json.loads(dest.read_text(encoding="utf-8"))
     data["build"] = {"timestamp": "1970-01-01T00:00:00+00:00", "git_commit": "x"}
     dest.write_text(json.dumps(data), encoding="utf-8")
-    assert tp.write(SCHEMA, check=True, dest=dest) == []
-    assert tp.write(SCHEMA, check=False, dest=dest) == []  # no stamp refresh churn
+    assert tp.write(SCHEMA, check=True, dest=dest) == [dest]
+    assert tp.write(SCHEMA, check=False, dest=dest) == [dest]
+    assert dest.read_bytes() == first
+    data = json.loads(dest.read_text(encoding="utf-8"))
     data["cells"]["agroforestry"]["T3"]["completion"]["pct"] = -1
     dest.write_text(json.dumps(data), encoding="utf-8")
     assert tp.write(SCHEMA, check=True, dest=dest) == [dest]

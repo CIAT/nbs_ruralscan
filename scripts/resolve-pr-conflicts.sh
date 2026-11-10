@@ -2,15 +2,34 @@
 # Fast path for "PR has conflicts": merge latest main into a PR branch, rebuild once,
 # re-synthesise only what changed, run the quick gates, push. Full pytest is left to CI.
 #
-#   bash scripts/resolve-pr-conflicts.sh <pr-number|branch> [--full-tests]
+#   bash scripts/resolve-pr-conflicts.sh <pr-number|branch> [--full-tests] [--no-push] [--generated-only]
+#
+#   --no-push         commit locally but do not push (the auto-resolve workflow pushes itself)
+#   --generated-only  refuse (exit 5) if regeneration changed anything other than generated
+#                     outputs — e.g. the write-mode build auto-quarantining evidence rows. Used
+#                     by the unattended workflow so a bot never edits a register on its own.
+#
+# Exit codes: 0 done · 2 real conflict · 3 rows need new prose · 4 a gate failed ·
+#             5 regeneration touched hand-edited files (with --generated-only).
 #
 # Relies on the merge drivers registered by scripts/setup-repo.sh (regen / keycsv /
 # jsonunion / union). Stops, without pushing, when a conflict needs a human: a row or key
 # edited differently on both sides, a source file conflict, or rows needing new prose.
 set -euo pipefail
 root="$(git rev-parse --show-toplevel)"; cd "$root"
-target="${1:?usage: resolve-pr-conflicts.sh <pr-number|branch> [--full-tests]}"
-full="${2:-}"
+target="${1:?usage: resolve-pr-conflicts.sh <pr-number|branch> [--full-tests] [--no-push] [--generated-only]}"
+shift
+full=""; push=1; generated_only=0
+for arg in "$@"; do
+  case "$arg" in
+    --full-tests) full="--full-tests" ;;
+    --no-push) push=0 ;;
+    --generated-only) generated_only=1 ;;
+    *) echo "unknown option: $arg"; exit 1 ;;
+  esac
+done
+# Files the build itself writes (keep in step with the merge=regen lines in .gitattributes).
+generated_re='^(docs/[^/]+\.json|docs/review/decisions\.json|docs/effect_rows_flat\.csv|docs/dashboard-[^/]+\.csv|schema/([^/]+|registers/[^/]+|lookups/[^/]+|recipes/.+)\.json|schema/recipes/[^/]+/(T3_nbs_hazard_farming|T6_nbs_scorecard|T6E_economic_profile)\.csv)$'
 py() { uv run python "$@"; }
 
 git config --get merge.keycsv.driver >/dev/null || bash scripts/setup-repo.sh >/dev/null
@@ -88,8 +107,19 @@ else
   uv run pytest -q -x tests/test_cell_synthesis.py tests/test_effect_checks.py tests/test_pipeline_hardening.py tests/test_t4_recovery.py >/dev/null || { echo "✗ core tests"; exit 4; }
 fi
 
+if [ "$generated_only" = 1 ]; then
+  touched=$(git diff --name-only HEAD | grep -vE "$generated_re" || true)
+  if [ -n "$touched" ]; then
+    echo "✗ regeneration changed hand-edited files (not pushed):"; echo "$touched"
+    exit 5
+  fi
+fi
 git add -u  # tracked files only: other sessions may have untracked work in this tree
 git diff --cached --quiet || git commit -q -m "chore: regenerate after merging main"
+if [ "$push" = 0 ]; then
+  echo "✓ $branch merged and regenerated locally (not pushed)"
+  exit 0
+fi
 git push -q
 echo "✓ pushed $branch (full test suite runs in CI)"
 [[ "$target" =~ ^[0-9]+$ ]] && sleep 15 && gh pr view "$target" --json mergeable,mergeStateStatus -q '"mergeable=\(.mergeable) state=\(.mergeStateStatus)"' || true
