@@ -3,7 +3,7 @@
 Reviewer-reported rating moves that look backwards. Diagnosed against the engine at
 `e2de3081` (`src/nbs_ruralscan/recipe/cell_synthesis.py`, `t3t6_build.py`); no engine code
 changed. Decision sheet for Pete: `docs/decisions/scoring_round5_2026-11-10.html`
-(codes `scoring_r5_1` … `scoring_r5_3`; rows in `methodology/decisions/open_decisions.csv`).
+(codes `scoring_r5_1` … `scoring_r5_5`; rows in `methodology/decisions/open_decisions.csv`).
 
 ## How to reproduce
 
@@ -203,3 +203,115 @@ review pages tells a reader that an absent breakdown means "same as overall" rat
 "no evidence". Recommended (no decision needed): add the third trigger and the
 family-row/pooled-rank notes to §2, and a one-line legend on the scorecard; consider
 comparing scope rows against the post-vote class.
+
+## 5. Farming-system T3 rows exist on the strength of one unit (`scoring_r5_4`)
+
+`t3t6_build.synthesise` (L280–283): `fs_present = {u.context.farming_system or "all"} ∪ {"all"}`
+over the NbS's units; each hazard × fs cell is then run. Inside `synthesise_cell`, the T3
+gather (L2386–2388) admits a unit when its fs is the cell's fs **or blank/"all"** (unstated =
+applies), and the emission guard (L2456–2469) only requires that **one** routed unit states
+the system. So the row's existence is decided by one unit, while its class, confidence and
+n_sources are dominated by the unstated pool.
+
+Example: `water_harvesting_conservation__drought__agro_pastoral` = moderate / very_high /
+25 sources / 36 units; exactly one unit names agro_pastoral (`ev_drought_hazard_roose17_3`,
+Roose 2017 Algeria stone lines). Drop it → the row and its 2 scope rows
+(`aez-semi_arid`, `income_group-upper_middle`) and the terracing family row are not emitted;
+the `__drought__all` row (moderate / very_high / 51 sources) applies. WH drought units by
+stated fs: cropping_rainfed 38, unstated 37, mixed_crop_livestock 22, irrigated 1,
+agro_pastoral 1.
+
+Census (six NbS, T3 mitigation, non-scope rows with fs ≠ all): **72 rows** (+16 scope rows
+under them). Sources naming the system: 1 → 33 rows; 2 → 19; ≥3 → 20. **56 / 72 carry the same
+class as the matching `all` row** (same family, no scope). The scorecard reads only
+`farming_system == all` rows (`runtime/scorecard.py` L333), so these rows feed the AOI
+farming-system lookup only. No practice × farming-system lookup exists (FAM, lookups, T7
+checked).
+
+Option impact (in-memory dry runs, all six NbS):
+
+* **B — lookup-driven rows** for every system a practice is used in: needs a new lookup;
+  upper bound 426 extra rows (each non-scope `all` row × systems not already present);
+  rows without system-naming units would equal the `all` row.
+* **C — ≥ 2 sources naming the system** (pooling unchanged): 33 of 72 removed; 39 stay, still
+  pooling unstated evidence into their n_sources.
+* **D — named-only pool, ≥ 2 sources, shown only when the class differs from the `all` row**
+  (the AEZ / income scope-row rule, `min_scope_sources=2` + L2791–2795 differ trigger):
+  simulated by filtering the T3 fs ≠ all cell to units with `context.farming_system == fs`.
+  **72 → 8 rows shown**; 27 fall below 2 sources / data deficient, 21 equal the `all` class.
+  The 8: AF drought agro_pastoral (low, 2 src; general conflicting), AF drought
+  mixed_crop_livestock (low, 2; conflicting), AF heat_stress pastoral_rangeland (moderate,
+  5; general low), AF wind_cyclone cropping_rainfed (moderate, 2; conflicting), WH
+  cross_family drought cropping_rainfed (low, 3; general moderate), WH flood
+  cropping_rainfed (low, 2; moderate), WH flood mixed_crop_livestock (low, 2; moderate),
+  WH runoff_catchment flood mixed_crop_livestock (low, 2; moderate).
+  Implementation: in `synthesise_cell`, for T3 fs ≠ all non-asset cells, gather only units
+  stating that fs (drop the `"all"` admission at L2387) and apply the scope emission rule
+  against the `all` row; the L2456 guard becomes redundant. Recommended: **D**.
+
+## 6. Two-step swings from removing one source (`scoring_r5_5`)
+
+Leave-one-**source**-out over all 580 sources of the six NbS (757 T3/T6/T6E rows; a swing =
+numeric class moves ≥ 2 ranks; high and very_high both rank 3): **24 events, 21 rows, 22
+sources**. 4 are sign flips in thin rows (≤ 5 sources; e.g. riparian planted biodiversity,
+FR passive_regeneration catchment water yield); 20 are size swings.
+
+### Mechanism — weighted median on a bimodal vote
+
+`_reconcile_rank` (L692–740) takes `_weighted_median` (lower median, `synthesis.py`
+L280–292) over modal-sign units with a magnitude; `_family_vote` (L3117–3200) takes `_wmedian`
+(L3258–3267, same rule) over family ranks with weight √n_sources. When the voters sit in two
+camps two ranks apart with nothing between (slight vs strong), the median must land on one
+camp; a single voter moving the cumulative weight across 50 % jumps it two ranks.
+`size_sparse` (needs < 1/3 sized) and `modelled_capped` do not bind in either example.
+
+* **WH terracing asset_threat × flood** (role `asset_vulnerability`, `asset_sensitivity`):
+  9 units / 9 sources. Four unsized (heusch95 model 0.42, willem21 meta 0.252, roose06 case
+  0.216, roose94 expert 0.126 = 71 % of weight, no vote on size). Five WOCAT practitioner
+  ratings: `not well` → strong (1553, 1616: 0.09 + 0.09 = 0.18) vs `well` → slight (6610,
+  7553: 0.09 each; 1573: 0.063 = 0.243). Lower median = slight → `low`. Drop 6610 or 7553 →
+  strong 0.18 vs slight 0.153 → strong → `very_high` (confidence high). Note the WOCAT coping
+  scale maps to slight/strong with no moderate step between `well` and `not well` in this
+  pool, which is what makes it bimodal.
+* **AF biodiversity roll-up** (T6): pooled class strong both runs; the published class is
+  the family vote. Votes: cross_family, linear_boundary, regeneration_farmland = slight
+  (√3 each, 5.196); shaded_perennial (√5), silvopastoral (√6), planted_silvoarable (√1) =
+  strong (5.685) → strong. `ev_biodiversity_outcome_biswas22_1` (source
+  `adhikary_2022_econ`, Biswas et al. 2022, earthworm Simpson index 0.62 vs 0.41, contrast →
+  strong) is the **only** voter of the planted_silvoarable cell; dropping it removes that
+  family row → strong 4.685 vs slight 5.196 → `slight_positive`. Same drop via
+  `niether_2020`.
+
+**Side finding (bug candidate, no card):** the planted_silvoarable biodiversity family row has
+`n_sources = 1` (very_low) yet is emitted and votes. `synthesise_cell_with_families` gates
+families on `min_family_sources` over `fam_units` — the family's whole pre-XW register slice
+(L3019–3023) — not the cell's sources. The per-cell truth is used for the vote weight but
+not for the gate.
+
+### Options (in-memory: patched `_reconcile_rank` + `_wmedian`; diff vs current, LOO rerun)
+
+| | rule | rows changed | strong/high/very_high rows (of 757) | LOO 2-step events / rows / sources |
+|---|---|---|---|---|
+| A | lower weighted median (now) | 0 | 101 | 24 / 21 / 22 |
+| B | if weighted q(1/3) and q(2/3) differ by ≥ 2 ranks → their midpoint (half away from 0), else median; both in cell and family vote | 12 (6 main, 6 scope) | 95 | 16 / 16 / 15 |
+| C | B + rank 3 needs ≥ 2 sources each with magnitude 3 (else 2) | 69 | 54 | 4 / 4 / 4 (3 sign flips) |
+| D | two-source rule only (current median) | 62 | 57 | 10 / 8 / 10 |
+| (mean) | weighted mean of ranks, rounded | 46 | 98 | 17 / 17 / 16 |
+
+B row changes (main): AF biodiversity roll-up strong → moderate; FR protection_cbfm
+water_stress slight → moderate; mangrove tidal_coastal soil_erosion strong → moderate; WH
+in_situ asset extreme_rainfall very_high → moderate; WH terracing asset extreme_rainfall
+low → moderate; WH terracing asset flood low → moderate. Scope: wetland water_quality
+cropping_rainfed strong → moderate; FR asset wind_cyclone upper_middle new (moderate); 4
+scope rows no longer emitted (FR carbon lic_lmic, WH asset flood lic_lmic, WH carbon
+cropping_rainfed + upper_middle) because they now equal their global row. Both examples
+read moderate with and without the dropped source under B, C and the mean. D leaves the
+terraces swing (two WOCAT sources already say strong). The 1/3 band reuses
+`CONFLICT_MIN_SHARE`. Interaction: `scoring_r5_3` B also moves AF biodiversity roll-up
+strong → moderate. Remaining B swings are mostly "one source supplies the only large size"
+(e.g. Sida 2018 is 67 % of AF regeneration_farmland drought weight and the only strong
+voter → very_high; without it only a WOCAT slight rating → low), which C addresses at the
+cost of halving strong rows. Recommended: **B**; C as a separate strictness decision.
+
+Repro scripts (scratchpad, not committed): `opts.py` (median variants), `loo.py` (per-source
+LOO per mode × NbS), `fs.py` / `fsD.py` (farming-system census and option D simulation).
