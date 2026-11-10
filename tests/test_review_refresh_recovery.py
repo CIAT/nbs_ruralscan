@@ -1,7 +1,6 @@
 """Review refresh publishes a complete artifact set without full corpus validation."""
 
 import csv
-from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
@@ -145,12 +144,7 @@ def test_real_refresh_matches_previous_outputs_and_repeat_is_noop(
     candidate = tmp_path / "staged"
     shutil.copytree(baseline, candidate)
 
-    class Clock(datetime):
-        @classmethod
-        def now(cls, tz=None):
-            return cls(2026, 11, 6, 9, 0, tzinfo=timezone.utc)
-
-    monkeypatch.setattr(generate, "datetime", Clock)
+    # Generated outputs no longer read the clock, so no frozen time is needed.
     monkeypatch.setattr(generate, "validate_inputs", forbid)
     monkeypatch.setattr(generate, "quarantine_inputs", forbid)
     # Exact pre-migration call sequence, against an independent snapshot.

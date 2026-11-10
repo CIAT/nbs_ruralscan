@@ -111,19 +111,14 @@ def test_relocated_build_is_read_only_and_uses_csv_not_stale_json(
     assert json.loads(
         (output / "schema/recipes/agroforestry/T3_nbs_hazard_farming.json").read_text()
     )
-    assert (
-        json.loads((output / "docs/progress.json").read_text())["git_commit"]
-        == "unknown"
-    )
-    original_history = json.loads((inputs / "docs/dashboard_data.json").read_text())[
-        "build"
-    ]["history"]
-    assert (
-        json.loads((output / "docs/dashboard_data.json").read_text())["build"][
-            "history"
-        ]
-        == original_history
-    )
+    # Generated files carry no commit or build-time stamp: provenance cannot leak in
+    # from the unrelated checkout, and the same inputs give the same bytes.
+    for name in ("progress.json", "dashboard_data.json"):
+        published = json.loads((output / "docs" / name).read_text())
+        assert not {"timestamp", "git_commit"} & set(published)
+    assert set(
+        json.loads((output / "docs/dashboard_data.json").read_text())["build"]
+    ) == {"release", "ui_id", "data_id", "count_definition_version"}
     before_output = snapshot(output)
     assert generate.build(paths, check=True) == []
     assert generate.build(paths) == []

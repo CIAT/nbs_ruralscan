@@ -23,7 +23,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-from datetime import datetime, timezone
 import json
 import hashlib
 import re
@@ -31,7 +30,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from nbs_ruralscan.schema_tools.build_paths import SchemaBuildPaths, source_revision
+from nbs_ruralscan.schema_tools.build_paths import SchemaBuildPaths
 
 
 def _coerce(value: str):
@@ -78,8 +77,6 @@ def generate_progress_report(
         return []
 
     from collections import Counter
-
-    git_commit = source_revision(schema_root.parent)
 
     nbs_stats: dict[str, dict[str, Any]] = {}
     with src_csv.open(newline="", encoding="utf-8") as f:
@@ -134,33 +131,13 @@ def generate_progress_report(
             "countries": sorted(list(s["countries"])),
         }
 
-    report_data = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "git_commit": git_commit,
-        "nbs_progress": formatted_stats,
-    }
+    # No wall-clock time or commit sha: those changed on every rebuild, so every PR touched
+    # this file and every other open PR then conflicted on it. Same inputs -> same bytes.
+    report_data = {"nbs_progress": formatted_stats}
 
     dest_path = (
         dest if dest is not None else schema_root.parent / "docs" / "progress.json"
     )
-
-    current_data = None
-    if dest_path.exists():
-        try:
-            current_data = json.loads(dest_path.read_text(encoding="utf-8"))
-        except Exception:
-            pass
-
-    if check and current_data:
-        if current_data.get("nbs_progress") == report_data.get("nbs_progress"):
-            return []
-
-    if (
-        current_data
-        and current_data.get("git_commit") == git_commit
-        and current_data.get("nbs_progress") == formatted_stats
-    ):
-        report_data["timestamp"] = current_data["timestamp"]
 
     text = json.dumps(report_data, ensure_ascii=False, indent=2) + "\n"
     current = dest_path.read_text(encoding="utf-8") if dest_path.exists() else None
@@ -257,11 +234,9 @@ def generate_dashboard_data(
         "T7_geographic_context",
     ]
 
-    git_commit = source_revision(schema_root.parent)
-
+    # No wall-clock time or commit sha here (see generate_progress_report): the payload is
+    # a pure function of the inputs, so two PRs only collide where their data really differs.
     data = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "git_commit": git_commit,
         "registers": {},
         "global_tables": {},
         "recipes": {},
@@ -466,10 +441,8 @@ def generate_dashboard_data(
         if path.exists():
             ui_hash.update(name.encode() + b"\0" + path.read_bytes())
     ui_id = ui_hash.hexdigest()[:12]
-    # Exclude volatile provenance fields: identical data produces the same snapshot identity.
-    content = {k: v for k, v in data.items() if k not in {"timestamp", "git_commit"}}
     data_id = hashlib.sha256(
-        json.dumps(content, sort_keys=True, ensure_ascii=False).encode()
+        json.dumps(data, sort_keys=True, ensure_ascii=False).encode()
     ).hexdigest()[:12]
 
     dest_path = (
@@ -477,44 +450,22 @@ def generate_dashboard_data(
         if dest is not None
         else schema_root.parent / "docs" / "dashboard_data.json"
     )
-
-    # A first relocated publication retains the selected snapshot's build history.
-    # Later builds use their own destination history. Neither path changes inputs.
-    history_path = (
-        dest_path
-        if dest_path.exists()
-        else schema_root.parent / "docs/dashboard_data.json"
-    )
     current_data = None
-    if history_path.exists():
+    if dest_path.exists():
         try:
-            parsed = json.loads(history_path.read_text(encoding="utf-8"))
+            parsed = json.loads(dest_path.read_text(encoding="utf-8"))
             current_data = parsed if isinstance(parsed, dict) else None
         except Exception:
             pass
 
-    previous_build = (current_data or {}).get("build", {})
-    if not isinstance(previous_build, dict):
-        previous_build = {}
-    unchanged_build = (
-        previous_build.get("ui_id") == ui_id
-        and previous_build.get("data_id") == data_id
-    )
-    if unchanged_build and current_data is not None:
-        data["timestamp"] = current_data.get("timestamp", data["timestamp"])
-        data["git_commit"] = current_data.get("git_commit", git_commit)
-    build_entry = {
+    # Build identity is content-derived only. The old build time, source commit and
+    # appended build history changed on every rebuild, so every PR conflicted here.
+    data["build"] = {
         "release": release["version"],
         "ui_id": ui_id,
         "data_id": data_id,
         "count_definition_version": str(release.get("count_definition_version", "1")),
-        "built_at": data["timestamp"],
-        "source_commit": data["git_commit"],
     }
-    history = list(previous_build.get("history", []))
-    if not unchanged_build:
-        history.append(build_entry.copy())
-    data["build"] = {**build_entry, "history": history[-50:]}
     # Compare every generated section, not just five legacy sections. New progress,
     # bibliography, scope annotations and build IDs must participate in stale detection.
     if check and current_data and dest_path.exists():
