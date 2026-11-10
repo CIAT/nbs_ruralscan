@@ -1,7 +1,7 @@
 {
   "build": {
-    "timestamp": "2026-11-09T19:47:20.115260+00:00",
-    "git_commit": "13a69a80048a0828497e2c0881774ed579aa9034"
+    "timestamp": "2026-11-10T07:53:47.045898+00:00",
+    "git_commit": "e5c8da02e72810956cfd179cb32cd137fc4ba398"
   },
   "meta": {
     "nbs": [
@@ -3198,6 +3198,42 @@
     }
   },
   "decisions": [
+    {
+      "decision_id": "scoring_r5_1",
+      "status": "open",
+      "owner": "Pete",
+      "raised": "2026-11-10",
+      "question": "Can a 'no effect' (null) finding hold a rating up? A direct null lifts the proxy-only cap and counts as the second source for the evidence floor, so dropping it lowers the class (WB 2020 Colombia: silvopastoral poverty strong -> moderate; FAO 2024 Senegal: windbreak drought slight_positive -> data deficient, AF drought roll-up -> conflicting).",
+      "options": "A Keep | B Nulls never open a gate (floor + proxy cap; 14 rows change) | C Proxy cap only (3 rows)",
+      "recommendation": "B",
+      "decided": "",
+      "decided_on": "",
+      "record": "docs/decisions/scoring_round5_2026-11-10.html | technical diagnosis: methodology/audits/scoring_oddities_2026-11-10.md"
+    },
+    {
+      "decision_id": "scoring_r5_2",
+      "status": "open",
+      "owner": "Pete",
+      "raised": "2026-11-10",
+      "question": "Should an unreplicated unit capped at moderate (#57) vote moderate at full weight? Akber 2018 (weight 32% of the direct strength vote) pulls mangrove tidal_coastal flood from very_high/strong to moderate although every unit points to a benefit.",
+      "options": "A Keep | B Capped unit abstains from the strength vote when others state a size (3 rows) | C Half weight (3 rows today)",
+      "recommendation": "B",
+      "decided": "",
+      "decided_on": "",
+      "record": "docs/decisions/scoring_round5_2026-11-10.html | technical diagnosis: methodology/audits/scoring_oddities_2026-11-10.md"
+    },
+    {
+      "decision_id": "scoring_r5_3",
+      "status": "open",
+      "owner": "Pete",
+      "raised": "2026-11-10",
+      "question": "Should a source's subgroup lines each vote alongside its pooled figure? Weight is shared per source, but line composition sets the vote: Nguyen 2026 invertebrate subgroup tips AF silvopastoral + roll-up biodiversity moderate -> strong.",
+      "options": "A Keep | B One vote per source (source median first, even split -> midpoint; 12 rows change) | C Pooled/headline line only (needs extraction tag; not computable)",
+      "recommendation": "B",
+      "decided": "",
+      "decided_on": "",
+      "record": "docs/decisions/scoring_round5_2026-11-10.html | technical diagnosis: methodology/audits/scoring_oddities_2026-11-10.md"
+    },
     {
       "decision_id": "t3t6bl_G1",
       "status": "open",

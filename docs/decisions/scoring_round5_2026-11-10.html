@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scoring Decisions Round 5</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#1b2430;--muted:#5b6675;--line:#dde2e8;--accent:#0f6e5c;--rec:#e7f4f0;--recline:#9ccfc1;--chip:#eef1f5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e131b;--card:#161d28;--ink:#e6ebf2;--muted:#9aa6b6;--line:#2a3443;--accent:#4fc4a8;--rec:#14302a;--recline:#2f6b5c;--chip:#1f2835}}
+:root[data-theme="dark"]{--bg:#0e131b;--card:#161d28;--ink:#e6ebf2;--muted:#9aa6b6;--line:#2a3443;--accent:#4fc4a8;--rec:#14302a;--recline:#2f6b5c;--chip:#1f2835}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:12px 16px}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+h1{font-size:19px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:13px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.bar input[type=text]{padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);min-width:150px}
+button{padding:7px 12px;border-radius:6px;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer;font:inherit;font-size:14px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.progress{font-size:13px;color:var(--muted);margin-left:auto}
+h2{font-size:16px;margin:28px 0 4px}
+.sec-note{color:var(--muted);font-size:13px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0}
+.card.done{border-left:4px solid var(--accent)}
+.code{display:inline-block;font-weight:700;font-size:12px;background:var(--chip);border-radius:4px;padding:1px 6px;margin-right:6px}
+.q{font-weight:600}
+.ctx{color:var(--ink);font-size:14px;margin:8px 0 6px}
+.aff{color:var(--muted);font-size:13px;margin:0 0 6px;border-left:3px solid var(--line);padding-left:8px}
+.opt{display:flex;gap:9px;align-items:flex-start;padding:7px 9px;border:1px solid var(--line);border-radius:7px;margin:5px 0;cursor:pointer}
+.opt.rec{background:var(--rec);border-color:var(--recline)}
+.opt input{margin-top:3px}
+.tag{font-size:11px;font-weight:700;color:var(--accent);margin-left:6px;white-space:nowrap}
+textarea{width:100%;margin-top:6px;min-height:38px;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px}
+.secbtn{font-size:12px;padding:4px 9px}
+footer{color:var(--muted);font-size:12px;padding:30px 0 50px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Scoring decisions — round 5 (10 Nov 2026)</h1>
+  <div class="sub">One card per question. The recommended option is highlighted. Pick an option (add a note if needed), then <b>Export CSV</b> and send the file to Claude. Answers save in this browser as you go.</div>
+  <div class="bar">
+    <input type="text" id="reviewer" placeholder="Your name" aria-label="Reviewer name">
+    <button id="acceptAll">Accept all recommendations</button>
+    <button class="primary" id="export">Export CSV</button>
+    <button id="clear">Clear</button>
+    <span class="progress" id="progress"></span>
+  </div>
+</div></header>
+<main class="wrap" id="main"></main>
+<div class="wrap"><footer>Three questions about how the scorecard turns findings into a rating, raised by reviewers who saw a rating move the wrong way when one finding was removed. Each card explains what happens, gives one real example, and says what each choice would change. The before → after figures come from a trial run of every rating for all six practices with each option applied; nothing has been changed yet. CSV columns: code, question, choice, choice_label, recommended, note, reviewer, date.</footer></div>
+<script>
+const R="Recommended";
+const SECTIONS=[
+{title:"Three scoring questions",note:"",items:[
+{code:"scoring_r5_1",n:"1",q:"Should a 'no effect' finding be able to hold a rating up?",
+ctx:"What happens: a finding that says 'no effect' never pushes a rating up or down on its own. But two of our safety rules only ask whether a finding exists, not which way it points. First, when all the evidence for a row is indirect (income standing in for poverty, say), the rating cannot go above moderate unless at least one direct measurement is present. Second, a row needs at least two independent papers before it can be given a rating. A 'no effect' finding can satisfy either rule, and then the other findings set the rating. So removing it can make the rating fall. Example 1, trees with livestock and poverty: 10 findings from 6 papers. Nine are about income or profit (indirect); 8 say it rises, 3 of them by a lot, and 1 says it falls. The World Bank's 2020 Colombia project report is the only one that measured poverty itself, and it found no change yet. Because that one direct finding is present, the indirect-only limit is lifted and the row reads 'strong benefit'. Remove it and the row reads 'moderate benefit'. Example 2, windbreaks and drought: two papers. A 2018 review says live fences feed livestock during drought (a benefit, no size given); the FAO 2024 Senegal review says there is no agreement on whether windbreaks help in drought. The FAO finding counts as the second paper, so the row reads 'slightly reduces drought impact'. Remove it and the row has too little evidence for a rating, and agroforestry's overall drought rating changes from 'slightly reduces drought impact' to 'conflicting evidence', because windbreaks no longer take part in the vote across the different kinds of agroforestry.",
+affects:"Any row where a 'no effect' finding is the only direct measurement, or is the second paper. Today that is 14 rows across the six practices.",
+change:"A: nothing changes. B: 14 rows change. Trees with livestock and poverty goes from strong to moderate benefit. Windbreaks and drought (three rows) become 'not enough evidence', and agroforestry drought overall becomes 'conflicting evidence'. Forest restoration: fire damage to plantations and water quality under protected or community forests become 'not enough evidence'. Five smaller lines for particular income groups or farming systems also become 'not enough evidence', and two new ones appear. C: 3 rows change. Trees with livestock and poverty goes from strong to moderate benefit, and two new smaller lines appear. The windbreak rows stay as they are.",
+why:"A study that found no effect is not evidence that the effect is strong, or that there is enough evidence to rate it. Under B, a 'no effect' finding can still lower a rating's confidence, which is the job it should do, but it can no longer prop a rating up. C fixes only the first example and leaves the same problem in the second.",
+opts:[["A","Keep as now"],["B","A 'no effect' finding can lower confidence but never counts toward the two-paper minimum or lifts the indirect-only limit"],["C","Change only the indirect-only limit: it is lifted only by a direct finding that points the same way as the rating"]],rec:"B"},
+{code:"scoring_r5_2",n:"2",q:"A weak single-site study is limited to 'moderate'. Should that limit pull down a row where stronger studies say 'strong'?",
+ctx:"What happens: we have a rule that a study comparing one site with one other site, with no repeats, can claim at most a moderate effect, however big its numbers. At present the study then votes 'moderate' with its full weight, so it can pull the whole row down. Example, coastal mangroves and flooding: Akber and others, 2018, Bangladesh. After Cyclone Sidr, households behind the Sundarbans mangroves recalled floodwater standing in their fields for about 5 days, compared with 8 days in a village without mangroves. That is one village on each side, recalled 8 years later. By our size scale that is a strong effect; the rule limits it to moderate. The row holds 25 findings from 11 papers, and every one says mangroves reduce flooding. Nine direct flood measurements give a size: 5 say strong (including a 2016 global review of many studies), 3 say moderate (one of them is Akber), and 1 says slight. Akber carries a third of the voting weight, more than the global review, so its 'moderate' vote moves the middle of the vote from strong to moderate. With Akber, the scorecard flood row for coastal mangroves reads 'moderate benefit' and protection of livelihoods from floods reads 'moderate'. Without Akber, they read 'strong benefit' and 'very high'.",
+affects:"Rows that contain one of these single-site studies alongside other studies that give a size. Today only the coastal mangrove flood rows (3 rows). Thirty findings carry the single-site label, mostly from one Algerian water-harvesting study and from Akber.",
+change:"A: nothing changes; coastal mangrove flood stays 'moderate'. B: 3 rows change. Coastal mangrove flood protection goes to 'strong benefit' on the scorecard and 'very high' for livelihoods. Akber still counts as a paper that shows mangroves reduce flooding. C: today the same 3 rows change as under B. Later, a study like this could still pull down a row where the other studies are evenly split.",
+why:"The limit was meant to stop a weak study from claiming a big effect on its own. It was not meant to let that study outvote stronger evidence. Under B, a weak study still counts toward which way the effect goes, but it does not help decide how big the effect is when better studies already say. If it is the only study that gives a size, its 'moderate' limit still applies.",
+opts:[["A","Keep as now: the limited study votes 'moderate' with full weight"],["B","It counts toward which way the effect goes but stays out of the size vote when other studies give a size; the limit applies only when it is the only one"],["C","It keeps its 'moderate' vote, at half weight"]],rec:"B"},
+{code:"scoring_r5_3",n:"3",q:"When one study reports an overall result and a breakdown, should each line of the breakdown get its own vote?",
+ctx:"What happens: each study's weight is shared between the lines we take from it, so a study never counts as more than one study. But every line still votes on its own. So the lines we happened to take from a study decide that study's vote, and a breakdown line can tip a row that sits on the edge. Example, trees with livestock and biodiversity: Nguyen and others, 2026, a global review of many studies. Overall, these systems held 28% more biodiversity than open pasture (moderate). Its breakdown: 36% more with native trees, 21% more with planted trees (both moderate), 54% more invertebrates under native trees and 60% more invertebrate numbers (both strong). The summary repeats the 28%, and we took that as a line too. So from one study, four lines say moderate (the overall figure twice and two breakdowns) and two narrower breakdown lines say strong. Three strong lines from two other papers sit beside them, and the row's vote lands just on 'strong benefit'. Remove the one invertebrate line and the row reads 'moderate benefit'. Agroforestry's overall biodiversity rating moves with it, from strong to moderate, because trees with livestock has the most papers of any kind of agroforestry.",
+affects:"Any row where a study gives several lines, typically reviews with breakdown tables. Today 12 rows would change under B.",
+change:"A: nothing changes. B: each study's lines are first boiled down to that study's own middle value (if its lines split evenly, halfway between the two), then studies vote. 12 rows change. Strong to moderate in 7: agroforestry biodiversity overall, and biodiversity and soil erosion for trees with livestock; poverty for protected or community forests; soil erosion for coastal mangroves; wetland biodiversity overall and for rewetting. Flood protection on rain-fed cropland under wetlands goes from moderate to low. Two rows go up from slight to moderate (forest restoration biodiversity in mixed-income countries; farm production under flood-diversion water harvesting). Two smaller lines disappear because they now match the overall rating. C: only a study's overall figure votes; its breakdown feeds the range and the 'where it works best' notes. This first needs each multi-line study re-checked to mark which line is the overall figure, so its effect cannot be counted yet.",
+why:"A study should speak with one voice on each row. B does that with no new extraction work and stops the number of lines we take from a study deciding the result. C is closer to how a reviewer would read a paper, and can follow later once breakdown lines are marked.",
+opts:[["A","Keep as now: every line votes, sharing the study's weight"],["B","One vote per study: its lines are boiled down to the study's own middle value first"],["C","Only the study's overall figure votes; its breakdown goes into the range and notes (needs a re-check of multi-line studies first)"]],rec:"B"}]}];
+
+const KEY="scoring_decisions_round5_2026-11-10";
+let S={answers:{},notes:{},reviewer:""};
+try{const s=localStorage.getItem(KEY);if(s)S=Object.assign(S,JSON.parse(s));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}progress();}
+const ITEMS=SECTIONS.flatMap(s=>s.items);
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function render(){
+  const m=document.getElementById("main");m.innerHTML="";
+  SECTIONS.forEach((sec,si)=>{
+    const h=document.createElement("h2");h.textContent=sec.title;m.appendChild(h);
+    const p=document.createElement("p");p.className="sec-note";p.innerHTML=(sec.note?esc(sec.note)+" ":"")+`<button class="secbtn" data-sec="${si}">Accept recommendations in this section</button>`;m.appendChild(p);
+    sec.items.forEach(it=>{
+      const c=document.createElement("div");c.className="card"+(S.answers[it.code]?" done":"");c.id="card-"+it.code;
+      let html=`<div><span class="code">${it.n}</span><span class="q">${esc(it.q)}</span></div>`;
+      if(it.ctx)html+=`<div class="ctx">${esc(it.ctx)}</div>`;if(it.affects)html+=`<div class="aff"><b>What it feeds today:</b> ${esc(it.affects)}</div>`;if(it.change)html+=`<div class="aff"><b>What each choice changes:</b> ${esc(it.change)}</div>`;if(it.why)html+=`<div class="aff"><b>Why I recommend ${esc(it.rec)}:</b> ${esc(it.why)}</div>`;html+=`<div style="height:6px"></div>`;
+      it.opts.forEach(([v,l])=>{const id=it.code+"-"+v;html+=`<label class="opt${v===it.rec?" rec":""}" for="${id}"><input type="radio" name="${it.code}" id="${id}" value="${v}" ${S.answers[it.code]===v?"checked":""}><span><b>${v}.</b> ${esc(l)}${v===it.rec?`<span class="tag">${R}</span>`:""}</span></label>`;});
+      html+=`<textarea data-note="${it.code}" placeholder="Note (optional)">${esc(S.notes[it.code]||"")}</textarea>`;
+      c.innerHTML=html;m.appendChild(c);
+    });
+  });
+  m.querySelectorAll("input[type=radio]").forEach(r=>r.addEventListener("change",e=>{S.answers[e.target.name]=e.target.value;document.getElementById("card-"+e.target.name).classList.add("done");save();}));
+  m.querySelectorAll("textarea").forEach(t=>t.addEventListener("input",e=>{S.notes[e.target.dataset.note]=e.target.value;save();}));
+  m.querySelectorAll(".secbtn").forEach(b=>b.addEventListener("click",e=>{SECTIONS[+e.target.dataset.sec].items.forEach(it=>{S.answers[it.code]=it.rec;});save();render();}));
+  progress();
+}
+function progress(){const n=ITEMS.filter(i=>S.answers[i.code]).length;document.getElementById("progress").textContent=`${n} / ${ITEMS.length} answered`;}
+const rv=document.getElementById("reviewer");rv.value=S.reviewer||"";rv.addEventListener("input",()=>{S.reviewer=rv.value;save();});
+document.getElementById("acceptAll").onclick=()=>{ITEMS.forEach(i=>{if(!S.answers[i.code])S.answers[i.code]=i.rec;});save();render();};
+document.getElementById("clear").onclick=()=>{if(confirm("Clear all answers and notes?")){S.answers={};S.notes={};save();render();}};
+document.getElementById("export").onclick=()=>{
+  const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+  const d=new Date().toISOString().slice(0,10);
+  const rows=[["code","question","choice","choice_label","recommended","note","reviewer","date"].join(",")];
+  ITEMS.forEach(i=>{const a=S.answers[i.code]||"";const lab=(i.opts.find(o=>o[0]===a)||["",""])[1];rows.push([i.code,i.q,a,lab,i.rec,S.notes[i.code]||"",S.reviewer||"",d].map(q).join(","));});
+  const blob=new Blob([rows.join("\n")+"\n"],{type:"text/csv"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`decisions_scoring_round5_2026-11-10_${(S.reviewer||"reviewer").replace(/\W+/g,"_")}.csv`;a.click();
+};
+render();
+</script>
+</body>
+</html>
