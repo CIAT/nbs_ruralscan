@@ -131,6 +131,16 @@ Not surveillance — shared learning, and visible progress.
 - All PRs use the PR template
 - One reviewer for content PRs (recipes, variable cards); one + Pete for structural PRs (wireframe, schema, AGENTS.md)
 
+### When main moves on and your PR shows "conflicts"
+
+Most of these conflicts are in files the build writes for us (the dashboard and progress data, the register JSON, the generated T3/T6 tables). They are rebuilt from the CSVs, so nobody needs to pick a side.
+
+- **It is handled for you.** Each time something is merged to main, a GitHub Action (`.github/workflows/auto-resolve-conflicts.yml`) looks at every open pull request that now conflicts, merges main into it, rebuilds the generated files once, runs the quick checks and pushes. Your PR goes green again on its own after a few minutes. It never approves or merges anything.
+- **When a person is needed**, the Action does not push. It leaves a comment on the PR saying why, in plain words, and adds the label `needs-manual-merge`. That happens when the same row or line was changed on both sides, when rebuilt tables need new written explanations, when a check fails, or when the rebuild would change a hand-edited file such as the evidence register. Fix it on your computer with `bash scripts/resolve-pr-conflicts.sh <PR number>` (or `/fix-pr-conflicts <PR number>` in Claude Code), commit and push. The label comes off by itself once the branch merges cleanly.
+- **Leave a PR alone** by adding the label `no-auto-resolve`. Drafts and PRs from forks are always skipped. You can also run the Action by hand from the Actions tab, for one PR or all of them.
+- **Why there were so many conflicts before:** the generated files used to record the time they were built and the commit they were built from, so every PR changed them and every other PR then clashed. They no longer do: building the same data twice gives exactly the same file. The dashboard shows when its data was published from the web server instead, and a short "data version" fingerprint.
+- **Setup (once, by a repo admin):** add a repository secret `AUTO_RESOLVE_TOKEN` holding a fine-grained token (or GitHub App token) for this repo with read/write access to Contents, Pull requests and Issues. Without it the Action still works using GitHub's built-in token, but GitHub does not start the normal checks on pushes made that way, so the Action starts them itself; if a PR ever sits waiting for checks, push any small commit or re-run CI from the Actions tab.
+
 ## Scope guardrails
 
 The project commitment is $200k / 6 months / **scoping** — not feasibility, not site-level design, not full ecosystem service modelling, not cost-benefit analysis. When in doubt about whether something is in scope, check the four-tier table in [`docs/pipeline.html`](./docs/pipeline.html#scope-guardrails) (Now / Soon / Later / Out).

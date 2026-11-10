@@ -23,10 +23,8 @@ from __future__ import annotations
 import csv
 import json
 import re
-import subprocess
 import sys
 from collections import Counter
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -590,50 +588,19 @@ def _blockers(
 
 
 # ------------------------------------------------------------------------------- write
-def _git_commit(root: Path | None = None) -> str:
-    if root is not None:
-        from nbs_ruralscan.schema_tools.build_paths import source_revision
-
-        return source_revision(root)
-    try:
-        return subprocess.run(
-            ["git", "rev-parse", "HEAD"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=True,
-        ).stdout.strip()
-    except Exception:  # noqa: BLE001 — never break the build on a missing git
-        return "unknown"
-
-
 def write(
     schema_root: str | Path, check: bool = False, dest: Path | None = None
 ) -> list[Path]:
     """(Re)write ``docs/table_progress.json``; returns ``[dest]`` if it was/is stale.
 
-    Unchanged ``meta`` + ``cells`` → ``[]`` in both modes (the build stamp is not
-    refreshed, so regeneration is churn-free).
+    The file carries no build time or commit sha (they changed on every rebuild and made
+    every open PR conflict), so the same inputs always give the same bytes.
     """
     schema_root = Path(schema_root)
     dest = Path(dest) if dest else schema_root.parent / "docs" / "table_progress.json"
-    payload = build(schema_root)
-    current = _json(dest)
-    if (
-        isinstance(current, dict)
-        and current.get("cells") == payload["cells"]
-        and current.get("meta") == payload["meta"]
-        and current.get("decisions", []) == payload["decisions"]
-        and current.get("review", {}) == payload["review"]
-    ):
+    out = build(schema_root)
+    if _json(dest) == json.loads(json.dumps(out, ensure_ascii=False)):
         return []
-    out = {
-        "build": {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "git_commit": _git_commit(schema_root.parent),
-        },
-        **payload,
-    }
     if not check:
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(

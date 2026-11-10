@@ -397,14 +397,12 @@
   function renderStamp() {
     var e = el('stamp');
     if (!e) return '';
-    var b = obj(DATA && DATA.build);
-    var ts = has(b.timestamp) ? String(b.timestamp) : '';
-    var date = ts ? ts.slice(0, 10) : DASH;
-    var sha = has(b.git_commit) ? String(b.git_commit) : '';
-    var shaHtml = sha
-      ? '<a href="https://github.com/CIAT/nbs_ruralscan/commit/' + encodeURIComponent(sha) + '"><code>' + esc(sha.slice(0, 7)) + '</code></a>'
-      : DASH;
-    var h = 'data as of <span title="' + esc(ts) + '">' + esc(date) + '</span> · built from ' + shaHtml;
+    // The data file carries no build time or commit (they made every PR conflict); the
+    // web server's Last-Modified header says when this copy was published.
+    var lm = (typeof window !== 'undefined' && window._tpLastModified) ? String(window._tpLastModified) : '';
+    var d = lm ? new Date(lm) : null;
+    var date = d && !isNaN(d) ? d.toISOString().slice(0, 10) : DASH;
+    var h = 'data as of <span title="' + esc(lm) + '">' + esc(date) + '</span> · <a href="https://github.com/CIAT/nbs_ruralscan/commits/main/docs/table_progress.json">change history</a>';
     e.innerHTML = h;
     return h;
   }
@@ -691,6 +689,7 @@
     return fetch('table_progress.json', { cache: 'no-store' })
       .then(function (r) {
         if (!r.ok) throw new Error('HTTP ' + r.status);
+        if (typeof window !== 'undefined' && r.headers) window._tpLastModified = r.headers.get('Last-Modified') || '';
         return r.json();
       })
       .then(function (data) {
