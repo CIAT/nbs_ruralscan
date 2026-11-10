@@ -15964,7 +15964,7 @@
       "opt_high": null,
       "abs_max": null,
       "unit": "degrees",
-      "direction": "Keep Krois & Schulte’s Ronquillo model for bunds in degrees, with its printed classes, ambiguous optimum notation and within-study slope weight of 0.39. Above 30° scores 1. The model assigns no slope band to restricted (0).",
+      "direction": "Keep Krois & Schulte’s Ronquillo model for bunds in degrees, with its printed classes and ambiguous optimum notation. Above 30° scores 1. The model assigns no slope band to restricted (0).",
       "source_profile": {
         "role": "regional suitability model",
         "unit": "degrees",
@@ -16000,7 +16000,6 @@
             "source_score": 0
           }
         ],
-        "slope_criterion_weight": 0.39,
         "endpoint_convention": "Retain printed intervals. First class and touching endpoints are unresolved for scoring."
       }
     },
@@ -16009,7 +16008,14 @@
         "locator": "PDF p. 9, Table 4, slope – bunds; PDF p. 10, Table 5, slope criterion.",
         "practice": "Bund systems, Ronquillo watershed, northern Peru",
         "source_sha256": "570e6473de72811082b9642a9fb0188fa3dac0b2c378e71b78984bed45f086cd"
-      }
+      },
+      "model_use": {
+        "slope_criterion_weight": 0.39,
+        "pdf_page": 10,
+        "locator": "Table 5, slope criterion",
+        "scope": "within-study weight"
+      },
+      "note": "2026-11-10: The slope criterion weight 0.39 comes from Table 5 on PDF p. 10, not from the quoted Table 4, so it is held here rather than in the relationship."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -16763,7 +16769,7 @@
       "opt_low": null,
       "opt_high": null,
       "unit": "percent",
-      "direction": "Keep historical 2–4% catchment slope guidance together with field results. Eight of nine dams on 2–5% catchment slopes were dry at assessment. Authors found no clear slope pattern. Leave optimum unresolved.",
+      "direction": "Keep historical 2–4% catchment slope guidance alongside the field results held in context. The authors found no clear slope pattern. Leave optimum unresolved.",
       "source_profile": {
         "unit": "percent grade",
         "role": "historical siting guideline evaluated against observed water presence",
@@ -16772,7 +16778,22 @@
           2,
           4
         ],
-        "field_results": [
+        "riverbed_gradient": "Separate measure; guidance and field results here concern the catchment."
+      }
+    },
+    "context": {
+      "source_table": {
+        "practice": "Sand dams, Tiva catchment, Kitui, Kenya",
+        "locator": "PDF p. 9, Table 3 (siting guidance); PDF pp. 21–22, Figure 11 and Table 9; p. 23, Topography discussion.",
+        "source_sha256": "a31e97eeb33847d34b5108fd095b2ed8c744e463547dde94b9c97d7d70920ecf"
+      },
+      "field_results": {
+        "pdf_pages": [
+          21,
+          22
+        ],
+        "locator": "Figure 11 and Table 9",
+        "classes": [
           {
             "catchment_slope_as_printed": "≤1",
             "with_water": 36,
@@ -16799,16 +16820,9 @@
             "without_water": 0
           }
         ],
-        "field_result_scope": "Presence of water at assessment. Authors found no clear slope-performance pattern. No sampled dams in the two steepest classes.",
-        "riverbed_gradient": "Separate measure; guidance and field results here concern the catchment."
-      }
-    },
-    "context": {
-      "source_table": {
-        "practice": "Sand dams, Tiva catchment, Kitui, Kenya",
-        "locator": "PDF p. 9, Table 3 (siting guidance); PDF pp. 21–22, Figure 11 and Table 9; p. 23, Topography discussion.",
-        "source_sha256": "a31e97eeb33847d34b5108fd095b2ed8c744e463547dde94b9c97d7d70920ecf"
-      }
+        "scope": "Presence of water at assessment. Authors found no clear slope-performance pattern. No sampled dams in the two steepest classes."
+      },
+      "note": "2026-11-10: The counts of dams with and without water by catchment-slope class come from Figure 11 and Table 9 on PDF pp. 21–22, not from the quoted Table 3 on p. 9, so they are held here. Eight of nine dams on 2–5% catchment slopes were dry at assessment."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -16904,18 +16918,6 @@
         {
           "design": "Slope-separated terrace",
           "site_conditions": "Low rainfall areas with permeable soils and slopes between 15° and 20°."
-        },
-        {
-          "design": "Slope terrace",
-          "site_conditions": "Thin soil cover and gentle slopes <7°."
-        },
-        {
-          "design": "Fanya juu terrace",
-          "site_conditions": "Thick soil cover and steep, uneven slopes where benching is unsuitable."
-        },
-        {
-          "design": "Half-moon terrace / fish-scale pit",
-          "site_conditions": "Steep slopes with shallow stony soils and short steep slopes for tree survival."
         }
       ]
     },
@@ -16925,7 +16927,26 @@
         "source_sha256": "00e0131089d16f5ece432390aae8681f967dbd511b4b77555b23ce9f1e74b80d",
         "slope_unit": "degrees",
         "eligible_use": "design-specific guidance"
-      }
+      },
+      "other_table_rows": {
+        "pdf_page": 4,
+        "locator": "Table 1, Scope of application column, rows below the quoted extract",
+        "rows": [
+          {
+            "design": "Slope terrace",
+            "site_conditions": "Thin soil cover and gentle slopes <7°."
+          },
+          {
+            "design": "Fanya juu terrace",
+            "site_conditions": "Thick soil cover and steep, uneven slopes where benching is unsuitable."
+          },
+          {
+            "design": "Half-moon terrace / fish-scale pit",
+            "site_conditions": "Steep slopes with shallow stony soils and short steep slopes for tree survival."
+          }
+        ]
+      },
+      "note": "2026-11-10: The slope terrace (<7°), fanya juu and half-moon rows sit further down the same Table 1 on PDF p. 4, outside the quoted extract. They are held here; the quote was not widened because it is already 176 words."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -17112,16 +17133,10 @@
     "relationship": {
       "mcda_weight": 0.069,
       "weight_scale": "AHP criterion weights; consistency ratio 0.02",
-      "direction": "Keep the local check-dam flat-terrain and percolation-pond undulating/rolling profiles with soil and land cover. Slope criterion weight 0.069 is study-specific. The 2–8% description is a mapped result.",
+      "direction": "Keep the local check-dam flat-terrain and percolation-pond undulating/rolling profiles with soil and land cover. Slope criterion weight 0.069 is study-specific. Terrain-class edges and the mapped-result slope description are held in context.",
       "source_profile": {
         "unit": "percent grade",
         "role": "regional multicriteria model",
-        "terrain_legend": {
-          "flat": "<2",
-          "undulating": "2–8",
-          "rolling": "8–15",
-          "hilly": "15–30"
-        },
         "structure_criteria": {
           "check dams": {
             "terrain": [
@@ -17140,8 +17155,7 @@
           }
         },
         "criterion_weight": 0.069,
-        "consistency_ratio": 0.02,
-        "output_description": "Good/excellent mapped water-harvesting zones described as flat, undulating (2–8%) in results."
+        "consistency_ratio": 0.02
       }
     },
     "context": {
@@ -17149,7 +17163,24 @@
         "practice": "Check dams and percolation ponds, Maysan Governorate, Iraq",
         "locator": "PDF p. 5, slope classification and Fig. 3a; PDF p. 11, Table 4, Figure 10 and mapped results.",
         "source_sha256": "07f96426d2108f87ff4d492c98ae15e6954594d13924944c99d467cde563cadb"
-      }
+      },
+      "terrain_legend": {
+        "pdf_page": 5,
+        "locator": "slope classification and Fig. 3a",
+        "unit": "percent grade",
+        "classes": {
+          "flat": "<2",
+          "undulating": "2–8",
+          "rolling": "8–15",
+          "hilly": "15–30"
+        }
+      },
+      "mapped_result": {
+        "pdf_page": 11,
+        "locator": "results text below Fig. 10",
+        "description": "Good/excellent mapped water-harvesting zones described as flat, undulating (2–8%) in results."
+      },
+      "note": "2026-11-10: The terrain-class edges (flat <2, undulating 2–8, rolling 8–15, hilly 15–30%) come from the slope classification on PDF p. 5, and the 2–8% description is a mapped result in the p. 11 text, not in the quoted Table 4. Both are held here."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -17570,7 +17601,7 @@
         "role": "regional farm-pond siting model",
         "criterion_weight": 0.158,
         "rank_1_is": "best",
-        "construction_text": "The discussion cites Critchley et al. (1991) and Napoli et al. (2014) for unsuitability above 5% and uses this to justify the greatest weight for the lowest slope class.",
+        "construction_text": "The discussion cites Critchley et al. and Napoli et al. for unsuitability above 5% and uses this to justify the greatest weight for the lowest slope class.",
         "classes": [
           {
             "slope_as_printed": "0–5",
@@ -17606,7 +17637,15 @@
         "practice": "Farm pond targeting, Kakareza watershed, Iran",
         "locator": "PDF p. 6, slope discussion; PDF p. 19, Table 6, slope criterion and class weights.",
         "source_sha256": "305ea812cfbae5c78718492d6d3edf18a32af528820473346828a85d2ab8f901"
-      }
+      },
+      "construction_text_citations": {
+        "pdf_page": 6,
+        "cited": [
+          "Critchley et al. (1991)",
+          "Napoli et al. (2014)"
+        ]
+      },
+      "note": "2026-11-10: Citation years moved out of the relationship; they are references in the PDF p. 6 discussion, not values in the quoted Table 6."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -18156,11 +18195,6 @@
           "soil permeability",
           "runoff potential"
         ],
-        "rule_count": 27,
-        "mapped_slope_range_pct": [
-          0,
-          11.97
-        ],
         "example": {
           "soil_permeability": "low",
           "slope": "high",
@@ -18168,9 +18202,7 @@
           "check_dam": "low",
           "farm_pond": "not suitable",
           "percolation_tank": "medium"
-        },
-        "source_lineage": "Rule base uses prior studies including Kadam et al. (2012) and expert knowledge.",
-        "source_ambiguity": "PDF p3 worked 8% slope example gives low/medium memberships 0.2/0.8, inconsistent with Table 2 trapezoids (0.4/0.6). Table values retained literally; no repair inferred."
+        }
       }
     },
     "context": {
@@ -18198,7 +18230,21 @@
         "practice": "Joint siting model for check dams, farm ponds and percolation tanks, Kondepi, India",
         "locator": "PDF pp. 3–4, membership example, Table 2, Figure 1 and §3.3.1; p. 6, Figure 4b and mapped terrain.",
         "source_sha256": "d840c4b5058a1bda4a71ea47ab002ae874356b525198cc7505a8145d5aed1b8e"
-      }
+      },
+      "model_detail": {
+        "pdf_pages": [
+          3,
+          4,
+          6
+        ],
+        "rule_count": 27,
+        "mapped_slope_range_pct": [
+          0,
+          11.97
+        ],
+        "source_lineage": "Rule base uses prior studies including Kadam et al. (2012) and expert knowledge."
+      },
+      "note": "2026-11-10: The 27-rule count (p. 4), the mapped local slope range of 0–11.97% (p. 6), the rule-base lineage and the p. 3 worked-example memberships are outside the quoted Table 2, so they are held here (the worked-example inconsistency is already recorded in source_internal_ambiguity)."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -18888,7 +18934,7 @@
     "relationship": {
       "abs_min": null,
       "unit": "mm",
-      "direction": "Annual rainfall can be as low as 150 mm in the technical guidance for tree Negarim. FAO separately describes Negev research farms in areas with rainfall as low as 100–150 mm/year.",
+      "direction": "Annual rainfall can be as low as 150 mm in the technical guidance for tree Negarim. The Negev research-farm rainfall is a site example held in context, not a recommended minimum.",
       "source_profile": {
         "role": "siting recommendation",
         "rainfall_can_be_as_low_as_mm_per_year": 150
@@ -18907,7 +18953,8 @@
           100,
           150
         ]
-      }
+      },
+      "note": "2026-11-10: The 100–150 mm/year Negev figure is from the manual's background section, not the quoted Suitability text, so it stays in site_example only."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -18957,10 +19004,8 @@
       "direction": "FAO recommends flat ground to 5% grade for Negarim. Uneven blocks should be subdivided. The upper end describes the recommendation.",
       "source_profile": {
         "role": "siting recommendation",
-        "slope_grade_pct": [
-          0,
-          5
-        ],
+        "slope_lower_as_printed": "flat",
+        "slope_max_grade_pct": 5,
         "uneven_terrain": "subdivide the block"
       }
     },
@@ -18969,7 +19014,8 @@
         "locator": "FAO manual §§5.2.1–2: background and technical details, Suitability",
         "source_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
         "practice": "Negarim tree microcatchments"
-      }
+      },
+      "note": "2026-11-10: The source says 'from flat up to 5.0%'. The lower end is kept as the word 'flat'; it is not a stated 0% limit."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -19043,10 +19089,8 @@
       "direction": "FAO recommends flat to 5% grade and even ground without gullies or rills for tree-planting contour bunds. Water can overtop the bund and break it at low spots.",
       "source_profile": {
         "role": "implementation recommendation",
-        "slope_grade_pct": [
-          0,
-          5
-        ],
+        "slope_lower_as_printed": "flat",
+        "slope_max_grade_pct": 5,
         "terrain": "Even terrain without gullies or rills.",
         "limitation": "Overtopping can break the bund at low spots."
       }
@@ -19056,7 +19100,8 @@
         "locator": "FAO manual §5.3.2, Suitability and Limitations, contour bunds for tree planting.",
         "practice": "Contour bunds for tree planting",
         "source_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860"
-      }
+      },
+      "note": "2026-11-10: The source says 'from flat up to 5.0%'. The lower end is kept as the word 'flat'; it is not a stated 0% limit."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -19817,7 +19862,7 @@
     "claim_basis": "expert_assertion",
     "claim_scope": "practice_technology",
     "extraction_confidence": "high",
-    "quote": "Cultivated reservoirs / tanks are above ground earthen water retention struc- tures. Tanks are constructed on gentile slopes (1 – 10%)",
+    "quote": "Cultivated reservoirs / tanks are above ground earthen water retention struc-\ntures. Tanks are constructed on gentile slopes (1 – 10%) by excavating soil and/or \nbuilding bunds (reservoirs). In this system collected water is either directed from the \ntank to lower fields or into a below ground tank or shallow well for irrigation (C:A ratio \n10:1 – 100:1). When the water of the reservoir is used, the reservoir itself is cropped \non soil residual moisture. This system is suitable for areas with 150 – 600 mm annual \nrainfall.",
     "page": 88,
     "reviewer_ok": false,
     "raw_name": "slopes",
