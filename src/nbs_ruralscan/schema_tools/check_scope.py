@@ -203,6 +203,59 @@ def _observed_suitability_bound(quote: str, relationship: str) -> bool:
     )
 
 
+# ---------------------------------------------------------------------------
+# Unsupported hard limits (retro 2026-11-10, catalogue #59/#60). Reviewers removed 23
+# inferred abs_min/abs_max values in one round: the edge of a scored or "marginal" /
+# "low priority" class, a recommended or commonly-used range, and a buffer width or
+# analysis window read as a distance-to-water limit. An absolute limit needs the source
+# to say what lies beyond it is excluded or unsuitable. Advisory: the reviewer decides.
+_HARD_EXCLUSION = re.compile(
+    r"not suitable|unsuitable|unsuited|not recommended|exclu|should not|must not"
+    r"|cannot|can ?not|not possible|not (be )?feasible|unfeasible|infeasible|impossible"
+    r"|prohibit|\bavoid|too (steep|dry|wet|shallow|sandy|clayey|saline)|\bfails?\b"
+    r"|failure|no longer|\bnever\b|\bonly\b|threshold|not exceed|no more than"
+    r"|no less than|\bat (least|most)\b|minimum|maximum|\blimit",
+    re.I,
+)
+_RANK_LABEL = re.compile(
+    r"\b(optimal(ly)?|very high|high(ly)?|moderate(ly)?|medium|marginal(ly)?|low"
+    r"|very low|not suitable|unsuitable|restricted|S1|S2|S3|N1|N2)\b",
+    re.I,
+)
+_LOW_RANK = re.compile(
+    r"\blow(er)? priority|less suitable|least suit|marginal(ly)? suit|marginal potential",
+    re.I,
+)
+_DESIGN_GEOMETRY = re.compile(
+    r"buffer|\bstrips?\b|reserves?\b|corridor|\bzones?\b|width|\bwide\b|each side"
+    r"|either side|both sides|delineat|analysis (window|extent)",
+    re.I,
+)
+_DISTANCE_TO_WATER = re.compile(
+    r"distance_to_water|buffer_width|riparian_width|stream_distance", re.I
+)
+
+
+def _unsupported_limit(quote: str, relationship: str, variable: str) -> str | None:
+    """Signal name when a proposed abs_min/abs_max lacks a stated exclusion (#59/#60)."""
+    try:
+        rel = json.loads(relationship)
+    except (TypeError, ValueError):
+        return None
+    if not isinstance(rel, dict) or all(
+        rel.get(k) is None for k in ("abs_min", "abs_max")
+    ):
+        return None
+    if _DISTANCE_TO_WATER.search(variable or "") and _DESIGN_GEOMETRY.search(quote):
+        return "design_geometry_limit"
+    labels = {m.group(0).lower() for m in _RANK_LABEL.finditer(quote)}
+    if len(labels) >= 3 or _LOW_RANK.search(quote):
+        return "ranked_class_limit"
+    if not _HARD_EXCLUSION.search(quote):
+        return "recommended_range_limit"
+    return None
+
+
 M2B_POLICY = ROOT / "schema" / "lookups" / "m2b_variable_policy.csv"
 
 
@@ -255,6 +308,18 @@ def check(
                         "snippet": quote[:80].strip(),
                     }
                 )
+            else:
+                limit = _unsupported_limit(
+                    quote, r.get("relationship") or "", r.get("variable") or ""
+                )
+                if limit:
+                    flags.append(
+                        {
+                            "evidence_id": r["evidence_id"],
+                            "signal": limit,
+                            "snippet": quote[:80].strip(),
+                        }
+                    )
             matched = False
             for name, pat in _SIGNALS.items():
                 m = pat.search(quote)

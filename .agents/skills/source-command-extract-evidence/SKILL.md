@@ -1,12 +1,12 @@
 ---
 name: "source-command-extract-evidence"
 description: "Extract and verify source-provenanced evidence for an authorised T4 suitability, T3/T6 effect, or operational-risk lane."
-version: "v1.10.0"
+version: "v1.10.1"
 ---
 
 # Evidence extraction
 
-Current ruleset: **v1.10.0**. Stamp new units with the version actually used; never restamp
+Current ruleset: **v1.10.1**. Stamp new units with the version actually used; never restamp
 historical evidence. Version log: `methodology/RULESET_VERSIONS.md`. This skill is the
 canonical extraction instruction; `.claude/commands/extract-evidence.md` delegates here.
 
@@ -84,8 +84,11 @@ operational-risk extraction. Retain supported direction even when calibration is
   unresolved values as source context; no silent widening, scoring or promotion (defect #55).
   Regional origin alone does not justify direction-only retention: preserve full numeric
   tables and conditional recommendations for compatible-source synthesis (T4 contract).
+  `abs_min`/`abs_max` only where the source says land past the value is excluded or
+  unsuitable: a scored or low-priority class edge, a recommended or common-use range and a
+  buffer/reserve width or analysis window stay in `source_profile` (#59, #60).
 - Preserve cited-primary attribution and lineage. Count independent studies, not duplicate
-  records, depth branches or repository copies. Keep source importance separate from runtime
+  records, depth branches or repository copies. One dataset gives one effect unit (#61). Keep source importance separate from runtime
   MCDA weights; record enough of the original criterion set to explain relative importance.
 - Validate `EvidenceUnit` objects with `validate_units`, then save staging only.
   Native-language quote anchors must stand on their own before any English translation.
@@ -93,7 +96,7 @@ operational-risk extraction. Retain supported direction even when calibration is
   matching pages in the team’s registered copy. Supplementary rationale quotes must match their own cited pages. Reject duplicate JSON
   keys, non-finite numeric values, Boolean-as-number values and ambiguous identifier types. New extraction
   never grants `reviewer_ok` or overwrites a reviewed record. A changed existing ID requires an
-  audited correction. Retain ambiguities and source conflicts visibly; do not manufacture agreement.
+  audited correction that passes `check_numbers` like any new unit (#62). Retain ambiguities and source conflicts visibly; do not manufacture agreement.
 - Orchestrator runs `scripts/ingest-effects-staging.py ... --dry-run` for supported page/section
   units, with explicit `--allow-structural` / `--allow-operational` when authorised. Code locators
   use their dedicated adapter and central source verifier; unsupported formats stay blocked.

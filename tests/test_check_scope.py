@@ -293,3 +293,73 @@ def test_reported_practice_range_is_evidence_without_an_establishment_limit(tmp_
         "explicit",
     }
     assert signal in _ADVISORY_ONLY
+
+
+def test_inferred_hard_limits_are_flagged_for_review(tmp_path):
+    """Retro 2026-11-10 (catalogue #59/#60): reviewers removed 23 abs_min/abs_max values
+    read from a scored class edge, a recommended range or a buffer/analysis width."""
+    from nbs_ruralscan.schema_tools.quarantine import _ADVISORY_ONLY
+
+    krois = (
+        "Table 4 Suitability levels for SWCTs (terraces and bunds). Suitability rating "
+        "Optimally suitable Highly suitable Moderately suitable Marginally suitable "
+        "Not suitable Restricted Suitability level 9 7 5 3 1 0"
+    )
+    russell = (
+        "If these sites were < 1 ha in extent, or farther than 120 m from extant "
+        "riparian, they were given a low priority."
+    )
+    negarim = (
+        "Suitability Negarim microcatchments are mainly used for tree growing in arid "
+        "and semi-arid areas. Rainfall: can be as low as 150 mm per annum."
+    )
+    zhao = (
+        "In this study, we set a maximum buffer width of 210 m (distance of 7 pixels, "
+        "Fig. 3) because a buffer width wider than 200 m was necessary."
+    )
+    stated = "Slopes above 16% are unsuitable for mechanised systems."
+    p = _write(
+        tmp_path,
+        [
+            _row("krois", "slope", krois, relationship='{"abs_min":2,"abs_max":30}'),
+            _row(
+                "russell",
+                "distance_to_waterbody",
+                russell,
+                relationship='{"abs_max":120}',
+            ),
+            _row(
+                "negarim",
+                "annual_precipitation",
+                negarim,
+                relationship='{"abs_min":150}',
+            ),
+            _row("zhao", "distance_to_waterbody", zhao, relationship='{"abs_max":210}'),
+            _row("stated", "slope", stated, relationship='{"abs_max":16}'),
+            _row(
+                "corrected",
+                "slope",
+                krois,
+                relationship='{"opt_low":18,"abs_max":null}',
+            ),
+            _row(
+                "approved",
+                "annual_precipitation",
+                negarim,
+                relationship='{"abs_min":150}',
+                reviewer_ok="true",
+            ),
+        ],
+    )
+    got = {
+        f["evidence_id"]: f["signal"]
+        for f in check(p)
+        if f["signal"].endswith("_limit")
+    }
+    assert got == {
+        "krois": "ranked_class_limit",
+        "russell": "ranked_class_limit",
+        "negarim": "recommended_range_limit",
+        "zhao": "design_geometry_limit",
+    }
+    assert set(got.values()) <= _ADVISORY_ONLY
