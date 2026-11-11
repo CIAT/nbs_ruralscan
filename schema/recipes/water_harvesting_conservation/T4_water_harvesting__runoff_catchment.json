@@ -412,11 +412,11 @@
         },
         "numerical_calibration": {
           "status": "held",
-          "reason": "The shared upper optimum bound of 0.25 km/km² combines different purposes and stream networks. Singh places 0.25 in the second class of a catchment potential index. Karimi favors lower densities for potential harvesting sites, and Ettazarini favors higher densities for check dams.",
+          "reason": "The shared upper optimum bound of 0.25 km/km² combines different purposes and stream networks. Singh places 0.25 in the second class of a catchment potential index. Karimi favors lower densities for potential harvesting sites, and Ettazarini favors higher densities for check dams. Regional stream-network density ranks for Wag Himra. Match stream delineation, network scale and area support before scoring. At 1.75 km/km² the source ranks a site S3. Keep the full class table. Scoring is held until spatial inputs match.",
           "scope": "water_harvesting__runoff_catchment__drainage_density",
-          "reviewer": "Peter",
-          "reviewed_date": "2026-11-09",
-          "decision_ref": "methodology/audits/t4_drainage_density_hold_20261109/user_decision.md",
+          "reviewer": "Pete",
+          "reviewed_date": "2026-11-11",
+          "decision_ref": "methodology/audits/t4_alene_slopes_20261111/water_profiles.md",
           "source_profiles_ref": "methodology/audits/t4_stream_order_hold_20261107/next_drainage_density_decision.json",
           "held_relationship": {
             "type": "trapezoidal",
@@ -582,8 +582,32 @@
               "boundaries_and_prose": "Table 1/PDF6, discussion PDF8 and Figure 5B/PDF10 agree on increasing ranking. Middle ranges share 0.4 without a printed tie rule. Lowest category receives 1. Accuracy checks of the combined map against terrain depressions do not validate individual drainage-density breakpoints.",
               "lineage": "PDF8 cites Horton (1945) for runoff/infiltration interpretation and Rahmati et al. (2019) for dam-siting preference. Four class scores and 0.07 AHP weight are attributed to Ettazarini’s applied model.",
               "evidence_comparison": "Existing EV retains direction. Table 1 class boundaries/scores, scale-dependent network specification and Table 2 criterion weight are surfaced here pending evidence review."
+            },
+            {
+              "evidence_id": "ev_wh5_alene_2022_drainage_density",
+              "source_id": "wh_stocktake_alene_2022",
+              "evidence_sha256": "440d75491560c3075a56e3add9db206f9fd537a6267a3b4181e763eddd235984",
+              "source_artifact_sha256": "4c6c62907311c7e4962f086bc3a649a6e5af305e0446e055a822e7be5e4d2370",
+              "source_quote": "Drainage density\n > 2\nS1\nAdham et al. (2018)\n1.8‒2\nS2\n1.7‒1.8\nS3\n1.5‒1.7\nS4\n < 1.5\nS5",
+              "source_weight": 0.1,
+              "source_weight_scope": "Table 7 within-study criterion weight",
+              "direction": "increasing",
+              "boundary_convention": "Keep shared printed endpoints unresolved.",
+              "native_quantity": "Stream length per unit area",
+              "unit": "km/km²",
+              "classes": {
+                "S1": ">2",
+                "S2": "1.8–2",
+                "S3": "1.7–1.8",
+                "S4": "1.5–1.7",
+                "S5": "<1.5"
+              },
+              "evidence_locator": "PDF p. 5, Table 2; p. 10, Figure 7a–b and Table 7; p. 11, drainage-density results.",
+              "source_input": "Figure 7a maps 0–5.3 km/km². The text rounds the range to 0–5. Table 7 labels the row drainage density and the column stream order.",
+              "scope": "Regional stream-network density ranks for Wag Himra. Match stream delineation, network scale and area support before scoring. At 1.75 km/km² the source ranks a site S3."
             }
-          ]
+          ],
+          "previous_decision_ref": "methodology/audits/t4_drainage_density_hold_20261109/user_decision.md"
         }
       }
     },
@@ -592,15 +616,16 @@
     "has_future_projection": false,
     "weight_default": 0.1111,
     "weight_adjustable": true,
-    "justification": "Peter approved holding the shared 0.25 km/km² drainage-density calibration on 9 November 2026. Retain the Karimi, Singh and Ettazarini profiles by mapping purpose, structure and network definition. Preserve each study’s full class table, source weights, units, network derivation, spatial support and transfer limits. Dataset binding unresolved; requires matching input: Basin polygons do not provide the required stream-length-per-area density. A compatible river network, area support and derivation must be specified. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "justification": "Peter approved holding the shared 0.25 km/km² drainage-density calibration on 9 November 2026. Retain the Karimi, Singh and Ettazarini profiles by mapping purpose, structure and network definition. Preserve each study’s full class table, source weights, units, network derivation, spatial support and transfer limits. Dataset binding unresolved; requires matching input: Basin polygons do not provide the required stream-length-per-area density. A compatible river network, area support and derivation must be specified. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes. Added Alene (11 November 2026). Regional stream-network density ranks for Wag Himra. Match stream delineation, network scale and area support before scoring. At 1.75 km/km² the source ranks a site S3. Keep the full class table. Scoring is held until spatial inputs match. Retained approved calibration hold; no new numeric synthesis or approval.",
     "variable": "drainage_density",
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
       "ev_wh_drainage_density_karimi19_1",
       "ev_wh_drainage_density_singh17_1",
-      "ev_wh_drainage_density_mahmoud21_1"
+      "ev_wh_drainage_density_mahmoud21_1",
+      "ev_wh5_alene_2022_drainage_density"
     ],
-    "n_sources": 3,
+    "n_sources": 4,
     "corpus_n": null,
     "paper_support_pct": null,
     "dataset_id": ""
@@ -623,11 +648,11 @@
         },
         "numerical_calibration": {
           "status": "held",
-          "reason": "The inherited 75/80 pair is not a standalone runoff suitability calibration. Vema reports fuzzy Curve Number input memberships; the five sources use incompatible native CN, runoff-depth and runoff-coefficient quantities. Retain complete source profiles for quantity- and system-compatible synthesis before approving a replacement.",
+          "reason": "The inherited 75/80 pair is not a standalone runoff suitability calibration. Vema reports fuzzy Curve Number input memberships; the five sources use incompatible native CN, runoff-depth and runoff-coefficient quantities. Retain complete source profiles for quantity- and system-compatible synthesis before approving a replacement. Regional runoff-depth suitability ranks for Wag Himra. Check the runoff-depth statistic, time basis and spatial support before scoring. An 800 mm modelled depth ranks S2. CN 80 alone cannot determine this rank. Keep the full class table. Scoring is held until spatial inputs match.",
           "scope": "water_harvesting__runoff_catchment__runoff_potential_index",
-          "reviewer": "Peter",
-          "reviewed_date": "2026-11-06",
-          "decision_ref": "methodology/audits/t4_calibration_hold_applied_20261106/user_decision.md",
+          "reviewer": "Pete",
+          "reviewed_date": "2026-11-11",
+          "decision_ref": "methodology/audits/t4_alene_slopes_20261111/water_profiles.md",
           "source_profiles_ref": "methodology/audits/t4_binding_holds_applied_20261106/next_calibration_decision.json",
           "held_relationship": {
             "type": "trapezoidal",
@@ -637,7 +662,203 @@
             },
             "uncertainty_pct": "60.0"
           },
-          "approval_scope": "Hold the inherited combined numerical function only. Keep all five source profiles and their existing review states. No replacement curve, scores, pooling, source drops or new evidence approval."
+          "approval_scope": "Existing five profiles retain their prior dispositions. Alene is approved for regional runoff-depth ranks. Numerical calibration remains held.",
+          "retained_source_profiles": [
+            {
+              "evidence_id": "ev_wh_runoff_potential_index_dewinnaar07_1",
+              "source_id": "dewinnaar_2007_gis_runoff_thukela",
+              "native_quantity": "SCS Curve Number (CN), runoff-generating source area",
+              "native_unit": "dimensionless CN scale",
+              "source_purpose": {
+                "page": 1,
+                "locator": "cached PDF page 1; native text slice",
+                "native_text_start": 1435,
+                "native_text_end": 1878,
+                "quote": "Geographic information systems (GIS) was utilised as an integrating tool to store, analyse and manage spa-\ntial information and when linked to hydrological response models, provided a rational means to facilitate decision making by providing\ncatchment level identiﬁcation, planning and assessment of runoﬀharvesting sites as illustrated by a case study at the Potshini catchment,\na small sub-catchment in the Thukela River basin, South Africa."
+              },
+              "retained_profile": {
+                "direction": "higher CN increases runoff generation, not independent storage-site suitability",
+                "source_layer_weight": "equal weighting; no numeric weight inferred",
+                "CN_map_display_classes": {
+                  "values": [
+                    "64–70",
+                    "71–78",
+                    "79–84",
+                    "85–90",
+                    "91–95"
+                  ],
+                  "locator": "Figure 4, PDF p6; visual legend inspection",
+                  "meaning": "display classes of local CN map, not standalone ecological or suitability thresholds"
+                }
+              },
+              "source_artifact_sha256": "1967b8fd902b81d903ff83681fc394928d42d0525dc07ce1a12227c5c755f019",
+              "evidence_sha256": "51d0527cf60bccafb91160fdd3610fbc9208ddcae8daf82e160404697435bc15"
+            },
+            {
+              "evidence_id": "ev_wh_runoff_potential_index_alabadi17_1",
+              "source_id": "fuzzy_ahp_2017_wh_zones",
+              "native_quantity": "Modelled runoff depth",
+              "native_unit": "mm",
+              "source_purpose": {
+                "page": 1,
+                "locator": "cached PDF page 1; native text slice",
+                "native_text_start": 465,
+                "native_text_end": 1147,
+                "quote": "Abstract Identifying potential sites for water harvesting\n(WH) is a crucial task for efﬁcient water resources man-\nagement in arid regions. In response, this paper proposes a\ngeographical information system-based model that combines\nfuzzy logic and analytic hierarchy process (AHP) to delineate\nsuitable areas for constructing WH structures in arid south-\nern Iraq. Based on a literature review and available data, ﬁve\ninﬂuential factors were selected to develop the model: hydro-\nlogical soil group, land cover, surface runoff depth, slope,\nand distance to an intermittent river. A fuzzy logic-based\napproach was used to standardize the factors, and AHP was\nused to derive weights."
+              },
+              "retained_profile": {
+                "runoff_criterion_weight": 0.368,
+                "criterion_weights": {
+                  "runoff_depth": 0.368,
+                  "hydrological_soil_group": 0.248,
+                  "land_cover": 0.117,
+                  "slope": 0.069,
+                  "distance_to_streams": 0.198
+                },
+                "consistency_ratio": 0.02,
+                "direction": "increasing via LARGE fuzzification",
+                "map_descriptors_mm": {
+                  "minimum": 7.57,
+                  "maximum": 175.2,
+                  "average": 133
+                },
+                "rainfall_input": "1980–2013 spatial annual-average rainfall",
+                "descriptor_warning": "Map extrema/mean are not suitability endpoints; annual-average rainfall input is not independently validated annual runoff accumulation."
+              },
+              "source_artifact_sha256": "07f96426d2108f87ff4d492c98ae15e6954594d13924944c99d467cde563cadb",
+              "evidence_sha256": "39fd299d8b2db0d8331d1f702344bc971210a4df543b3eec9ef724b862f59247"
+            },
+            {
+              "evidence_id": "ev_wh_runoff_potential_index_karimi19_1",
+              "source_id": "karimi_2019_runoff_map_rwh_zones",
+              "native_quantity": "WetSpa mean annual runoff depth",
+              "native_unit": "mm annual runoff depth",
+              "source_purpose": {
+                "page": 2,
+                "locator": "cached PDF page 2; native text slice",
+                "native_text_start": 1424,
+                "native_text_end": 1734,
+                "quote": "The runoff map obtained by the WetSpa model is considered as a \nuseful layer that is integrated with other thematic layers in the geographic information system (GIS) environment for \nidentifying RWH sites. Kakareza watershed (1132 km2) in Iran was selected as a study area to carry out the \nforegoing approach."
+              },
+              "retained_profile": {
+                "criterion_weight": 0.427,
+                "classes": [
+                  {
+                    "range": ">200",
+                    "label": "High",
+                    "rank": 1,
+                    "printed_normalized_weight": 0.22
+                  },
+                  {
+                    "range": "100–200",
+                    "label": "Moderate",
+                    "rank": 2,
+                    "printed_normalized_weight": 0.122
+                  },
+                  {
+                    "range": "<100",
+                    "label": "Low",
+                    "rank": 3,
+                    "printed_normalized_weight": 0.067
+                  }
+                ],
+                "direction": "higher annual runoff depth ranked better",
+                "source_weight_warning": "Retain printed criterion and feature weights separately; do not normalize again or treat as ecological probabilities."
+              },
+              "source_artifact_sha256": "305ea812cfbae5c78718492d6d3edf18a32af528820473346828a85d2ab8f901",
+              "evidence_sha256": "8f7b613f0f39de0eddf1171588e66e29717ff2fa6d9db1be82c845a4a41305ea"
+            },
+            {
+              "evidence_id": "ev_wh_runoff_potential_index_singh17_1",
+              "source_id": "mahmoud_2016_mcda_gis_wh_recharge",
+              "native_quantity": "Runoff coefficient",
+              "native_unit": "dimensionless runoff/rainfall fraction",
+              "source_purpose": {
+                "page": 1,
+                "locator": "cached PDF page 1; native text slice",
+                "native_text_start": 916,
+                "native_text_end": 1701,
+                "quote": "The main aim of this study is to present a technically robust and pragmatic methodology for evaluating\nrainwater harvesting potential and identifying suitable sites for RWH and artiﬁcial recharge structures\nusing Geographic Information System (GIS)-based multi-criteria decision analysis (MCDA). Unlike past\nstudies, this study proposes an approach to prioritize zones/sites for RWH and recharge structures, which\nis of great importance for the effective implementation of RWH strategies. The derived themes ‘runoff\ncoefﬁcient’ and the basic themes of ‘slope’ and ‘drainage density’ were used for mapping rainwater\nharvesting potential. Thereafter, suitable zones and sites for feasible RWH and recharge structures were\nidentiﬁed using suitability criteria and GIS-based Boolean logic."
+              },
+              "retained_profile": {
+                "source_classes_and_weights": "Complete current_relationship_preserved.classes is authoritative retained source profile; all five classes and assigned/normalized weights retained.",
+                "criterion_assigned_weight": 9,
+                "criterion_normalized_weight": 0.391,
+                "direction": "increasing local RWH potential",
+                "statistic": "normal-rainfall-year runoff coefficient per existing reviewed context; not Curve Number"
+              },
+              "source_artifact_sha256": "5c2b6373e271890a13cf34ddedba1848cf64d6d9ac298f1302395fca3acada2d",
+              "evidence_sha256": "296c22bd444bc44fbec464467593d2aee7df81e1693b15bd3b05343b086d7a03"
+            },
+            {
+              "evidence_id": "ev_wh_runoff_potential_index_vema19_1",
+              "source_id": "singh_2019_fuzzy_wh_structure_rainfed",
+              "native_quantity": "SCS Curve Number (CN) fuzzy INPUT classes",
+              "native_unit": "dimensionless CN scale",
+              "source_purpose": {
+                "page": 1,
+                "locator": "cached PDF page 1; native text slice",
+                "native_text_start": 1324,
+                "native_text_end": 1665,
+                "quote": "In this study, a fuzzy inference system (FIS) is\ndeveloped for site selection of water harvesting structures (check dams, farm ponds, and percolation tanks),\nowing to its capability to handle linguistic data eﬀectively. The suitability zones were identiﬁed using the slope,\nsoil permeability and runoﬀpotential as input variables to the FIS."
+              },
+              "retained_profile": {
+                "parameter_order": [
+                  "a",
+                  "b",
+                  "c",
+                  "d"
+                ],
+                "low": [
+                  0,
+                  35,
+                  55,
+                  60
+                ],
+                "medium": [
+                  55,
+                  60,
+                  75,
+                  80
+                ],
+                "high": [
+                  75,
+                  80,
+                  100,
+                  100
+                ],
+                "source_importance": "equal weightage in 27 joint fuzzy rules; no numeric runtime MCDA weight inferred",
+                "direction": "storage favours high and medium runoff; recharge favours low runoff",
+                "figure_label_caveat": "Figure 1c axis says Runoff Coefficient, while Table 2 explicitly says Runoff Potential (CN). Preserve source label inconsistency; do not reinterpret as 0–1 runoff fraction."
+              },
+              "source_artifact_sha256": "d840c4b5058a1bda4a71ea47ab002ae874356b525198cc7505a8145d5aed1b8e",
+              "evidence_sha256": "37952053943a40ffc677c880d8d154b53114464b4164576aa84906e73915e713"
+            },
+            {
+              "evidence_id": "ev_wh5_alene_2022_runoff_potential_index",
+              "source_id": "wh_stocktake_alene_2022",
+              "evidence_sha256": "7cc05ae864e4b34550f1e7cc9d7e059adc0182018b7e37a9779fc6991d682453",
+              "source_artifact_sha256": "4c6c62907311c7e4962f086bc3a649a6e5af305e0446e055a822e7be5e4d2370",
+              "source_quote": "Runoff depth\n > 900\nS1\nMugo and Odera (2019)\n700–900\nS2\n600–700\nS3\n500–600\nS4\n < 500\nS5",
+              "source_weight": 0.42,
+              "source_weight_scope": "Table 7 within-study criterion weight",
+              "direction": "increasing",
+              "boundary_convention": "Keep shared printed endpoints unresolved.",
+              "native_quantity": "Modelled runoff depth",
+              "unit": "mm",
+              "classes": {
+                "S1": ">900",
+                "S2": "700–900",
+                "S3": "600–700",
+                "S4": "500–600",
+                "S5": "<500"
+              },
+              "evidence_locator": "PDF pp. 3–5, datasets, runoff calculation and Table 2; p. 9, Figure 6a–d; p. 10, Table 7.",
+              "source_input": "Curve Number and interpolated mean annual precipitation from nine stations. Source gives 2008–2017 in Datasets and 2008–2018 in the runoff method.",
+              "scope": "Regional runoff-depth suitability ranks for Wag Himra. Check the runoff-depth statistic, time basis and spatial support before scoring. An 800 mm modelled depth ranks S2. CN 80 alone cannot determine this rank."
+            }
+          ],
+          "previous_decision_ref": "methodology/audits/t4_calibration_hold_applied_20261106/user_decision.md"
         }
       }
     },
@@ -646,7 +867,7 @@
     "has_future_projection": false,
     "weight_default": 0.1111,
     "weight_adjustable": true,
-    "justification": "Reviewed numerical calibration hold (Peter, 2026-11-06): inherited 75/80 function and its derived uncertainty are historical only, archived in reviewed_adaptation.numerical_calibration. All five source profiles, native classes/ranges, directions, labelled weights and evidence links are retained for compatible synthesis. No replacement or source approval. Separate approved dataset-binding hold remains in force. Retained approved calibration hold; no new numeric synthesis or approval. Dataset binding unresolved; requires matching input: The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
+    "justification": "Reviewed numerical calibration hold (Peter, 2026-11-06): inherited 75/80 function and its derived uncertainty are historical only, archived in reviewed_adaptation.numerical_calibration. All five source profiles, native classes/ranges, directions, labelled weights and evidence links are retained for compatible synthesis. No replacement or source approval. Separate approved dataset-binding hold remains in force. Added Alene (11 November 2026). Regional runoff-depth suitability ranks for Wag Himra. Check the runoff-depth statistic, time basis and spatial support before scoring. An 800 mm modelled depth ranks S2. CN 80 alone cannot determine this rank. Keep the full class table. Scoring is held until spatial inputs match. Retained approved calibration hold; no new numeric synthesis or approval. Dataset binding unresolved; requires matching input: The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
     "variable": "runoff_potential_index",
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
@@ -654,9 +875,10 @@
       "ev_wh_runoff_potential_index_alabadi17_1",
       "ev_wh_runoff_potential_index_karimi19_1",
       "ev_wh_runoff_potential_index_singh17_1",
-      "ev_wh_runoff_potential_index_vema19_1"
+      "ev_wh_runoff_potential_index_vema19_1",
+      "ev_wh5_alene_2022_runoff_potential_index"
     ],
-    "n_sources": 5,
+    "n_sources": 6,
     "corpus_n": null,
     "paper_support_pct": null,
     "dataset_id": ""
