@@ -1,0 +1,124 @@
+{
+  "input_revision": "b8eda0c4f52795e31f8c13d57234a7bbbc659bd0",
+  "historical_recipe_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+  "review_date": "2026-11-11",
+  "reviewer": "peetmate",
+  "decision": "ok approve next",
+  "agent": "Codex /root",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "inputs_sha256": {
+    ".agents/skills/source-command-t4-synthesise/SKILL.md": "a87b41ea4a9ef9c25c21b8260f3d15f62d016c514ff6b170453676dc9fd694ff",
+    ".agents/skills/extraction_contracts/T4_review_contract.md": "da830a151ad4caa163c13f399948b9bd84224f86788e8746ac1b44f9a0df74ff",
+    "methodology/T4_generation_method.md": "a08142578a4255a1f08a393c321918a71729a30a8a317fa9b77f555a2f782fe7",
+    "schema/lookups/t4_numeric_compilation_policy.csv": "ee653fa0c9747e9333949b9795e1f6bffd17e9b678546607b57033e3c3d4f668",
+    "scripts/synthesise-recipe.py": "4bc5edee6b2681e7a807c49708776f16d24984ae4eccdb76ff21fbe2bd2cbf59",
+    "src/nbs_ruralscan/recipe/t4_build.py": "a2bd8375b612e060de11ee07be6118e1335a28415216c00670aa74ad4914c4af",
+    "schema/recipe_inputs/t4/water_harvesting_conservation/review_holds.csv": "2a205cc6fbcbc63934169e01dcecb47211df6007ad57b59bd117b43a322f6f55",
+    "schema/recipe_inputs/t4/water_harvesting_conservation/mapping_settings.csv": "deab24adc77320d192ea27050bdbe5444a71adf306e928e244985bc5eef7a576",
+    "schema/registers/EV_evidence_register.csv": "338a7edff3eae3c40c89cbfab90da02e0973114090014f76cb291daad6ab1630"
+  },
+  "accepted_profiles": {
+    "ev_wh_aridity_slm11_macro": {
+      "source_id": "fao_slm_in_practice_2011",
+      "evidence_sha256": "cfe5c1133592603e047d3273ff21123a675299a979042c406f2f53d08c98be26",
+      "extraction_ruleset": "v1.6.0",
+      "locator": "PDF p. 87 (printed p. 90), rainwater harvesting applicability",
+      "source_artifact_sha256": "a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3",
+      "disposition": "Keep macrocatchment guidance where runoff events are infrequent. Microcatchments suit more reliable rain. Event frequency supplies no numeric P/PET boundary.",
+      "source_guidance": "Climate: RWH techniques are most relevant in semi-arid and subhumid zones with poorly distributed rains, in particular in cereal–based areas. In more arid regions they are used for tree crops and / or establishing trees for afforestation. Micro-catchments are more suitable for areas with more reliable rainfall, whereas macro-catchments are effective in areas where few runoff events are expected."
+    },
+    "ev_wh_aridity_index_kahinda08_3": {
+      "source_id": "kahinda2008_sa_rwh_suitability",
+      "evidence_sha256": "7bbe3f1a423aad4b7f29429cff9e9700609d875f37cc78b883d87dcab639a762",
+      "extraction_ruleset": "v1.5.1",
+      "locator": "PDF p. 3, Table 2, XRWH row and model weights on PDF p. 5",
+      "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+      "disposition": "Keep all five South African external-catchment ranks and the 0.34 climate weight within this study. Hyper-arid sites receive rank 1. Use rainfall or aridity once. Rank-to-score conversion and shared endpoint assignment remain open.",
+      "published_ranks": {
+        "<0.05": 1,
+        "0.05-0.2": 3,
+        "0.2-0.5": 4,
+        "0.5-0.65": 5,
+        ">0.65": 2
+      },
+      "unit": "annual rainfall / potential evapotranspiration",
+      "source_weight": 0.34,
+      "weight_scope": "XRWH climate criterion",
+      "alternative_climate_inputs": [
+        "annual_precipitation",
+        "aridity_index"
+      ],
+      "maximum_climate_contributions": 1
+    },
+    "ev_wh_clay_content_kahinda08_2": {
+      "source_id": "kahinda2008_sa_rwh_suitability",
+      "evidence_sha256": "49562c41a18da7cf73d10b096ee79190affecb9b51ef5eca45647fda0387f7db",
+      "extraction_ruleset": "v1.5.1",
+      "locator": "PDF p. 3, Table 4, XRWH column and model weights on PDF p. 5",
+      "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+      "disposition": "Keep all six external-catchment clay classes, the original 2–1 range and the within-study 0.33 texture weight. Interpret clay for the runoff-producing area. Assess receiving soil separately.",
+      "published_ranks": {
+        "0-6": "2-1",
+        "6.1-15": 3,
+        "15.1-25": 4,
+        "25.1-35": 4,
+        "35.1-55": 5,
+        ">55": 3
+      },
+      "unit": "percent clay",
+      "source_weight": 0.33,
+      "weight_scope": "XRWH soil texture criterion",
+      "study_assumption": "about 10% silt"
+    },
+    "ev_wh_soil_permeability_vema19_1": {
+      "source_id": "singh_2019_fuzzy_wh_structure_rainfed",
+      "evidence_sha256": "0456a3bac1ca8361fb9e4476636deb7a99ced3974b7fb189d1096f7bd3ab99d1",
+      "extraction_ruleset": "v1.5.1",
+      "locator": "PDF p. 4, Table 2 and section 3.3, and PDF p. 7, watershed permeability",
+      "source_artifact_sha256": "d840c4b5058a1bda4a71ea47ab002ae874356b525198cc7505a8145d5aed1b8e",
+      "disposition": "Keep the three trapezoidal permeability classes as joint inputs with slope and runoff. Preserve separate surface-storage and recharge outcomes. No independent permeability-to-suitability conversion.",
+      "input_classes": {
+        "low": [
+          0,
+          0,
+          12,
+          48
+        ],
+        "medium": [
+          12,
+          48,
+          151,
+          305
+        ],
+        "high": [
+          151,
+          305,
+          900,
+          1000
+        ]
+      },
+      "unit": "cm/day",
+      "parameter_order": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "observed_watershed_range_cm_day": [
+        0.3,
+        31
+      ],
+      "conditional_example": "Low permeability, low slope and high runoff favour check dams and farm ponds. The same combination is unsuitable for percolation tanks."
+    }
+  },
+  "mapping_ids": [
+    "water_harvesting__runoff_catchment__aridity_index",
+    "water_harvesting__runoff_catchment__clay_content",
+    "water_harvesting__runoff_catchment__soil_permeability"
+  ],
+  "replay": "PYTHONPATH=src python scripts/synthesise-recipe.py water_harvesting_conservation --output-dir <empty-directory> --report <report-path>",
+  "settings_source": "Codex turn context, 01a1ca65-ecf5-7172-b2fa-da38e3b46478",
+  "turn_prompt": "ok approve next",
+  "decision_scope": "Four runoff-catchment cards presented together: FAO/WOCAT runoff reliability, Kahinda external aridity and clay tables, and Vema joint permeability inputs."
+}

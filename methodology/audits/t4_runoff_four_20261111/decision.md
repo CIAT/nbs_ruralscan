@@ -1,0 +1,14 @@
+# External-catchment aridity, soil clay and permeability
+
+Pete approved four dashboard cards on 11 November 2026 for the runoff-catchment family. The three recipe rows retain evidence for planning and synthesis with numerical calibration held. Each source keeps its own measurement, structure and footprint.
+
+| Source and locator | Approved interpretation |
+|---|---|
+| FAO/WOCAT (2011), PDF p. 87, rainwater harvesting applicability | Macrocatchments can be effective where few runoff events occur. Microcatchments suit reliable rain. Runoff-event frequency has no numerical conversion to annual aridity in the guidance. |
+| Kahinda et al. (2008), PDF p. 3, Table 2, external-catchment row | Annual rainfall divided by potential evapotranspiration has five ordered classes. The ranks are 1 for <0.05, 3 for 0.05–0.2, 4 for 0.2–0.5, 5 for 0.5–0.65 and 2 for >0.65. A site at 0.04 has rank 1. The printed classes share internal endpoints at 0.2 and 0.5. Endpoint assignment and conversion to scores remain open. The external model uses rainfall or aridity for its single climate contribution, weighted 0.34 in this study (PDF p. 5). |
+| Kahinda et al. (2008), PDF p. 3, Table 4, external-catchment column | The ranks by percent clay are 2–1 for 0–6, 3 for 6.1–15, 4 for 15.1–25, 4 for 25.1–35, 5 for 35.1–55 and 3 for >55. The analysis assumes approximately 10% silt. Retain the two ranks in the lowest interval and the gaps between printed intervals. At 50% clay the runoff-producing catchment ranks 5 while the in-field column ranks 3. Account for the receiving field separately. The study-specific external texture weight is 0.33 (PDF p. 5). |
+| Vema et al. (2019), PDF p. 4, Table 2 and §3.3, and PDF p. 7 | Low, medium and high permeability have trapezoid parameters (0, 0, 12, 48), (12, 48, 151, 305) and (151, 305, 900, 1000) cm/day. The observed watershed range was 0.3–31 cm/day. Suitability depends jointly on slope, permeability and runoff. Low permeability with low slope and high runoff favours check dams and farm ponds. The same inputs yield an unsuitable rating for percolation tanks. Retain recharge as a separate model outcome. |
+
+A source rank, a criterion weight and fuzzy input membership describe different steps in these models. Future numerical scoring needs a reviewed conversion and matching spatial inputs. For clay this includes band, units, depth and contributing catchment footprint. The historical identifier `soilgrids_250m` is absent from T1. The dataset binding therefore requires a matching input. For permeability it includes the hydraulic measurement and structure-specific joint rules. Missing values and unresolved intervals carry no score. The original mapping parameters are archived under each calibration decision. The 17 previously accepted water-harvesting rows replayed identically.
+
+[Four evidence fingerprints, three source-file hashes, agent settings and replay command](run.json)

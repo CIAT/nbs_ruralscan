@@ -286,3 +286,41 @@ def test_riparian_design_geometry_stays_visible_but_cannot_score(family, geometr
                 },
             },
         )
+
+
+def test_runoff_climate_and_soil_profiles_survive_without_enabling_scores():
+    contract = dc.build_contract(ROOT, nbs=NBS)["contract"]["rows"]
+    prefix = "water_harvesting__runoff_catchment__"
+    variables = {"aridity_index", "clay_content", "soil_permeability"}
+    rows = {
+        r["rule_id"][len(prefix) :]: r
+        for r in contract
+        if r["rule_id"].startswith(prefix)
+    }
+    profiles = {}
+    for variable in variables:
+        row = rows[variable]
+        assert row["status"] == "blocked"
+        assert row["function_options"] == []
+        assert row["weight"]["runtime_weight"] is None
+        adaptation = row["declared_relationship"]["params"]["reviewed_adaptation"]
+        hold = adaptation["numerical_calibration"]
+        profiles.update({p["evidence_id"]: p for p in hold["retained_source_profiles"]})
+        if variable == "aridity_index":
+            assert (
+                hold["alternative_climate_inputs"][
+                    "maximum_concurrent_climate_contributions"
+                ]
+                == 1
+            )
+        if variable == "clay_content":
+            assert adaptation["dataset_binding"]["status"] == "requires_matching_input"
+    assert len(profiles) == 4
+    assert profiles["ev_wh_aridity_index_kahinda08_3"]["published_ranks"]["<0.05"] == 1
+    assert profiles["ev_wh_clay_content_kahinda08_2"]["published_ranks"]["0-6"] == "2-1"
+    assert profiles["ev_wh_soil_permeability_vema19_1"]["input_classes"]["high"] == [
+        151,
+        305,
+        900,
+        1000,
+    ]
