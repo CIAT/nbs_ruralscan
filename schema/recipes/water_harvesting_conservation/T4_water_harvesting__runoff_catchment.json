@@ -671,11 +671,11 @@
       "reviewed_adaptation": {
         "numerical_calibration": {
           "scope": "water_harvesting__runoff_catchment__slope",
-          "reviewer": "Peter",
-          "reviewed_date": "2026-11-09",
+          "reviewer": "Pete",
+          "reviewed_date": "2026-11-11",
           "status": "held",
-          "decision_ref": "methodology/audits/t4_water_block_20261109/runoff_slope.md",
-          "reason": "Keep all eight slope profiles by structure and purpose. The Karimi text and weighted table disagree. Ngugi compares a historical catchment-slope guideline with field observations. No shared cutoff or numerical score is approved.",
+          "decision_ref": "methodology/audits/t4_alene_slopes_20261111/decision.md",
+          "reason": "Keep eleven slope profiles by structure and purpose. Retain the Karimi text/table disagreement, Ngugi’s field results and Alene’s >8% general guidance alongside its conditional <15% check-dam criterion. Shared slope calibration remains held.",
           "retained_source_profiles": [
             {
               "evidence_id": "ev_wh_slope_kadam12_1",
@@ -1028,10 +1028,89 @@
               },
               "interpretation": "Keep the 1–10% construction range for cultivated above-ground tanks, paired with 150–600 mm annual rainfall. The drained reservoir bed can be cultivated on residual moisture. Other excavated ponds have separate guidance.",
               "disposition": "Construction conditions for cultivated reservoirs and tanks storing runoff above ground."
+            },
+            {
+              "evidence_id": "ev_wh5_alene_2022_slope",
+              "source_id": "wh_stocktake_alene_2022",
+              "evidence_sha256": "0de5d2e746201db970e0fb2f4a539b031eff20ccd975e1747ccaf24c9637e62b",
+              "source_artifact_sha256": "4c6c62907311c7e4962f086bc3a649a6e5af305e0446e055a822e7be5e4d2370",
+              "locator": "PDF pp. 4–5, slope guidance and Table 2, p. 7 Figure 4a–b, p. 10 Table 7",
+              "source_quote": "Slope (%)\n < 5\nS1\nHameed (2013), Islam et al. (2020) and Mugo and Odera \n(2019)\n8-May\nS2\n8–15\nS3\n15–30\nS4\n > 30\nS5",
+              "structure": "Regional rainwater-harvesting potential in Wag Himra, Ethiopia",
+              "unit": "percent grade",
+              "published_profile": {
+                "unit": "percent grade",
+                "scope": "Wag Himra regional rainwater-harvesting potential map",
+                "Table_2_with_S2_resolved_from_Figure_4": {
+                  "S1": "<5",
+                  "S2": "5–8",
+                  "S3": "8–15",
+                  "S4": "15–30",
+                  "S5": ">30"
+                },
+                "S2_verification": {
+                  "as_printed_in_table_2": "8-May",
+                  "mapped_interval": "5–8",
+                  "suitability": "moderately suitable",
+                  "locator": "PDF p. 7, Figure 4a slope legend, second band, and Figure 4b suitability legend and caption",
+                  "source_sha256": "4c6c62907311c7e4962f086bc3a649a6e5af305e0446e055a822e7be5e4d2370"
+                },
+                "boundary_convention": "Map legend shares endpoints. Assignment at exactly 5% and 8% is unspecified.",
+                "within_study_slope_weight": 0.26,
+                "weight_locator": "PDF p. 10, Table 7",
+                "prose_guidance": "PDF p. 4 advises against slopes greater than 8%."
+              },
+              "interpretation": "Keep the Wag Himra regional map ranks, including the Figure 4 S2 band of 5–8% and S3 at 10%. Preserve the page 4 guidance against slopes above 8% and the conditional Table 4 check-dam criterion below 15%. No shared slope cutoff.",
+              "disposition": "Documentary profile. Family-wide numerical calibration held.",
+              "source_lineage": "Alene regional model. Table 2 cites Hameed (2013), Islam et al. (2020) and Mugo and Odera (2019)."
+            },
+            {
+              "evidence_id": "ev_wh5_alene_2022_slope_check_dam",
+              "source_id": "wh_stocktake_alene_2022",
+              "evidence_sha256": "d602dfa370d10b8fa91e239cddfb0a13b102ec17341abd3190c9dd631ade1519",
+              "source_artifact_sha256": "4c6c62907311c7e4962f086bc3a649a6e5af305e0446e055a822e7be5e4d2370",
+              "locator": "PDF p. 6, Table 4, check dam row",
+              "source_quote": "Table 4   IMSD guidelines \nto select potential locations \nfor RWH structures. Source: \n(Adham et al. 2016; Saha et al. \n2018)\nSelected criteria/ \nstructure\nSlop (%)\nLU/LC\nSoil texture\nStream order\nFarm pond\n < 5\nAgricultural land\nFine-textured soil\n1st and 2nd\nCheek dam\n < 15\nBarren and shrub land\nFine-textured soil\n3rd and 4th",
+              "structure": "Check dam",
+              "unit": "percent grade",
+              "published_profile": {
+                "slope_percent": "<15",
+                "land_cover": "barren or shrub land",
+                "soil": "fine-textured",
+                "stream_orders": [
+                  3,
+                  4
+                ]
+              },
+              "interpretation": "Keep the Table 4 check-dam profile together: slope <15%, barren or shrub land, fine-textured soil, stream orders 3–4. The page 4 guidance against slopes >8% conflicts within this interval. No shared slope cutoff.",
+              "disposition": "Documentary profile. Family-wide numerical calibration held.",
+              "source_lineage": "IMSD guidance via Adham et al. (2016) and Saha et al. (2018), reproduced in Table 4."
+            },
+            {
+              "evidence_id": "ev_wh5_alene_2022_slope_farm_pond",
+              "source_id": "wh_stocktake_alene_2022",
+              "evidence_sha256": "73340c7ce198ee8c754242d5c951388cd949823f92241a3edf28a3708c6d0ad2",
+              "source_artifact_sha256": "4c6c62907311c7e4962f086bc3a649a6e5af305e0446e055a822e7be5e4d2370",
+              "locator": "PDF p. 6, Table 4, farm pond row",
+              "source_quote": "Table 4   IMSD guidelines \nto select potential locations \nfor RWH structures. Source: \n(Adham et al. 2016; Saha et al. \n2018)\nSelected criteria/ \nstructure\nSlop (%)\nLU/LC\nSoil texture\nStream order\nFarm pond\n < 5\nAgricultural land\nFine-textured soil\n1st and 2nd",
+              "structure": "Farm pond",
+              "unit": "percent grade",
+              "published_profile": {
+                "slope_percent": "<5",
+                "land_cover": "agricultural land",
+                "soil": "fine-textured",
+                "stream_orders": [
+                  1,
+                  2
+                ]
+              },
+              "interpretation": "Keep the Table 4 farm-pond profile together: slope <5%, agricultural land, fine-textured soil, stream orders 1–2. Retain as structure-specific siting guidance. No shared slope cutoff.",
+              "disposition": "Documentary profile. Family-wide numerical calibration held.",
+              "source_lineage": "IMSD guidance via Adham et al. (2016) and Saha et al. (2018), reproduced in Table 4."
             }
           ],
           "spatial_input": "SRTM provides local terrain slope in degrees, derived before aggregation. To compare local terrain with a percent-grade source, convert as 100 × tan(angle in radians) at the derivative scale. For a catchment slope require the matching catchment boundaries and summary statistic. A terrain cell or riverbed gradient cannot substitute for the sand-dam catchment measure.",
-          "source_count_basis": "Eight distinct publications retain slope-use evidence. Cited guidance and study weights remain attached to their sources. This count does not establish eight independent validations of a common threshold.",
+          "source_count_basis": "Nine distinct publications. Three Alene cards count as one paper. Table 4 reproduces cited IMSD guidance; these rows do not supply independent validation.",
           "held_relationship": {
             "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
             "type": "trapezoidal",
@@ -1042,7 +1121,8 @@
               "abs_max": 5.7
             },
             "uncertainty_pct": "60.0"
-          }
+          },
+          "prior_decision_ref": "methodology/audits/t4_water_block_20261109/runoff_slope.md"
         }
       }
     },
@@ -1051,7 +1131,7 @@
     "has_future_projection": false,
     "weight_default": 0.1111,
     "weight_adjustable": true,
-    "justification": "Keep all eight slope profiles by structure and purpose. The Karimi text and weighted table disagree. Ngugi compares a historical catchment-slope guideline with field observations. No shared cutoff or numerical score is approved. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "justification": "Keep eleven slope profiles by structure and purpose. Retain the Karimi text/table disagreement, Ngugi’s field results and Alene’s >8% general guidance alongside its conditional <15% check-dam criterion. Shared slope calibration remains held. Retained approved calibration hold; no new numeric synthesis or approval.",
     "variable": "slope",
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
@@ -1062,9 +1142,12 @@
       "ev_wh_slope_karimi19_1",
       "ev_wh_slope_vema19_1",
       "ev_wh_slope_critchley91_trapezoidal",
-      "ev_wh_slope_wocatgl13_tanks"
+      "ev_wh_slope_wocatgl13_tanks",
+      "ev_wh5_alene_2022_slope",
+      "ev_wh5_alene_2022_slope_check_dam",
+      "ev_wh5_alene_2022_slope_farm_pond"
     ],
-    "n_sources": 8,
+    "n_sources": 9,
     "corpus_n": null,
     "paper_support_pct": null
   },
