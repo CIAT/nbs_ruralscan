@@ -96,7 +96,13 @@ nested cell, and it must be QA-able and diffable as a first-class row.
   For T3, `farming_system` is a cell key, so its scope rows use the remaining types.
 - **Emission rule:** a scope row is emitted for a context group when it has ≥ 2 independent sources **and**
   either its reconciled rank differs from the global row's by ≥ 1, or the global row's `transfer_class` for that
-  scope is `out_of_context`.
+  scope is `out_of_context`, or the global row's agreement level is `low`. Family rows get no scope rows. A
+  missing breakdown row means "same as the overall row", not "no evidence".
+- **Farming-system rows in T3 (Pete 2026-11-11, `scoring_r5_4` D).** `farming_system` is a T3 cell key, but a
+  farming-system row is built **only from units that name that farming system** (unstated units belong to the
+  all-systems row), needs ≥ 2 independent sources naming it, and is **shown only when its class differs** from
+  the all-systems row of the same hazard and family. Before, one unit naming a system created a row that pooled
+  every unstated unit under that system's name.
 - **Precedence (most-specific-wins, runtime):** `admin_region` > `admin_country` > `hydrobasin` >
   `farming_system` > `aez` > `income_group` > global. Same resolver as BIND, extended with `income_group`.
 - `record_id` pattern: `<nbs>[__<family>]__<cell>[__<scope_type>-<scope_id>]`.
@@ -386,6 +392,23 @@ Unit rank on a shared −3..+3 scale: sign from `direction` (after polarity), ma
   sign are *not* averaged in; they lower agreement instead. This is what stops two opposite findings collapsing
   into a false `no_relationship` (decision 3). `no_relationship` is emitted only when the modal sign is zero,
   i.e. the evidence actually reports no effect.
+- **Size vote rules (Pete 2026-11-11, scoring round 5 + all-open sheet).** Only modal-sign units that state a
+  size vote on size, and:
+  - *One vote per study* (`scoring_r5_3` B): a study's lines (pooled figure, subgroups, restatements) are first
+    reduced to the study's own weighted middle value (an exact even split → halfway between), then studies vote
+    at their summed weight. The lines an extractor happened to take from one study no longer decide a cell.
+  - *Unreplicated studies* (`scoring_r5_2` B, catalogue #57): a one-site-per-arm study still counts for
+    direction but stays out of the size vote when any other study states a size; its moderate cap applies only
+    when it is the only one giving a size.
+  - *Two camps* (`scoring_r5_5` B): when the weighted one-third and two-thirds points of the size vote are two
+    or more steps apart (at least a third of the vote sits two steps from the rest), the class is the step in
+    between, so one source leaving cannot make a class jump two steps. The same rule applies to the family vote
+    that sets the NbS roll-up. Halves round away from zero.
+- **'No effect' findings and the gates** (`scoring_r5_1` B). A null or opposite finding lowers agreement and so
+  confidence, but it never counts toward the two-source evidence floor (unless every finding in the cell is
+  null) and never lifts the indirect-only (proxy) cap — only a direct unit of the modal sign lifts it.
+- **Per-species results** (`t3t6bl_G1` A, 2026-11-11) count as practice evidence in T3/T6, with the species
+  name kept on the unit. T4 keeps the species lock.
 - **Weighted sign agreement** `A` = share of contributing weight on the modal sign (zeros count half toward
   whichever sign is modal, `ns` units already ×0.5).
 - **Enum mapping.** T6 `effect_direction`: rank ±1 → `slight_*`, ±2 → `moderate_*`, ±3 → `strong_*`, 0 →
@@ -439,7 +462,16 @@ with T0 `establishment_period_years`.
 
 Emitted only when ≥ 2 independent sources in the row's scope share a `metric` and a VONT-convertible `unit`:
 `{metric, unit, median, low, high, n, income_groups}`. Median is `_weighted_median` over `magnitude`; `low`/`high`
-are the observed extremes (never a CI we did not measure). Cross-metric pooling is forbidden. The number sits
+are the observed extremes (never a CI we did not measure). Cross-metric pooling is forbidden.
+
+**Dry matter → carbon (Pete 2026-11-11, `t3t6r6_drymatter` A).** Growth reported as dry plant matter
+(`t_dm_per_ha_yr`, `t_dm_per_ha`) is converted to carbon at pooling time with a carbon fraction of **0.47 t C per
+t dry matter** — the IPCC default carbon fraction of aboveground forest biomass (IPCC 2006 Guidelines for National
+Greenhouse Gas Inventories, Vol. 4 *Agriculture, Forestry and Other Land Use*, Ch. 4 *Forest Land*, Table 4.3;
+retained in the 2019 Refinement). The register keeps the number as printed; the summary records
+`n_converted_from_dry_matter` and the factor. `Mg C` is treated as `t C`. Absolute carbon rates have no BANDS
+size scale, so the conversion makes the two kinds of figure comparable in the number summary but does not by
+itself move a class. The number sits
 *under* the class in M5 and in the traceable account, with its `n`; it is not the value the MCDA uses.
 
 ### 7.7 `economic_value_range` — hard gates (decision 4)

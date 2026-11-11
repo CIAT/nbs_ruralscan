@@ -488,8 +488,16 @@ def test_t3_cell_routes_via_xw_and_farming_system_key():
         "moderate",
         ctx={"farming_system": "agro_pastoral", "income_group": "low"},
     )
+    d3 = _u(
+        "d3",
+        "s3",
+        "drought_hazard",
+        "negative",
+        "strong",
+        ctx={"farming_system": "cropping_rainfed", "income_group": "low"},
+    )
     rows, _ = cs.synthesise_cell(
-        [d1, d2],
+        [d1, d2, d3],
         {},
         table="T3",
         nbs_id="riparian_buffer",
@@ -499,7 +507,8 @@ def test_t3_cell_routes_via_xw_and_farming_system_key():
     )
     g = rows[0]
     assert g["hazard_type"] == "drought" and g["farming_system"] == "cropping_rainfed"
-    assert g["n_sources"] == 1
+    # scoring_r5_4 D: only units naming the system, and at least two sources
+    assert g["n_sources"] == 2 and "d2" not in g["evidence_ids"]
     # 'negative' on drought_hazard = hazard impact reduced → positive mitigation
     assert g["mitigation_potential"] in ("high", "very_high", "moderate")
 
@@ -610,8 +619,10 @@ def test_species_scope_routed_out_and_dropped_units_ignored():
     dr.review_state = "dropped"
     ok = _u("ok", "s3")
     rows, rep = _t6([sp, dr, ok])
-    assert rows[0]["n_sources"] == 1
-    assert ("sp", "claim_scope=species_specific") in rep.dropped
+    # t3t6bl_G1 A (2026-11-11): per-species results count as practice evidence in T3/T6
+    assert rows[0]["n_sources"] == 2
+    assert ("sp", "claim_scope=species_specific") not in rep.dropped
+    assert "dr" not in rows[0]["evidence_ids"]
 
 
 def test_family_rows_and_roll_up_spread():
@@ -1518,10 +1529,8 @@ def test_farming_system_row_needs_system_specific_evidence():
             xw_rows=XW,
         )
 
-    rows, rep = _cell([generic], "pastoral_rangeland")
-    assert rows == [] and any(
-        "no unit states this farming system" in n for n in rep.notes
-    )
+    rows, _ = _cell([generic], "pastoral_rangeland")
+    assert rows == []  # unstated units never reach a farming-system row
     specific = _u(
         "p",
         "s2",
@@ -1530,8 +1539,19 @@ def test_farming_system_row_needs_system_specific_evidence():
         "strong",
         ctx={"hazard_type": "drought", "farming_system": "pastoral_rangeland"},
     )
+    # scoring_r5_4 D: unstated units stay out; one naming source is not enough
     rows, _ = _cell([generic, specific], "pastoral_rangeland")
-    assert rows and set(rows[0]["evidence_ids"]) == {"g", "p"}
+    assert rows == []
+    specific2 = _u(
+        "p2",
+        "s3",
+        "drought_hazard",
+        "negative",
+        "strong",
+        ctx={"hazard_type": "drought", "farming_system": "pastoral_rangeland"},
+    )
+    rows, _ = _cell([generic, specific, specific2], "pastoral_rangeland")
+    assert rows and set(rows[0]["evidence_ids"]) == {"p", "p2"}
 
 
 def test_establishment_cost_takes_per_structure_not_per_hectare():
@@ -1959,10 +1979,12 @@ def test_severe_end_coverage_drives_the_statement():
 
 def test_modelled_only_strength_is_capped_at_moderate():
     ctx = {"hazard_type": "drought"}
+    # two model sources: a 'no effect' finding no longer meets the two-source floor
+    # (scoring_r5_1 B), so the cap is tested on a pool that may state a class
     model = [
         _u(
             f"m{i}",
-            "s1",
+            f"s{1 + i % 2}",
             "drought_hazard",
             "negative",
             "strong",
@@ -3029,3 +3051,36 @@ def test_cost_rows_live_in_t6e_not_t6():
 
 def test_food_insecurity_benefit_reads_reduces():
     assert cs._benefit_verbs("T6", "food_insecurity") == ("reduces", "increases")
+
+
+def test_scoring_round5_size_vote_rules():
+    """scoring_r5_2/3/5 B (Pete 2026-11-11)."""
+    ctx = {"hazard_type": "drought"}
+    # r5_2: an unreplicated unit stays out of the size vote when others give a size
+    strong = [
+        _u(f"s{i}", f"src{i}", "drought_hazard", "negative", "strong", ctx=ctx)
+        for i in range(2)
+    ]
+    unrep = _u(
+        "u",
+        "srcu",
+        "drought_hazard",
+        "negative",
+        "strong",
+        ctx={**ctx, "unreplicated": True},
+    )
+    rows, _ = cs.synthesise_cell(
+        strong + [unrep] * 1,
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    assert rows[0]["mitigation_potential"] in ("high", "very_high")
+    # r5_5: two camps two steps apart with the smaller camp >= 1/3 → the step between
+    assert cs._central_rank([(1.0, 1.0), (3.0, 1.2)]) == 2
+    assert cs._central_rank([(1.0, 1.0), (1.0, 1.0), (3.0, 0.4)]) == 1
+    # r5_3: one study's lines reduce to its own middle (even split → midpoint)
+    assert cs._median_midpoint([(2.0, 1.0), (3.0, 1.0)]) == 2.5
+    assert cs._median_midpoint([(2.0, 3.0), (3.0, 1.0)]) == 2.0

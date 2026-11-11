@@ -298,6 +298,8 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
                 t3_rows += rows
                 _collect(rows, rep, "T3", f"{hz}__{fs}")
 
+    t3_rows = _farming_system_rows_that_differ(t3_rows, report)
+
     # ── T3 asset threat: per hazard (+ asset-only hazards), from asset_vulnerability units ──
     for hz in T3_HAZARDS + cs.ASSET_ONLY_HAZARDS:
         rows, rep = cs.synthesise_cell_with_families(
@@ -453,3 +455,41 @@ def _summary(out: dict[str, Any]) -> str:
             f"asset_risk_weight blank (incomplete hazard set): {rep['weights_incomplete']}"
         )
     return "\n".join(lines)
+
+
+def _farming_system_rows_that_differ(
+    t3_rows: list[dict[str, Any]], report: dict[str, Any]
+) -> list[dict[str, Any]]:
+    """scoring_r5_4 D (Pete 2026-11-11): show a farming-system row only when its class
+    differs from the all-systems row (same hazard, family). A hidden row means "same as
+    overall"; its breakdown rows go with it."""
+
+    def cls(r: dict[str, Any]) -> str:
+        return str(r.get("mitigation_potential") or "")
+
+    general = {
+        (r["hazard_type"], r.get("suitability_family_id") or ""): r
+        for r in t3_rows
+        if r.get("farming_system") in ("all", "", None) and not r.get("scope_type")
+    }
+    hidden: set[tuple[str, str, str]] = set()
+    for r in t3_rows:
+        fs = r.get("farming_system") or "all"
+        if fs == "all" or r.get("scope_type"):
+            continue
+        g = general.get((r["hazard_type"], r.get("suitability_family_id") or ""))
+        if not cls(r) or (g is not None and cls(g) == cls(r)):
+            hidden.add((r["hazard_type"], r.get("suitability_family_id") or "", fs))
+    out = []
+    for r in t3_rows:
+        fs = r.get("farming_system") or "all"
+        if (
+            fs != "all"
+            and (r["hazard_type"], r.get("suitability_family_id") or "", fs) in hidden
+        ):
+            report.setdefault("notes", []).append(
+                f"{r['record_id']}: same class as the all-systems row (or no class) — not shown"
+            )
+            continue
+        out.append(r)
+    return out

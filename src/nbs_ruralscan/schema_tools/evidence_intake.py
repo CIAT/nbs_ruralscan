@@ -240,6 +240,11 @@ def gate(
         ev_fields = set(csv.DictReader(f).fieldnames or [])
     operational_policy = m2b_policy(paths.operational_policy)
     direction_sense = check_direction.load_sense(paths.direction_sense)
+    # reviewed cue exceptions (direction confirmed against the full quote) pass here too,
+    # exactly as in the register-wide check
+    cue_exceptions = check_direction._exceptions(
+        exceptions_path=paths.direction_sense.parent / "direction_cue_exceptions.csv"
+    )
     docs: dict[str, fitz.Document | None] = {}
     seen: set[str] = set()
     with ExitStack() as stack:
@@ -478,6 +483,7 @@ def gate(
                     },
                     senses=direction_sense,
                 )
+                if not (f["signal"] == "cue_word_conflict" and eid in cue_exceptions)
             ]
             if u["variable"] not in vont:
                 errs.append(f"{eid}: variable '{u['variable']}' has no VONT id")
