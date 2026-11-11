@@ -237,10 +237,19 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
     }
     live_vars = {u.variable for u in units if u.use_role == "nbs_effect"}
     routed_vars = {x.ev_variable for x in xw}
+    # a variable whose every route was switched off for this NbS by a ratified route
+    # policy (xw_route_policy.csv) is excluded by decision, not unmapped work
+    policy_vars = {x.ev_variable for x in inp["xw"]} - routed_vars
     report["unmapped_variables"] = sorted(
         {
             v: sum(1 for u in units if u.variable == v and u.use_role == "nbs_effect")
-            for v in live_vars - routed_vars
+            for v in live_vars - routed_vars - policy_vars
+        }.items()
+    )
+    report["route_excluded_variables"] = sorted(
+        {
+            v: sum(1 for u in units if u.variable == v and u.use_role == "nbs_effect")
+            for v in (live_vars - routed_vars) & policy_vars
         }.items()
     )
 

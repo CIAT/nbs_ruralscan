@@ -85,9 +85,12 @@ RULES = {
     "hand (none pending); not started when the queue lists no sources for it.",
     "extracted": "Done when evidence units exist and no acquired source is waiting to be "
     "read; not started when there are no active evidence units.",
-    "reviewed": f"Done when at least {int(REVIEW_DONE_SHARE * 100)}% of evidence units have "
-    "a human review decision (signed off, or rejected and dropped); not started when none "
-    "have.",
+    "reviewed": "Done when every finding that on its own sets or moves a headline rating, "
+    "plus a fixed random sample, has a human decision (signed off, or rejected and "
+    "dropped) — the review targets in pipeline/metrics/rating_setters.json (Pete "
+    "2026-11-11). Falls back to at least "
+    f"{int(REVIEW_DONE_SHARE * 100)}% of all units when no targets are listed; not started "
+    "when nothing has a decision.",
     "synthesised": "Done when the generated table has rows, matches its synthesis report, "
     "and the report lists no unmapped variables (decision-parked families are shown but do "
     "not block); not started when the table has no rows.",
@@ -186,6 +189,8 @@ def status_extracted(m: dict) -> str:
 def status_reviewed(m: dict) -> str:
     if m["reviewed_ok"] + m["reviewed_rejected"] == 0:
         return "not_started"
+    if m.get("targets_total"):
+        return "done" if m["targets_decided"] >= m["targets_total"] else "in_progress"
     return "done" if m["pct_reviewed"] >= REVIEW_DONE_SHARE * 100 else "in_progress"
 
 
@@ -317,7 +322,9 @@ def _extracted(units: list[dict], n_in_hand: int) -> dict:
     return {"status": status_extracted(m), **m}
 
 
-def _reviewed(units: list[dict], rejected_ids: set[str]) -> dict:
+def _reviewed(
+    units: list[dict], rejected_ids: set[str], targets: set[str] | None = None
+) -> dict:
     active = [u for u in units if (u.get("review_state") or "") != "dropped"]
     ok = sum(1 for u in active if (u.get("reviewer_ok") or "").lower() == "true")
     rejected = sum(
@@ -332,6 +339,19 @@ def _reviewed(units: list[dict], rejected_ids: set[str]) -> dict:
         "unreviewed": len(active) - ok,
         "pct_reviewed": _pct(ok + rejected, len(active) + rejected),
     }
+    if targets:
+        by_id = {u.get("evidence_id"): u for u in units}
+        live = [t for t in sorted(targets) if t in by_id]
+
+        def decided(eid: str) -> bool:
+            u = by_id[eid]
+            if (u.get("review_state") or "") == "dropped":
+                return eid in rejected_ids
+            return (u.get("reviewer_ok") or "").lower() == "true"
+
+        m["targets_total"] = len(live)
+        m["targets_decided"] = sum(1 for t in live if decided(t))
+        m["pct_targets"] = _pct(m["targets_decided"], len(live))
     return {"status": status_reviewed(m), **m}
 
 
@@ -430,6 +450,7 @@ def build(schema_root: str | Path) -> dict:
         for r in review_log
         if (r.get("decision") or "") in _REJECT_DECISIONS
     }
+    setters = _json(repo / "pipeline" / "metrics" / "rating_setters.json") or {}
     routes = xw_routes(schema_root)
     ev_tables = [
         (u, tables_for(u.get("use_role", ""), u.get("variable", ""), routes))
@@ -451,7 +472,15 @@ def build(schema_root: str | Path) -> dict:
                 "searched": _searched(nbs, tbl, ledger, srch),
                 "acquired": acq,
                 "extracted": _extracted(units, acq["acquired"]),
-                "reviewed": _reviewed(units, rejected_ids),
+                "reviewed": _reviewed(
+                    units,
+                    rejected_ids,
+                    set(
+                        ((setters.get("cells") or {}).get(nbs) or {})
+                        .get(tbl, {})
+                        .get("targets", [])
+                    ),
+                ),
                 "synthesised": _synthesised(tbl, rows, report),
                 "prose": _prose(rows, prose),
                 "benchmarked": _benchmarked(schema_root, nbs, tbl),
