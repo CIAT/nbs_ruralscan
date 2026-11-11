@@ -167,7 +167,15 @@ EXCLUDED_T3_HAZARDS = ["frost"]
 #: tanks and storm damage to structures are threats to the INVESTMENT (M2b Stream A), not
 #: livelihood hazards — no T3 livelihood cell, no XW route, excluded from the 7-hazard
 #: `asset_risk_weight` completeness rule.
-ASSET_ONLY_HAZARDS = ["sedimentation", "extreme_rainfall", "landslide"]
+#: + three mangrove die-off drivers (Pete 2026-11-11, t3t6r6_mangrove_hazards A)
+ASSET_ONLY_HAZARDS = [
+    "sedimentation",
+    "extreme_rainfall",
+    "landslide",
+    "low_sea_level",
+    "sea_level_rise",
+    "wave_exposure",
+]
 ECON_UNITS = {
     "usd_per_ha",
     "usd_per_ha_yr",
@@ -726,18 +734,73 @@ def _reconcile_rank(contribs: list[_Contrib]) -> tuple[int, float, int, bool]:
     conflicting = (
         min(pos, neg) / (pos + neg) >= CONFLICT_MIN_SHARE if (pos and neg) else False
     )
-    pairs = [
-        (float(c.sign * c.magnitude), c.weight)
-        for c in contribs
-        if c.sign == modal and c.magnitude is not None
-    ]
-    if not pairs:  # direction known, strength never stated → weakest class of that sign
+    sized = [c for c in contribs if c.sign == modal and c.magnitude is not None]
+    if not sized:  # direction known, strength never stated → weakest class of that sign
         return modal * 1, agreement, modal, conflicting
-    med = _weighted_median(pairs)
-    rank = int(round(med if med is not None else modal))
+    # scoring_r5_2 B (Pete 2026-11-11): an unreplicated study (#57, capped at moderate)
+    # still counts for direction but stays OUT of the size vote when any other study states
+    # a size; its cap applies only when it is the only one giving a size.
+    replicated = [
+        c for c in sized if (c.unit.context or {}).get("unreplicated") is not True
+    ]
+    if replicated:
+        sized = replicated
+    # scoring_r5_3 B (Pete 2026-11-11): one vote per study. A study's lines (its pooled
+    # figure, subgroups, restatements) are first reduced to the study's own middle value
+    # (an even split → halfway between), then studies vote at their summed weight.
+    by_source: dict[str, list[tuple[float, float]]] = defaultdict(list)
+    for c in sized:
+        by_source[c.unit.source_id].append(
+            (float(c.sign * (c.magnitude or 0)), c.weight)
+        )
+    pairs = [
+        (_median_midpoint(lines), sum(w for _, w in lines))
+        for lines in by_source.values()
+    ]
+    rank = _central_rank(pairs)
     if rank == 0:
         rank = modal
     return max(-3, min(3, rank)), agreement, modal, conflicting
+
+
+def _round_half_away(x: float) -> int:
+    return int(math.floor(x + 0.5)) if x >= 0 else -int(math.floor(-x + 0.5))
+
+
+def _wquantile(pairs: list[tuple[float, float]], q: float) -> float:
+    pairs = sorted(pairs)
+    total = sum(w for _, w in pairs)
+    acc = 0.0
+    for v, w in pairs:
+        acc += w
+        if acc >= q * total - 1e-12:
+            return v
+    return pairs[-1][0]
+
+
+def _median_midpoint(pairs: list[tuple[float, float]]) -> float:
+    """Weighted median of one study's lines; an exact even split → the midpoint."""
+    pairs = sorted(pairs)
+    total = sum(w for _, w in pairs)
+    acc = 0.0
+    for i, (v, w) in enumerate(pairs):
+        acc += w
+        if abs(acc - total / 2) <= 1e-9 * max(total, 1.0) and i + 1 < len(pairs):
+            return (v + pairs[i + 1][0]) / 2
+        if acc >= total / 2:
+            return v
+    return pairs[-1][0]
+
+
+def _central_rank(pairs: list[tuple[float, float]]) -> int:
+    """Weighted median of (rank, weight), with the two-camp rule (scoring_r5_5 B, Pete
+    2026-11-11): when the weighted third and two-thirds points sit two or more steps apart
+    (at least a third of the size vote is two steps from the rest), the class is the step
+    in between, so one source leaving cannot make the class jump two steps."""
+    lo, hi = _wquantile(pairs, 1 / 3), _wquantile(pairs, 2 / 3)
+    if abs(hi - lo) >= 2:
+        return _round_half_away((lo + hi) / 2)
+    return _round_half_away(_wquantile(pairs, 0.5))
 
 
 def independent_sources(items: list[Any]) -> int:
@@ -922,15 +985,34 @@ def _default_bands() -> list[dict[str, Any]]:
 
 #: extraction spellings of a unit that mean the same denominator (WH prose review 2026-10-05:
 #: a household BCR < 1 was silently dropped from the pool as `bcr`)
-_UNIT_ALIASES = {"bcr": "benefit_cost_ratio", "pct": "percent", "%": "percent"}
+_UNIT_ALIASES = {
+    "bcr": "benefit_cost_ratio",
+    "pct": "percent",
+    "%": "percent",
+    "mg_c_per_ha_yr": "t_c_per_ha_yr",  # 1 Mg = 1 t
+    "mg_c_per_ha": "t_c_per_ha",
+}
+#: t3t6r6_drymatter A (Pete 2026-11-11): growth reported as dry plant matter is converted to
+#: carbon at POOLING time so it can be compared with carbon figures. Factor = 0.47 t C per t
+#: dry matter, the IPCC default carbon fraction of aboveground forest biomass (IPCC 2006
+#: Guidelines, Vol. 4, Ch. 4, Table 4.3; retained in the 2019 Refinement). The quoted number
+#: stays as printed in the register; the summary records that it converted.
+CARBON_FRACTION_DRY_MATTER = 0.47
+_DRY_MATTER_TO_CARBON = {"t_dm_per_ha_yr": "t_c_per_ha_yr", "t_dm_per_ha": "t_c_per_ha"}
 
 
 def _pool_unit(rel: dict[str, Any]) -> str:
     u = str(rel.get("unit") or "").strip().lower()
     u = _UNIT_ALIASES.get(u, u)
+    u = _DRY_MATTER_TO_CARBON.get(u, u)
     if not u and str(rel.get("metric") or "") == "pct_change":
         u = "percent"  # a % change needs no other denominator
     return u
+
+
+def _carbon_factor(c: _Contrib) -> float:
+    u = str((c.unit.relationship or {}).get("unit") or "").strip().lower()
+    return CARBON_FRACTION_DRY_MATTER if u in _DRY_MATTER_TO_CARBON else 1.0
 
 
 def magnitude_summary(
@@ -978,9 +1060,14 @@ def magnitude_summary(
         if independent_sources(group) < min_sources:
             continue
         vals = [
-            (float((c.unit.relationship or {})["magnitude"]), c.weight) for c in group
+            (
+                float((c.unit.relationship or {})["magnitude"]) * _carbon_factor(c),
+                c.weight,
+            )
+            for c in group
         ]
         med = _weighted_median(vals)
+        n_dm = sum(1 for c in group if _carbon_factor(c) != 1.0)
         cand: dict[str, Any] = {
             "metric": metric,
             "unit": unit,
@@ -996,6 +1083,9 @@ def magnitude_summary(
             "n_excluded_opposite": n_opp,
             "n_excluded_band": n_band,
         }
+        if n_dm:
+            cand["n_converted_from_dry_matter"] = n_dm
+            cand["carbon_fraction"] = CARBON_FRACTION_DRY_MATTER
         if best is None or int(cand["n"]) > int(best["n"]):
             best = cand
     return best
@@ -1537,8 +1627,15 @@ def apply_proxy_cap(
             rec["rank"] = d_rank
             rec["strength_from"] = "direct"
         return rec
+    # scoring_r5_1 B (Pete 2026-11-11): only a DIRECT unit of the modal sign lifts the cap —
+    # a direct 'no effect' or opposite finding no longer unlocks a class built on proxies.
     if (
-        all(xw_by_unit[c.unit.evidence_id].proximity != "direct" for c in contribs)
+        not any(
+            xw_by_unit[c.unit.evidence_id].proximity == "direct"
+            and c.has_direction
+            and c.sign == modal
+            for c in contribs
+        )
         and abs(int(rec.get("rank", 0))) > 2
     ):
         rec = dict(rec)
@@ -2183,6 +2280,17 @@ MEASURED_BASES = {"primary_measured", "table"}
 
 def meets_evidence_floor(contribs: list["_Contrib"]) -> tuple[bool, str]:
     """(may this cell state a class?, what is missing when it may not)."""
+    # scoring_r5_1 B (Pete 2026-11-11): a 'no effect' finding can lower confidence but never
+    # counts toward the two-source minimum — unless every direction-bearing unit is null
+    # (then the nulls ARE the finding).
+    directed = [c for c in contribs if c.has_direction]
+    n_null_only = 0
+    if directed and any(c.sign != 0 for c in directed):
+        kept = [c for c in contribs if not (c.has_direction and c.sign == 0)]
+        n_null_only = len({c.unit.source_id for c in contribs}) - len(
+            {c.unit.source_id for c in kept}
+        )
+        contribs = kept
     n_sources = len({c.unit.source_id for c in contribs})
     measured = [c for c in contribs if c.unit.claim_basis in MEASURED_BASES]
     if n_sources >= 2:
@@ -2193,8 +2301,10 @@ def meets_evidence_floor(contribs: list["_Contrib"]) -> tuple[bool, str]:
         return False, "no evidence reaches this cell"
     basis = sorted({str(c.unit.claim_basis) for c in contribs})
     return False, (
-        f"one source, none of it measured (claim basis: {', '.join(basis)}) — "
-        "a second independent source or one measured finding would let this cell state a class"
+        "a single source showing an effect"
+        + (" (the others found no effect)" if n_null_only else "")
+        + f", none of it measured (claim basis: {', '.join(basis)}) — "
+        "a second independent source or a measured finding would let this cell state a class"
     )
 
 
@@ -2364,9 +2474,9 @@ def synthesise_cell(
             if isinstance(allow_crop_scope, bool)
             else (u.suitability_family_id or "") in allow_crop_scope
         )
-        if u.claim_scope == "species_specific" or (
-            u.claim_scope == "crop_specific" and not crop_ok
-        ):
+        # t3t6bl_G1 A (Pete 2026-11-11): per-species results count as practice evidence in
+        # T3/T6 (the species name stays on the unit). T4 keeps the species lock.
+        if u.claim_scope == "crop_specific" and not crop_ok:
             rep.dropped.append((u.evidence_id, f"claim_scope={u.claim_scope}"))
             continue
         if role == "asset_vulnerability":
@@ -2384,7 +2494,9 @@ def synthesise_cell(
             continue
         if table == "T3":
             fs = str((u.context or {}).get("farming_system") or "all")
-            if farming_system != "all" and fs not in (farming_system, "all"):
+            # scoring_r5_4 D (Pete 2026-11-11): a farming-system row is built ONLY from units
+            # that name that system (unstated units belong to the all-systems row)
+            if farming_system != "all" and fs != farming_system:
                 continue
             # A unit that STATES its hazard only speaks to that hazard's cell. Without
             # this, any variable routed to several hazards (microclimate_buffering →
@@ -2457,13 +2569,13 @@ def synthesise_cell(
         # a farming-system row that no unit addresses specifically is the all-systems
         # row under another name (rooftop cisterns × irrigated cropping, zaï × rangeland;
         # WH prose review 2026-10-05) — emit only where a unit states that system
-        if not any(
-            str((u.context or {}).get("farming_system") or "") == farming_system
-            for u, _ in routed
-        ):
+        # scoring_r5_4 D: at least two sources must name the system (the scope-row floor);
+        # whether the row is SHOWN (only when it differs from the all-systems row) is
+        # decided after both rows exist (t3t6_build)
+        if len({u.source_id for u, _ in routed}) < min_scope_sources:
             rep.notes.append(
-                f"{target_key}×{farming_system}: no unit states this farming system — "
-                "not emitted (the all-systems row applies)"
+                f"{target_key}×{farming_system}: fewer than {min_scope_sources} sources name "
+                "this farming system — not emitted (the all-systems row applies)"
             )
             return [], rep
 
@@ -3256,15 +3368,8 @@ def _key_of(top: dict[str, Any]) -> str:
 
 
 def _wmedian(pairs: list[tuple[int, float]]) -> int:
-    """Weighted median of (rank, weight) pairs."""
-    pairs = sorted(pairs)
-    half = sum(w for _, w in pairs) / 2
-    run = 0.0
-    for r, w in pairs:
-        run += w
-        if run >= half:
-            return r
-    return pairs[-1][0]
+    """Weighted median of (rank, weight) pairs, with the two-camp rule (scoring_r5_5 B)."""
+    return _central_rank([(float(r), w) for r, w in pairs])
 
 
 # ── runtime resolution (method §5.5) ──────────────────────────────────────────────────

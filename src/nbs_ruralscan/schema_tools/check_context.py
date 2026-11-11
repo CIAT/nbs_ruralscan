@@ -132,6 +132,10 @@ HAZARDS = {
     "sedimentation",
     "extreme_rainfall",
     "landslide",  # 8b B (Pete 2026-10-07): asset-threat only, like sedimentation
+    # mangrove die-off drivers (Pete 2026-11-11, t3t6r6_mangrove_hazards A): asset-threat only
+    "low_sea_level",  # extreme low sea level → soil hypersalinity (Lovelock 2017)
+    "sea_level_rise",  # relative sea-level rise outpacing surface elevation gain
+    "wave_exposure",  # planting on exposed, eroding shores
 }
 SEVERITY = {"mild", "moderate", "severe", "extreme", "unspecified"}
 #: v1.6.11 (Pete 2026-10-16): `reference_*` marks a RECOVERY SHORTFALL — a restored site
