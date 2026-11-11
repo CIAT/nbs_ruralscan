@@ -835,6 +835,92 @@
     "n_sources": 4
   },
   {
+    "mapping_id": "water_harvesting__runoff_catchment__aridity_index",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "global_aridity_index_v3",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "scope": "water_harvesting__runoff_catchment__aridity_index",
+          "status": "held",
+          "reviewer": "Pete",
+          "reviewed_date": "2026-11-11",
+          "decision_ref": "methodology/audits/t4_runoff_four_20261111/decision.md",
+          "reason": "Kahinda’s ordinal climate ranks require an explicit score convention. FAO describes the frequency of runoff events. Use at most one climate input from Kahinda when selecting rainfall or aridity.",
+          "retained_source_profiles": [
+            {
+              "evidence_id": "ev_wh_aridity_index_kahinda08_3",
+              "source_id": "kahinda2008_sa_rwh_suitability",
+              "evidence_sha256": "7bbe3f1a423aad4b7f29429cff9e9700609d875f37cc78b883d87dcab639a762",
+              "source_quote": "Table 2\nPercentage of land area in each aridity zone in South Africa (Hoffman and Ashwell,\n2001) and their RWH suitability\nAridity zone\nHyper-\narid\nArid\nSemi-\narid\nDry sub-humid\nHumid\nRainfall/ETP\n<0.05\n0.05–\n0.2\n0.2–0.5\n0.5–0.65\n>0.65\n% of SA\n8\n47\n39\n5\n1\nSuitability IRWH\n1\n4\n5\n3\n1\nSuitability XRWH\n1\n3\n4\n5\n2",
+              "locator": "PDF p. 3, Table 2, XRWH row and model weights on PDF p. 5",
+              "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+              "disposition": "Keep all five South African external-catchment ranks and the 0.34 climate weight within this study. Hyper-arid sites receive rank 1. Use rainfall or aridity once. Rank-to-score conversion and shared endpoint assignment remain open.",
+              "published_ranks": {
+                "<0.05": 1,
+                "0.05-0.2": 3,
+                "0.2-0.5": 4,
+                "0.5-0.65": 5,
+                ">0.65": 2
+              },
+              "unit": "annual rainfall / potential evapotranspiration",
+              "source_weight": 0.34,
+              "weight_scope": "XRWH climate criterion",
+              "alternative_climate_inputs": [
+                "annual_precipitation",
+                "aridity_index"
+              ],
+              "maximum_climate_contributions": 1
+            },
+            {
+              "evidence_id": "ev_wh_aridity_slm11_macro",
+              "source_id": "fao_slm_in_practice_2011",
+              "evidence_sha256": "cfe5c1133592603e047d3273ff21123a675299a979042c406f2f53d08c98be26",
+              "source_quote": "Climate: RWH techniques are most relevant in semi-arid and subhumid zones with poorly distributed rains, in particular in cereal–based areas. In more arid regions they are used for tree crops and / or establishing trees for afforestation. Micro-catchments are more suitable for areas with more reliable rainfall, whereas macro-catchments are effective in areas where few runoff events are expected.",
+              "locator": "PDF p. 87 (printed p. 90), rainwater harvesting applicability",
+              "source_artifact_sha256": "a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3",
+              "disposition": "Keep macrocatchment guidance where runoff events are infrequent. Microcatchments suit more reliable rain. Event frequency supplies no numeric P/PET boundary.",
+              "source_guidance": "Climate: RWH techniques are most relevant in semi-arid and subhumid zones with poorly distributed rains, in particular in cereal–based areas. In more arid regions they are used for tree crops and / or establishing trees for afforestation. Micro-catchments are more suitable for areas with more reliable rainfall, whereas macro-catchments are effective in areas where few runoff events are expected."
+            }
+          ],
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "type": "trapezoidal",
+            "params": {
+              "abs_min": 0.05,
+              "opt_low": 0.5,
+              "opt_high": 0.65
+            },
+            "uncertainty_pct": "20.0"
+          },
+          "alternative_climate_inputs": {
+            "source_id": "kahinda2008_sa_rwh_suitability",
+            "family": "water_harvesting__runoff_catchment",
+            "mapping_ids": [
+              "water_harvesting__runoff_catchment__annual_precipitation",
+              "water_harvesting__runoff_catchment__aridity_index"
+            ],
+            "maximum_concurrent_climate_contributions": 1
+          }
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_adjustable": false,
+    "justification": "Kahinda’s ordinal climate ranks require an explicit score convention. FAO describes the frequency of runoff events. Use at most one climate input from Kahinda when selecting rainfall or aridity. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "variable": "aridity_index",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": [
+      "ev_wh_aridity_index_kahinda08_3",
+      "ev_wh_aridity_slm11_macro"
+    ],
+    "n_sources": 2
+  },
+  {
     "mapping_id": "water_harvesting__runoff_catchment__catchment_area",
     "nbs_id": "water_harvesting_conservation",
     "suitability_dimension": "biophysical_constraint",
@@ -921,6 +1007,77 @@
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
       "ev_wh_catchment_area_kadam12_1"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "water_harvesting__runoff_catchment__clay_content",
+    "nbs_id": "water_harvesting_conservation",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "scope": "water_harvesting__runoff_catchment__clay_content",
+          "status": "held",
+          "reviewer": "Pete",
+          "reviewed_date": "2026-11-11",
+          "decision_ref": "methodology/audits/t4_runoff_four_20261111/decision.md",
+          "reason": "The ranks describe external-catchment runoff generation. The lowest clay class carries two ranks and some class endpoints have gaps. Preserve the regional table until spatial support and scoring are resolved.",
+          "retained_source_profiles": [
+            {
+              "evidence_id": "ev_wh_clay_content_kahinda08_2",
+              "source_id": "kahinda2008_sa_rwh_suitability",
+              "evidence_sha256": "49562c41a18da7cf73d10b096ee79190affecb9b51ef5eca45647fda0387f7db",
+              "source_quote": "Table 4\nSoil texture classes per clay class and suitability ranking\nClay\nclass\n% Clay\ncontent\nSoil texture classes\nIRWH\nsuitability\nXRWH\nsuitability\nC1\n0–6\nLoamy sands to\nsands\n2–1\n2–1\nC2\n6.1–15\nSandy loams\n4\n3\nC3\n15.1–25\nSandy clay loam\n5\n4\nC4\n25.1–35\nSandy clay loam\n5\n4\nC5\n35.1–55\nSandy clays\n3\n5\nC6\n>55\nClays\n1\n3",
+              "locator": "PDF p. 3, Table 4, XRWH column and model weights on PDF p. 5",
+              "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+              "disposition": "Keep all six external-catchment clay classes, the original 2–1 range and the within-study 0.33 texture weight. Interpret clay for the runoff-producing area. Assess receiving soil separately.",
+              "published_ranks": {
+                "0-6": "2-1",
+                "6.1-15": 3,
+                "15.1-25": 4,
+                "25.1-35": 4,
+                "35.1-55": 5,
+                ">55": 3
+              },
+              "unit": "percent clay",
+              "source_weight": 0.33,
+              "weight_scope": "XRWH soil texture criterion",
+              "study_assumption": "about 10% silt"
+            }
+          ],
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "type": "trapezoidal",
+            "params": {
+              "opt_low": 35.1,
+              "opt_high": 55.0
+            },
+            "uncertainty_pct": "20.0"
+          }
+        },
+        "dataset_binding": {
+          "scope": "water_harvesting__runoff_catchment__clay_content",
+          "reviewer": "Pete",
+          "reviewed_date": "2026-11-11",
+          "decision_ref": "methodology/audits/t4_runoff_four_20261111/decision.md",
+          "status": "requires_matching_input",
+          "unmatched_dataset_id": "soilgrids_250m",
+          "reason": "Historical soilgrids_250m identifier is absent from T1. Verify the clay band, unit, sampling depth and contributing-catchment footprint before using a dataset.",
+          "required_statistic": "Percent clay for the runoff-producing catchment, with depth and spatial support documented."
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_adjustable": false,
+    "justification": "The ranks describe external-catchment runoff generation. The lowest clay class carries two ranks and some class endpoints have gaps. Preserve the regional table until spatial support and scoring are resolved. Retained approved calibration hold; no new numeric synthesis or approval. Dataset binding unresolved; requires matching input: Historical soilgrids_250m identifier is absent from T1. Verify the clay band, unit, sampling depth and contributing-catchment footprint before using a dataset.",
+    "variable": "clay_content",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": [
+      "ev_wh_clay_content_kahinda08_2"
     ],
     "n_sources": 1
   },
@@ -1589,6 +1746,87 @@
       "ev_wh_slope_wocatgl13_tanks"
     ],
     "n_sources": 8
+  },
+  {
+    "mapping_id": "water_harvesting__runoff_catchment__soil_permeability",
+    "nbs_id": "water_harvesting_conservation",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "scope": "water_harvesting__runoff_catchment__soil_permeability",
+          "status": "held",
+          "reviewer": "Pete",
+          "reviewed_date": "2026-11-11",
+          "decision_ref": "methodology/audits/t4_runoff_four_20261111/decision.md",
+          "reason": "Permeability is an input to a joint fuzzy model with slope and runoff. Storage and recharge require separate outputs. An independent permeability response has no source calibration.",
+          "retained_source_profiles": [
+            {
+              "evidence_id": "ev_wh_soil_permeability_vema19_1",
+              "source_id": "singh_2019_fuzzy_wh_structure_rainfed",
+              "evidence_sha256": "0456a3bac1ca8361fb9e4476636deb7a99ced3974b7fb189d1096f7bd3ab99d1",
+              "source_quote": "Table 2\nFuzzy Membership Function Parameters.\nLow\nMedium\nHigh\na\nb\nc\nd\na\nb\nc\nd\na\nb\nc\nd\nSlope (%)\n0\n0\n5\n10\n5\n10\n20\n30\n20\n30\n100\n100\nSoil Permeability (cm/day)\n0\n0\n12\n48\n12\n48\n151\n305\n151\n305\n900\n1000\nRunoﬀPotential (CN)\n0\n35\n55\n60\n55\n60\n75\n80\n75\n80\n100\n100\n",
+              "locator": "PDF p. 4, Table 2 and section 3.3, and PDF p. 7, watershed permeability",
+              "source_artifact_sha256": "d840c4b5058a1bda4a71ea47ab002ae874356b525198cc7505a8145d5aed1b8e",
+              "disposition": "Keep the three trapezoidal permeability classes as joint inputs with slope and runoff. Preserve separate surface-storage and recharge outcomes. No independent permeability-to-suitability conversion.",
+              "input_classes": {
+                "low": [
+                  0,
+                  0,
+                  12,
+                  48
+                ],
+                "medium": [
+                  12,
+                  48,
+                  151,
+                  305
+                ],
+                "high": [
+                  151,
+                  305,
+                  900,
+                  1000
+                ]
+              },
+              "unit": "cm/day",
+              "parameter_order": [
+                "a",
+                "b",
+                "c",
+                "d"
+              ],
+              "observed_watershed_range_cm_day": [
+                0.3,
+                31
+              ],
+              "conditional_example": "Low permeability, low slope and high runoff favour check dams and farm ponds. The same combination is unsuitable for percolation tanks."
+            }
+          ],
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "type": "trapezoidal",
+            "params": {
+              "opt_high": 5.0,
+              "abs_max": 20.0
+            },
+            "uncertainty_pct": "30.0"
+          }
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_adjustable": false,
+    "justification": "Permeability is an input to a joint fuzzy model with slope and runoff. Storage and recharge require separate outputs. An independent permeability response has no source calibration. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "variable": "soil_permeability",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": [
+      "ev_wh_soil_permeability_vema19_1"
+    ],
+    "n_sources": 1
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__stream_order",

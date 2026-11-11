@@ -17286,9 +17286,9 @@
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "variable": "aridity_index",
     "relationship": {
-      "opt_low": 0.5,
-      "opt_high": 0.65,
-      "abs_min": 0.05,
+      "opt_low": null,
+      "opt_high": null,
+      "abs_min": null,
       "unit": "dimensionless",
       "scale": "suitability rank 1 (least) to 5 (most); IRWH = in-field RWH, XRWH = ex-field (external catchment) RWH",
       "xrwh_ranks": {
@@ -17298,7 +17298,23 @@
         "0.5-0.65": 5,
         ">0.65": 2
       },
-      "direction": "ex-field RWH peaks one zone WETTER than in-field — in DRY SUB-HUMID land (0.5-0.65) — because an external catchment needs enough rain to generate runoff"
+      "direction": "non_monotonic"
+    },
+    "context": {
+      "reviewed_use": "Keep all five South African external-catchment ranks and the 0.34 climate weight within this study. Hyper-arid sites receive rank 1. Use rainfall or aridity once. Rank-to-score conversion and shared endpoint assignment remain open.",
+      "model_use": {
+        "study": "South African external-catchment suitability model",
+        "criterion_weight": 0.34,
+        "alternatives": [
+          "rainfall",
+          "aridity"
+        ],
+        "maximum_concurrent_climate_contributions": 1
+      },
+      "source_table": {
+        "locator": "PDF p. 3, Table 2, XRWH row and model weights on PDF p. 5",
+        "source_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8"
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -17307,8 +17323,9 @@
     "extraction_confidence": "high",
     "quote": "Table 2\nPercentage of land area in each aridity zone in South Africa (Hoffman and Ashwell,\n2001) and their RWH suitability\nAridity zone\nHyper-\narid\nArid\nSemi-\narid\nDry sub-humid\nHumid\nRainfall/ETP\n<0.05\n0.05–\n0.2\n0.2–0.5\n0.5–0.65\n>0.65\n% of SA\n8\n47\n39\n5\n1\nSuitability IRWH\n1\n4\n5\n3\n1\nSuitability XRWH\n1\n3\n4\n5\n2",
     "page": 3,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "aridity zone suitability ranking for ex-field RWH",
+    "attribution": "[reviewed 2026-11-11 by peetmate; reason:accepted_correction; note:Keep all five South African external-catchment ranks and the 0.34 climate weight within this study. Hyper-arid sites receive rank 1. Use rainfall or aridity once. Rank-to-score conversion and shared endpoint assignment remain open.]",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -17496,8 +17513,8 @@
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "variable": "clay_content",
     "relationship": {
-      "opt_low": 35.1,
-      "opt_high": 55,
+      "opt_low": null,
+      "opt_high": null,
       "unit": "percent",
       "scale": "suitability rank 1 (least) to 5 (most); IRWH = in-field RWH, XRWH = ex-field (external catchment) RWH",
       "xrwh_ranks": {
@@ -17508,7 +17525,19 @@
         "35.1-55": 5,
         ">55": 3
       },
-      "direction": "ex-field RWH is best on sandy CLAYS, 35.1-55% clay — heavier than in-field's optimum, because the catchment must shed water rather than absorb it"
+      "direction": "non_monotonic"
+    },
+    "context": {
+      "reviewed_use": "Keep all six external-catchment clay classes, the original 2–1 range and the within-study 0.33 texture weight. Interpret clay for the runoff-producing area. Assess receiving soil separately.",
+      "model_use": {
+        "study": "South African external-catchment suitability model",
+        "criterion_weight": 0.33,
+        "footprint": "runoff-producing catchment"
+      },
+      "source_table": {
+        "locator": "PDF p. 3, Table 4, XRWH column and model weights on PDF p. 5",
+        "source_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8"
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -17517,8 +17546,9 @@
     "extraction_confidence": "high",
     "quote": "Table 4\nSoil texture classes per clay class and suitability ranking\nClay\nclass\n% Clay\ncontent\nSoil texture classes\nIRWH\nsuitability\nXRWH\nsuitability\nC1\n0–6\nLoamy sands to\nsands\n2–1\n2–1\nC2\n6.1–15\nSandy loams\n4\n3\nC3\n15.1–25\nSandy clay loam\n5\n4\nC4\n25.1–35\nSandy clay loam\n5\n4\nC5\n35.1–55\nSandy clays\n3\n5\nC6\n>55\nClays\n1\n3",
     "page": 3,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "clay-content suitability ranking for ex-field RWH",
+    "attribution": "[reviewed 2026-11-11 by peetmate; reason:accepted_correction; note:Keep all six external-catchment clay classes, the original 2–1 range and the within-study 0.33 texture weight. Interpret clay for the runoff-producing area. Assess receiving soil separately.]",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -18320,6 +18350,11 @@
         "date": "2026-11-04",
         "ruleset": "v1.9.2",
         "audit": "methodology/audits/vema_fuzzy_correction_20261104/corrections.json"
+      },
+      "reviewed_use": "Keep the three trapezoidal permeability classes as joint inputs with slope and runoff. Preserve separate surface-storage and recharge outcomes. No independent permeability-to-suitability conversion.",
+      "source_table": {
+        "locator": "PDF p. 4, Table 2 and section 3.3, and PDF p. 7, watershed permeability",
+        "source_sha256": "d840c4b5058a1bda4a71ea47ab002ae874356b525198cc7505a8145d5aed1b8e"
       }
     },
     "use_role": "structural_suitability",
@@ -18329,9 +18364,9 @@
     "extraction_confidence": "medium",
     "quote": "Table 2\nFuzzy Membership Function Parameters.\nLow\nMedium\nHigh\na\nb\nc\nd\na\nb\nc\nd\na\nb\nc\nd\nSlope (%)\n0\n0\n5\n10\n5\n10\n20\n30\n20\n30\n100\n100\nSoil Permeability (cm/day)\n0\n0\n12\n48\n12\n48\n151\n305\n151\n305\n900\n1000\nRunoﬀPotential (CN)\n0\n35\n55\n60\n55\n60\n75\n80\n75\n80\n100\n100\n",
     "page": 4,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "Soil Permeability (cm/day)",
-    "attribution": "[VERIFY-FLAG mismatch: Corrected input-class endpoints previously misread as absolute suitability limits. Review qualitative storage direction and joint-rule conditionality; no standalone calibrated curve.] rule base from Adham et al. 2016a; Kadam et al. 2012; Ramakrishnan et al. 2009; Rao and Bhaumik 2003, plus expert knowledge",
+    "attribution": "[reviewed 2026-11-11 by peetmate; reason:accepted_correction; note:Keep the three trapezoidal permeability classes as joint inputs with slope and runoff. Preserve separate surface-storage and recharge outcomes. No independent permeability-to-suitability conversion.] rule base from Adham et al. 2016a; Kadam et al. 2012; Ramakrishnan et al. 2009; Rao and Bhaumik 2003, plus expert knowledge",
     "locator_type": "page",
     "justification_quote": "The water harvesting structures for surface water\nstorage to aid rainfed agriculture are more suitable in areas with low\nvalues of soil permeability.",
     "justification_page": 3,
@@ -19531,7 +19566,15 @@
     "variable": "aridity_index",
     "relationship": {
       "type": "qualitative",
-      "direction": "macro-catchments are effective where FEW runoff events are expected (drier, more erratic rainfall)"
+      "direction": "unclear"
+    },
+    "context": {
+      "reviewed_use": "Keep macrocatchment guidance where runoff events are infrequent. Microcatchments suit more reliable rain. Event frequency supplies no numeric P/PET boundary.",
+      "measurement": "Runoff-event frequency and rainfall reliability. Qualitative context only for the family aridity row.",
+      "source_table": {
+        "locator": "PDF p. 87 (printed p. 90), rainwater harvesting applicability",
+        "source_sha256": "a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3"
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -19540,8 +19583,9 @@
     "extraction_confidence": "high",
     "quote": "Climate: RWH techniques are most relevant in semi-arid and subhumid zones with poorly distributed rains, in particular in cereal–based areas. In more arid regions they are used for tree crops and / or establishing trees for afforestation. Micro-catchments are more suitable for areas with more reliable rainfall, whereas macro-catchments are effective in areas where few runoff events are expected.",
     "page": 87,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "Climate",
+    "attribution": "[reviewed 2026-11-11 by peetmate; reason:accepted_correction; note:Keep macrocatchment guidance where runoff events are infrequent. Microcatchments suit more reliable rain. Event frequency supplies no numeric P/PET boundary.]",
     "locator_type": "page",
     "ruleset_version": "v1.6.0"
   },
