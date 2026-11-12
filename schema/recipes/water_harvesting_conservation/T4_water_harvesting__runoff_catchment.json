@@ -961,10 +961,10 @@
         "numerical_calibration": {
           "scope": "water_harvesting__runoff_catchment__slope",
           "reviewer": "Pete",
-          "reviewed_date": "2026-11-11",
+          "reviewed_date": "2026-11-12",
           "status": "held",
-          "decision_ref": "methodology/audits/t4_alene_slopes_20261111/decision.md",
-          "reason": "Keep eleven slope profiles by structure and purpose. Retain the Karimi text/table disagreement, Ngugi’s field results and Alene’s >8% general guidance alongside its conditional <15% check-dam criterion. Shared slope calibration remains held.",
+          "decision_ref": "methodology/audits/t4_bera_storage_20261112/design_profiles.md",
+          "reason": "Keep the previously approved eleven slope profiles by structure and purpose. Retain the Karimi text/table disagreement, Ngugi’s field results and Alene’s >8% general guidance alongside its conditional <15% check-dam criterion. Shared slope calibration remains held. Add the Bera regional structure profiles with their companion conditions. No shared cutoff.",
           "retained_source_profiles": [
             {
               "evidence_id": "ev_wh_slope_kadam12_1",
@@ -1396,10 +1396,56 @@
               "interpretation": "Keep the Table 4 farm-pond profile together: slope <5%, agricultural land, fine-textured soil, stream orders 1–2. Retain as structure-specific siting guidance. No shared slope cutoff.",
               "disposition": "Documentary profile. Family-wide numerical calibration held.",
               "source_lineage": "IMSD guidance via Adham et al. (2016) and Saha et al. (2018), reproduced in Table 4."
+            },
+            {
+              "evidence_id": "ev_wh5_bera_2023_slope_check_dam",
+              "source_id": "wh_stocktake_bera_2023",
+              "evidence_sha256": "bfe739bea642d7cd6dcce7956583a171fb7cb737eb61baf3dbd53381fdda2c1b",
+              "source_artifact_sha256": "538586026aada8303244b7b728402e6e091606e89dcfde0aa12b6a12e568c33c",
+              "joint_structure_profile": {
+                "structure": "Check dam",
+                "stream_orders": [
+                  2,
+                  3
+                ],
+                "slope_degrees": "5–15",
+                "proposed_sites": 32,
+                "locator": "p. 13, Figure 7 and accompanying text",
+                "lineage": "Padmavathy et al. (1993), Pandey et al. (2011), Ettazarini (2021)",
+                "joint_conditions": "Keep stream order 2 or 3 together with 5–15 degrees slope.",
+                "companion_evidence_ids": [
+                  "ev_wh5_bera_2023_slope_check_dam",
+                  "ev_wh5_bera_2023_stream_order_check_dam"
+                ]
+              }
+            },
+            {
+              "evidence_id": "ev_wh5_bera_2023_slope_percolation",
+              "source_id": "wh_stocktake_bera_2023",
+              "evidence_sha256": "6ed361389e09b10bfe43094e00424b044d3156ff6b539c539b4298a6279857ff",
+              "source_artifact_sha256": "538586026aada8303244b7b728402e6e091606e89dcfde0aa12b6a12e568c33c",
+              "joint_structure_profile": {
+                "structure": "Percolation tank",
+                "stream_orders": [
+                  1,
+                  2
+                ],
+                "slope_as_printed": "moderately steep",
+                "land_cover": "agricultural or fallow land",
+                "proposed_sites": 35,
+                "locator": "p. 14, Figure 8 and accompanying text",
+                "lineage": "Jha et al. (2014), Rais and Javed (2014) for stream order",
+                "joint_conditions": "Keep stream orders 1–2, agricultural or fallow land and a qualitatively moderately steep slope together for recharge siting. Assess NbS eligibility separately. The paper calls 10–15° moderately steep on p. 4 and 15–30° moderately steep on p. 13. Keep the p. 14 wording.",
+                "companion_evidence_ids": [
+                  "ev_wh5_bera_2023_stream_order_percolation",
+                  "ev_wh5_bera_2023_slope_percolation",
+                  "ev_wh5_bera_2023_land_cover_percolation"
+                ]
+              }
             }
           ],
           "spatial_input": "SRTM provides local terrain slope in degrees, derived before aggregation. To compare local terrain with a percent-grade source, convert as 100 × tan(angle in radians) at the derivative scale. For a catchment slope require the matching catchment boundaries and summary statistic. A terrain cell or riverbed gradient cannot substitute for the sand-dam catchment measure.",
-          "source_count_basis": "Nine distinct publications. Three Alene cards count as one paper. Table 4 reproduces cited IMSD guidance; these rows do not supply independent validation.",
+          "source_count_basis": "10 distinct publications across 13 evidence cards. Count Alene and Bera once each per variable. Preserve shared guideline lineage when assessing independence.",
           "held_relationship": {
             "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
             "type": "trapezoidal",
@@ -1411,7 +1457,8 @@
             },
             "uncertainty_pct": "60.0"
           },
-          "prior_decision_ref": "methodology/audits/t4_water_block_20261109/runoff_slope.md"
+          "prior_decision_ref": "methodology/audits/t4_alene_slopes_20261111/decision.md",
+          "previous_decision_ref": "methodology/audits/t4_alene_slopes_20261111/decision.md"
         }
       }
     },
@@ -1420,7 +1467,7 @@
     "has_future_projection": false,
     "weight_default": 0.1111,
     "weight_adjustable": true,
-    "justification": "Keep eleven slope profiles by structure and purpose. Retain the Karimi text/table disagreement, Ngugi’s field results and Alene’s >8% general guidance alongside its conditional <15% check-dam criterion. Shared slope calibration remains held. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "justification": "Keep eleven slope profiles by structure and purpose. Retain the Karimi text/table disagreement, Ngugi’s field results and Alene’s >8% general guidance alongside its conditional <15% check-dam criterion. Shared slope calibration remains held. Retain Bera’s regional siting evidence by structure. Keep the complete linked conditions and the existing calibration hold. Retained approved calibration hold; no new numeric synthesis or approval.",
     "variable": "slope",
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
@@ -1434,9 +1481,11 @@
       "ev_wh_slope_wocatgl13_tanks",
       "ev_wh5_alene_2022_slope",
       "ev_wh5_alene_2022_slope_check_dam",
-      "ev_wh5_alene_2022_slope_farm_pond"
+      "ev_wh5_alene_2022_slope_farm_pond",
+      "ev_wh5_bera_2023_slope_check_dam",
+      "ev_wh5_bera_2023_slope_percolation"
     ],
-    "n_sources": 9,
+    "n_sources": 10,
     "corpus_n": null,
     "paper_support_pct": null
   },
@@ -1541,11 +1590,11 @@
         },
         "numerical_calibration": {
           "status": "held",
-          "reason": "The shared curve spans orders 1–4 and selects order 2 as its optimum. Published criteria depend on the structure, purpose and stream network. The studies use both joint site-selection conditions and ordinal ranks, including ranks above order 4.",
+          "reason": "The shared curve spans orders 1–4 and selects order 2 as its optimum. Published criteria depend on the structure, purpose and stream network. The studies use both joint site-selection conditions and ordinal ranks, including ranks above order 4. Add the Bera regional structure profiles with their companion conditions. No shared cutoff.",
           "scope": "water_harvesting__runoff_catchment__stream_order",
           "reviewer": "Pete",
           "reviewed_date": "2026-11-12",
-          "decision_ref": "methodology/audits/t4_alene_slopes_20261111/land_soil_and_structures.md",
+          "decision_ref": "methodology/audits/t4_bera_storage_20261112/design_profiles.md",
           "source_profiles_ref": "methodology/audits/t4_krois_hold_20261107/next_stream_order_decision.json",
           "held_relationship": {
             "type": "trapezoidal",
@@ -1757,10 +1806,98 @@
                 "slope_evidence_id": "ev_wh5_alene_2022_slope_farm_pond",
                 "source_table": "Table 4, PDF p. 6; IMSD guidelines via Adham et al. (2016) and Saha et al. (2018)"
               }
+            },
+            {
+              "evidence_id": "ev_wh5_bera_2023_stream_order_check_dam",
+              "source_id": "wh_stocktake_bera_2023",
+              "evidence_sha256": "cdaa71d907287cff9d3a28419ea934193487b31fcdfbd0abfabee199783da63b",
+              "source_artifact_sha256": "538586026aada8303244b7b728402e6e091606e89dcfde0aa12b6a12e568c33c",
+              "joint_structure_profile": {
+                "structure": "Check dam",
+                "stream_orders": [
+                  2,
+                  3
+                ],
+                "slope_degrees": "5–15",
+                "proposed_sites": 32,
+                "locator": "p. 13, Figure 7 and accompanying text",
+                "lineage": "Padmavathy et al. (1993), Pandey et al. (2011), Ettazarini (2021)",
+                "joint_conditions": "Keep stream order 2 or 3 together with 5–15 degrees slope.",
+                "companion_evidence_ids": [
+                  "ev_wh5_bera_2023_slope_check_dam",
+                  "ev_wh5_bera_2023_stream_order_check_dam"
+                ]
+              }
+            },
+            {
+              "evidence_id": "ev_wh5_bera_2023_stream_order_earthen_dam",
+              "source_id": "wh_stocktake_bera_2023",
+              "evidence_sha256": "813a7199b5c677c1d329233c18a5cf75929ea2b3e54bf8e586bebf0c5bd0c755",
+              "source_artifact_sha256": "538586026aada8303244b7b728402e6e091606e89dcfde0aa12b6a12e568c33c",
+              "joint_structure_profile": {
+                "structure": "Earthen dam",
+                "stream_orders": [
+                  2,
+                  3,
+                  4
+                ],
+                "proposed_sites": 17,
+                "locator": "pp. 13–14, Figure 8 and accompanying text",
+                "lineage": "Hashim and Sayl (2021)",
+                "joint_conditions": "Keep stream orders 2–4 for earthen dams.",
+                "companion_evidence_ids": [
+                  "ev_wh5_bera_2023_stream_order_earthen_dam"
+                ]
+              }
+            },
+            {
+              "evidence_id": "ev_wh5_bera_2023_stream_order_farm_pond",
+              "source_id": "wh_stocktake_bera_2023",
+              "evidence_sha256": "d1cb208f0b8ece9612c57cf1d72800eb5117801b13b77dfdc8c4018be316876a",
+              "source_artifact_sha256": "538586026aada8303244b7b728402e6e091606e89dcfde0aa12b6a12e568c33c",
+              "joint_structure_profile": {
+                "structure": "Farm pond",
+                "stream_orders": [
+                  1
+                ],
+                "feeder_channel_as_printed": "1/2 feeder channel",
+                "feeder_channel_count": null,
+                "proposed_sites": 24,
+                "locator": "p. 14, Figure 8 and accompanying text",
+                "lineage": "Kadam et al. (2012), Singh et al. (2017)",
+                "joint_conditions": "First-order streams and their surroundings. The printed feeder-channel count remains unresolved.",
+                "companion_evidence_ids": [
+                  "ev_wh5_bera_2023_stream_order_farm_pond"
+                ]
+              }
+            },
+            {
+              "evidence_id": "ev_wh5_bera_2023_stream_order_percolation",
+              "source_id": "wh_stocktake_bera_2023",
+              "evidence_sha256": "ce5ffa076b3f4674b4f9fcc010050a58f8dcbd416f08bdcdf456f4992d74ba8b",
+              "source_artifact_sha256": "538586026aada8303244b7b728402e6e091606e89dcfde0aa12b6a12e568c33c",
+              "joint_structure_profile": {
+                "structure": "Percolation tank",
+                "stream_orders": [
+                  1,
+                  2
+                ],
+                "slope_as_printed": "moderately steep",
+                "land_cover": "agricultural or fallow land",
+                "proposed_sites": 35,
+                "locator": "p. 14, Figure 8 and accompanying text",
+                "lineage": "Jha et al. (2014), Rais and Javed (2014) for stream order",
+                "joint_conditions": "Keep stream orders 1–2, agricultural or fallow land and a qualitatively moderately steep slope together for recharge siting. Assess NbS eligibility separately. The paper calls 10–15° moderately steep on p. 4 and 15–30° moderately steep on p. 13. Keep the p. 14 wording.",
+                "companion_evidence_ids": [
+                  "ev_wh5_bera_2023_stream_order_percolation",
+                  "ev_wh5_bera_2023_slope_percolation",
+                  "ev_wh5_bera_2023_land_cover_percolation"
+                ]
+              }
             }
           ],
-          "previous_decision_ref": "methodology/audits/t4_stream_order_hold_20261107/user_decision.md",
-          "source_count_basis": "Four publications across five stream-order cards. Alene reproduces IMSD guidance. Related adopted specifications do not provide independent validation."
+          "previous_decision_ref": "methodology/audits/t4_alene_slopes_20261111/land_soil_and_structures.md",
+          "source_count_basis": "5 distinct publications across 9 evidence cards. Count Alene and Bera once each per variable. Preserve shared guideline lineage when assessing independence."
         }
       }
     },
@@ -1769,7 +1906,7 @@
     "has_future_projection": false,
     "weight_default": 0.1111,
     "weight_adjustable": true,
-    "justification": "Peter approved holding the shared stream-order curve on 7 November 2026. Retain the Kadam, Singh and Ettazarini profiles by structure, including companion siting criteria, network definitions, source weights and discrepancies. Select a compatible structure and stream network before calibrating a response. Dataset binding unresolved; requires matching input: HydroBASINS ORDER is a classical hierarchy with the main stem numbered 1, not the Strahler order required by this mapping. It cannot be substituted unchanged. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes. Retain Alene’s two joint Table 4 profiles. Count the paper once for stream order. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "justification": "Peter approved holding the shared stream-order curve on 7 November 2026. Retain the Kadam, Singh and Ettazarini profiles by structure, including companion siting criteria, network definitions, source weights and discrepancies. Select a compatible structure and stream network before calibrating a response. Dataset binding unresolved; requires matching input: HydroBASINS ORDER is a classical hierarchy with the main stem numbered 1, not the Strahler order required by this mapping. It cannot be substituted unchanged. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes. Retain Alene’s two joint Table 4 profiles. Count the paper once for stream order. Retain Bera’s regional siting evidence by structure. Keep the complete linked conditions and the existing calibration hold. Retained approved calibration hold; no new numeric synthesis or approval.",
     "variable": "stream_order",
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
@@ -1777,9 +1914,13 @@
       "ev_wh_stream_order_singh17_1",
       "ev_wh_stream_order_mahmoud21_1",
       "ev_wh5_alene_2022_stream_order_check_dam",
-      "ev_wh5_alene_2022_stream_order_farm_pond"
+      "ev_wh5_alene_2022_stream_order_farm_pond",
+      "ev_wh5_bera_2023_stream_order_check_dam",
+      "ev_wh5_bera_2023_stream_order_earthen_dam",
+      "ev_wh5_bera_2023_stream_order_farm_pond",
+      "ev_wh5_bera_2023_stream_order_percolation"
     ],
-    "n_sources": 4,
+    "n_sources": 5,
     "corpus_n": null,
     "paper_support_pct": null,
     "dataset_id": ""
