@@ -315,7 +315,16 @@ def test_runoff_climate_and_soil_profiles_survive_without_enabling_scores():
             )
         if variable == "clay_content":
             assert adaptation["dataset_binding"]["status"] == "requires_matching_input"
-    assert len(profiles) == 4
+    assert "ev_wh_aridity_slm11_macro" in profiles
+    adham_clay = profiles["ev_wh5_adham_2018_clay_content"]
+    assert "unit omitted" in adham_clay["quantity"]
+    assert [(c["value"], c["score"]) for c in adham_clay["classes"]] == [
+        (">20", 9),
+        ("15–20", 7),
+        ("11–15", 4),
+        ("8–11", 3),
+        ("<8", 1),
+    ]
     assert profiles["ev_wh_aridity_index_kahinda08_3"]["published_ranks"]["<0.05"] == 1
     assert profiles["ev_wh_clay_content_kahinda08_2"]["published_ranks"]["0-6"] == "2-1"
     assert profiles["ev_wh_soil_permeability_vema19_1"]["input_classes"]["high"] == [

@@ -354,9 +354,9 @@
           "scope": "water_harvesting__runoff_catchment__clay_content",
           "status": "held",
           "reviewer": "Pete",
-          "reviewed_date": "2026-11-11",
-          "decision_ref": "methodology/audits/t4_runoff_four_20261111/decision.md",
-          "reason": "The ranks describe external-catchment runoff generation. The lowest clay class carries two ranks and some class endpoints have gaps. Preserve the regional table until spatial support and scoring are resolved.",
+          "reviewed_date": "2026-11-12",
+          "decision_ref": "methodology/audits/t4_adham_20261112/regional_profile.md",
+          "reason": "The ranks describe external-catchment runoff generation. The lowest clay class carries two ranks and some class endpoints have gaps. Preserve the regional table until spatial support and scoring are resolved. Retain the Adham regional storage-dam profile. Higher clay favours retention at surface storage sites. Table 1 and Figure 2e omit the numeric clay unit. Verify the unit and texture definitions before binding or pooling.",
           "retained_source_profiles": [
             {
               "evidence_id": "ev_wh_clay_content_kahinda08_2",
@@ -378,6 +378,51 @@
               "source_weight": 0.33,
               "weight_scope": "XRWH soil texture criterion",
               "study_assumption": "about 10% silt"
+            },
+            {
+              "evidence_id": "ev_wh5_adham_2018_clay_content",
+              "source_id": "wh_stocktake_adham_2018",
+              "source_artifact_sha256": "1ef0721759af20dc477072a07ece08386b078d93dd8690468810971d52cbe15f",
+              "evidence_sha256": "ff22decacaba965804978a637c615387524c9bb68842d952305023c7ee6b35e2",
+              "companion_evidence_ids": [
+                "ev_wh5_adham_2018_runoff_potential_index",
+                "ev_wh5_adham_2018_slope",
+                "ev_wh5_adham_2018_stream_order",
+                "ev_wh5_adham_2018_clay_content",
+                "ev_wh5_adham_2018_land_cover"
+              ],
+              "scope": "One Wadi Horan regional storage-dam siting profile, Western Desert of Iraq. The study identified 39 candidate sites.",
+              "source_locator": "Figure 2 and methods, PDF p. 3. Table 1, PDF p. 4. Figure 4, PDF p. 5. Site identification, PDF p. 7.",
+              "decision": "Preserve printed regional classes and endpoints. Missing or unmatched classes remain unknown. Shared T4 scores stay open.",
+              "quantity": "Clay content, numeric unit omitted from Table 1",
+              "classes": [
+                {
+                  "value": ">20",
+                  "source_class": "Very high suitability (clay)",
+                  "score": 9
+                },
+                {
+                  "value": "15–20",
+                  "source_class": "High suitability (silty clay)",
+                  "score": 7
+                },
+                {
+                  "value": "11–15",
+                  "source_class": "Medium suitability (sandy clay)",
+                  "score": 4
+                },
+                {
+                  "value": "8–11",
+                  "source_class": "Low suitability (sandy clayey loam and sandy loam)",
+                  "score": 3
+                },
+                {
+                  "value": "<8",
+                  "source_class": "Very low suitability (other)",
+                  "score": 1
+                }
+              ],
+              "interpretation": "Higher clay favours retention at surface storage sites. Table 1 and Figure 2e omit the numeric clay unit. Verify the unit and texture definitions before binding or pooling."
             }
           ],
           "held_relationship": {
@@ -388,7 +433,8 @@
               "opt_high": 55.0
             },
             "uncertainty_pct": "20.0"
-          }
+          },
+          "previous_decision_ref": "methodology/audits/t4_runoff_four_20261111/decision.md"
         },
         "dataset_binding": {
           "scope": "water_harvesting__runoff_catchment__clay_content",
@@ -406,13 +452,14 @@
     "is_scenario_candidate": false,
     "has_future_projection": false,
     "weight_adjustable": false,
-    "justification": "The ranks describe external-catchment runoff generation. The lowest clay class carries two ranks and some class endpoints have gaps. Preserve the regional table until spatial support and scoring are resolved. Retained approved calibration hold; no new numeric synthesis or approval. Dataset binding unresolved; requires matching input: Historical soilgrids_250m identifier is absent from T1. Verify the clay band, unit, sampling depth and contributing-catchment footprint before using a dataset.",
+    "justification": "The ranks describe external-catchment runoff generation. The lowest clay class carries two ranks and some class endpoints have gaps. Preserve the regional table until spatial support and scoring are resolved. Keep Adham Table 1 for regional storage-dam siting with its linked companion criteria. Retained approved calibration hold; no new numeric synthesis or approval. Dataset binding unresolved; requires matching input: Historical soilgrids_250m identifier is absent from T1. Verify the clay band, unit, sampling depth and contributing-catchment footprint before using a dataset.",
     "variable": "clay_content",
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
-      "ev_wh_clay_content_kahinda08_2"
+      "ev_wh_clay_content_kahinda08_2",
+      "ev_wh5_adham_2018_clay_content"
     ],
-    "n_sources": 1,
+    "n_sources": 2,
     "corpus_n": null,
     "paper_support_pct": null,
     "dataset_id": ""
@@ -755,11 +802,11 @@
         },
         "numerical_calibration": {
           "status": "held",
-          "reason": "The inherited 75/80 pair is not a standalone runoff suitability calibration. Vema reports fuzzy Curve Number input memberships; the five sources use incompatible native CN, runoff-depth and runoff-coefficient quantities. Retain complete source profiles for quantity- and system-compatible synthesis before approving a replacement. Regional runoff-depth suitability ranks for Wag Himra. Check the runoff-depth statistic, time basis and spatial support before scoring. An 800 mm modelled depth ranks S2. CN 80 alone cannot determine this rank. Keep the full class table. Scoring is held until spatial inputs match. Regional storage ranks increase with depth. Page 9 cites high to very high runoff for gully plugs, moderate to high for check dams and low to moderately low for farm ponds and percolation tanks. Low runoff can favour recharge or subsurface harvesting. Keep all published bands and within-study weights. Shared scoring awaits matching inputs and purpose. Rainfall supplies water for runoff. Figure 6 relates each factor to the composite suitability map. Pairwise rainfall–runoff correlation is unreported. Before combining, align time windows and sub-basin support in the target area, check the runoff forcing and pairwise dependence, and retain one representative if both describe the same water supply. Jha Table 4 contributes one regional index. Retain the component alongside its companion layers. The composite lower bound is unresolved.",
+          "reason": "The inherited 75/80 pair is not a standalone runoff suitability calibration. Vema reports fuzzy Curve Number input memberships; the five sources use incompatible native CN, runoff-depth and runoff-coefficient quantities. Retain complete source profiles for quantity- and system-compatible synthesis before approving a replacement. Regional runoff-depth suitability ranks for Wag Himra. Check the runoff-depth statistic, time basis and spatial support before scoring. An 800 mm modelled depth ranks S2. CN 80 alone cannot determine this rank. Keep the full class table. Scoring is held until spatial inputs match. Regional storage ranks increase with depth. Page 9 cites high to very high runoff for gully plugs, moderate to high for check dams and low to moderately low for farm ponds and percolation tanks. Low runoff can favour recharge or subsurface harvesting. Keep all published bands and within-study weights. Shared scoring awaits matching inputs and purpose. Rainfall supplies water for runoff. Figure 6 relates each factor to the composite suitability map. Pairwise rainfall–runoff correlation is unreported. Before combining, align time windows and sub-basin support in the target area, check the runoff forcing and pairwise dependence, and retain one representative if both describe the same water supply. Jha Table 4 contributes one regional index. Retain the component alongside its companion layers. The composite lower bound is unresolved. Retain the Adham regional storage-dam profile. Rainfall period and >90 mm tail unresolved. CN derives from soil and land cover. Check input overlap and reported slope/runoff correlation. Preserve 80–90 labelled Medium and scored 8.",
           "scope": "water_harvesting__runoff_catchment__runoff_potential_index",
           "reviewer": "Pete",
           "reviewed_date": "2026-11-12",
-          "decision_ref": "methodology/audits/t4_jha_designs_20261112/regional_index.md",
+          "decision_ref": "methodology/audits/t4_adham_20261112/regional_profile.md",
           "source_profiles_ref": "methodology/audits/t4_binding_holds_applied_20261106/next_calibration_decision.json",
           "held_relationship": {
             "type": "trapezoidal",
@@ -1047,9 +1094,54 @@
                 }
               ],
               "interpretation": "Modelled annual runoff divided by annual rainfall for normal year 2003. Account for rainfall, soil and land cover already used in the runoff estimate before combining layers."
+            },
+            {
+              "evidence_id": "ev_wh5_adham_2018_runoff_potential_index",
+              "source_id": "wh_stocktake_adham_2018",
+              "source_artifact_sha256": "1ef0721759af20dc477072a07ece08386b078d93dd8690468810971d52cbe15f",
+              "evidence_sha256": "2eb05e82e6c36872c08853b7969932160e348a730bb4e2967e68898f7be8a76f",
+              "companion_evidence_ids": [
+                "ev_wh5_adham_2018_runoff_potential_index",
+                "ev_wh5_adham_2018_slope",
+                "ev_wh5_adham_2018_stream_order",
+                "ev_wh5_adham_2018_clay_content",
+                "ev_wh5_adham_2018_land_cover"
+              ],
+              "scope": "One Wadi Horan regional storage-dam siting profile, Western Desert of Iraq. The study identified 39 candidate sites.",
+              "source_locator": "Figure 2 and methods, PDF p. 3. Table 1, PDF p. 4. Figure 4, PDF p. 5. Site identification, PDF p. 7.",
+              "decision": "Preserve printed regional classes and endpoints. Missing or unmatched classes remain unknown. Shared T4 scores stay open.",
+              "quantity": "Runoff depth in mm",
+              "classes": [
+                {
+                  "value": "80–90",
+                  "source_class": "Medium suitability",
+                  "score": 8
+                },
+                {
+                  "value": "70–80",
+                  "source_class": "Very high suitability",
+                  "score": 9
+                },
+                {
+                  "value": "60–70",
+                  "source_class": "Suitable",
+                  "score": 4
+                },
+                {
+                  "value": "50–60",
+                  "source_class": "Low suitability",
+                  "score": 3
+                },
+                {
+                  "value": "<50",
+                  "source_class": "Very low suitability",
+                  "score": 1
+                }
+              ],
+              "interpretation": "Rainfall period and >90 mm tail unresolved. CN derives from soil and land cover. Check input overlap and reported slope/runoff correlation. Preserve 80–90 labelled Medium and scored 8."
             }
           ],
-          "previous_decision_ref": "methodology/audits/t4_bera_storage_20261112/water_profiles.md"
+          "previous_decision_ref": "methodology/audits/t4_jha_designs_20261112/regional_index.md"
         }
       }
     },
@@ -1058,7 +1150,7 @@
     "has_future_projection": false,
     "weight_default": 0.1111,
     "weight_adjustable": true,
-    "justification": "Reviewed numerical calibration hold (Peter, 2026-11-06): inherited 75/80 function and its derived uncertainty are historical only, archived in reviewed_adaptation.numerical_calibration. All five source profiles, native classes/ranges, directions, labelled weights and evidence links are retained for compatible synthesis. No replacement or source approval. Separate approved dataset-binding hold remains in force. Added Alene (11 November 2026). Regional runoff-depth suitability ranks for Wag Himra. Check the runoff-depth statistic, time basis and spatial support before scoring. An 800 mm modelled depth ranks S2. CN 80 alone cannot determine this rank. Keep the full class table. Scoring is held until spatial inputs match. Retain the Bera Kumari basin profile and its purpose-specific guidance. Check rainfall–runoff overlap before joint use. Retain Jha’s regional Table 4 component with its two companion layers and unresolved lower bound. Retained approved calibration hold; no new numeric synthesis or approval. Dataset binding unresolved; requires matching input: The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
+    "justification": "Reviewed numerical calibration hold (Peter, 2026-11-06): inherited 75/80 function and its derived uncertainty are historical only, archived in reviewed_adaptation.numerical_calibration. All five source profiles, native classes/ranges, directions, labelled weights and evidence links are retained for compatible synthesis. No replacement or source approval. Separate approved dataset-binding hold remains in force. Added Alene (11 November 2026). Regional runoff-depth suitability ranks for Wag Himra. Check the runoff-depth statistic, time basis and spatial support before scoring. An 800 mm modelled depth ranks S2. CN 80 alone cannot determine this rank. Keep the full class table. Scoring is held until spatial inputs match. Retain the Bera Kumari basin profile and its purpose-specific guidance. Check rainfall–runoff overlap before joint use. Retain Jha’s regional Table 4 component with its two companion layers and unresolved lower bound. Keep Adham Table 1 for regional storage-dam siting with its linked companion criteria. Retained approved calibration hold; no new numeric synthesis or approval. Dataset binding unresolved; requires matching input: The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
     "variable": "runoff_potential_index",
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
@@ -1069,9 +1161,10 @@
       "ev_wh_runoff_potential_index_vema19_1",
       "ev_wh5_alene_2022_runoff_potential_index",
       "ev_wh5_bera_2023_runoff_potential_index",
-      "ev_wh5_jha_2014_runoff_potential_index_index"
+      "ev_wh5_jha_2014_runoff_potential_index_index",
+      "ev_wh5_adham_2018_runoff_potential_index"
     ],
-    "n_sources": 8,
+    "n_sources": 9,
     "corpus_n": null,
     "paper_support_pct": null,
     "dataset_id": ""
@@ -1089,8 +1182,8 @@
           "reviewer": "Pete",
           "reviewed_date": "2026-11-12",
           "status": "held",
-          "decision_ref": "methodology/audits/t4_jha_designs_20261112/regional_index.md",
-          "reason": "Keep the previously approved eleven slope profiles by structure and purpose. Retain the Karimi text/table disagreement, Ngugi’s field results and Alene’s >8% general guidance alongside its conditional <15% check-dam criterion. Shared slope calibration remains held. Add the Bera regional structure profiles with their companion conditions. No shared cutoff. Retain the Bera regional slope table alongside the two structure-specific profiles. Retain Jha’s design-specific criteria and their lineage. No shared cutoff. Jha Table 4 contributes one regional index. Retain the component alongside its companion layers. The composite lower bound is unresolved.",
+          "decision_ref": "methodology/audits/t4_adham_20261112/regional_profile.md",
+          "reason": "Keep the previously approved eleven slope profiles by structure and purpose. Retain the Karimi text/table disagreement, Ngugi’s field results and Alene’s >8% general guidance alongside its conditional <15% check-dam criterion. Shared slope calibration remains held. Add the Bera regional structure profiles with their companion conditions. No shared cutoff. Retain the Bera regional slope table alongside the two structure-specific profiles. Retain Jha’s design-specific criteria and their lineage. No shared cutoff. Jha Table 4 contributes one regional index. Retain the component alongside its companion layers. The composite lower bound is unresolved. Retain the Adham regional storage-dam profile. The authors cite an erosion and earthwork caution at ≥5%. Their own table still scores those slopes and ranks 1.5–2.5% highest.",
           "retained_source_profiles": [
             {
               "evidence_id": "ev_wh_slope_kadam12_1",
@@ -1759,10 +1852,55 @@
                 }
               ],
               "interpretation": "Section 4.5 calls slopes above 15% inappropriate, but Table 4 gives 15–30% positive weight 0.04. Retain both."
+            },
+            {
+              "evidence_id": "ev_wh5_adham_2018_slope",
+              "source_id": "wh_stocktake_adham_2018",
+              "source_artifact_sha256": "1ef0721759af20dc477072a07ece08386b078d93dd8690468810971d52cbe15f",
+              "evidence_sha256": "79a3b83aca35b26eee788093de283146969c0202bce37a1b86f7ad3da1b9ca24",
+              "companion_evidence_ids": [
+                "ev_wh5_adham_2018_runoff_potential_index",
+                "ev_wh5_adham_2018_slope",
+                "ev_wh5_adham_2018_stream_order",
+                "ev_wh5_adham_2018_clay_content",
+                "ev_wh5_adham_2018_land_cover"
+              ],
+              "scope": "One Wadi Horan regional storage-dam siting profile, Western Desert of Iraq. The study identified 39 candidate sites.",
+              "source_locator": "Figure 2 and methods, PDF p. 3. Table 1, PDF p. 4. Figure 4, PDF p. 5. Site identification, PDF p. 7.",
+              "decision": "Preserve printed regional classes and endpoints. Missing or unmatched classes remain unknown. Shared T4 scores stay open.",
+              "quantity": "Percent grade",
+              "classes": [
+                {
+                  "value": "<1.5",
+                  "source_class": "Flat",
+                  "score": 3
+                },
+                {
+                  "value": "1.5–2.5",
+                  "source_class": "Undulating",
+                  "score": 9
+                },
+                {
+                  "value": "2.5–4.5",
+                  "source_class": "Rolling",
+                  "score": 5
+                },
+                {
+                  "value": "4.5–7.5",
+                  "source_class": "Hilly",
+                  "score": 2
+                },
+                {
+                  "value": ">7.5",
+                  "source_class": "Mountainous",
+                  "score": 1
+                }
+              ],
+              "interpretation": "The authors cite an erosion and earthwork caution at ≥5%. Their own table still scores those slopes and ranks 1.5–2.5% highest."
             }
           ],
           "spatial_input": "SRTM provides local terrain slope in degrees, derived before aggregation. To compare local terrain with a percent-grade source, convert as 100 × tan(angle in radians) at the derivative scale. For a catchment slope require the matching catchment boundaries and summary statistic. A terrain cell or riverbed gradient cannot substitute for the sand-dam catchment measure.",
-          "source_count_basis": "11 publications across 19 cards. Publication use is distinct from calibration support. Jha contributes one publication across its designs. Singh Table 6 traces to Jha Table 1 and provides no independent corroboration for reused conditions. Singh’s regional slope table is a separate profile. Bera retains its different along-stream applicability.",
+          "source_count_basis": "12 publications across 20 cards. Publication use is distinct from calibration support. Jha contributes one publication across its designs. Singh Table 6 traces to Jha Table 1 and provides no independent corroboration for reused conditions. Singh’s regional slope table is a separate profile. Bera retains its different along-stream applicability.",
           "held_relationship": {
             "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
             "type": "trapezoidal",
@@ -1774,8 +1912,8 @@
             },
             "uncertainty_pct": "60.0"
           },
-          "prior_decision_ref": "methodology/audits/t4_jha_designs_20261112/design_profiles.md",
-          "previous_decision_ref": "methodology/audits/t4_jha_designs_20261112/design_profiles.md"
+          "prior_decision_ref": "methodology/audits/t4_jha_designs_20261112/regional_index.md",
+          "previous_decision_ref": "methodology/audits/t4_jha_designs_20261112/regional_index.md"
         }
       }
     },
@@ -1784,7 +1922,7 @@
     "has_future_projection": false,
     "weight_default": 0.1111,
     "weight_adjustable": true,
-    "justification": "Keep eleven slope profiles by structure and purpose. Retain the Karimi text/table disagreement, Ngugi’s field results and Alene’s >8% general guidance alongside its conditional <15% check-dam criterion. Shared slope calibration remains held. Retain Bera’s regional siting evidence by structure. Keep the complete linked conditions and the existing calibration hold. Regional Bera slope bands and class-label discrepancy retained, with one source contribution across the three cards. Keep Jha Table 1 conditions together per design. Count their use in Singh Table 6 as one guidance lineage. Retain Jha’s regional Table 4 component with its two companion layers and unresolved lower bound. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "justification": "Keep eleven slope profiles by structure and purpose. Retain the Karimi text/table disagreement, Ngugi’s field results and Alene’s >8% general guidance alongside its conditional <15% check-dam criterion. Shared slope calibration remains held. Retain Bera’s regional siting evidence by structure. Keep the complete linked conditions and the existing calibration hold. Regional Bera slope bands and class-label discrepancy retained, with one source contribution across the three cards. Keep Jha Table 1 conditions together per design. Count their use in Singh Table 6 as one guidance lineage. Retain Jha’s regional Table 4 component with its two companion layers and unresolved lower bound. Keep Adham Table 1 for regional storage-dam siting with its linked companion criteria. Retained approved calibration hold; no new numeric synthesis or approval.",
     "variable": "slope",
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
@@ -1806,9 +1944,10 @@
       "ev_wh5_jha_2014_slope_ground_percolation",
       "ev_wh5_jha_2014_slope_stream_percolation",
       "ev_wh5_jha_2014_slope_check_dam",
-      "ev_wh5_jha_2014_slope_index"
+      "ev_wh5_jha_2014_slope_index",
+      "ev_wh5_adham_2018_slope"
     ],
-    "n_sources": 11,
+    "n_sources": 12,
     "corpus_n": null,
     "paper_support_pct": null
   },
@@ -1913,11 +2052,11 @@
         },
         "numerical_calibration": {
           "status": "held",
-          "reason": "The shared curve spans orders 1–4 and selects order 2 as its optimum. Published criteria depend on the structure, purpose and stream network. The studies use both joint site-selection conditions and ordinal ranks, including ranks above order 4. Add the Bera regional structure profiles with their companion conditions. No shared cutoff. Retain Jha’s design-specific criteria and their lineage. No shared cutoff.",
+          "reason": "The shared curve spans orders 1–4 and selects order 2 as its optimum. Published criteria depend on the structure, purpose and stream network. The studies use both joint site-selection conditions and ordinal ranks, including ranks above order 4. Add the Bera regional structure profiles with their companion conditions. No shared cutoff. Retain Jha’s design-specific criteria and their lineage. No shared cutoff. Retain the Adham regional storage-dam profile. Figure 2f maps order 4, but Table 1 and section 2.2.1.5 leave it unscored. Order 4 remains unknown.",
           "scope": "water_harvesting__runoff_catchment__stream_order",
           "reviewer": "Pete",
           "reviewed_date": "2026-11-12",
-          "decision_ref": "methodology/audits/t4_jha_designs_20261112/design_profiles.md",
+          "decision_ref": "methodology/audits/t4_adham_20261112/regional_profile.md",
           "source_profiles_ref": "methodology/audits/t4_krois_hold_20261107/next_stream_order_decision.json",
           "held_relationship": {
             "type": "trapezoidal",
@@ -2274,10 +2413,55 @@
                 "scope": "Regional structure siting, Binpur-I and Binpur-II, West Bengal, India."
               },
               "guidance_origin": "wh_stocktake_jha_2014"
+            },
+            {
+              "evidence_id": "ev_wh5_adham_2018_stream_order",
+              "source_id": "wh_stocktake_adham_2018",
+              "source_artifact_sha256": "1ef0721759af20dc477072a07ece08386b078d93dd8690468810971d52cbe15f",
+              "evidence_sha256": "fcdf619faaaebfd421480e5ea51fe72e93a24fb3fa80549a5a694f877d516f55",
+              "companion_evidence_ids": [
+                "ev_wh5_adham_2018_runoff_potential_index",
+                "ev_wh5_adham_2018_slope",
+                "ev_wh5_adham_2018_stream_order",
+                "ev_wh5_adham_2018_clay_content",
+                "ev_wh5_adham_2018_land_cover"
+              ],
+              "scope": "One Wadi Horan regional storage-dam siting profile, Western Desert of Iraq. The study identified 39 candidate sites.",
+              "source_locator": "Figure 2 and methods, PDF p. 3. Table 1, PDF p. 4. Figure 4, PDF p. 5. Site identification, PDF p. 7.",
+              "decision": "Preserve printed regional classes and endpoints. Missing or unmatched classes remain unknown. Shared T4 scores stay open.",
+              "quantity": "Stream order",
+              "classes": [
+                {
+                  "value": ">7",
+                  "source_class": "Very high suitability",
+                  "score": 9
+                },
+                {
+                  "value": "7",
+                  "source_class": "High suitability",
+                  "score": 8
+                },
+                {
+                  "value": "6",
+                  "source_class": "Medium suitability",
+                  "score": 3
+                },
+                {
+                  "value": "5",
+                  "source_class": "Low suitability",
+                  "score": 2
+                },
+                {
+                  "value": "<4",
+                  "source_class": "Very low suitability",
+                  "score": 1
+                }
+              ],
+              "interpretation": "Figure 2f maps order 4, but Table 1 and section 2.2.1.5 leave it unscored. Order 4 remains unknown."
             }
           ],
-          "previous_decision_ref": "methodology/audits/t4_bera_storage_20261112/design_profiles.md",
-          "source_count_basis": "6 publications across 11 cards. Publication use is distinct from calibration support. Jha contributes one publication across its designs. Singh Table 6 traces to Jha Table 1 and provides no independent corroboration for reused conditions. Singh’s regional slope table is a separate profile. Bera retains its different along-stream applicability."
+          "previous_decision_ref": "methodology/audits/t4_jha_designs_20261112/design_profiles.md",
+          "source_count_basis": "7 publications across 12 cards. Publication use is distinct from calibration support. Jha contributes one publication across its designs. Singh Table 6 traces to Jha Table 1 and provides no independent corroboration for reused conditions. Singh’s regional slope table is a separate profile. Bera retains its different along-stream applicability."
         }
       }
     },
@@ -2286,7 +2470,7 @@
     "has_future_projection": false,
     "weight_default": 0.1111,
     "weight_adjustable": true,
-    "justification": "Peter approved holding the shared stream-order curve on 7 November 2026. Retain the Kadam, Singh and Ettazarini profiles by structure, including companion siting criteria, network definitions, source weights and discrepancies. Select a compatible structure and stream network before calibrating a response. Dataset binding unresolved; requires matching input: HydroBASINS ORDER is a classical hierarchy with the main stem numbered 1, not the Strahler order required by this mapping. It cannot be substituted unchanged. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes. Retain Alene’s two joint Table 4 profiles. Count the paper once for stream order. Retain Bera’s regional siting evidence by structure. Keep the complete linked conditions and the existing calibration hold. Keep Jha Table 1 conditions together per design. Count their use in Singh Table 6 as one guidance lineage. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "justification": "Peter approved holding the shared stream-order curve on 7 November 2026. Retain the Kadam, Singh and Ettazarini profiles by structure, including companion siting criteria, network definitions, source weights and discrepancies. Select a compatible structure and stream network before calibrating a response. Dataset binding unresolved; requires matching input: HydroBASINS ORDER is a classical hierarchy with the main stem numbered 1, not the Strahler order required by this mapping. It cannot be substituted unchanged. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes. Retain Alene’s two joint Table 4 profiles. Count the paper once for stream order. Retain Bera’s regional siting evidence by structure. Keep the complete linked conditions and the existing calibration hold. Keep Jha Table 1 conditions together per design. Count their use in Singh Table 6 as one guidance lineage. Keep Adham Table 1 for regional storage-dam siting with its linked companion criteria. Retained approved calibration hold; no new numeric synthesis or approval.",
     "variable": "stream_order",
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
@@ -2300,9 +2484,10 @@
       "ev_wh5_bera_2023_stream_order_farm_pond",
       "ev_wh5_bera_2023_stream_order_percolation",
       "ev_wh5_jha_2014_stream_order_stream_percolation",
-      "ev_wh5_jha_2014_stream_order_check_dam"
+      "ev_wh5_jha_2014_stream_order_check_dam",
+      "ev_wh5_adham_2018_stream_order"
     ],
-    "n_sources": 6,
+    "n_sources": 7,
     "corpus_n": null,
     "paper_support_pct": null,
     "dataset_id": ""
