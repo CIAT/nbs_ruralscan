@@ -242,7 +242,9 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
     policy_vars = {x.ev_variable for x in inp["xw"]} - routed_vars
     # a policy row with target `*` parks the variable for this NbS: it is not an outcome
     # (an uptake, design or remote-sensing measure) and feeds no cell by decision
-    policy_vars |= {v for n, v, t, _k in inp["route_policy"] if n == nbs_id and t == "*"}
+    policy_vars |= {
+        v for n, v, t, _k in inp["route_policy"] if n == nbs_id and t == "*"
+    }
     report["unmapped_variables"] = sorted(
         {
             v: sum(1 for u in units if u.variable == v and u.use_role == "nbs_effect")

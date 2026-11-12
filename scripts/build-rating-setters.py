@@ -41,8 +41,10 @@ def _load_synth():
     spec = importlib.util.spec_from_file_location(
         "synth", ROOT / "scripts" / "synthesise-t3t6.py"
     )
-    mod = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
-    spec.loader.exec_module(mod)  # type: ignore[union-attr]
+    if spec is None or spec.loader is None:
+        raise ImportError("cannot load scripts/synthesise-t3t6.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
     return mod
 
 

@@ -19,12 +19,12 @@ def test_partition_accounts_for_every_row_and_first_pass_gate(contract):
         "defined": 9,
         "provisional": 2,
         "blocked": 15,
-        "reference_only": 12,
+        "reference_only": 13,
     }
     assert (
         sum(contract["summary"]["implementation_readiness"].values())
         == len(contract["rows"])
-        == 38
+        == 39
     )
     (policy,) = contract["run_contract"]["approved_policies"]
     assert policy["implementation_readiness"] == {"defined": 3, "provisional": 2}
