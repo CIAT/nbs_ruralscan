@@ -36967,20 +36967,54 @@
         "suitability_family_id": "forest_restoration__active_planting",
         "variable": "slope",
         "relationship": {
-          "abs_max": 75,
+          "abs_max": null,
           "unit": "percent",
-          "direction": "slopes above 75% are generally unsuitable for planting because seedlings are hard to establish there — an upper bound for active planting"
+          "direction": "Establishment difficulty on slopes greater than 75% grade, cited from Santos et al. (2018)."
+        },
+        "context": {
+          "study_profile": {
+            "objective": "minimise modelled soil loss",
+            "region": "Seridó River basin, semi-arid Caatinga, Brazil",
+            "evidence_ids": [
+              "ev_fr_land_cover_oliveira26_scope_20261028",
+              "ev_fr_slope_oliveira26_1"
+            ]
+          },
+          "reviewed_use": "Oliveira cites Santos et al. (2018) for planting establishment difficulty at slopes >75% grade. The erosion-control model nevertheless allocated some planting to steep terrain. On p. 8 the authors report 5% of total proposed reforestation there. Figure 8b reports 0.04% of proposed allocation in the escarped class; panel c reports 4.84% under a different denominator. The discrepancy remains open. Cited planting caution and model allocation; no shared slope cutoff.",
+          "reported_values": {
+            "planting_caution": {
+              "operator": ">",
+              "value": 75,
+              "unit": "percent slope",
+              "origin": "Santos et al. (2018), as cited by Oliveira, p. 8"
+            },
+            "allocation_discrepancy": {
+              "origin": "Oliveira model, PDF pp. 8–9, Figure 8",
+              "text_pct_of_total_reforested_area": 5,
+              "panel_b_escarped_pct_of_proposed_allocation": 0.04,
+              "panel_c_escarped_pct_within_class": 4.84,
+              "status": "Different denominators; retain original values.",
+              "text_flat_to_gently_undulating_pct": 97.16,
+              "panel_b_allocation_pct": {
+                "flat": 26.78,
+                "gently_undulating": 51.79,
+                "undulating": 18.59
+              },
+              "class_label_discrepancy": "The text total of 97.16% includes the third class in panel b."
+            }
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
         "claim_basis": "cited_secondary",
         "claim_scope": "practice_technology",
+        "lineage_of": "Santos et al. (2018), Sistema Brasileiro de Classificação de Solos",
         "extraction_confidence": "high",
         "quote": "Areas with slopes greater than 75% are generally unsuitable for \nplanting due to establishment difficulties (Santos et al., 2018).",
         "page": 8,
-        "reviewer_ok": false,
+        "reviewer_ok": true,
         "raw_name": "maximum slope for planting-based restoration",
-        "attribution": "Santos et al. (2018)",
+        "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Oliveira cites Santos et al. (2018) for planting establishment difficulty at slopes >75% grade. The erosion-control model nevertheless allocated some planting to steep terrain. On p. 8 the authors report 5% of total proposed reforestation there. Figure 8b reports 0.04% of proposed allocation in the escarped class; panel c reports 4.84% under a different denominator. The discrepancy remains open. Cited planting caution and model allocation; no shared slope cutoff.] Santos et al. (2018)",
         "locator_type": "page",
         "ruleset_version": "v1.5.1"
       },
@@ -210731,10 +210765,8 @@
         "suitability_family_id": "forest_restoration__active_planting",
         "variable": "land_cover",
         "relationship": {
-          "allowed_classes": [
-            "agricultural",
-            "non-vegetated"
-          ]
+          "allowed_classes": null,
+          "direction": "Study search area limited to agricultural and non-vegetated land."
         },
         "context": {
           "model_use": {
@@ -210752,6 +210784,22 @@
               "legal",
               "logistical"
             ]
+          },
+          "study_profile": {
+            "objective": "minimise modelled soil loss",
+            "region": "Seridó River basin, semi-arid Caatinga, Brazil",
+            "evidence_ids": [
+              "ev_fr_land_cover_oliveira26_scope_20261028",
+              "ev_fr_slope_oliveira26_1"
+            ]
+          },
+          "reviewed_use": "The model searched agricultural and non-vegetated classes in the Seridó River basin, Brazil, to reduce erosion. Socioeconomic, legal and logistical constraints were omitted. The two classes describe the regional search area. Regional planning domain only; no shared land-cover eligibility.",
+          "reported_values": {
+            "study_area_classes": [
+              "agricultural",
+              "non-vegetated"
+            ],
+            "locator": "PDF p. 4, optimization domain"
           }
         },
         "use_role": "structural_suitability",
@@ -210761,8 +210809,8 @@
         "extraction_confidence": "medium",
         "quote": "The basin includes six LULC classes, but optimization was restricted \nto agricultural and non-vegetated areas. Socio-economic, legal, and \nlogistical constraints were not explicitly incorporated, due to data lim­\nitations and the objective of evaluating the core performance of the \nproposed spatial optimization framework under controlled and repro­\nducible conditions.",
         "page": 4,
-        "reviewer_ok": false,
-        "attribution": "[VERIFY-FLAG mismatch: re-opened for review] [AUTO-QUARANTINE off_scope:land_cover_no_classes]",
+        "reviewer_ok": true,
+        "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:The model searched agricultural and non-vegetated classes in the Seridó River basin, Brazil, to reduce erosion. Socioeconomic, legal and logistical constraints were omitted. The two classes describe the regional search area. Regional planning domain only; no shared land-cover eligibility.] [AUTO-QUARANTINE off_scope:land_cover_no_classes]",
         "locator_type": "page",
         "ruleset_version": "v1.8.0"
       },
@@ -387733,12 +387781,12 @@
     }
   ],
   "qaqc_stats": {
-    "total_reviews": 2766,
+    "total_reviews": 2770,
     "queried": 214,
-    "n_reviewers": 43,
+    "n_reviewers": 44,
     "by_reviewer": {
       "ai_mechanism_rule": 727,
-      "peetmate": 535,
+      "peetmate": 537,
       "orchestrator": 482,
       "Namita-J": 191,
       "Peter": 132,
@@ -387775,6 +387823,7 @@
       "ai_t4_terrace_slope_check": 2,
       "ai_t4_haile_scope": 2,
       "ai_t4_cavalcante_method": 2,
+      "ai_t4_oliveira_profile": 2,
       "Namita-J,peetmate": 1,
       "ai_retro_2026-10-29": 1,
       "ai_t4_terrace_rainfall_check": 1,
@@ -387783,7 +387832,7 @@
     },
     "by_decision": {
       "drop": 1598,
-      "ok": 842,
+      "ok": 846,
       "flag": 213,
       "reclassify": 18,
       "retag": 4,
@@ -387792,7 +387841,7 @@
       "query": 1
     },
     "by_reason": {
-      "accepted_correction": 751,
+      "accepted_correction": 755,
       "insufficient_context": 705,
       "unspecified": 371,
       "other": 272,
@@ -387815,8 +387864,8 @@
     },
     "by_verdict": {
       "unsupported": 12,
-      "pass": 2178,
-      "mismatch": 65,
+      "pass": 2179,
+      "mismatch": 66,
       "scope": 53,
       "review": 27,
       "qa_sweep": 5,
@@ -387829,25 +387878,25 @@
       "routing_ruling": 3,
       "variable_ruling": 31,
       "direction_audit": 122,
-      "unit_correction": 198
+      "unit_correction": 200
     },
     "flag_eval": {
-      "tp": 63,
+      "tp": 64,
       "fp": 2,
-      "n": 65,
-      "precision_pct": 96.9,
+      "n": 66,
+      "precision_pct": 97.0,
       "tp_removed": 38,
-      "tp_corrected": 25
+      "tp_corrected": 26
     },
     "pass_eval": {
-      "tn": 815,
+      "tn": 818,
       "fn": 11,
       "out_of_remit": 1549,
-      "checked": 2375,
+      "checked": 2378,
       "fn_rate_pct": 1.3
     },
-    "recall_est_pct": 85.1,
-    "errors_caught": 63,
+    "recall_est_pct": 85.3,
+    "errors_caught": 64,
     "errors_missed_in_sample": 11
   },
   "review_log": [
@@ -422802,6 +422851,45 @@
       "reason": "accepted_correction",
       "note": "FAO gives two reasons planting may be needed: a degraded site lacks sources of natural regeneration, or management objectives call for a more intensive approach. Retain both for choosing a restoration method. Qualitative method-selection guidance. No numeric score approved.",
       "reviewer": "peetmate"
+    },
+    {
+      "date": "2026-11-13",
+      "evidence_id": "ev_fr_slope_oliveira26_1",
+      "source_id": "fr_semiarid_reforestation_spatial_planning_2026",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.reported_values, context.reviewed_use, context.study_profile, lineage_of, relationship.abs_max, relationship.direction: Oliveira cites Santos et al. (2018) for planting establishment difficulty at slopes >75% grade. The erosion-control model nevertheless allocated some planting to steep terrain. On p. 8 the authors report 5% of total proposed reforestation there. Figure 8b reports 0.04% of proposed allocation in the escarped class; panel c reports 4.84% under a different denominator. The discrepancy remains open. Cited planting caution and model allocation; no shared slope cutoff.",
+      "reviewer": "ai_t4_oliveira_profile"
+    },
+    {
+      "date": "2026-11-13",
+      "evidence_id": "ev_fr_land_cover_oliveira26_scope_20261028",
+      "source_id": "fr_semiarid_reforestation_spatial_planning_2026",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.reported_values, context.reviewed_use, context.study_profile, relationship.allowed_classes, relationship.direction: The model searched agricultural and non-vegetated classes in the Seridó River basin, Brazil, to reduce erosion. Socioeconomic, legal and logistical constraints were omitted. The two classes describe the regional search area. Regional planning domain only; no shared land-cover eligibility.",
+      "reviewer": "ai_t4_oliveira_profile"
+    },
+    {
+      "date": "2026-11-13",
+      "evidence_id": "ev_fr_slope_oliveira26_1",
+      "source_id": "fr_semiarid_reforestation_spatial_planning_2026",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "Oliveira cites Santos et al. (2018) for planting establishment difficulty at slopes >75% grade. The erosion-control model nevertheless allocated some planting to steep terrain. On p. 8 the authors report 5% of total proposed reforestation there. Figure 8b reports 0.04% of proposed allocation in the escarped class; panel c reports 4.84% under a different denominator. The discrepancy remains open. Cited planting caution and model allocation; no shared slope cutoff.",
+      "reviewer": "peetmate"
+    },
+    {
+      "date": "2026-11-13",
+      "evidence_id": "ev_fr_land_cover_oliveira26_scope_20261028",
+      "source_id": "fr_semiarid_reforestation_spatial_planning_2026",
+      "verdict": "mismatch",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "The model searched agricultural and non-vegetated classes in the Seridó River basin, Brazil, to reduce erosion. Socioeconomic, legal and logistical constraints were omitted. The two classes describe the regional search area. Regional planning domain only; no shared land-cover eligibility.",
+      "reviewer": "peetmate"
     }
   ],
   "family_presentation": {
@@ -422941,11 +423029,11 @@
       "evidence_sha256": "88975d0ae7d2401729a9d24cf35544637ee6b3af12d9438c85d77c3491f22cb6"
     },
     "ev_fr_slope_oliveira26_1": {
-      "finding": "Quoted sentence calls >75% slopes generally unsuitable for planting, citing Santos 2018. Same paragraph explicitly includes such slopes in restoration strategy (5% of total). A hard ceiling is unsupported.",
-      "intended_use": "Retain cited establishment difficulty, original 75% value, and distinction from erosion-priority allocation.",
-      "remaining_decision": "Correction required: do not compile unconditional abs_max or extrapolated curve. Resolve planting method/primary source and missing supplement before calibration.",
-      "source_check": "Cached fr_semiarid_reforestation_spatial_planning_2026.pdf, PDF p8 full paragraph and Fig.8 discussion inspected.",
-      "evidence_sha256": "9b8cd2cd93865dc86cc6166a79c8f4e6326a741686a62e3a79de6d5e57434f69"
+      "finding": "Oliveira cites Santos et al. (2018) for planting establishment difficulty at slopes >75% grade. The erosion-control model nevertheless allocated some planting to steep terrain. On p. 8 the authors report 5% of total proposed reforestation there. Figure 8b reports 0.04% of proposed allocation in the escarped class; panel c reports 4.84% under a different denominator. The discrepancy remains open. Cited planting caution and model allocation; no shared slope cutoff.",
+      "intended_use": "One regional Seridó erosion-control planning profile.",
+      "remaining_decision": "Pete approved qualitative use. Shared slope cutoff remains open.",
+      "source_check": "PDF pp. 8–9, slope discussion and Fig. 8b–c, compared with the printed panel values.",
+      "evidence_sha256": "c8f642abcc7bd14d59eeae9c334914dc7c1ce900ce8093de0a2bc186b8c399b4"
     },
     "ev_fr_land_cover_fahrudin24_1": {
       "finding": "Source target delineation depends on historical nonforest duration and 2000–2023 observations; adjacent equal-weight models concern ecosystem services, not planting suitability.",
@@ -422955,11 +423043,11 @@
       "evidence_sha256": "e9744bc5e4d01a51f7e25ac03a103d2448fd78d4190b97194cdf874c7fed7a53"
     },
     "ev_fr_land_cover_oliveira26_scope_20261028": {
-      "finding": "Exact native quotes verified. Oliveira agricultural/nonvegetated domain is erosion-optimization scope, not global establishment suitability; Zomer tenure is discussed as omitted viability condition, not used numeric criterion.",
-      "intended_use": "Retain explicit regional/source-scope categorical inventory; tenure stays M2b/M6.",
-      "remaining_decision": "No automatic mask or numeric weight; source-scoped extraction can be retained unreviewed with current holds.",
-      "source_check": "Oliveira PDF p4 and Zomer PDF p5 quote containment verified; Zomer full p5 inspected.",
-      "evidence_sha256": "3a492c0e9fbfcf48983a34e69b543f034e05e66d97c4a4510b82642a6a7dbc15"
+      "finding": "The model searched agricultural and non-vegetated classes in the Seridó River basin, Brazil, to reduce erosion. Socioeconomic, legal and logistical constraints were omitted. The two classes describe the regional search area. Regional planning domain only; no shared land-cover eligibility.",
+      "intended_use": "One regional Seridó erosion-control planning profile.",
+      "remaining_decision": "Pete approved the regional study domain. Shared land-cover eligibility remains open.",
+      "source_check": "PDF p. 4, optimization domain and omitted constraints verified.",
+      "evidence_sha256": "ffa66159b640784f59031c2041e472f3bb4af990d423e2745ae2f9a6b5562daf"
     },
     "ev_fr_tenure_zomer08_20261028": {
       "finding": "Exact native quotes verified. Oliveira agricultural/nonvegetated domain is erosion-optimization scope, not global establishment suitability; Zomer tenure is discussed as omitted viability condition, not used numeric criterion.",
@@ -424284,10 +424372,10 @@
       "page": "4",
       "mapping_id": "",
       "reason": "Source check 6 November 2026 (PDF page(s) 1, 4, 8). land_cover — Caatinga USPED/genetic-algorithm study targets agricultural and non-vegetated classes for erosion-reduction optimization. Socioeconomic, legal and logistics constraints omitted; this is scenario target-domain evidence.",
-      "decision_needed": "Retain agricultural and non-vegetated land as the two classes searched to reduce erosion in the Seridó basin. The study omitted socioeconomic, legal and logistical constraints. These model classes give no general permission to convert cropland or native nonforest habitat. Review both Oliveira cards together.",
+      "decision_needed": "Approved by Pete, 13 November 2026. The model searched agricultural and non-vegetated classes in the Seridó River basin, Brazil, to reduce erosion. Socioeconomic, legal and logistical constraints were omitted. The two classes describe the regional search area. Regional planning domain only; no shared land-cover eligibility.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "3a492c0e9fbfcf48983a34e69b543f034e05e66d97c4a4510b82642a6a7dbc15",
+      "evidence_sha256": "ffa66159b640784f59031c2041e472f3bb4af990d423e2745ae2f9a6b5562daf",
       "source_locator": "Oliveira et al. (2026), PDF p. 4, optimization domain.",
       "context_changed": true
     },
@@ -424300,10 +424388,10 @@
       "page": "8",
       "mapping_id": "",
       "reason": "Source check 6 November 2026 (PDF page(s) 1, 4, 8). slope — PDF 8 cites Santos 2018 that >75% slopes are generally unsuitable for planting due to establishment difficulty, but immediately says these areas were included for erosion-control benefits (5% of reforested area). This is qualified secondary guidance, not a universal hard boundary.",
-      "decision_needed": "Retain the >75% grade establishment caution attributed to Santos et al. (2018). Steep terrain was included for erosion control. The text reports 5% of total reforested area; Fig. 8b shows 0.04% of the proposed allocation in the escarped class, whereas Fig. 8c shows 4.84% for that class using a different denominator. The text also assigns 97.16% to flat and gently undulating land. Panel b reaches 97.16% only when the undulating class is added (26.78 + 51.79 + 18.59). Preserve the printed values with their class labels and denominators unresolved where they disagree. Neither allocation nor cited caution calibrates a planting score. Leave a shared slope maximum open. Review both Oliveira cards together.",
+      "decision_needed": "Approved by Pete, 13 November 2026. Oliveira cites Santos et al. (2018) for planting establishment difficulty at slopes >75% grade. The erosion-control model nevertheless allocated some planting to steep terrain. On p. 8 the authors report 5% of total proposed reforestation there. Figure 8b reports 0.04% of proposed allocation in the escarped class; panel c reports 4.84% under a different denominator. The discrepancy remains open. Cited planting caution and model allocation; no shared slope cutoff.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "9b8cd2cd93865dc86cc6166a79c8f4e6326a741686a62e3a79de6d5e57434f69",
+      "evidence_sha256": "c8f642abcc7bd14d59eeae9c334914dc7c1ce900ce8093de0a2bc186b8c399b4",
       "source_locator": "Oliveira et al. (2026), PDF p. 8, slope discussion; PDF p. 9, Figure 8b–c.",
       "context_changed": true
     },
@@ -424316,12 +424404,12 @@
       "page": "2",
       "mapping_id": "",
       "reason": "Source check 6 November 2026 (PDF page(s) 1, 2, 3, 5). aridity_index — Zomer 2008 models first-commitment-period 2007–2012 CDM-AR eligibility and biomass viability across multiple interventions. PDF 2–3 retains AI 0.65,3500 m/timberline,30%canopy and historic 1990 forest-baseline screens; these are policy/production screens, not universal restoration limits.",
-      "decision_needed": "Keep full historic CDM-AR source screen and assumptions for planning-method comparison; hold any universal active-planting threshold or mask until scope and current applicability reviewed. Advisory proposal only; no evidence approval or analytical mapping is applied.",
+      "decision_needed": "Keep the historic moisture screen using mean annual precipitation divided by estimated annual potential evapotranspiration. The exclusion list removes AI <0.65; the methods and Figure 1 select AI >0.65. Equality is unresolved. Review six Zomer cards as one historical carbon-project screen. Shared restoration thresholds and exclusions remain open.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "33cfdd1b0682ccb1d0b1535d5fd8de30b0d294a18703d86fdb67d13fd2cd4664",
-      "source_locator": "",
-      "context_changed": false
+      "source_locator": "Zomer et al. (2008), pp. 2–4, §§2.1 and 2.3, Figure 1.",
+      "context_changed": true
     },
     {
       "batch_id": "t4_source_checked_20261106",
@@ -424332,12 +424420,12 @@
       "page": "2",
       "mapping_id": "",
       "reason": "Source check 6 November 2026 (PDF page(s) 1, 2, 3, 5). elevation — Zomer 2008 models first-commitment-period 2007–2012 CDM-AR eligibility and biomass viability across multiple interventions. PDF 2–3 retains AI 0.65,3500 m/timberline,30%canopy and historic 1990 forest-baseline screens; these are policy/production screens, not universal restoration limits.",
-      "decision_needed": "Keep full historic CDM-AR source screen and assumptions for planning-method comparison; hold any universal active-planting threshold or mask until scope and current applicability reviewed. Advisory proposal only; no evidence approval or analytical mapping is applied.",
+      "decision_needed": "Retain both screens: elevation above 3,500 m and areas at or near timberline, represented by mean growing-season temperature below 6.5°C. The authors assumed insufficient growth for their carbon projects. Review six Zomer cards as one historical carbon-project screen. Shared restoration thresholds and exclusions remain open.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "88975d0ae7d2401729a9d24cf35544637ee6b3af12d9438c85d77c3491f22cb6",
-      "source_locator": "",
-      "context_changed": false
+      "source_locator": "Zomer et al. (2008), pp. 2–3, §§2.1–2.2.",
+      "context_changed": true
     },
     {
       "batch_id": "t4_source_checked_20261106",
@@ -424348,12 +424436,12 @@
       "page": "2",
       "mapping_id": "",
       "reason": "Source check 6 November 2026 (PDF page(s) 1, 2, 3, 5). land_cover — Zomer 2008 models first-commitment-period 2007–2012 CDM-AR eligibility and biomass viability across multiple interventions. PDF 2–3 retains AI 0.65,3500 m/timberline,30%canopy and historic 1990 forest-baseline screens; these are policy/production screens, not universal restoration limits.",
-      "decision_needed": "Keep full historic CDM-AR source screen and assumptions for planning-method comparison; hold any universal active-planting threshold or mask until scope and current applicability reviewed. Advisory proposal only; no evidence approval or analytical mapping is applied.",
+      "decision_needed": "Retain water bodies and urban land with the continuation on p. 3 as one historical screen. The study treated current and recently cleared forest as ineligible under the historical programme. Review six Zomer cards as one historical carbon-project screen. Shared restoration thresholds and exclusions remain open.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "f58b5f6fd93debfeb1d3463bbbd780962dc76a305ef9a111d9b885695d7b50af",
-      "source_locator": "",
-      "context_changed": false
+      "source_locator": "Zomer et al. (2008), pp. 2–3, §2.1, continuous exclusion list.",
+      "context_changed": true
     },
     {
       "batch_id": "t4_source_checked_20261106",
@@ -424364,12 +424452,12 @@
       "page": "3",
       "mapping_id": "",
       "reason": "Source check 6 November 2026 (PDF page(s) 1, 2, 3, 5). land_cover — PDF 3 continues PDF 2 exclusion list: tundra, intensive/irrigated agriculture for production/food-security reasons, currently forested and recently deforested land under historical CDM rules. Existing context already confines this to source profile.",
-      "decision_needed": "Keep full continuation and historic CDM context; count once with preceding list, no current project-wide mask. Advisory proposal only; no evidence approval or analytical mapping is applied.",
+      "decision_needed": "Complete the same list with tundra, irrigated or other intensively farmed land, current forest and recently cleared forest. The agriculture restriction protected production and food security. Count both land-cover cards once. Review six Zomer cards as one historical carbon-project screen. Shared restoration thresholds and exclusions remain open.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "fa0d3c38906e356d93b1cbd030ab0181e5290298eba6ca497a83832e2e9967a0",
-      "source_locator": "",
-      "context_changed": false
+      "source_locator": "Zomer et al. (2008), p. 3, §2.1, continuation from p. 2.",
+      "context_changed": true
     },
     {
       "batch_id": "t4_source_checked_20261106",
@@ -424380,12 +424468,12 @@
       "page": "5",
       "mapping_id": "",
       "reason": "Source check 6 November 2026 (PDF page(s) 1, 2, 3, 5). protected_area_status — Figure 2/PDF 5 says protected areas were not included in source map; this does not demonstrate all protected areas legally prohibit ecological restoration.",
-      "decision_needed": "Retain source map exclusion as planning-method evidence; hold assertion of universal legal prohibition. Any legal mask needs applicable jurisdiction/site rules. Advisory proposal only; no evidence approval or analytical mapping is applied.",
+      "decision_needed": "Protected areas were omitted from the main map. The authors separately identified about 27 million ha meeting their other screens inside protected areas and described restoration in Mt Elgon National Park, Uganda. Retain as a mapping assumption; any legal exclusion requires a local basis. Review six Zomer cards as one historical carbon-project screen. Shared restoration thresholds and exclusions remain open.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "c4676136ea47c095b05e1a8256ae284f0363bd0e62357151b0f5be3a745e598e",
-      "source_locator": "",
-      "context_changed": false
+      "source_locator": "Zomer et al. (2008), p. 5, Figure 2; pp. 6–7, §3.2.",
+      "context_changed": true
     },
     {
       "batch_id": "t4_source_checked_20261106",
@@ -424396,12 +424484,12 @@
       "page": "3",
       "mapping_id": "",
       "reason": "Source check 6 November 2026 (PDF page(s) 1, 2, 3, 5). tree_canopy_cover — Zomer 2008 models first-commitment-period 2007–2012 CDM-AR eligibility and biomass viability across multiple interventions. PDF 2–3 retains AI 0.65,3500 m/timberline,30%canopy and historic 1990 forest-baseline screens; these are policy/production screens, not universal restoration limits.",
-      "decision_needed": "Keep full historic CDM-AR source screen and assumptions for planning-method comparison; hold any universal active-planting threshold or mask until scope and current applicability reviewed. Advisory proposal only; no evidence approval or analytical mapping is applied.",
+      "decision_needed": "Keep 30% tree canopy as the forest definition using 500 m MODIS pixels. Distinguish the start-of-1990 eligibility requirement from the 1991 land-cover proxy. Comparing different datasets made recent deforestation approximate. Review six Zomer cards as one historical carbon-project screen. Shared restoration thresholds and exclusions remain open.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "a9269b0451430ede38cd30487fb64a0e5c7aa151ff38b8058ca390dfcb75d748",
-      "source_locator": "",
-      "context_changed": false
+      "source_locator": "Zomer et al. (2008), pp. 2–3, §§2.1–2.2.",
+      "context_changed": true
     },
     {
       "batch_id": "t4_source_checked_20261106",
@@ -453138,8 +453226,14 @@
           "ev_fr_slope_oliveira26_1"
         ],
         "dropped_evidence_ids": [],
-        "approved_evidence_ids": [],
-        "reviewed_evidence_ids": [],
+        "approved_evidence_ids": [
+          "ev_fr_land_cover_oliveira26_scope_20261028",
+          "ev_fr_slope_oliveira26_1"
+        ],
+        "reviewed_evidence_ids": [
+          "ev_fr_land_cover_oliveira26_scope_20261028",
+          "ev_fr_slope_oliveira26_1"
+        ],
         "extraction_counts": {
           "T4": 2,
           "effects": 0,
@@ -524497,19 +524591,19 @@
         "zoure_2025_traditional_practices_burkina"
       ],
       "extracted_sources": 795,
-      "reviewed_sources": 194,
-      "fully_reviewed_sources": 75,
-      "sources_with_reviewed_excerpts": 439,
-      "sources_with_approved_excerpts": 194,
+      "reviewed_sources": 195,
+      "fully_reviewed_sources": 76,
+      "sources_with_reviewed_excerpts": 440,
+      "sources_with_approved_excerpts": 195,
       "active_excerpts": 5255,
       "retained_excerpts": 5255,
       "all_excerpts": 6832,
-      "reviewed_excerpts": 2339,
-      "unreviewed_excerpts": 4493,
-      "reviewed_pct": 34.2,
-      "approved_excerpts": 542,
+      "reviewed_excerpts": 2341,
+      "unreviewed_excerpts": 4491,
+      "reviewed_pct": 34.3,
+      "approved_excerpts": 544,
       "approved_pct": 23.2,
-      "reviewed_active_excerpts": 767,
+      "reviewed_active_excerpts": 769,
       "reviewed_dropped_excerpts": 1572,
       "reviewed_unresolved_excerpts": 225,
       "dropped_excerpts": 1577,
@@ -538256,19 +538350,19 @@
             "zhou_2015_forest_recovery_water_yield"
           ],
           "extracted_sources": 153,
-          "reviewed_sources": 21,
-          "fully_reviewed_sources": 9,
-          "sources_with_reviewed_excerpts": 60,
-          "sources_with_approved_excerpts": 21,
+          "reviewed_sources": 22,
+          "fully_reviewed_sources": 10,
+          "sources_with_reviewed_excerpts": 61,
+          "sources_with_approved_excerpts": 22,
           "active_excerpts": 869,
           "retained_excerpts": 869,
           "all_excerpts": 1073,
-          "reviewed_excerpts": 264,
-          "unreviewed_excerpts": 809,
-          "reviewed_pct": 24.6,
-          "approved_excerpts": 33,
-          "approved_pct": 12.5,
-          "reviewed_active_excerpts": 61,
+          "reviewed_excerpts": 266,
+          "unreviewed_excerpts": 807,
+          "reviewed_pct": 24.8,
+          "approved_excerpts": 35,
+          "approved_pct": 13.2,
+          "reviewed_active_excerpts": 63,
           "reviewed_dropped_excerpts": 203,
           "reviewed_unresolved_excerpts": 28,
           "dropped_excerpts": 204,
@@ -538703,19 +538797,19 @@
                 "zhang_2017_forest_water_yield_global"
               ],
               "extracted_sources": 53,
-              "reviewed_sources": 7,
-              "fully_reviewed_sources": 3,
-              "sources_with_reviewed_excerpts": 21,
-              "sources_with_approved_excerpts": 7,
+              "reviewed_sources": 8,
+              "fully_reviewed_sources": 4,
+              "sources_with_reviewed_excerpts": 22,
+              "sources_with_approved_excerpts": 8,
               "active_excerpts": 201,
               "retained_excerpts": 201,
               "all_excerpts": 260,
-              "reviewed_excerpts": 70,
-              "unreviewed_excerpts": 190,
-              "reviewed_pct": 26.9,
-              "approved_excerpts": 10,
-              "approved_pct": 14.3,
-              "reviewed_active_excerpts": 11,
+              "reviewed_excerpts": 72,
+              "unreviewed_excerpts": 188,
+              "reviewed_pct": 27.7,
+              "approved_excerpts": 12,
+              "approved_pct": 16.7,
+              "reviewed_active_excerpts": 13,
               "reviewed_dropped_excerpts": 59,
               "reviewed_unresolved_excerpts": 1,
               "dropped_excerpts": 59,
@@ -603645,19 +603739,19 @@
             "zomer_2014"
           ],
           "extracted_sources": 197,
-          "reviewed_sources": 87,
-          "fully_reviewed_sources": 72,
-          "sources_with_reviewed_excerpts": 111,
-          "sources_with_approved_excerpts": 87,
+          "reviewed_sources": 88,
+          "fully_reviewed_sources": 73,
+          "sources_with_reviewed_excerpts": 112,
+          "sources_with_approved_excerpts": 88,
           "active_excerpts": 846,
           "retained_excerpts": 846,
           "all_excerpts": 1070,
-          "reviewed_excerpts": 553,
-          "unreviewed_excerpts": 517,
-          "reviewed_pct": 51.7,
-          "approved_excerpts": 306,
-          "approved_pct": 55.3,
-          "reviewed_active_excerpts": 331,
+          "reviewed_excerpts": 555,
+          "unreviewed_excerpts": 515,
+          "reviewed_pct": 51.9,
+          "approved_excerpts": 308,
+          "approved_pct": 55.5,
+          "reviewed_active_excerpts": 333,
           "reviewed_dropped_excerpts": 222,
           "reviewed_unresolved_excerpts": 25,
           "dropped_excerpts": 224,
@@ -606139,19 +606233,19 @@
                 "wri_restoration_diagnostic_2015"
               ],
               "extracted_sources": 46,
-              "reviewed_sources": 12,
-              "fully_reviewed_sources": 12,
-              "sources_with_reviewed_excerpts": 12,
-              "sources_with_approved_excerpts": 12,
+              "reviewed_sources": 13,
+              "fully_reviewed_sources": 13,
+              "sources_with_reviewed_excerpts": 13,
+              "sources_with_approved_excerpts": 13,
               "active_excerpts": 142,
               "retained_excerpts": 142,
               "all_excerpts": 143,
-              "reviewed_excerpts": 19,
-              "unreviewed_excerpts": 124,
-              "reviewed_pct": 13.3,
-              "approved_excerpts": 19,
+              "reviewed_excerpts": 21,
+              "unreviewed_excerpts": 122,
+              "reviewed_pct": 14.7,
+              "approved_excerpts": 21,
               "approved_pct": 100.0,
-              "reviewed_active_excerpts": 19,
+              "reviewed_active_excerpts": 21,
               "reviewed_dropped_excerpts": 0,
               "reviewed_unresolved_excerpts": 0,
               "dropped_excerpts": 1,
@@ -606300,19 +606394,19 @@
                     "wocat_750_2016"
                   ],
                   "extracted_sources": 17,
-                  "reviewed_sources": 5,
-                  "fully_reviewed_sources": 5,
-                  "sources_with_reviewed_excerpts": 5,
-                  "sources_with_approved_excerpts": 5,
+                  "reviewed_sources": 6,
+                  "fully_reviewed_sources": 6,
+                  "sources_with_reviewed_excerpts": 6,
+                  "sources_with_approved_excerpts": 6,
                   "active_excerpts": 54,
                   "retained_excerpts": 54,
                   "all_excerpts": 54,
-                  "reviewed_excerpts": 8,
-                  "unreviewed_excerpts": 46,
-                  "reviewed_pct": 14.8,
-                  "approved_excerpts": 8,
+                  "reviewed_excerpts": 10,
+                  "unreviewed_excerpts": 44,
+                  "reviewed_pct": 18.5,
+                  "approved_excerpts": 10,
                   "approved_pct": 100.0,
-                  "reviewed_active_excerpts": 8,
+                  "reviewed_active_excerpts": 10,
                   "reviewed_dropped_excerpts": 0,
                   "reviewed_unresolved_excerpts": 0,
                   "dropped_excerpts": 0,
@@ -711387,22 +711481,22 @@
               "suitability_family_id": "forest_restoration__active_planting",
               "claim_scope": "practice_technology",
               "evidence_type": "literature_relationship",
-              "reviewer_ok": "false",
-              "relationship": "{\"abs_max\": 75, \"unit\": \"percent\", \"direction\": \"slopes above 75% are generally unsuitable for planting because seedlings are hard to establish there — an upper bound for active planting\"}",
-              "context": "",
+              "reviewer_ok": "true",
+              "relationship": "{\"abs_max\": null, \"unit\": \"percent\", \"direction\": \"Establishment difficulty on slopes greater than 75% grade, cited from Santos et al. (2018).\"}",
+              "context": "{\"study_profile\": {\"objective\": \"minimise modelled soil loss\", \"region\": \"Seridó River basin, semi-arid Caatinga, Brazil\", \"evidence_ids\": [\"ev_fr_land_cover_oliveira26_scope_20261028\", \"ev_fr_slope_oliveira26_1\"]}, \"reviewed_use\": \"Oliveira cites Santos et al. (2018) for planting establishment difficulty at slopes >75% grade. The erosion-control model nevertheless allocated some planting to steep terrain. On p. 8 the authors report 5% of total proposed reforestation there. Figure 8b reports 0.04% of proposed allocation in the escarped class; panel c reports 4.84% under a different denominator. The discrepancy remains open. Cited planting caution and model allocation; no shared slope cutoff.\", \"reported_values\": {\"planting_caution\": {\"operator\": \">\", \"value\": 75, \"unit\": \"percent slope\", \"origin\": \"Santos et al. (2018), as cited by Oliveira, p. 8\"}, \"allocation_discrepancy\": {\"origin\": \"Oliveira model, PDF pp. 8–9, Figure 8\", \"text_pct_of_total_reforested_area\": 5, \"panel_b_escarped_pct_of_proposed_allocation\": 0.04, \"panel_c_escarped_pct_within_class\": 4.84, \"status\": \"Different denominators; retain original values.\", \"text_flat_to_gently_undulating_pct\": 97.16, \"panel_b_allocation_pct\": {\"flat\": 26.78, \"gently_undulating\": 51.79, \"undulating\": 18.59}, \"class_label_discrepancy\": \"The text total of 97.16% includes the third class in panel b.\"}}}",
               "quote": "Areas with slopes greater than 75% are generally unsuitable for \nplanting due to establishment difficulties (Santos et al., 2018).",
               "page": "8",
               "locator_type": "page",
               "locator": "",
-              "lineage_of": "",
+              "lineage_of": "Santos et al. (2018), Sistema Brasileiro de Classificação de Solos",
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "slopes above 75% are generally unsuitable for planting because seedlings are hard to establish there — an upper bound for active planting",
+              "source_direction": "Establishment difficulty on slopes greater than 75% grade, cited from Santos et al. (2018).",
               "has_stated_direction": true,
               "has_source_classes": false,
               "source_shape": "",
-              "compilation_disposition": "unresolved_review",
+              "compilation_disposition": "Oliveira cites Santos et al. (2018) for planting establishment difficulty at slopes >75% grade. The erosion-control model nevertheless allocated some planting to steep terrain. On p. 8 the authors report 5% of total proposed reforestation there. Figure 8b reports 0.04% of proposed allocation in the escarped class; panel c reports 4.84% under a different denominator. The discrepancy remains open.",
               "linked_mapping_ids": [],
               "focus_review": false,
               "visibility_flag": false,
@@ -713997,9 +714091,9 @@
               "suitability_family_id": "forest_restoration__active_planting",
               "claim_scope": "practice_technology",
               "evidence_type": "literature_relationship",
-              "reviewer_ok": "false",
-              "relationship": "{\"allowed_classes\": [\"agricultural\", \"non-vegetated\"]}",
-              "context": "{\"model_use\": {\"used\": true, \"method\": \"USPED erosion-reduction spatial optimization target domain\", \"source_specific_weight\": null}, \"applicability_hold\": \"Regional Caatinga allocation scope, not universal biological suitability. Non-vegetated does not authorize conversion of native non-forest ecosystems.\", \"numeric_calibration\": \"source-category selection only; dataset class mapping and transfer unapproved\", \"practice_as_described\": \"reforestation\", \"source_check\": {\"scope\": \"Serido River Basin, Brazil\", \"constraints_not_modelled\": [\"socio-economic\", \"legal\", \"logistical\"]}}",
+              "reviewer_ok": "true",
+              "relationship": "{\"allowed_classes\": null, \"direction\": \"Study search area limited to agricultural and non-vegetated land.\"}",
+              "context": "{\"model_use\": {\"used\": true, \"method\": \"USPED erosion-reduction spatial optimization target domain\", \"source_specific_weight\": null}, \"applicability_hold\": \"Regional Caatinga allocation scope, not universal biological suitability. Non-vegetated does not authorize conversion of native non-forest ecosystems.\", \"numeric_calibration\": \"source-category selection only; dataset class mapping and transfer unapproved\", \"practice_as_described\": \"reforestation\", \"source_check\": {\"scope\": \"Serido River Basin, Brazil\", \"constraints_not_modelled\": [\"socio-economic\", \"legal\", \"logistical\"]}, \"study_profile\": {\"objective\": \"minimise modelled soil loss\", \"region\": \"Seridó River basin, semi-arid Caatinga, Brazil\", \"evidence_ids\": [\"ev_fr_land_cover_oliveira26_scope_20261028\", \"ev_fr_slope_oliveira26_1\"]}, \"reviewed_use\": \"The model searched agricultural and non-vegetated classes in the Seridó River basin, Brazil, to reduce erosion. Socioeconomic, legal and logistical constraints were omitted. The two classes describe the regional search area. Regional planning domain only; no shared land-cover eligibility.\", \"reported_values\": {\"study_area_classes\": [\"agricultural\", \"non-vegetated\"], \"locator\": \"PDF p. 4, optimization domain\"}}",
               "quote": "The basin includes six LULC classes, but optimization was restricted \nto agricultural and non-vegetated areas. Socio-economic, legal, and \nlogistical constraints were not explicitly incorporated, due to data lim­\nitations and the objective of evaluating the core performance of the \nproposed spatial optimization framework under controlled and repro­\nducible conditions.",
               "page": "4",
               "locator_type": "page",
@@ -714008,11 +714102,11 @@
               "justification_quote": "",
               "justification_page": "",
               "taxon": "",
-              "source_direction": "",
-              "has_stated_direction": false,
-              "has_source_classes": true,
+              "source_direction": "Study search area limited to agricultural and non-vegetated land.",
+              "has_stated_direction": true,
+              "has_source_classes": false,
               "source_shape": "",
-              "compilation_disposition": "unresolved_review",
+              "compilation_disposition": "The model searched agricultural and non-vegetated classes in the Seridó River basin, Brazil, to reduce erosion. Socioeconomic, legal and logistical constraints were omitted. The two classes describe the regional search area.",
               "linked_mapping_ids": [],
               "focus_review": false,
               "visibility_flag": false,
@@ -732115,7 +732209,7 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "edf7b3c0d3b6",
-    "data_id": "3446f312e0dc",
+    "data_id": "52283d1ac120",
     "count_definition_version": "4"
   }
 }
