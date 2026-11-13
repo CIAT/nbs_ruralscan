@@ -165,7 +165,7 @@
     });
     h += '<tr><td class="counts">count strip</td>' + nbs.map(function (n) {
       var c = D.nbs[n].counts, bits = [];
-      [['benefit', 'benefit'], ['harm', 'harm'], ['no_effect', 'no effect'], ['conflicting_evidence', 'disagree'], ['data_deficient', 'too thin'], ['not_assessed', 'n/a']].forEach(function (k) { if (c[k[0]]) bits.push(c[k[0]] + ' ' + k[1]); });
+      [['benefit', 'benefit'], ['harm', 'harm'], ['no_effect', 'no effect'], ['conflicting_evidence', 'disagree'], ['data_deficient', 'too thin'], ['not_assessed', 'n/a'], ['searched_no_evidence', 'searched, nothing found']].forEach(function (k) { if (c[k[0]]) bits.push(c[k[0]] + ' ' + k[1]); });
       return '<td class="counts">' + esc(bits.join(' · ')) + '</td>';
     }).join('') + '</tr>';
     el('matrix').innerHTML = h;
