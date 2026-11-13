@@ -234857,10 +234857,10 @@
               "savanna ecosystems"
             ]
           },
-          "numeric_calibration": "Categorical safeguard only; no score, threshold, weight or EO class crosswalk supplied. Native ecosystem identity needs local habitat history and validation.",
+          "numeric_calibration": "Non-compensatory exclusion. Assess native habitat and proposed conversion using locally adequate data. No numeric habitat threshold or direct global land-cover crosswalk.",
           "note": "Applies to active planting that would convert these existing native ecosystems. Does not prohibit restoring degraded native wetland forest or establish a legal protected-area mask. Source includes broader FLR practices; only the explicit planted-forest safeguard is admitted.",
-          "intended_use": "T4 habitat eligibility evidence pending human review; no automatically executable mask",
-          "review_needed": "Confirm source-scope application and native ecosystem mapping before compilation."
+          "intended_use": "Hard land-use exclusion for active forest planting and plantation establishment.",
+          "reviewed_use": "Exclude proposed tree planting wherever it would replace existing indigenous natural vegetation. ITTO GE20 explicitly identifies native tropical grasslands, savannas and wetlands. Pete adopted the broader no-conversion rule. Restoration of degraded native forest that retains existing indigenous vegetation can pass this safeguard. Unresolved habitat or conversion status remains unknown."
         },
         "use_role": "structural_suitability",
         "evidence_type": "expert",
@@ -234869,9 +234869,9 @@
         "extraction_confidence": "medium",
         "quote": "Under FLR, planted forests, particularly afforestation,\nshould not replace existing native tropical grasslands,\nwetlands or savanna ecosystems.",
         "page": 36,
-        "reviewer_ok": false,
+        "reviewer_ok": true,
         "raw_name": "existing native tropical grasslands, wetlands or savanna ecosystems",
-        "attribution": "ITTO2020 guiding element GE20; normative international guidance, no separate empirical calibration asserted.",
+        "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Exclude proposed tree planting wherever it would replace existing indigenous natural vegetation. ITTO GE20 explicitly identifies native tropical grasslands, savannas and wetlands. Pete adopted the broader no-conversion rule. Restoration of degraded native forest that retains existing indigenous vegetation can pass this safeguard. Unresolved habitat or conversion status remains unknown.] ITTO2020 guiding element GE20; normative international guidance, no separate empirical calibration asserted.",
         "locator_type": "page",
         "ruleset_version": "v1.9.2"
       },
@@ -319922,7 +319922,88 @@
           ]
         }
       ],
-      "T4_suitability_mappings": [],
+      "T4_suitability_mappings": [
+        {
+          "mapping_id": "forest_restoration__active_planting__native_vegetation_exclusion",
+          "nbs_id": "forest_restoration",
+          "dataset_id": "esa_worldcover_2021",
+          "suitability_dimension": "system_constraint",
+          "relationship_type": "threshold",
+          "relationship_params": {
+            "mapping_role": "hard_exclusion",
+            "input_kind": "assessed_boolean_mask",
+            "input_contract": {
+              "scope": "forest_restoration__active_planting",
+              "input_name": "native_vegetation_conversion",
+              "label": "Native vegetation conversion — hard land-use exclusion",
+              "provenance_label": "Required habitat assessment provenance",
+              "true": "Proposed planting would replace existing indigenous natural vegetation. Exclude the site.",
+              "false": "Habitat and proposed intervention assessed. Planting would retain indigenous natural vegetation. This passes only the conversion safeguard.",
+              "unknown": "Native habitat, proposed conversion or assessment coverage unresolved. Leave opportunity unknown.",
+              "category_handling": "Broad land-cover codes cannot identify indigenous vegetation or establish conversion. Match the planting footprint and habitat history to locally appropriate evidence.",
+              "input_requirement": "Supply a site- or AOI-assessed conversion mask for the proposed planting, with habitat evidence, coverage, assessment date and intervention scope.",
+              "required_provenance": [
+                "scope",
+                "source_reference",
+                "assessment_date",
+                "coverage",
+                "intervention"
+              ]
+            }
+          },
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0,
+          "weight_adjustable": false,
+          "justification": "Exclude proposed tree planting wherever it would replace existing indigenous natural vegetation. ITTO GE20 explicitly identifies native tropical grasslands, savannas and wetlands. Pete adopted the broader no-conversion rule. Restoration of degraded native forest that retains existing indigenous vegetation can pass this safeguard. Unresolved habitat or conversion status remains unknown. WorldCover supplies land-cover context only.",
+          "variable": "land_cover",
+          "suitability_family_id": "forest_restoration__active_planting",
+          "evidence_ids": [
+            "ev_fr_native_habitat_itto20_20261031"
+          ],
+          "n_sources": 1
+        },
+        {
+          "mapping_id": "forest_restoration__plantation__native_vegetation_exclusion",
+          "nbs_id": "forest_restoration",
+          "dataset_id": "esa_worldcover_2021",
+          "suitability_dimension": "system_constraint",
+          "relationship_type": "threshold",
+          "relationship_params": {
+            "mapping_role": "hard_exclusion",
+            "input_kind": "assessed_boolean_mask",
+            "input_contract": {
+              "scope": "forest_restoration__plantation",
+              "input_name": "native_vegetation_conversion",
+              "label": "Native vegetation conversion — hard land-use exclusion",
+              "provenance_label": "Required habitat assessment provenance",
+              "true": "Proposed planting would replace existing indigenous natural vegetation. Exclude the site.",
+              "false": "Habitat and proposed intervention assessed. Planting would retain indigenous natural vegetation. This passes only the conversion safeguard.",
+              "unknown": "Native habitat, proposed conversion or assessment coverage unresolved. Leave opportunity unknown.",
+              "category_handling": "Broad land-cover codes cannot identify indigenous vegetation or establish conversion. Match the planting footprint and habitat history to locally appropriate evidence.",
+              "input_requirement": "Supply a site- or AOI-assessed conversion mask for the proposed planting, with habitat evidence, coverage, assessment date and intervention scope.",
+              "required_provenance": [
+                "scope",
+                "source_reference",
+                "assessment_date",
+                "coverage",
+                "intervention"
+              ]
+            }
+          },
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0,
+          "weight_adjustable": false,
+          "justification": "Exclude proposed tree planting wherever it would replace existing indigenous natural vegetation. ITTO GE20 explicitly identifies native tropical grasslands, savannas and wetlands. Pete adopted the broader no-conversion rule. Restoration of degraded native forest that retains existing indigenous vegetation can pass this safeguard. Unresolved habitat or conversion status remains unknown. WorldCover supplies land-cover context only.",
+          "variable": "land_cover",
+          "suitability_family_id": "forest_restoration__plantation",
+          "evidence_ids": [
+            "ev_fr_native_habitat_itto20_20261031"
+          ],
+          "n_sources": 1
+        }
+      ],
       "T3_nbs_hazard_farming": [
         {
           "record_id": "forest_restoration__drought__all",
@@ -387961,12 +388042,12 @@
     }
   ],
   "qaqc_stats": {
-    "total_reviews": 2786,
+    "total_reviews": 2788,
     "queried": 214,
-    "n_reviewers": 46,
+    "n_reviewers": 47,
     "by_reviewer": {
       "ai_mechanism_rule": 727,
-      "peetmate": 545,
+      "peetmate": 546,
       "orchestrator": 482,
       "Namita-J": 191,
       "Peter": 132,
@@ -388010,11 +388091,12 @@
       "ai_retro_2026-10-29": 1,
       "ai_t4_terrace_rainfall_check": 1,
       "ai_t4_figure_check": 1,
-      "ai_t4_mangrove_guidance": 1
+      "ai_t4_mangrove_guidance": 1,
+      "ai_t4_itto_exclusion": 1
     },
     "by_decision": {
       "drop": 1598,
-      "ok": 862,
+      "ok": 864,
       "flag": 213,
       "reclassify": 18,
       "retag": 4,
@@ -388023,7 +388105,7 @@
       "query": 1
     },
     "by_reason": {
-      "accepted_correction": 771,
+      "accepted_correction": 773,
       "insufficient_context": 705,
       "unspecified": 371,
       "other": 272,
@@ -388046,7 +388128,7 @@
     },
     "by_verdict": {
       "unsupported": 12,
-      "pass": 2186,
+      "pass": 2187,
       "mismatch": 67,
       "scope": 53,
       "review": 27,
@@ -388060,7 +388142,7 @@
       "routing_ruling": 3,
       "variable_ruling": 31,
       "direction_audit": 122,
-      "unit_correction": 208
+      "unit_correction": 209
     },
     "flag_eval": {
       "tp": 65,
@@ -388071,10 +388153,10 @@
       "tp_corrected": 27
     },
     "pass_eval": {
-      "tn": 833,
+      "tn": 835,
       "fn": 11,
       "out_of_remit": 1549,
-      "checked": 2393,
+      "checked": 2395,
       "fn_rate_pct": 1.3
     },
     "recall_est_pct": 85.5,
@@ -423225,6 +423307,25 @@
       "reason": "accepted_correction",
       "note": "At <10 people/km² and lower land-use intensity, mixed-species planting is one wide-scale option. At 10–100 people/km² with more intensive land use, mosaics may include farm trees, small woodlots and ecological restoration plantations. Count one cited landscape-planning profile across passive regeneration and active planting. Population density stays outside suitability scoring.",
       "reviewer": "peetmate"
+    },
+    {
+      "date": "2026-11-13",
+      "evidence_id": "ev_fr_native_habitat_itto20_20261031",
+      "source_id": "itto_flr_guidelines_ps24_2020",
+      "verdict": "unit_correction",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "context.intended_use, context.numeric_calibration, context.review_needed, context.reviewed_use: Exclude proposed tree planting wherever it would replace existing indigenous natural vegetation. ITTO GE20 explicitly identifies native tropical grasslands, savannas and wetlands. Pete adopted the broader no-conversion rule. Restoration of degraded native forest that retains existing indigenous vegetation can pass this safeguard. Unresolved habitat or conversion status remains unknown.",
+      "reviewer": "ai_t4_itto_exclusion"
+    },
+    {
+      "date": "2026-11-13",
+      "evidence_id": "ev_fr_native_habitat_itto20_20261031",
+      "source_id": "itto_flr_guidelines_ps24_2020",
+      "decision": "ok",
+      "reason": "accepted_correction",
+      "note": "Exclude proposed tree planting wherever it would replace existing indigenous natural vegetation. ITTO GE20 explicitly identifies native tropical grasslands, savannas and wetlands. Pete adopted the broader no-conversion rule. Restoration of degraded native forest that retains existing indigenous vegetation can pass this safeguard. Unresolved habitat or conversion status remains unknown.",
+      "reviewer": "peetmate"
     }
   ],
   "family_presentation": {
@@ -424835,10 +424936,10 @@
       "page": "36",
       "mapping_id": "",
       "reason": "Source check 6 November 2026 (PDF page(s) 1, 36). land_cover — ITTO guiding element 20 explicitly says planted forests, particularly afforestation, should not replace existing native tropical grasslands, wetlands or savanna ecosystems. Surrounding text also protects peatlands and natural disturbance regimes.",
-      "decision_needed": "Keep ITTO’s safeguard against replacing existing native tropical grassland, wetland or savanna with planted forest. Verify native habitat identity and land-use history before applying it to a mapped site. Distinguish conversion from restoration of degraded native wetland forest. The guideline supplies no numeric cutoff or global land-cover class crosswalk.",
+      "decision_needed": "Approved by Pete, 13 November 2026. Exclude proposed tree planting wherever it would replace existing indigenous natural vegetation. ITTO GE20 explicitly identifies native tropical grasslands, savannas and wetlands. Pete adopted the broader no-conversion rule. Restoration of degraded native forest that retains existing indigenous vegetation can pass this safeguard. Unresolved habitat or conversion status remains unknown.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
-      "evidence_sha256": "d32826236c548ea1dbdcddb2b1a84fa3de364b766bd8dc5d0dc78c60568287df",
+      "evidence_sha256": "33a963e536959c3472c67c890800708a36d5233b31d611322e81e9b97bc6490d",
       "source_locator": "ITTO (2020), Guiding Element 20, PDF p. 36, printed p. 35.",
       "context_changed": true
     },
@@ -459334,8 +459435,12 @@
           "ev_fr_native_habitat_itto20_20261031"
         ],
         "dropped_evidence_ids": [],
-        "approved_evidence_ids": [],
-        "reviewed_evidence_ids": [],
+        "approved_evidence_ids": [
+          "ev_fr_native_habitat_itto20_20261031"
+        ],
+        "reviewed_evidence_ids": [
+          "ev_fr_native_habitat_itto20_20261031"
+        ],
         "extraction_counts": {
           "T4": 1,
           "effects": 0,
@@ -459343,7 +459448,9 @@
           "other": 0
         },
         "contributions": {
-          "T4": [],
+          "T4": [
+            "ev_fr_native_habitat_itto20_20261031"
+          ],
           "T3": [],
           "T6": [],
           "M2b": []
@@ -516975,7 +517082,7 @@
       }
     ],
     "totals": {
-      "compiled_outputs": 685,
+      "compiled_outputs": 687,
       "evidence_ids": [
         "EV_binam_2017_007",
         "EV_chomba_2020_001",
@@ -523810,8 +523917,8 @@
         "ev_yield_stability_sileshi12_3",
         "ev_yield_stability_silv26_1"
       ],
-      "contributing_excerpts": 3478,
-      "contributing_sources": 663,
+      "contributing_excerpts": 3479,
+      "contributing_sources": 664,
       "known_sources": 1130,
       "source_keys": [
         "aarons_2013_dairy_farm_impacts_of",
@@ -524946,27 +525053,27 @@
         "zoure_2025_traditional_practices_burkina"
       ],
       "extracted_sources": 795,
-      "reviewed_sources": 197,
-      "fully_reviewed_sources": 77,
-      "sources_with_reviewed_excerpts": 442,
-      "sources_with_approved_excerpts": 197,
+      "reviewed_sources": 198,
+      "fully_reviewed_sources": 78,
+      "sources_with_reviewed_excerpts": 443,
+      "sources_with_approved_excerpts": 198,
       "active_excerpts": 5255,
       "retained_excerpts": 5255,
       "all_excerpts": 6832,
-      "reviewed_excerpts": 2349,
-      "unreviewed_excerpts": 4483,
+      "reviewed_excerpts": 2350,
+      "unreviewed_excerpts": 4482,
       "reviewed_pct": 34.4,
-      "approved_excerpts": 552,
+      "approved_excerpts": 553,
       "approved_pct": 23.5,
-      "reviewed_active_excerpts": 777,
+      "reviewed_active_excerpts": 778,
       "reviewed_dropped_excerpts": 1572,
       "reviewed_unresolved_excerpts": 225,
       "dropped_excerpts": 1577,
-      "t4_relationships": 52,
+      "t4_relationships": 54,
       "t4_operational_relationships": 8,
-      "t4_structural_relationships": 44,
-      "t4_evidence_backed_relationships": 43,
-      "t4_contributing_sources": 38,
+      "t4_structural_relationships": 46,
+      "t4_evidence_backed_relationships": 45,
+      "t4_contributing_sources": 39,
       "source_mix": {
         "literature": 650,
         "grey": 174,
@@ -537425,7 +537532,7 @@
         "nbs_id": "forest_restoration",
         "name": "Forest restoration",
         "metrics": {
-          "compiled_outputs": 128,
+          "compiled_outputs": 130,
           "evidence_ids": [
             "ev_accessibility_travel_time_iufro20_1",
             "ev_adoption_rate_chazdon16_1",
@@ -538501,8 +538608,8 @@
             "ev_windbreak_protection_wocat_1577_2013_wind_velocity",
             "ev_windbreak_protection_wocat_1626_2014_wind_velocity"
           ],
-          "contributing_excerpts": 528,
-          "contributing_sources": 120,
+          "contributing_excerpts": 529,
+          "contributing_sources": 121,
           "known_sources": 198,
           "source_keys": [
             "afforestation_erosion_sediment_catchments_2009",
@@ -538705,27 +538812,27 @@
             "zhou_2015_forest_recovery_water_yield"
           ],
           "extracted_sources": 153,
-          "reviewed_sources": 24,
-          "fully_reviewed_sources": 11,
-          "sources_with_reviewed_excerpts": 63,
-          "sources_with_approved_excerpts": 24,
+          "reviewed_sources": 25,
+          "fully_reviewed_sources": 12,
+          "sources_with_reviewed_excerpts": 64,
+          "sources_with_approved_excerpts": 25,
           "active_excerpts": 869,
           "retained_excerpts": 869,
           "all_excerpts": 1073,
-          "reviewed_excerpts": 274,
-          "unreviewed_excerpts": 799,
-          "reviewed_pct": 25.5,
-          "approved_excerpts": 43,
-          "approved_pct": 15.7,
-          "reviewed_active_excerpts": 71,
+          "reviewed_excerpts": 275,
+          "unreviewed_excerpts": 798,
+          "reviewed_pct": 25.6,
+          "approved_excerpts": 44,
+          "approved_pct": 16.0,
+          "reviewed_active_excerpts": 72,
           "reviewed_dropped_excerpts": 203,
           "reviewed_unresolved_excerpts": 28,
           "dropped_excerpts": 204,
-          "t4_relationships": 0,
+          "t4_relationships": 2,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 0,
-          "t4_evidence_backed_relationships": 0,
-          "t4_contributing_sources": 0,
+          "t4_structural_relationships": 2,
+          "t4_evidence_backed_relationships": 2,
+          "t4_contributing_sources": 1,
           "source_mix": {
             "literature": 112,
             "grey": 39,
@@ -538786,7 +538893,7 @@
             "scope_kind": "family",
             "scope_definition": "Deliberate tree planting to re-establish forest on formerly forested land.",
             "metrics": {
-              "compiled_outputs": 19,
+              "compiled_outputs": 20,
               "evidence_ids": [
                 "ev_adoption_rate_le12_1",
                 "ev_asset_drought_barajas13_1",
@@ -539049,8 +539156,8 @@
                 "ev_windbreak_protection_wocat_1523_2011_wind_velocity",
                 "ev_windbreak_protection_wocat_1529_2012_wind_velocity"
               ],
-              "contributing_excerpts": 76,
-              "contributing_sources": 29,
+              "contributing_excerpts": 77,
+              "contributing_sources": 30,
               "known_sources": 97,
               "source_keys": [
                 "afforestation_erosion_sediment_catchments_2009",
@@ -539152,27 +539259,27 @@
                 "zhang_2017_forest_water_yield_global"
               ],
               "extracted_sources": 53,
-              "reviewed_sources": 10,
-              "fully_reviewed_sources": 5,
-              "sources_with_reviewed_excerpts": 24,
-              "sources_with_approved_excerpts": 10,
+              "reviewed_sources": 11,
+              "fully_reviewed_sources": 6,
+              "sources_with_reviewed_excerpts": 25,
+              "sources_with_approved_excerpts": 11,
               "active_excerpts": 201,
               "retained_excerpts": 201,
               "all_excerpts": 260,
-              "reviewed_excerpts": 79,
-              "unreviewed_excerpts": 181,
-              "reviewed_pct": 30.4,
-              "approved_excerpts": 19,
-              "approved_pct": 24.1,
-              "reviewed_active_excerpts": 20,
+              "reviewed_excerpts": 80,
+              "unreviewed_excerpts": 180,
+              "reviewed_pct": 30.8,
+              "approved_excerpts": 20,
+              "approved_pct": 25.0,
+              "reviewed_active_excerpts": 21,
               "reviewed_dropped_excerpts": 59,
               "reviewed_unresolved_excerpts": 1,
               "dropped_excerpts": 59,
-              "t4_relationships": 0,
+              "t4_relationships": 1,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 0,
-              "t4_evidence_backed_relationships": 0,
-              "t4_contributing_sources": 0,
+              "t4_structural_relationships": 1,
+              "t4_evidence_backed_relationships": 1,
+              "t4_contributing_sources": 1,
               "source_mix": {
                 "literature": 60,
                 "grey": 21,
@@ -540075,7 +540182,7 @@
             "scope_kind": "family",
             "scope_definition": "Establishment or management of production tree plantations — commercial/cyclical-harvest planting, monocultures or plantation genera (pine, eucalypt, hybrid poplar, teak, Cedrela) — including afforestation of grasslands/shrublands with plantation species.",
             "metrics": {
-              "compiled_outputs": 11,
+              "compiled_outputs": 12,
               "evidence_ids": [
                 "ev_asset_extreme_rainfall_wocat_1577_2013_local_rainstorm",
                 "ev_asset_wind_cyclone_ieg18_1",
@@ -540266,11 +540373,11 @@
               "reviewed_dropped_excerpts": 17,
               "reviewed_unresolved_excerpts": 6,
               "dropped_excerpts": 17,
-              "t4_relationships": 0,
+              "t4_relationships": 1,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 0,
-              "t4_evidence_backed_relationships": 0,
-              "t4_contributing_sources": 0,
+              "t4_structural_relationships": 1,
+              "t4_evidence_backed_relationships": 1,
+              "t4_contributing_sources": 1,
               "source_mix": {
                 "literature": 23,
                 "grey": 7,
@@ -542201,13 +542308,54 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 0,
-            "evidence_backed_outputs": 0,
-            "contributing_excerpts": 0,
-            "contributing_sources": 0,
-            "evidence_ids": [],
-            "source_keys": [],
-            "rows": []
+            "output_count": 2,
+            "evidence_backed_outputs": 2,
+            "contributing_excerpts": 1,
+            "contributing_sources": 1,
+            "evidence_ids": [
+              "ev_fr_native_habitat_itto20_20261031"
+            ],
+            "source_keys": [
+              "itto_flr_guidelines_ps24_2020"
+            ],
+            "rows": [
+              {
+                "id": "forest_restoration__active_planting__native_vegetation_exclusion",
+                "label": "forest restoration  active planting  native vegetation exclusion · Active forest planting",
+                "nbs_id": "forest_restoration",
+                "family_ids": [
+                  "forest_restoration__active_planting"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_fr_native_habitat_itto20_20261031"
+                ],
+                "source_keys": [
+                  "itto_flr_guidelines_ps24_2020"
+                ]
+              },
+              {
+                "id": "forest_restoration__plantation__native_vegetation_exclusion",
+                "label": "forest restoration  plantation  native vegetation exclusion · Plantation",
+                "nbs_id": "forest_restoration",
+                "family_ids": [
+                  "forest_restoration__plantation"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_fr_native_habitat_itto20_20261031"
+                ],
+                "source_keys": [
+                  "itto_flr_guidelines_ps24_2020"
+                ]
+              }
+            ]
           },
           {
             "table_id": "T6",
@@ -602805,7 +602953,7 @@
         "project_level": false,
         "evidence_tracking": "routed",
         "totals": {
-          "compiled_outputs": 44,
+          "compiled_outputs": 46,
           "evidence_ids": [
             "EV_chomba_2020_001",
             "EV_chomba_2020_002",
@@ -603878,8 +604026,8 @@
             "ev_wh_watertable_wocat7777_1",
             "ev_wh_watertable_wocat7778_1"
           ],
-          "contributing_excerpts": 117,
-          "contributing_sources": 38,
+          "contributing_excerpts": 118,
+          "contributing_sources": 39,
           "known_sources": 210,
           "source_keys": [
             "abigaba_2024",
@@ -604094,27 +604242,27 @@
             "zomer_2014"
           ],
           "extracted_sources": 197,
-          "reviewed_sources": 90,
-          "fully_reviewed_sources": 75,
-          "sources_with_reviewed_excerpts": 114,
-          "sources_with_approved_excerpts": 90,
+          "reviewed_sources": 91,
+          "fully_reviewed_sources": 76,
+          "sources_with_reviewed_excerpts": 115,
+          "sources_with_approved_excerpts": 91,
           "active_excerpts": 846,
           "retained_excerpts": 846,
           "all_excerpts": 1070,
-          "reviewed_excerpts": 563,
-          "unreviewed_excerpts": 507,
-          "reviewed_pct": 52.6,
-          "approved_excerpts": 316,
-          "approved_pct": 56.1,
-          "reviewed_active_excerpts": 341,
+          "reviewed_excerpts": 564,
+          "unreviewed_excerpts": 506,
+          "reviewed_pct": 52.7,
+          "approved_excerpts": 317,
+          "approved_pct": 56.2,
+          "reviewed_active_excerpts": 342,
           "reviewed_dropped_excerpts": 222,
           "reviewed_unresolved_excerpts": 25,
           "dropped_excerpts": 224,
-          "t4_relationships": 44,
+          "t4_relationships": 46,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 44,
-          "t4_evidence_backed_relationships": 43,
-          "t4_contributing_sources": 38,
+          "t4_structural_relationships": 46,
+          "t4_evidence_backed_relationships": 45,
+          "t4_contributing_sources": 39,
           "source_mix": {
             "literature": 106,
             "grey": 99,
@@ -606390,7 +606538,7 @@
             "nbs_id": "forest_restoration",
             "name": "Forest restoration",
             "metrics": {
-              "compiled_outputs": 0,
+              "compiled_outputs": 2,
               "evidence_ids": [
                 "ev_forest_regeneration_potential_fao175_ch4_20261104",
                 "ev_fr_aridity_cao2011_t4_20261105",
@@ -606536,8 +606684,8 @@
                 "ev_fr_watertable_wocat5243_1",
                 "ev_fr_watertable_wocat7460_1"
               ],
-              "contributing_excerpts": 0,
-              "contributing_sources": 0,
+              "contributing_excerpts": 1,
+              "contributing_sources": 1,
               "known_sources": 46,
               "source_keys": [
                 "anr_carbon_farming_cost_2015",
@@ -606588,27 +606736,27 @@
                 "wri_restoration_diagnostic_2015"
               ],
               "extracted_sources": 46,
-              "reviewed_sources": 15,
-              "fully_reviewed_sources": 15,
-              "sources_with_reviewed_excerpts": 15,
-              "sources_with_approved_excerpts": 15,
+              "reviewed_sources": 16,
+              "fully_reviewed_sources": 16,
+              "sources_with_reviewed_excerpts": 16,
+              "sources_with_approved_excerpts": 16,
               "active_excerpts": 142,
               "retained_excerpts": 142,
               "all_excerpts": 143,
-              "reviewed_excerpts": 29,
-              "unreviewed_excerpts": 114,
-              "reviewed_pct": 20.3,
-              "approved_excerpts": 29,
+              "reviewed_excerpts": 30,
+              "unreviewed_excerpts": 113,
+              "reviewed_pct": 21.0,
+              "approved_excerpts": 30,
               "approved_pct": 100.0,
-              "reviewed_active_excerpts": 29,
+              "reviewed_active_excerpts": 30,
               "reviewed_dropped_excerpts": 0,
               "reviewed_unresolved_excerpts": 0,
               "dropped_excerpts": 1,
-              "t4_relationships": 0,
+              "t4_relationships": 2,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 0,
-              "t4_evidence_backed_relationships": 0,
-              "t4_contributing_sources": 0,
+              "t4_structural_relationships": 2,
+              "t4_evidence_backed_relationships": 2,
+              "t4_contributing_sources": 1,
               "source_mix": {
                 "literature": 18,
                 "grey": 26,
@@ -606669,7 +606817,7 @@
                 "scope_kind": "family",
                 "scope_definition": "Deliberate tree planting to re-establish forest on formerly forested land.",
                 "metrics": {
-                  "compiled_outputs": 0,
+                  "compiled_outputs": 1,
                   "evidence_ids": [
                     "ev_fr_aridity_cao2011_t4_20261105",
                     "ev_fr_aridity_index_zomer08_1",
@@ -606726,8 +606874,8 @@
                     "ev_fr_tree_canopy_cover_zomer08_1",
                     "ev_fr_watertable_wocat1509_1"
                   ],
-                  "contributing_excerpts": 0,
-                  "contributing_sources": 0,
+                  "contributing_excerpts": 1,
+                  "contributing_sources": 1,
                   "known_sources": 17,
                   "source_keys": [
                     "cedagro_restauracao_espirito_santo_2022",
@@ -606749,27 +606897,27 @@
                     "wocat_750_2016"
                   ],
                   "extracted_sources": 17,
-                  "reviewed_sources": 8,
-                  "fully_reviewed_sources": 8,
-                  "sources_with_reviewed_excerpts": 8,
-                  "sources_with_approved_excerpts": 8,
+                  "reviewed_sources": 9,
+                  "fully_reviewed_sources": 9,
+                  "sources_with_reviewed_excerpts": 9,
+                  "sources_with_approved_excerpts": 9,
                   "active_excerpts": 54,
                   "retained_excerpts": 54,
                   "all_excerpts": 54,
-                  "reviewed_excerpts": 17,
-                  "unreviewed_excerpts": 37,
-                  "reviewed_pct": 31.5,
-                  "approved_excerpts": 17,
+                  "reviewed_excerpts": 18,
+                  "unreviewed_excerpts": 36,
+                  "reviewed_pct": 33.3,
+                  "approved_excerpts": 18,
                   "approved_pct": 100.0,
-                  "reviewed_active_excerpts": 17,
+                  "reviewed_active_excerpts": 18,
                   "reviewed_dropped_excerpts": 0,
                   "reviewed_unresolved_excerpts": 0,
                   "dropped_excerpts": 0,
-                  "t4_relationships": 0,
+                  "t4_relationships": 1,
                   "t4_operational_relationships": 0,
-                  "t4_structural_relationships": 0,
-                  "t4_evidence_backed_relationships": 0,
-                  "t4_contributing_sources": 0,
+                  "t4_structural_relationships": 1,
+                  "t4_evidence_backed_relationships": 1,
+                  "t4_contributing_sources": 1,
                   "source_mix": {
                     "literature": 7,
                     "grey": 10,
@@ -607158,7 +607306,7 @@
                 "scope_kind": "family",
                 "scope_definition": "Establishment or management of production tree plantations — commercial/cyclical-harvest planting, monocultures or plantation genera (pine, eucalypt, hybrid poplar, teak, Cedrela) — including afforestation of grasslands/shrublands with plantation species.",
                 "metrics": {
-                  "compiled_outputs": 0,
+                  "compiled_outputs": 1,
                   "evidence_ids": [
                     "ev_fr_aridity_wocat1533_1",
                     "ev_fr_aridity_wocat1577_1",
@@ -607194,11 +607342,11 @@
                   "reviewed_dropped_excerpts": 0,
                   "reviewed_unresolved_excerpts": 0,
                   "dropped_excerpts": 0,
-                  "t4_relationships": 0,
+                  "t4_relationships": 1,
                   "t4_operational_relationships": 0,
-                  "t4_structural_relationships": 0,
-                  "t4_evidence_backed_relationships": 0,
-                  "t4_contributing_sources": 0,
+                  "t4_structural_relationships": 1,
+                  "t4_evidence_backed_relationships": 1,
+                  "t4_contributing_sources": 1,
                   "source_mix": {
                     "literature": 1,
                     "grey": 2,
@@ -607411,13 +607559,54 @@
                 "label": "Suitability",
                 "unit": "suitability rules",
                 "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-                "output_count": 0,
-                "evidence_backed_outputs": 0,
-                "contributing_excerpts": 0,
-                "contributing_sources": 0,
-                "evidence_ids": [],
-                "source_keys": [],
-                "rows": []
+                "output_count": 2,
+                "evidence_backed_outputs": 2,
+                "contributing_excerpts": 1,
+                "contributing_sources": 1,
+                "evidence_ids": [
+                  "ev_fr_native_habitat_itto20_20261031"
+                ],
+                "source_keys": [
+                  "itto_flr_guidelines_ps24_2020"
+                ],
+                "rows": [
+                  {
+                    "id": "forest_restoration__active_planting__native_vegetation_exclusion",
+                    "label": "forest restoration  active planting  native vegetation exclusion · Active forest planting",
+                    "nbs_id": "forest_restoration",
+                    "family_ids": [
+                      "forest_restoration__active_planting"
+                    ],
+                    "farming_system": "",
+                    "scope_type": "",
+                    "scope_id": "",
+                    "risk_role": "",
+                    "evidence_ids": [
+                      "ev_fr_native_habitat_itto20_20261031"
+                    ],
+                    "source_keys": [
+                      "itto_flr_guidelines_ps24_2020"
+                    ]
+                  },
+                  {
+                    "id": "forest_restoration__plantation__native_vegetation_exclusion",
+                    "label": "forest restoration  plantation  native vegetation exclusion · Plantation",
+                    "nbs_id": "forest_restoration",
+                    "family_ids": [
+                      "forest_restoration__plantation"
+                    ],
+                    "farming_system": "",
+                    "scope_type": "",
+                    "scope_id": "",
+                    "risk_role": "",
+                    "evidence_ids": [
+                      "ev_fr_native_habitat_itto20_20261031"
+                    ],
+                    "source_keys": [
+                      "itto_flr_guidelines_ps24_2020"
+                    ]
+                  }
+                ]
               }
             ]
           },
@@ -611322,10 +611511,10 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 44,
-            "evidence_backed_outputs": 43,
-            "contributing_excerpts": 117,
-            "contributing_sources": 38,
+            "output_count": 46,
+            "evidence_backed_outputs": 45,
+            "contributing_excerpts": 118,
+            "contributing_sources": 39,
             "evidence_ids": [
               "EV_wocat_507_2019_008",
               "ev_T4_canopy_ahmad2018_1",
@@ -611345,6 +611534,7 @@
               "ev_distance_to_waterbody_tiwari16_1",
               "ev_distance_to_waterbody_zhao13_1",
               "ev_economic_return_jezeer17_1",
+              "ev_fr_native_habitat_itto20_20261031",
               "ev_soil_ph_singh26",
               "ev_t4_annualp_nath21_02",
               "ev_t4_land_cover_castle2025_1",
@@ -611457,6 +611647,7 @@
               "gis_riparian_siting_russell_1997",
               "gismcda_swc_siting_2014",
               "haile_2024",
+              "itto_flr_guidelines_ps24_2020",
               "kadam2012_scscn_india_rwh",
               "kahinda2008_sa_rwh_suitability",
               "karimi_2019_runoff_map_rwh_zones",
@@ -611817,6 +612008,42 @@
                 ],
                 "source_keys": [
                   "vaast2016_double_dividend"
+                ]
+              },
+              {
+                "id": "forest_restoration__active_planting__native_vegetation_exclusion",
+                "label": "forest restoration  active planting  native vegetation exclusion · Active forest planting",
+                "nbs_id": "forest_restoration",
+                "family_ids": [
+                  "forest_restoration__active_planting"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_fr_native_habitat_itto20_20261031"
+                ],
+                "source_keys": [
+                  "itto_flr_guidelines_ps24_2020"
+                ]
+              },
+              {
+                "id": "forest_restoration__plantation__native_vegetation_exclusion",
+                "label": "forest restoration  plantation  native vegetation exclusion · Plantation",
+                "nbs_id": "forest_restoration",
+                "family_ids": [
+                  "forest_restoration__plantation"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_fr_native_habitat_itto20_20261031"
+                ],
+                "source_keys": [
+                  "itto_flr_guidelines_ps24_2020"
                 ]
               },
               {
@@ -677579,10 +677806,10 @@
         "label": "Suitability",
         "unit": "suitability rules",
         "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-        "output_count": 44,
-        "evidence_backed_outputs": 43,
-        "contributing_excerpts": 117,
-        "contributing_sources": 38,
+        "output_count": 46,
+        "evidence_backed_outputs": 45,
+        "contributing_excerpts": 118,
+        "contributing_sources": 39,
         "evidence_ids": [
           "EV_wocat_507_2019_008",
           "ev_T4_canopy_ahmad2018_1",
@@ -677602,6 +677829,7 @@
           "ev_distance_to_waterbody_tiwari16_1",
           "ev_distance_to_waterbody_zhao13_1",
           "ev_economic_return_jezeer17_1",
+          "ev_fr_native_habitat_itto20_20261031",
           "ev_soil_ph_singh26",
           "ev_t4_annualp_nath21_02",
           "ev_t4_land_cover_castle2025_1",
@@ -677714,6 +677942,7 @@
           "gis_riparian_siting_russell_1997",
           "gismcda_swc_siting_2014",
           "haile_2024",
+          "itto_flr_guidelines_ps24_2020",
           "kadam2012_scscn_india_rwh",
           "kahinda2008_sa_rwh_suitability",
           "karimi_2019_runoff_map_rwh_zones",
@@ -678074,6 +678303,42 @@
             ],
             "source_keys": [
               "vaast2016_double_dividend"
+            ]
+          },
+          {
+            "id": "forest_restoration__active_planting__native_vegetation_exclusion",
+            "label": "forest restoration  active planting  native vegetation exclusion · Active forest planting",
+            "nbs_id": "forest_restoration",
+            "family_ids": [
+              "forest_restoration__active_planting"
+            ],
+            "farming_system": "",
+            "scope_type": "",
+            "scope_id": "",
+            "risk_role": "",
+            "evidence_ids": [
+              "ev_fr_native_habitat_itto20_20261031"
+            ],
+            "source_keys": [
+              "itto_flr_guidelines_ps24_2020"
+            ]
+          },
+          {
+            "id": "forest_restoration__plantation__native_vegetation_exclusion",
+            "label": "forest restoration  plantation  native vegetation exclusion · Plantation",
+            "nbs_id": "forest_restoration",
+            "family_ids": [
+              "forest_restoration__plantation"
+            ],
+            "farming_system": "",
+            "scope_type": "",
+            "scope_id": "",
+            "risk_role": "",
+            "evidence_ids": [
+              "ev_fr_native_habitat_itto20_20261031"
+            ],
+            "source_keys": [
+              "itto_flr_guidelines_ps24_2020"
             ]
           },
           {
@@ -711210,7 +711475,7 @@
         "catalogue": {
           "summary": {
             "structural_claims": 142,
-            "explicitly_linked_claims": 0,
+            "explicitly_linked_claims": 1,
             "focus_claims": 8,
             "selection_only_with_relationship_content": 4,
             "scopes": {
@@ -714997,9 +715262,9 @@
               "suitability_family_id": "forest_restoration__active_planting",
               "claim_scope": "practice_technology",
               "evidence_type": "expert",
-              "reviewer_ok": "false",
+              "reviewer_ok": "true",
               "relationship": "{\"direction\": \"unclear\"}",
-              "context": "{\"region\": \"Tropical forest landscapes\", \"practice_as_described\": \"Planted forests under forest landscape restoration; safeguard against replacing native non-forest ecosystems\", \"reported_values\": {\"do_not_replace\": [\"existing native tropical grasslands\", \"wetlands\", \"savanna ecosystems\"]}, \"numeric_calibration\": \"Categorical safeguard only; no score, threshold, weight or EO class crosswalk supplied. Native ecosystem identity needs local habitat history and validation.\", \"note\": \"Applies to active planting that would convert these existing native ecosystems. Does not prohibit restoring degraded native wetland forest or establish a legal protected-area mask. Source includes broader FLR practices; only the explicit planted-forest safeguard is admitted.\", \"intended_use\": \"T4 habitat eligibility evidence pending human review; no automatically executable mask\", \"review_needed\": \"Confirm source-scope application and native ecosystem mapping before compilation.\"}",
+              "context": "{\"region\": \"Tropical forest landscapes\", \"practice_as_described\": \"Planted forests under forest landscape restoration; safeguard against replacing native non-forest ecosystems\", \"reported_values\": {\"do_not_replace\": [\"existing native tropical grasslands\", \"wetlands\", \"savanna ecosystems\"]}, \"numeric_calibration\": \"Non-compensatory exclusion. Assess native habitat and proposed conversion using locally adequate data. No numeric habitat threshold or direct global land-cover crosswalk.\", \"note\": \"Applies to active planting that would convert these existing native ecosystems. Does not prohibit restoring degraded native wetland forest or establish a legal protected-area mask. Source includes broader FLR practices; only the explicit planted-forest safeguard is admitted.\", \"intended_use\": \"Hard land-use exclusion for active forest planting and plantation establishment.\", \"reviewed_use\": \"Exclude proposed tree planting wherever it would replace existing indigenous natural vegetation. ITTO GE20 explicitly identifies native tropical grasslands, savannas and wetlands. Pete adopted the broader no-conversion rule. Restoration of degraded native forest that retains existing indigenous vegetation can pass this safeguard. Unresolved habitat or conversion status remains unknown.\"}",
               "quote": "Under FLR, planted forests, particularly afforestation,\nshould not replace existing native tropical grasslands,\nwetlands or savanna ecosystems.",
               "page": "36",
               "locator_type": "page",
@@ -715012,8 +715277,11 @@
               "has_stated_direction": false,
               "has_source_classes": false,
               "source_shape": "",
-              "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "compilation_disposition": "qualitative_relationship",
+              "linked_mapping_ids": [
+                "forest_restoration__active_planting__native_vegetation_exclusion",
+                "forest_restoration__plantation__native_vegetation_exclusion"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -732564,7 +732832,7 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "edf7b3c0d3b6",
-    "data_id": "2b155bad22d2",
+    "data_id": "9bed9871fe05",
     "count_definition_version": "4"
   }
 }

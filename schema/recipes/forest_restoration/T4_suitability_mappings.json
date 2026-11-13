@@ -1,1 +1,82 @@
-[]
+[
+  {
+    "mapping_id": "forest_restoration__active_planting__native_vegetation_exclusion",
+    "nbs_id": "forest_restoration",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "threshold",
+    "relationship_params": {
+      "mapping_role": "hard_exclusion",
+      "input_kind": "assessed_boolean_mask",
+      "input_contract": {
+        "scope": "forest_restoration__active_planting",
+        "input_name": "native_vegetation_conversion",
+        "label": "Native vegetation conversion — hard land-use exclusion",
+        "provenance_label": "Required habitat assessment provenance",
+        "true": "Proposed planting would replace existing indigenous natural vegetation. Exclude the site.",
+        "false": "Habitat and proposed intervention assessed. Planting would retain indigenous natural vegetation. This passes only the conversion safeguard.",
+        "unknown": "Native habitat, proposed conversion or assessment coverage unresolved. Leave opportunity unknown.",
+        "category_handling": "Broad land-cover codes cannot identify indigenous vegetation or establish conversion. Match the planting footprint and habitat history to locally appropriate evidence.",
+        "input_requirement": "Supply a site- or AOI-assessed conversion mask for the proposed planting, with habitat evidence, coverage, assessment date and intervention scope.",
+        "required_provenance": [
+          "scope",
+          "source_reference",
+          "assessment_date",
+          "coverage",
+          "intervention"
+        ]
+      }
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Exclude proposed tree planting wherever it would replace existing indigenous natural vegetation. ITTO GE20 explicitly identifies native tropical grasslands, savannas and wetlands. Pete adopted the broader no-conversion rule. Restoration of degraded native forest that retains existing indigenous vegetation can pass this safeguard. Unresolved habitat or conversion status remains unknown. WorldCover supplies land-cover context only.",
+    "variable": "land_cover",
+    "suitability_family_id": "forest_restoration__active_planting",
+    "evidence_ids": [
+      "ev_fr_native_habitat_itto20_20261031"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "forest_restoration__plantation__native_vegetation_exclusion",
+    "nbs_id": "forest_restoration",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "threshold",
+    "relationship_params": {
+      "mapping_role": "hard_exclusion",
+      "input_kind": "assessed_boolean_mask",
+      "input_contract": {
+        "scope": "forest_restoration__plantation",
+        "input_name": "native_vegetation_conversion",
+        "label": "Native vegetation conversion — hard land-use exclusion",
+        "provenance_label": "Required habitat assessment provenance",
+        "true": "Proposed planting would replace existing indigenous natural vegetation. Exclude the site.",
+        "false": "Habitat and proposed intervention assessed. Planting would retain indigenous natural vegetation. This passes only the conversion safeguard.",
+        "unknown": "Native habitat, proposed conversion or assessment coverage unresolved. Leave opportunity unknown.",
+        "category_handling": "Broad land-cover codes cannot identify indigenous vegetation or establish conversion. Match the planting footprint and habitat history to locally appropriate evidence.",
+        "input_requirement": "Supply a site- or AOI-assessed conversion mask for the proposed planting, with habitat evidence, coverage, assessment date and intervention scope.",
+        "required_provenance": [
+          "scope",
+          "source_reference",
+          "assessment_date",
+          "coverage",
+          "intervention"
+        ]
+      }
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Exclude proposed tree planting wherever it would replace existing indigenous natural vegetation. ITTO GE20 explicitly identifies native tropical grasslands, savannas and wetlands. Pete adopted the broader no-conversion rule. Restoration of degraded native forest that retains existing indigenous vegetation can pass this safeguard. Unresolved habitat or conversion status remains unknown. WorldCover supplies land-cover context only.",
+    "variable": "land_cover",
+    "suitability_family_id": "forest_restoration__plantation",
+    "evidence_ids": [
+      "ev_fr_native_habitat_itto20_20261031"
+    ],
+    "n_sources": 1
+  }
+]

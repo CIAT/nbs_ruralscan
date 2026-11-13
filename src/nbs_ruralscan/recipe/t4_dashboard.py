@@ -522,15 +522,19 @@ def _global(result):
                 + "</details>"
             )
         if row["role"] == "hard_exclusion" and row.get("gate_input_contract"):
-            legal = row["gate_input_contract"]
+            contract = row["gate_input_contract"]
+            title = contract.get("label", "Legal exclusion — local assessment required")
+            provenance = contract.get(
+                "provenance_label", "Required legal-mask provenance"
+            )
             function = (
-                "<strong>Legal exclusion — local assessment required</strong><p>"
-                + _text(legal["category_handling"])
+                f"<strong>{_text(title)}</strong><p>"
+                + _text(contract["category_handling"])
                 + "</p>"
                 + _table(
                     ["Mask value", "Meaning"],
                     [
-                        _row([_text(label), _text(legal[key])])
+                        _row([_text(label), _text(contract[key])])
                         for key, label in (
                             ("true", "Excluded"),
                             ("false", "No exclusion identified in assessed scope"),
@@ -538,8 +542,8 @@ def _global(result):
                         )
                     ],
                 )
-                + "<details><summary>Required legal-mask provenance</summary>"
-                + _list([_label(v) for v in legal["required_provenance"]])
+                + f"<details><summary>{_text(provenance)}</summary>"
+                + _list([_label(v) for v in contract["required_provenance"]])
                 + "</details>"
             )
         if not function:

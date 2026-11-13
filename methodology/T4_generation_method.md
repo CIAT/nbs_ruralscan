@@ -220,6 +220,8 @@ binding is `requires_upload` — the runtime uses the global default and **flags
 Sierra Leone → use the national cocoa map if present, else prompt for it" is a schema lookup, not a code change.
 See `schema/spec.md` → BIND. Relationship *parameters* are refined in parallel via `T4.context_overrides`.
 
+**Avoid conversion of indigenous natural vegetation when planting trees (Pete, 13 November 2026).** Exclude a proposed planting footprint wherever establishment would replace existing indigenous natural vegetation. ITTO’s tropical forest-landscape restoration guidance (GE20, printed p. 35) explicitly covers native grasslands, savannas and wetlands. Pete extended the project safeguard to indigenous natural vegetation generally. Habitat condition, land-use history and the proposed intervention determine whether planting would cause conversion. Restoring a degraded native wetland forest can pass this safeguard when planting maintains its native habitat. For the forest planting families, a confirmed conversion overrides every suitability score. Where the assessment is missing or ambiguous, report unknown. A broad land-cover label alone cannot clear or exclude a site. [Reviewed recipe decision](audits/t4_itto_20261113/decision.md)
+
 ### 2.6 Variable generalisability & data sovereignty — flag, don't resolve
 
 Variables differ in how freely a global dataset transfers and how politically charged the numbers are. Carry this

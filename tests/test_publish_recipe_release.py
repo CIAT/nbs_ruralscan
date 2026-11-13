@@ -50,6 +50,15 @@ def snapshot(tmp_path):
         rows(file, [])
     sync(effects.evidence.with_suffix(".csv"))
     current = t4_build.T4BuildInputs.from_root(root, NBS, require_authored=True)
+    # This fixture models an empty evidence corpus and its matching empty recipe.
+    if current.authored_mappings:
+        current.authored_mappings.unlink()
+        with current.definition_index.open(newline="", encoding="utf-8") as file:
+            declarations = list(csv.DictReader(file))
+        next(r for r in declarations if r["nbs_id"] == NBS)["authored_mappings"] = (
+            "false"
+        )
+        rows(current.definition_index, declarations)
     rows(current.audited_recipe, [])
     sync(current.audited_recipe)
     effects.prose.write_text("{}")

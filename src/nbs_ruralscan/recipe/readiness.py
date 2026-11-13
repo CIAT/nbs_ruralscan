@@ -84,7 +84,10 @@ def assess(row):
             reason = "Boolean exclusion interface defined; target restriction assessment is still required."
             action(
                 "Target team",
-                "Supply assessed exclusion mask with applicable rules, authority, date, coverage and unknown areas; raw protected-area categories are insufficient.",
+                row["gate_input_contract"].get(
+                    "input_requirement",
+                    "Supply assessed exclusion mask with applicable rules, authority, date, coverage and unknown areas; raw protected-area categories are insufficient.",
+                ),
             )
         else:
             reason = "Legal exclusion has no usable input contract."
