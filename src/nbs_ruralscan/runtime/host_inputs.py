@@ -40,6 +40,17 @@ def plan_family_inputs(schema_root, nbs_id, family, aoi_contexts):
         if row.get("suitability_family_id") != family:
             continue
         params = row.get("relationship_params", {})
+        if (
+            params.get("mapping_role") == "hard_exclusion"
+            and "input_contract" in params
+        ):
+            contract = params["input_contract"]
+            plans[contract["input_name"]] = {
+                "status": "requires_upload",
+                "spec": contract,
+                "inputs": {},
+                "context_dataset_id": row["dataset_id"],
+            }
         names = {
             name
             for req in params.get("class_requirements", {}).values()

@@ -371,3 +371,50 @@ def test_planted_all_worldcover_classes_keep_unresolved_habitats_unknown():
             evidence=ev,
         )
         np.testing.assert_equal(result.values, [flag, 1])
+
+
+@pytest.mark.parametrize("system", ["active_planting", "plantation"])
+def test_planting_cannot_replace_native_vegetation(system):
+    from nbs_ruralscan.runtime.host_inputs import plan_family_inputs
+
+    family_id = f"forest_restoration__{system}"
+    name = "native_vegetation_conversion"
+    datasets = {"esa_worldcover_2021": np.array([30, 30, 30, 90])}
+    plan = plan_family_inputs(SCHEMA, "forest_restoration", family_id, set())[name]
+    assert plan["status"] == "requires_upload"
+    assert plan["spec"]["scope"] == family_id
+    masks = {name: np.ma.array([1, 0, 0, 0], mask=[False, False, True, False])}
+    meta = {
+        "scope": family_id,
+        "source_reference": "Local vegetation survey and historical imagery",
+        "assessment_date": "2026-11-13",
+        "coverage": "Assessed planting footprint",
+        "intervention": "Proposed planting",
+    }
+
+    def gate(**kwargs):
+        return evaluate_family(
+            SCHEMA, "forest_restoration", family_id, datasets, **kwargs
+        )
+
+    assert np.isnan(gate().values).all()
+    assert np.isnan(gate(masks=masks).values).all()
+    assert np.isnan(
+        gate(masks=masks, mask_metadata={name: dict(meta, scope="other")}).values
+    ).all()
+    result = gate(masks=masks, mask_metadata={name: meta})
+    np.testing.assert_equal(result.values, [0, 1, np.nan, 1])
+    assessment_only = evaluate_family(
+        SCHEMA,
+        "forest_restoration",
+        family_id,
+        {},
+        masks=masks,
+        mask_metadata={name: meta},
+    )
+    np.testing.assert_equal(assessment_only.values, result.values)
+    np.testing.assert_equal(
+        apply_eligibility([1, 0.4, 0.9, 0.3], result.values), [0, 0.4, np.nan, 0.3]
+    )
+    with pytest.raises(ValueError, match="aligned"):
+        gate(masks={name: [1.0, 30.0, 0.0, 1.0]}, mask_metadata={name: meta})

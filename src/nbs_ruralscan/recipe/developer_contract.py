@@ -648,6 +648,8 @@ def build_contract(
                 blockers.append(
                     "No numeric response survives the evidence-country filter"
                 )
+        elif role == "hard_exclusion" and params.get("input_contract"):
+            blockers.append(params["input_contract"]["input_requirement"])
         elif operational:
             blockers.append(
                 "Configured 0–1 scenario endpoints are placeholders; raw-variable scale, direction and operational combination need confirmation"
@@ -673,7 +675,14 @@ def build_contract(
             catalog,
             ontology,
             target_contexts,
-            matching_input=_matching_input_requirement(raw),
+            matching_input=(
+                {
+                    "status": "requires_matching_input",
+                    "reason": params["input_contract"]["input_requirement"],
+                }
+                if role == "hard_exclusion" and params.get("input_contract")
+                else _matching_input_requirement(raw)
+            ),
         )
         if dataset["dataset_id"] and dataset["dataset_id"] not in catalog:
             raise ValueError(f"Dataset absent from T1: {dataset['dataset_id']}")

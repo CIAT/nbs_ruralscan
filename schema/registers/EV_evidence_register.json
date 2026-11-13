@@ -15033,9 +15033,27 @@
     "suitability_family_id": "forest_restoration__passive_regeneration",
     "variable": "distance_to_forest",
     "relationship": {
-      "abs_max": 5,
+      "abs_max": null,
       "unit": "km",
-      "direction": "natural-regeneration potential is mapped within a 5 km radius of forest cover; beyond it the seed-source effect on regeneration is treated as negligible"
+      "direction": "The regional model used a 5 km neighbourhood to quantify surrounding forest cover. The authors describe more substantial effects within 5 km. The effect beyond that radius is unquantified."
+    },
+    "context": {
+      "reported_values": {
+        "regional_mapping_method": {
+          "scope": "Deforested areas of the Itacaiúnas River basin, eastern Amazon, Brazil",
+          "response": "Regional passive-regeneration potential for restoration prioritisation",
+          "predictor": "Surrounding forest cover",
+          "radius_km": 5,
+          "minimum_fragment_area_ha": 100,
+          "method": "GoFor v1.0, based on the approach of Crouzeilles et al. (2019)",
+          "companion_evidence_ids": [
+            "ev_fr_distance_to_forest_barros22_1",
+            "ev_fr_forest_fragment_size_barros22_1"
+          ],
+          "source_locator": "Cavalcante et al., cached preprint, PDF p. 11, §2.2, lines 217–228"
+        }
+      },
+      "reviewed_use": "Retain both settings as one regional mapping method. GoFor assesses surrounding forest cover within 5 km using fragments of at least 100 ha. The authors describe stronger effects within 5 km. The effect beyond that distance and the contribution from smaller patches remain unquantified."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -15044,9 +15062,10 @@
     "extraction_confidence": "high",
     "quote": "To generate the regeneration potential in the IRB, this radius of 5 km was maintained, and a \n228\nminimum fragment size of 100 ha was considered",
     "page": 11,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "radius around forest fragments within which regeneration potential is generated",
     "observed_dataset": "Landsat-derived forest cover (30 m)",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Retain both settings as one regional mapping method. GoFor assesses surrounding forest cover within 5 km using fragments of at least 100 ha. The authors describe stronger effects within 5 km. The effect beyond that distance and the contribution from smaller patches remain unquantified.]",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -15057,9 +15076,27 @@
     "suitability_family_id": "forest_restoration__passive_regeneration",
     "variable": "forest_fragment_size",
     "relationship": {
-      "abs_min": 100,
+      "abs_min": null,
       "unit": "ha",
-      "direction": "only forest fragments at or above the minimum size are counted as seed sources when generating regeneration potential"
+      "direction": "The regional model counted forest fragments of at least 100 ha within its 5 km neighbourhood. The ecological contribution of smaller patches is unquantified."
+    },
+    "context": {
+      "reported_values": {
+        "regional_mapping_method": {
+          "scope": "Deforested areas of the Itacaiúnas River basin, eastern Amazon, Brazil",
+          "response": "Regional passive-regeneration potential for restoration prioritisation",
+          "predictor": "Surrounding forest cover",
+          "radius_km": 5,
+          "minimum_fragment_area_ha": 100,
+          "method": "GoFor v1.0, based on the approach of Crouzeilles et al. (2019)",
+          "companion_evidence_ids": [
+            "ev_fr_distance_to_forest_barros22_1",
+            "ev_fr_forest_fragment_size_barros22_1"
+          ],
+          "source_locator": "Cavalcante et al., cached preprint, PDF p. 11, §2.2, lines 217–228"
+        }
+      },
+      "reviewed_use": "Retain both settings as one regional mapping method. GoFor assesses surrounding forest cover within 5 km using fragments of at least 100 ha. The authors describe stronger effects within 5 km. The effect beyond that distance and the contribution from smaller patches remain unquantified."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -15068,9 +15105,10 @@
     "extraction_confidence": "high",
     "quote": "To generate the regeneration potential in the IRB, this radius of 5 km was maintained, and a \n228\nminimum fragment size of 100 ha was considered",
     "page": 11,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "minimum forest fragment size considered a seed source",
     "observed_dataset": "Landsat-derived forest cover (30 m)",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Retain both settings as one regional mapping method. GoFor assesses surrounding forest cover within 5 km using fragments of at least 100 ha. The authors describe stronger effects within 5 km. The effect beyond that distance and the contribution from smaller patches remain unquantified.]",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -15131,22 +15169,45 @@
     "suitability_family_id": "forest_restoration__passive_regeneration",
     "variable": "population_density",
     "relationship": {
-      "abs_max": 10,
+      "abs_max": null,
       "unit": "persons/km2",
-      "mosaic_band_low": 10,
-      "mosaic_band_high": 100,
-      "direction": "below 10 persons/km2 the landscape supports WIDE-SCALE restoration (single intervention type, incl. assisted or spontaneous natural regeneration and mixed-species plantations); at 10-100 persons/km2 only MOSAIC restoration applies, spatially mixed with agricultural land uses"
+      "mosaic_band_low": null,
+      "mosaic_band_high": null,
+      "direction": "At <10 people/km² and lower land-use intensity, wide-scale restoration typically uses a single approach, including spontaneous or assisted natural regeneration. At 10–100 people/km² with more intensive land use, mosaics may include assisted regeneration in patches, corridors and buffers."
+    },
+    "context": {
+      "study_profile": {
+        "companion_evidence_ids": [
+          "ev_fr_population_density_chazdon16_1",
+          "ev_fr_population_density_chazdon16_2"
+        ],
+        "cited_passage": "Chazdon and Uriarte (2016), p. 3, citing IUCN and WRI (2014) and Laestadius et al. (2012)",
+        "wide_scale": {
+          "population_density": "<10 people/km² (typical)",
+          "land_use_intensity": "lower",
+          "intervention": "one approach"
+        },
+        "mosaic": {
+          "population_density": "10–100 people/km²",
+          "land_use_intensity": "higher",
+          "intervention": "multiple interventions mixed with agriculture"
+        },
+        "above_100": "unclassified in this passage"
+      },
+      "reviewed_use": "At <10 people/km² and lower land-use intensity, wide-scale restoration typically uses a single approach, including spontaneous or assisted natural regeneration. At 10–100 people/km² with more intensive land use, mosaics may include assisted regeneration in patches, corridors and buffers. Count one cited landscape-planning profile across passive regeneration and active planting. Population density stays outside suitability scoring.",
+      "source_locator": "Chazdon and Uriarte (2016), PDF p. 3, printed p. 711, Restoration approaches, right column."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
+    "lineage_of": "Chazdon and Uriarte (2016), p. 3, citing IUCN and WRI (2014) and Laestadius et al. (2012)",
     "extraction_confidence": "medium",
     "quote": "Wide-scale restoration opportunities involve\nareas with less intensive land use where a single type of interven-\ntion is applied (IUCN and WRI 2014). These areas typically have\na population density below 10/km2, and they account for 21 per-\ncent of restoration opportunities worldwide (Laestadius et al.\n2012). Approaches suitable for wide-scale restoration include\nmixed-species plantations or assisted or spontaneous natural rege-\nneration. In areas with higher population density (10–100/km2)\nand more intensive land use, mosaic restoration opportunities\nencompass larger areas and utilize a combination of interventions\nthat are spatially mixed with agricultural land uses within the lan-\ndscape matrix (Fig. 1).",
     "page": 3,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "local human population density banding of restoration opportunity (wide-scale vs mosaic)",
-    "attribution": "IUCN and WRI 2014; Laestadius et al. 2012",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:At <10 people/km² and lower land-use intensity, wide-scale restoration typically uses a single approach, including spontaneous or assisted natural regeneration. At 10–100 people/km² with more intensive land use, mosaics may include assisted regeneration in patches, corridors and buffers. Count one cited landscape-planning profile across passive regeneration and active planting. Population density stays outside suitability scoring.] IUCN and WRI 2014; Laestadius et al. 2012",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -15157,22 +15218,45 @@
     "suitability_family_id": "forest_restoration__active_planting",
     "variable": "population_density",
     "relationship": {
-      "abs_max": 10,
+      "abs_max": null,
       "unit": "persons/km2",
-      "mosaic_band_low": 10,
-      "mosaic_band_high": 100,
-      "direction": "below 10 persons/km2 the landscape supports WIDE-SCALE restoration (single intervention type, incl. assisted or spontaneous natural regeneration and mixed-species plantations); at 10-100 persons/km2 only MOSAIC restoration applies, spatially mixed with agricultural land uses"
+      "mosaic_band_low": null,
+      "mosaic_band_high": null,
+      "direction": "At <10 people/km² and lower land-use intensity, mixed-species planting is one wide-scale option. At 10–100 people/km² with more intensive land use, mosaics may include farm trees, small woodlots and ecological restoration plantations."
+    },
+    "context": {
+      "study_profile": {
+        "companion_evidence_ids": [
+          "ev_fr_population_density_chazdon16_1",
+          "ev_fr_population_density_chazdon16_2"
+        ],
+        "cited_passage": "Chazdon and Uriarte (2016), p. 3, citing IUCN and WRI (2014) and Laestadius et al. (2012)",
+        "wide_scale": {
+          "population_density": "<10 people/km² (typical)",
+          "land_use_intensity": "lower",
+          "intervention": "one approach"
+        },
+        "mosaic": {
+          "population_density": "10–100 people/km²",
+          "land_use_intensity": "higher",
+          "intervention": "multiple interventions mixed with agriculture"
+        },
+        "above_100": "unclassified in this passage"
+      },
+      "reviewed_use": "At <10 people/km² and lower land-use intensity, mixed-species planting is one wide-scale option. At 10–100 people/km² with more intensive land use, mosaics may include farm trees, small woodlots and ecological restoration plantations. Count one cited landscape-planning profile across passive regeneration and active planting. Population density stays outside suitability scoring.",
+      "source_locator": "Chazdon and Uriarte (2016), PDF p. 3, printed p. 711, Restoration approaches, right column."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
+    "lineage_of": "Chazdon and Uriarte (2016), p. 3, citing IUCN and WRI (2014) and Laestadius et al. (2012)",
     "extraction_confidence": "medium",
     "quote": "Wide-scale restoration opportunities involve\nareas with less intensive land use where a single type of interven-\ntion is applied (IUCN and WRI 2014). These areas typically have\na population density below 10/km2, and they account for 21 per-\ncent of restoration opportunities worldwide (Laestadius et al.\n2012). Approaches suitable for wide-scale restoration include\nmixed-species plantations or assisted or spontaneous natural rege-\nneration. In areas with higher population density (10–100/km2)\nand more intensive land use, mosaic restoration opportunities\nencompass larger areas and utilize a combination of interventions\nthat are spatially mixed with agricultural land uses within the lan-\ndscape matrix (Fig. 1).",
     "page": 3,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "local human population density banding of restoration opportunity (wide-scale vs mosaic)",
-    "attribution": "IUCN and WRI 2014; Laestadius et al. 2012",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:At <10 people/km² and lower land-use intensity, mixed-species planting is one wide-scale option. At 10–100 people/km² with more intensive land use, mosaics may include farm trees, small woodlots and ecological restoration plantations. Count one cited landscape-planning profile across passive regeneration and active planting. Population density stays outside suitability scoring.] IUCN and WRI 2014; Laestadius et al. 2012",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -15183,9 +15267,20 @@
     "suitability_family_id": "forest_restoration__passive_regeneration",
     "variable": "tree_canopy_cover",
     "relationship": {
-      "abs_max": 25,
+      "abs_max": null,
       "unit": "percent",
-      "direction": "the opportunity space for forest regrowth is land BELOW 25% tree cover that lies where forests historically occurred; restoration is the transition across that 25% threshold"
+      "direction": "Historically forested land moving from <25% to >25% tree cover meets the study definition of forest restoration. Exactly 25% is unspecified. Retain the transition for interpreting the carbon study. Shared canopy cutoff remains open."
+    },
+    "context": {
+      "reviewed_use": "Historically forested land moving from <25% to >25% tree cover meets the study definition of forest restoration. Exactly 25% is unspecified. Retain the transition for interpreting the carbon study. Shared canopy cutoff remains open.",
+      "reported_values": {
+        "forest_cover_transition": {
+          "start": "<25% tree cover",
+          "end": ">25% tree cover",
+          "scope": "where forests historically occurred",
+          "exactly_25_percent": "unspecified"
+        }
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -15194,8 +15289,9 @@
     "extraction_confidence": "high",
     "quote": "Restoring forest cover, defined here as the transition from less than 25% \ntree cover to more than 25% tree cover in areas where forests histori-\ncally occurred, is a promising option",
     "page": 2,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "definition of restorable forest cover: transition from <25% to >25% tree cover in historical forest areas",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Historically forested land moving from <25% to >25% tree cover meets the study definition of forest restoration. Exactly 25% is unspecified. Retain the transition for interpreting the carbon study. Shared canopy cutoff remains open.]",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -15228,18 +15324,30 @@
     "suitability_family_id": "forest_restoration__passive_regeneration",
     "variable": "slope",
     "relationship": {
-      "direction": "regrowth likelihood increases on steep, less-accessible slopes — steepness is a positive correlate for passive regeneration because it depresses competing land use, not a biophysical optimum"
+      "direction": "Earlier studies cited on p. 7 report more frequent regrowth on steep, less-accessible slopes. Retain this qualitative land-use association for passive-regeneration planning. Slope threshold and biological response remain open."
+    },
+    "context": {
+      "reviewed_use": "Earlier studies cited on p. 7 report more frequent regrowth on steep, less-accessible slopes. Retain this qualitative land-use association for passive-regeneration planning. Slope threshold and biological response remain open. The paper cites refs. 40–43 together. Count this passage once across the proximity and slope cards. Cook-Patton adds no independent observation. Reconcile individual findings against their primary publications before pooling.",
+      "lineage": {
+        "citation_group": "Cook-Patton et al. (2020), p. 7, refs. 40–43",
+        "companion_evidence_ids": [
+          "ev_fr_distance_to_forest_cookpatton20_1",
+          "ev_fr_slope_cookpatton20_1"
+        ],
+        "interpretation": "The paper cites refs. 40–43 together. Count this passage once across the proximity and slope cards. Cook-Patton adds no independent observation. Reconcile individual findings against their primary publications before pooling."
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
+    "lineage_of": "Cook-Patton et al. (2020), p. 7, refs. 40–43",
     "extraction_confidence": "medium",
     "quote": "Others have \nobserved an increased likelihood of regrowth near rivers or existing \nforest fragments, far from roads or on steep (less-accessible) slopes, \nand in areas protected from browsing",
     "page": 7,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "observed correlates of regrowth likelihood: steep less-accessible slopes",
-    "attribution": "refs 40-43 (observational studies of regrowth likelihood)",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Earlier studies cited on p. 7 report more frequent regrowth on steep, less-accessible slopes. Retain this qualitative land-use association for passive-regeneration planning. Slope threshold and biological response remain open. The paper cites refs. 40–43 together. Count this passage once across the proximity and slope cards. Cook-Patton adds no independent observation. Reconcile individual findings against their primary publications before pooling.] refs 40-43 (observational studies of regrowth likelihood)",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -15250,18 +15358,30 @@
     "suitability_family_id": "forest_restoration__passive_regeneration",
     "variable": "distance_to_forest",
     "relationship": {
-      "direction": "regrowth likelihood increases near rivers or existing forest fragments — proximity to a seed source is a positive correlate of passive regeneration"
+      "direction": "Earlier studies cited on p. 7 report more frequent regrowth near rivers or existing forest fragments. Distance is unquantified. Retain for passive-regeneration planning."
+    },
+    "context": {
+      "reviewed_use": "Earlier studies cited on p. 7 report more frequent regrowth near rivers or existing forest fragments. Distance is unquantified. Retain for passive-regeneration planning. The paper cites refs. 40–43 together. Count this passage once across the proximity and slope cards. Cook-Patton adds no independent observation. Reconcile individual findings against their primary publications before pooling.",
+      "lineage": {
+        "citation_group": "Cook-Patton et al. (2020), p. 7, refs. 40–43",
+        "companion_evidence_ids": [
+          "ev_fr_distance_to_forest_cookpatton20_1",
+          "ev_fr_slope_cookpatton20_1"
+        ],
+        "interpretation": "The paper cites refs. 40–43 together. Count this passage once across the proximity and slope cards. Cook-Patton adds no independent observation. Reconcile individual findings against their primary publications before pooling."
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
+    "lineage_of": "Cook-Patton et al. (2020), p. 7, refs. 40–43",
     "extraction_confidence": "medium",
     "quote": "Others have \nobserved an increased likelihood of regrowth near rivers or existing \nforest fragments, far from roads or on steep (less-accessible) slopes, \nand in areas protected from browsing",
     "page": 7,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "observed correlates of regrowth likelihood: proximity to rivers and existing forest fragments",
-    "attribution": "refs 40-43 (observational studies of regrowth likelihood)",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Earlier studies cited on p. 7 report more frequent regrowth near rivers or existing forest fragments. Distance is unquantified. Retain for passive-regeneration planning. The paper cites refs. 40–43 together. Count this passage once across the proximity and slope cards. Cook-Patton adds no independent observation. Reconcile individual findings against their primary publications before pooling.] refs 40-43 (observational studies of regrowth likelihood)",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -15320,9 +15440,31 @@
     "suitability_family_id": "forest_restoration__active_planting",
     "variable": "aridity_index",
     "relationship": {
-      "abs_min": 0.65,
+      "abs_min": null,
       "unit": "dimensionless",
-      "direction": "drier arid/semi-arid land with an Aridity Index below 0.65 is excluded a priori from CDM afforestation/reforestation suitability"
+      "direction": "Keep the historic moisture screen using mean annual precipitation divided by estimated annual potential evapotranspiration. The exclusion list removes AI <0.65; the methods and Figure 1 select AI >0.65. Equality is unresolved."
+    },
+    "context": {
+      "study_profile": {
+        "region": "Non-Annex I countries",
+        "purpose": "Historical CDM afforestation and reforestation project screen",
+        "companion_evidence_ids": [
+          "ev_fr_aridity_index_zomer08_1",
+          "ev_fr_elevation_zomer08_1",
+          "ev_fr_tree_canopy_cover_zomer08_1",
+          "ev_fr_land_cover_zomer08_1",
+          "ev_fr_land_cover_zomer08_continuation_20261028",
+          "ev_fr_protected_area_status_zomer08_1"
+        ]
+      },
+      "reviewed_use": "Keep the historic moisture screen using mean annual precipitation divided by estimated annual potential evapotranspiration. The exclusion list removes AI <0.65; the methods and Figure 1 select AI >0.65. Equality is unresolved. One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis.",
+      "reported_values": {
+        "aridity_index": "mean annual precipitation / estimated annual potential evapotranspiration",
+        "exclusion": "AI <0.65",
+        "selection": "AI >0.65",
+        "exactly_0.65": "unresolved"
+      },
+      "applicability_hold": "One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -15331,9 +15473,9 @@
     "extraction_confidence": "high",
     "quote": "All areas that were\ndeemed not suitable for CDM-AR due to the environmental\nand land use factors have been excluded a priori from our\nanalysis. In addition, forested and recently deforested\nareas ineligible under current UNFCCC rules were also\nexcluded:\n\u0002 drier arid/semi-arid areas with Aridity Index less than\n0.65 (AI < 0.65);\n\u0002 high elevation areas, above 3500 m and/or timberline;\n\u0002 areas covered by water bodies;\n\u0002 urban areas;",
     "page": 2,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "Aridity Index exclusion threshold for CDM-AR suitable land",
-    "attribution": "UNFCCC CDM eligibility rules",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Keep the historic moisture screen using mean annual precipitation divided by estimated annual potential evapotranspiration. The exclusion list removes AI <0.65; the methods and Figure 1 select AI >0.65. Equality is unresolved. One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis.] UNFCCC CDM eligibility rules",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -15344,9 +15486,30 @@
     "suitability_family_id": "forest_restoration__active_planting",
     "variable": "elevation",
     "relationship": {
-      "abs_max": 3500,
+      "abs_max": null,
       "unit": "m",
-      "direction": "land above 3500 m and/or above the timberline is excluded — tree growth rates are too slow"
+      "direction": "Retain both screens: elevation above 3,500 m and areas at or near timberline, represented by mean growing-season temperature below 6.5°C. The authors assumed insufficient growth for their carbon projects."
+    },
+    "context": {
+      "study_profile": {
+        "region": "Non-Annex I countries",
+        "purpose": "Historical CDM afforestation and reforestation project screen",
+        "companion_evidence_ids": [
+          "ev_fr_aridity_index_zomer08_1",
+          "ev_fr_elevation_zomer08_1",
+          "ev_fr_tree_canopy_cover_zomer08_1",
+          "ev_fr_land_cover_zomer08_1",
+          "ev_fr_land_cover_zomer08_continuation_20261028",
+          "ev_fr_protected_area_status_zomer08_1"
+        ]
+      },
+      "reviewed_use": "Retain both screens: elevation above 3,500 m and areas at or near timberline, represented by mean growing-season temperature below 6.5°C. The authors assumed insufficient growth for their carbon projects. One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis.",
+      "reported_values": {
+        "separate_elevation_exclusion": ">3500 m",
+        "timberline_proxy": "mean temperature over growing season <6.5°C",
+        "rationale": "assumed slow tree growth for carbon projects"
+      },
+      "applicability_hold": "One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -15355,9 +15518,9 @@
     "extraction_confidence": "high",
     "quote": "All areas that were\ndeemed not suitable for CDM-AR due to the environmental\nand land use factors have been excluded a priori from our\nanalysis. In addition, forested and recently deforested\nareas ineligible under current UNFCCC rules were also\nexcluded:\n\u0002 drier arid/semi-arid areas with Aridity Index less than\n0.65 (AI < 0.65);\n\u0002 high elevation areas, above 3500 m and/or timberline;\n\u0002 areas covered by water bodies;\n\u0002 urban areas;",
     "page": 2,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "high-elevation exclusion threshold for CDM-AR suitable land",
-    "attribution": "UNFCCC CDM eligibility rules",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Retain both screens: elevation above 3,500 m and areas at or near timberline, represented by mean growing-season temperature below 6.5°C. The authors assumed insufficient growth for their carbon projects. One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis.] UNFCCC CDM eligibility rules",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -15368,13 +15531,37 @@
     "suitability_family_id": "forest_restoration__active_planting",
     "variable": "land_cover",
     "relationship": {
-      "excluded_classes": [
-        "water bodies",
-        "urban areas",
-        "forested areas",
-        "recently deforested areas"
-      ],
-      "direction": "hard exclusion mask — water bodies and urban areas are removed, as are already-forested and recently deforested areas, the latter two on UNFCCC eligibility grounds rather than biophysical ones"
+      "excluded_classes": null,
+      "direction": "Retain water bodies and urban land with the continuation on p. 3 as one historical screen. The study treated current and recently cleared forest as ineligible under the historical programme."
+    },
+    "context": {
+      "study_profile": {
+        "region": "Non-Annex I countries",
+        "purpose": "Historical CDM afforestation and reforestation project screen",
+        "companion_evidence_ids": [
+          "ev_fr_aridity_index_zomer08_1",
+          "ev_fr_elevation_zomer08_1",
+          "ev_fr_tree_canopy_cover_zomer08_1",
+          "ev_fr_land_cover_zomer08_1",
+          "ev_fr_land_cover_zomer08_continuation_20261028",
+          "ev_fr_protected_area_status_zomer08_1"
+        ]
+      },
+      "reviewed_use": "Retain water bodies and urban land with the continuation on p. 3 as one historical screen. The study treated current and recently cleared forest as ineligible under the historical programme. One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis.",
+      "reported_values": {
+        "historical_exclusion_list": [
+          "water bodies",
+          "urban areas",
+          "tundra",
+          "irrigated or otherwise intensively farmed land",
+          "currently forested land",
+          "recently deforested land"
+        ],
+        "combined_with": "ev_fr_land_cover_zomer08_continuation_20261028",
+        "first_page": 2,
+        "continuation_page": 3
+      },
+      "applicability_hold": "One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -15383,9 +15570,9 @@
     "extraction_confidence": "high",
     "quote": "All areas that were\ndeemed not suitable for CDM-AR due to the environmental\nand land use factors have been excluded a priori from our\nanalysis. In addition, forested and recently deforested\nareas ineligible under current UNFCCC rules were also\nexcluded:\n\u0002 drier arid/semi-arid areas with Aridity Index less than\n0.65 (AI < 0.65);\n\u0002 high elevation areas, above 3500 m and/or timberline;\n\u0002 areas covered by water bodies;\n\u0002 urban areas;",
     "page": 2,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "land-cover classes excluded a priori from CDM-AR suitable land",
-    "attribution": "UNFCCC CDM eligibility rules",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Retain water bodies and urban land with the continuation on p. 3 as one historical screen. The study treated current and recently cleared forest as ineligible under the historical programme. One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis.] UNFCCC CDM eligibility rules",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -15396,9 +15583,33 @@
     "suitability_family_id": "forest_restoration__active_planting",
     "variable": "tree_canopy_cover",
     "relationship": {
-      "abs_max": 30,
+      "abs_max": null,
       "unit": "percent",
-      "direction": "land at or above 30% canopy cover already counts as forest and is therefore NOT eligible as afforestation/reforestation area — the threshold defines the upper bound of the opportunity space"
+      "direction": "Keep 30% tree canopy as the forest definition using 500 m MODIS pixels. Distinguish the start-of-1990 eligibility requirement from the 1991 land-cover proxy. Comparing different datasets made recent deforestation approximate."
+    },
+    "context": {
+      "study_profile": {
+        "region": "Non-Annex I countries",
+        "purpose": "Historical CDM afforestation and reforestation project screen",
+        "companion_evidence_ids": [
+          "ev_fr_aridity_index_zomer08_1",
+          "ev_fr_elevation_zomer08_1",
+          "ev_fr_tree_canopy_cover_zomer08_1",
+          "ev_fr_land_cover_zomer08_1",
+          "ev_fr_land_cover_zomer08_continuation_20261028",
+          "ev_fr_protected_area_status_zomer08_1"
+        ]
+      },
+      "reviewed_use": "Keep 30% tree canopy as the forest definition using 500 m MODIS pixels. Distinguish the start-of-1990 eligibility requirement from the 1991 land-cover proxy. Comparing different datasets made recent deforestation approximate. One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis.",
+      "reported_values": {
+        "study_canopy_definition_pct": 30,
+        "satellite_layer": "MODIS VCF",
+        "pixel_size_m": 500,
+        "programme_baseline": "nonforest at beginning of 1990",
+        "land_cover_proxy_year": 1991,
+        "recent_deforestation": "rough estimate from datasets with differing classification and resolution"
+      },
+      "applicability_hold": "One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -15407,10 +15618,10 @@
     "extraction_confidence": "high",
     "quote": "The MODIS Vegetation Continuous Fields (VCF)\ndataset (Hansen et al., 2003), a global dataset of tree canopy\ncover extracted from multi-temporal MODIS data (500 m\nresolution), was used to identify currently forested areas\nwithin the remaining ‘‘non-forest areas’’. A threshold of\n30% canopy cover was used as the forest deﬁnition, as per\nresults of an earlier analysis of the impact of forest deﬁnition\non areas available at a national scale (Verchot and Zomer,\n2007).",
     "page": 3,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "crown/canopy cover threshold used as the forest definition",
     "observed_dataset": "MODIS Vegetation Continuous Fields, 500 m (Hansen et al. 2003)",
-    "attribution": "Verchot and Zomer, 2007",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Keep 30% tree canopy as the forest definition using 500 m MODIS pixels. Distinguish the start-of-1990 eligibility requirement from the 1991 land-cover proxy. Comparing different datasets made recent deforestation approximate. One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis.] Verchot and Zomer, 2007",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -15465,11 +15676,38 @@
     "suitability_family_id": "forest_restoration__active_planting",
     "variable": "tree_canopy_cover",
     "relationship": {
-      "abs_max": 30,
+      "abs_max": null,
       "unit": "percent",
       "sensitivity_low": 10,
       "sensitivity_high": 50,
-      "direction": "30% tree cover separates forest from non-forest (the high end of the UNFCCC 10-30% range), so land below it is the reforestation opportunity space; 10% and 50% alternatives shift the result substantially"
+      "direction": "Busch classified forest at 30% tree cover. Relative to that run, 10% and 50% definitions lowered projected additional CO₂ removals from reforestation at US$20/tCO₂ by 76% and 65%, respectively."
+    },
+    "context": {
+      "reviewed_use": "Busch classified forest at 30% tree cover. Relative to that run, 10% and 50% definitions lowered projected additional CO₂ removals from reforestation at US$20/tCO₂ by 76% and 65%, respectively. One pantropical forest-change profile for 90 countries. Observed transitions from nonforest in 2000 to forest in 2010 combine natural and human causes. Shared active-planting scores remain open.",
+      "study_profile": {
+        "scope": "One pantropical forest-change profile for 90 countries. Observed transitions from nonforest in 2000 to forest in 2010 combine natural and human causes. Shared active-planting scores remain open.",
+        "evidence_ids": [
+          "ev_fr_tree_canopy_cover_busch19_1",
+          "ev_fr_slope_busch19_1",
+          "ev_fr_elevation_busch19_1"
+        ],
+        "source_pages": "1–2, 5"
+      },
+      "reported_values": {
+        "base_tree_cover_pct": 30,
+        "price_usd_per_tco2": 20,
+        "outcome": "Projected additional CO₂ removals from reforestation, 2020–2050, relative to the base scenario",
+        "sensitivity_runs": [
+          {
+            "tree_cover_pct": 10,
+            "change_pct": -76
+          },
+          {
+            "tree_cover_pct": 50,
+            "change_pct": -65
+          }
+        ]
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -15478,9 +15716,9 @@
     "extraction_confidence": "high",
     "quote": "We classified tree cover into forest and non-\nforest by applying a tree-cover threshold of 30%, which is the high end of the range \n(10–30%) of the UNFCCC’s forest definition33. The use of alternative tree-cover \nthresholds of 10% and 50% in sensitivity analyses",
     "page": 5,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "tree-cover threshold applied as the forest/non-forest definition",
-    "attribution": "UNFCCC forest definition, ref. 33",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Busch classified forest at 30% tree cover. Relative to that run, 10% and 50% definitions lowered projected additional CO₂ removals from reforestation at US$20/tCO₂ by 76% and 65%, respectively. One pantropical forest-change profile for 90 countries. Observed transitions from nonforest in 2000 to forest in 2010 combine natural and human causes. Shared active-planting scores remain open.] UNFCCC forest definition, ref. 33",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -15491,7 +15729,19 @@
     "suitability_family_id": "forest_restoration__active_planting",
     "variable": "slope",
     "relationship": {
-      "direction": "observed reforestation 2000-2010 was significantly greater on FLATTER land — an empirical determinant of where reforestation actually occurred pantropically"
+      "direction": "Observed 2000–2010 forest gain was significantly greater on flatter land. The study supplies no slope cutoff for planting."
+    },
+    "context": {
+      "reviewed_use": "Observed 2000–2010 forest gain was significantly greater on flatter land. The study supplies no slope cutoff for planting. One pantropical forest-change profile for 90 countries. Observed transitions from nonforest in 2000 to forest in 2010 combine natural and human causes. Shared active-planting scores remain open.",
+      "study_profile": {
+        "scope": "One pantropical forest-change profile for 90 countries. Observed transitions from nonforest in 2000 to forest in 2010 combine natural and human causes. Shared active-planting scores remain open.",
+        "evidence_ids": [
+          "ev_fr_tree_canopy_cover_busch19_1",
+          "ev_fr_slope_busch19_1",
+          "ev_fr_elevation_busch19_1"
+        ],
+        "source_pages": "1–2, 5"
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -15500,8 +15750,9 @@
     "extraction_confidence": "high",
     "quote": "Determinants of pantropical forest-cover changes from 2000–\n2010 were largely as expected (Supplementary Table 5). Reforestation \nwas significantly greater on land that was flatter, at lower elevation,",
     "page": 1,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "observed determinant of pantropical reforestation: terrain flatness",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Observed 2000–2010 forest gain was significantly greater on flatter land. The study supplies no slope cutoff for planting. One pantropical forest-change profile for 90 countries. Observed transitions from nonforest in 2000 to forest in 2010 combine natural and human causes. Shared active-planting scores remain open.]",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -15512,7 +15763,19 @@
     "suitability_family_id": "forest_restoration__active_planting",
     "variable": "elevation",
     "relationship": {
-      "direction": "observed reforestation 2000-2010 was significantly greater at LOWER elevation"
+      "direction": "Observed 2000–2010 forest gain was significantly greater at lower elevation. The study supplies no elevation cutoff for planting."
+    },
+    "context": {
+      "reviewed_use": "Observed 2000–2010 forest gain was significantly greater at lower elevation. The study supplies no elevation cutoff for planting. One pantropical forest-change profile for 90 countries. Observed transitions from nonforest in 2000 to forest in 2010 combine natural and human causes. Shared active-planting scores remain open.",
+      "study_profile": {
+        "scope": "One pantropical forest-change profile for 90 countries. Observed transitions from nonforest in 2000 to forest in 2010 combine natural and human causes. Shared active-planting scores remain open.",
+        "evidence_ids": [
+          "ev_fr_tree_canopy_cover_busch19_1",
+          "ev_fr_slope_busch19_1",
+          "ev_fr_elevation_busch19_1"
+        ],
+        "source_pages": "1–2, 5"
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -15521,8 +15784,9 @@
     "extraction_confidence": "high",
     "quote": "Determinants of pantropical forest-cover changes from 2000–\n2010 were largely as expected (Supplementary Table 5). Reforestation \nwas significantly greater on land that was flatter, at lower elevation,",
     "page": 1,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "observed determinant of pantropical reforestation: elevation",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Observed 2000–2010 forest gain was significantly greater at lower elevation. The study supplies no elevation cutoff for planting. One pantropical forest-change profile for 90 countries. Observed transitions from nonforest in 2000 to forest in 2010 combine natural and human causes. Shared active-planting scores remain open.]",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -18553,20 +18817,54 @@
     "suitability_family_id": "forest_restoration__active_planting",
     "variable": "slope",
     "relationship": {
-      "abs_max": 75,
+      "abs_max": null,
       "unit": "percent",
-      "direction": "slopes above 75% are generally unsuitable for planting because seedlings are hard to establish there — an upper bound for active planting"
+      "direction": "Establishment difficulty on slopes greater than 75% grade, cited from Santos et al. (2018)."
+    },
+    "context": {
+      "study_profile": {
+        "objective": "minimise modelled soil loss",
+        "region": "Seridó River basin, semi-arid Caatinga, Brazil",
+        "evidence_ids": [
+          "ev_fr_land_cover_oliveira26_scope_20261028",
+          "ev_fr_slope_oliveira26_1"
+        ]
+      },
+      "reviewed_use": "Oliveira cites Santos et al. (2018) for planting establishment difficulty at slopes >75% grade. The erosion-control model nevertheless allocated some planting to steep terrain. On p. 8 the authors report 5% of total proposed reforestation there. Figure 8b reports 0.04% of proposed allocation in the escarped class; panel c reports 4.84% under a different denominator. The discrepancy remains open. Cited planting caution and model allocation; no shared slope cutoff.",
+      "reported_values": {
+        "planting_caution": {
+          "operator": ">",
+          "value": 75,
+          "unit": "percent slope",
+          "origin": "Santos et al. (2018), as cited by Oliveira, p. 8"
+        },
+        "allocation_discrepancy": {
+          "origin": "Oliveira model, PDF pp. 8–9, Figure 8",
+          "text_pct_of_total_reforested_area": 5,
+          "panel_b_escarped_pct_of_proposed_allocation": 0.04,
+          "panel_c_escarped_pct_within_class": 4.84,
+          "status": "Different denominators; retain original values.",
+          "text_flat_to_gently_undulating_pct": 97.16,
+          "panel_b_allocation_pct": {
+            "flat": 26.78,
+            "gently_undulating": 51.79,
+            "undulating": 18.59
+          },
+          "class_label_discrepancy": "The text total of 97.16% includes the third class in panel b."
+        }
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
+    "lineage_of": "Santos et al. (2018), Sistema Brasileiro de Classificação de Solos",
     "extraction_confidence": "high",
     "quote": "Areas with slopes greater than 75% are generally unsuitable for \nplanting due to establishment difficulties (Santos et al., 2018).",
     "page": 8,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "maximum slope for planting-based restoration",
-    "attribution": "Santos et al. (2018)",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Oliveira cites Santos et al. (2018) for planting establishment difficulty at slopes >75% grade. The erosion-control model nevertheless allocated some planting to steep terrain. On p. 8 the authors report 5% of total proposed reforestation there. Figure 8b reports 0.04% of proposed allocation in the escarped class; panel c reports 4.84% under a different denominator. The discrepancy remains open. Cited planting caution and model allocation; no shared slope cutoff.] Santos et al. (2018)",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -18598,10 +18896,32 @@
     "suitability_family_id": "forest_restoration__active_planting",
     "variable": "protected_area_status",
     "relationship": {
-      "excluded_classes": [
-        "protected areas"
-      ],
-      "direction": "protected areas are a HARD exclusion from the afforestation/reforestation opportunity space — a legal mask, not a scored factor"
+      "excluded_classes": null,
+      "direction": "Protected areas were omitted from the main map. The authors separately identified about 27 million ha meeting their other screens inside protected areas and described restoration in Mt Elgon National Park, Uganda. Retain as a mapping assumption; any legal exclusion requires a local basis."
+    },
+    "context": {
+      "study_profile": {
+        "region": "Non-Annex I countries",
+        "purpose": "Historical CDM afforestation and reforestation project screen",
+        "companion_evidence_ids": [
+          "ev_fr_aridity_index_zomer08_1",
+          "ev_fr_elevation_zomer08_1",
+          "ev_fr_tree_canopy_cover_zomer08_1",
+          "ev_fr_land_cover_zomer08_1",
+          "ev_fr_land_cover_zomer08_continuation_20261028",
+          "ev_fr_protected_area_status_zomer08_1"
+        ]
+      },
+      "reviewed_use": "Protected areas were omitted from the main map. The authors separately identified about 27 million ha meeting their other screens inside protected areas and described restoration in Mt Elgon National Park, Uganda. Retain as a mapping assumption; any legal exclusion requires a local basis. One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis.",
+      "reported_values": {
+        "main_map_excluded_classes": [
+          "protected areas"
+        ],
+        "separate_analysis_additional_suitable_area_mha_approx": 27,
+        "example": "Mt Elgon National Park, Uganda",
+        "legal_applicability": "requires local determination"
+      },
+      "applicability_hold": "One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -18610,8 +18930,9 @@
     "extraction_confidence": "high",
     "quote": "Fig. 2. Global map of CDM-AR suitable land (dark green) within Non-Annex I countries (light yellow), as delineated by the land suitability analysis. A 30%\ncrown cover density threshold was used to deﬁne forest, and protected areas are not included.",
     "page": 5,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "protected areas excluded from CDM-AR suitable land",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Protected areas were omitted from the main map. The authors separately identified about 27 million ha meeting their other screens inside protected areas and described restoration in Mt Elgon National Park, Uganda. Retain as a mapping assumption; any legal exclusion requires a local basis. One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis.]",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
   },
@@ -19720,6 +20041,21 @@
       "abs_max": 50,
       "unit": "percent",
       "direction": "most mangrove species cannot establish where the site is inundated for more than half the time; inundation must be appropriate for the species"
+    },
+    "context": {
+      "reported_values": {
+        "establishment_warning": {
+          "quantity": "percentage of time the site is tidally inundated",
+          "comparator": ">",
+          "value": 50,
+          "unit": "percent",
+          "outcome": "establishment difficulty for most mangrove species",
+          "applicability": "general mangrove restoration screening",
+          "source_locator": "PDF p. 39, printed p. 76, section 3.4.4",
+          "interpretation": "Keep >50% of time tidally inundated as general screening evidence for establishment difficulty in most mangrove species. Use the named species and a local reference site to interpret the warning. The source establishes no family-wide zero score and gives no score on either side of 50%."
+        }
+      },
+      "reviewed_use": "Keep >50% of time tidally inundated as general screening evidence for establishment difficulty in most mangrove species. Use the named species and a local reference site to interpret the warning. The source establishes no family-wide zero score and gives no score on either side of 50%."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -192262,12 +192598,8 @@
     "suitability_family_id": "forest_restoration__active_planting",
     "variable": "land_cover",
     "relationship": {
-      "excluded_classes": [
-        "various types of tundra",
-        "irrigated or under other intensive agricultural production",
-        "currently forested areas",
-        "recently deforested areas"
-      ]
+      "excluded_classes": null,
+      "direction": "Complete the same list with tundra, irrigated or other intensively farmed land, current forest and recently cleared forest. The agriculture restriction protected production and food security. Count both land-cover cards once."
     },
     "context": {
       "model_use": {
@@ -192275,13 +192607,37 @@
         "method": "Boolean CDM-AR eligibility screen",
         "source_specific_weight": null
       },
-      "applicability_hold": "Historical 2007–2012 CDM-AR source profile only; source includes plantation, agroforestry and ANR alongside reforestation. Active-planting transfer and safeguard decision pending. Enrichment excluded by source, not entire project family.",
+      "applicability_hold": "One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis.",
       "continuation_of": "ev_fr_land_cover_zomer08_1",
       "continuation_page": 2,
       "numeric_calibration": "categorical source classes retained; no dataset class crosswalk or runtime mask approved",
-      "reported_values": "Intensive production exclusion is justified by high-value production/food security, not universal natural tree-establishment limitation.",
+      "reported_values": {
+        "historical_exclusion_list": [
+          "water bodies",
+          "urban areas",
+          "tundra",
+          "irrigated or otherwise intensively farmed land",
+          "currently forested land",
+          "recently deforested land"
+        ],
+        "continuation_of": "ev_fr_land_cover_zomer08_1",
+        "agricultural_exclusion_reason": "existing high-value production or food-security concern"
+      },
       "practice_as_described": "afforestation or reforestation",
-      "source_check": "CDM first commitment period 2007–2012; p2 requires land not forested at beginning of 1990. p3 raster proxy uses 1991 GLCC. Source excludes enrichment planting; project active-planting family includes it. No transfer approved."
+      "source_check": "CDM first commitment period 2007–2012; p2 requires land not forested at beginning of 1990. p3 raster proxy uses 1991 GLCC. Source excludes enrichment planting; project active-planting family includes it. No transfer approved.",
+      "study_profile": {
+        "region": "Non-Annex I countries",
+        "purpose": "Historical CDM afforestation and reforestation project screen",
+        "companion_evidence_ids": [
+          "ev_fr_aridity_index_zomer08_1",
+          "ev_fr_elevation_zomer08_1",
+          "ev_fr_tree_canopy_cover_zomer08_1",
+          "ev_fr_land_cover_zomer08_1",
+          "ev_fr_land_cover_zomer08_continuation_20261028",
+          "ev_fr_protected_area_status_zomer08_1"
+        ]
+      },
+      "reviewed_use": "Complete the same list with tundra, irrigated or other intensively farmed land, current forest and recently cleared forest. The agriculture restriction protected production and food security. Count both land-cover cards once. One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -192290,8 +192646,8 @@
     "extraction_confidence": "medium",
     "quote": "! areas classiﬁed as various types of tundra;\n! areas classiﬁed as irrigated or under other intensive\nagricultural production, assuming that these areas are\nalready in high value production or their conversion may\nimpact on food security;\n! currently forested areas that are ineligible due to\nUNFCCC rules;\n! recently deforested areas that are ineligible due to\nUNFCCC rules.",
     "page": 3,
-    "reviewer_ok": false,
-    "attribution": "[VERIFY-FLAG mismatch: re-opened for review] [AUTO-QUARANTINE off_scope:land_cover_no_classes]",
+    "reviewer_ok": true,
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Complete the same list with tundra, irrigated or other intensively farmed land, current forest and recently cleared forest. The agriculture restriction protected production and food security. Count both land-cover cards once. One historical Kyoto Clean Development Mechanism afforestation/reforestation planning profile. Shared T4 scores and exclusions remain open. Protected-area restrictions require a local legal basis.] [AUTO-QUARANTINE off_scope:land_cover_no_classes]",
     "locator_type": "page",
     "ruleset_version": "v1.8.0"
   },
@@ -192302,10 +192658,8 @@
     "suitability_family_id": "forest_restoration__active_planting",
     "variable": "land_cover",
     "relationship": {
-      "allowed_classes": [
-        "agricultural",
-        "non-vegetated"
-      ]
+      "allowed_classes": null,
+      "direction": "Study search area limited to agricultural and non-vegetated land."
     },
     "context": {
       "model_use": {
@@ -192323,6 +192677,22 @@
           "legal",
           "logistical"
         ]
+      },
+      "study_profile": {
+        "objective": "minimise modelled soil loss",
+        "region": "Seridó River basin, semi-arid Caatinga, Brazil",
+        "evidence_ids": [
+          "ev_fr_land_cover_oliveira26_scope_20261028",
+          "ev_fr_slope_oliveira26_1"
+        ]
+      },
+      "reviewed_use": "The model searched agricultural and non-vegetated classes in the Seridó River basin, Brazil, to reduce erosion. Socioeconomic, legal and logistical constraints were omitted. The two classes describe the regional search area. Regional planning domain only; no shared land-cover eligibility.",
+      "reported_values": {
+        "study_area_classes": [
+          "agricultural",
+          "non-vegetated"
+        ],
+        "locator": "PDF p. 4, optimization domain"
       }
     },
     "use_role": "structural_suitability",
@@ -192332,8 +192702,8 @@
     "extraction_confidence": "medium",
     "quote": "The basin includes six LULC classes, but optimization was restricted \nto agricultural and non-vegetated areas. Socio-economic, legal, and \nlogistical constraints were not explicitly incorporated, due to data lim­\nitations and the objective of evaluating the core performance of the \nproposed spatial optimization framework under controlled and repro­\nducible conditions.",
     "page": 4,
-    "reviewer_ok": false,
-    "attribution": "[VERIFY-FLAG mismatch: re-opened for review] [AUTO-QUARANTINE off_scope:land_cover_no_classes]",
+    "reviewer_ok": true,
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:The model searched agricultural and non-vegetated classes in the Seridó River basin, Brazil, to reduce erosion. Socioeconomic, legal and logistical constraints were omitted. The two classes describe the regional search area. Regional planning domain only; no shared land-cover eligibility.] [AUTO-QUARANTINE off_scope:land_cover_no_classes]",
     "locator_type": "page",
     "ruleset_version": "v1.8.0"
   },
@@ -193686,11 +194056,24 @@
         "source_specific_weight": null
       },
       "numeric_calibration": "No executable curve, cutoff, interpolated score or runtime weight. Source map/engineering values retained separately.",
-      "intended_use": "T4 qualitative applicability/constraint review; not an executable parameter",
+      "intended_use": "Regional method-selection guidance, with shared distance cutoff open.",
       "note": "Lower natural regeneration potential favors choosing full-area planting relative to passive restoration; not evidence that degraded sites have higher survival. Low not numerically defined. Table5/footnote1 p43–45 qualifies forest-source distance/quality; no500m hard cutoff.",
-      "review_needed": "Confirm scope, mapping and qualitative interpretation; no human approval granted.",
       "country": "BRA",
-      "income_group": "upper_middle"
+      "income_group": "upper_middle",
+      "reviewed_use": "In Espírito Santo agricultural landscapes, low regeneration potential and scarce nearby forest fragments favour full-area planting. Table 5 treats native forest of at least 3 ha and at least mid-stage regeneration as a potential seed source. Use 500 m as a regional reference. A site substantially below the source may receive propagules from farther away; a significant physical dispersal barrier may shorten the effective distance. Assess locally. Regional method-selection guidance, with shared distance cutoff open.",
+      "reported_values": {
+        "native_seed_source_reference": {
+          "reference_distance_m": 500,
+          "minimum_native_forest_area_ha": 3,
+          "minimum_regeneration_stage": "mid-stage",
+          "dispersal_conditions": {
+            "longer_distance": "site substantially lower in elevation than native forest",
+            "shorter_distance": "significant physical barrier to propagule dispersal"
+          },
+          "locator": "Table 5, footnote 1, PDF p. 45",
+          "use": "case-by-case reference for nearby native seed sources"
+        }
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -193699,8 +194082,9 @@
     "extraction_confidence": "medium",
     "quote": "O plantio de mudas em área total é uma técnica de restauração indicada principalmente para áreas com baixo potencial de regeneração natural, inse- ridas em uma paisagem predominantemente agro- pecuária, com poucos fragmentos florestais no entorno imediato (Figura 3).",
     "page": 13,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "regeneration_potential",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:In Espírito Santo agricultural landscapes, low regeneration potential and scarce nearby forest fragments favour full-area planting. Table 5 treats native forest of at least 3 ha and at least mid-stage regeneration as a potential seed source. Use 500 m as a regional reference. A site substantially below the source may receive propagules from farther away; a significant physical dispersal barrier may shorten the effective distance. Assess locally. Regional method-selection guidance, with shared distance cutoff open.]",
     "locator_type": "page",
     "ruleset_version": "v1.8.0"
   },
@@ -193722,11 +194106,11 @@
         "source_specific_weight": null
       },
       "numeric_calibration": "No executable curve, cutoff, interpolated score or runtime weight. Source map/engineering values retained separately.",
-      "intended_use": "T4 qualitative applicability/constraint review; not an executable parameter",
+      "intended_use": "Regional pre-planting treatment guidance, with shared pH cutoff open.",
       "note": "Extreme soil acidity is one prerequisite-remediation condition alongside erosion/contamination; no pH value, depth or monotonic full-range response. Do not make acidity permanently unsuitable; amelioration precedes planting.",
-      "review_needed": "Confirm scope, mapping and qualitative interpretation; no human approval granted.",
       "country": "BRA",
-      "income_group": "upper_middle"
+      "income_group": "upper_middle",
+      "reviewed_use": "Extreme soil acidity flags the need to mitigate or reverse degradation before planting. The guidance supplies no pH cutoff or permanent exclusion. Regional pre-planting treatment guidance, with shared pH cutoff open."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -193735,8 +194119,9 @@
     "extraction_confidence": "medium",
     "quote": "Quando a área está com avançado processo de degradação das condições físicas e/ou químicas do solo, são necessárias intervenções previamen- te às etapas de implantação visando mitigar e/ou reverter o processo de degradação. Considera-se solo com elevada degradação e/ou deficiência física e química àqueles decorrentes de ações an- trópicas ou processos naturais. Áreas com processos erosivos (laminar ou sulcos) avançados, solos extremamente ácidos e/ou com a presença de contaminantes e áreas formadas geologicamente por intrusões de quartizito são alguns exemplos de elevada degradação e/ou de- ficiência física e química dos solos (Figura 4).",
     "page": 14,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "soil_ph",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Extreme soil acidity flags the need to mitigate or reverse degradation before planting. The guidance supplies no pH cutoff or permanent exclusion. Regional pre-planting treatment guidance, with shared pH cutoff open.]",
     "locator_type": "page",
     "ruleset_version": "v1.8.0"
   },
@@ -193921,9 +194306,9 @@
         "source_specific_weight": null
       },
       "numeric_calibration": "No executable curve, cutoff, interpolated score or runtime weight. Source map/engineering values retained separately.",
-      "intended_use": "T4 qualitative applicability/constraint review; not an executable parameter",
+      "intended_use": "Qualitative method-selection guidance. No numeric score approved.",
       "note": "Absence of natural regeneration sources can make active planting necessary; alternative intensive management objective also stated. Method-selection applicability, not measured establishment probability or automatic conversion permission.",
-      "review_needed": "Confirm scope, mapping and qualitative interpretation; no human approval granted."
+      "reviewed_use": "FAO gives two reasons planting may be needed: a degraded site lacks sources of natural regeneration, or management objectives call for a more intensive approach. Retain both for choosing a restoration method. Qualitative method-selection guidance. No numeric score approved."
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -193931,8 +194316,9 @@
     "claim_scope": "practice_technology",
     "extraction_confidence": "medium",
     "quote": "En sitios degradados sin fuentes de regeneración natural o cuando se prefiere un manejo más intensivo para alcanzar los objetivos de la gestión, puede ser necesario plantar especies de árboles, arbustos y pastos para que la restauración forestal tenga éxito.",
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "regeneration_potential",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:FAO gives two reasons planting may be needed: a degraded site lacks sources of natural regeneration, or management objectives call for a more intensive approach. Retain both for choosing a restoration method. Qualitative method-selection guidance. No numeric score approved.]",
     "locator_type": "section",
     "locator": "Información más detallada > Elaborar un plan de manejo > 2. Seleccionar el método o los métodos de restauración; paragraph beginning En sitios degradados",
     "ruleset_version": "v1.8.0"
@@ -216184,10 +216570,10 @@
           "savanna ecosystems"
         ]
       },
-      "numeric_calibration": "Categorical safeguard only; no score, threshold, weight or EO class crosswalk supplied. Native ecosystem identity needs local habitat history and validation.",
+      "numeric_calibration": "Non-compensatory exclusion. Assess native habitat and proposed conversion using locally adequate data. No numeric habitat threshold or direct global land-cover crosswalk.",
       "note": "Applies to active planting that would convert these existing native ecosystems. Does not prohibit restoring degraded native wetland forest or establish a legal protected-area mask. Source includes broader FLR practices; only the explicit planted-forest safeguard is admitted.",
-      "intended_use": "T4 habitat eligibility evidence pending human review; no automatically executable mask",
-      "review_needed": "Confirm source-scope application and native ecosystem mapping before compilation."
+      "intended_use": "Hard land-use exclusion for active forest planting and plantation establishment.",
+      "reviewed_use": "Exclude proposed tree planting wherever it would replace existing indigenous natural vegetation. ITTO GE20 explicitly identifies native tropical grasslands, savannas and wetlands. Pete adopted the broader no-conversion rule. Restoration of degraded native forest that retains existing indigenous vegetation can pass this safeguard. Unresolved habitat or conversion status remains unknown."
     },
     "use_role": "structural_suitability",
     "evidence_type": "expert",
@@ -216196,9 +216582,9 @@
     "extraction_confidence": "medium",
     "quote": "Under FLR, planted forests, particularly afforestation,\nshould not replace existing native tropical grasslands,\nwetlands or savanna ecosystems.",
     "page": 36,
-    "reviewer_ok": false,
+    "reviewer_ok": true,
     "raw_name": "existing native tropical grasslands, wetlands or savanna ecosystems",
-    "attribution": "ITTO2020 guiding element GE20; normative international guidance, no separate empirical calibration asserted.",
+    "attribution": "[reviewed 2026-11-13 by peetmate; reason:accepted_correction; note:Exclude proposed tree planting wherever it would replace existing indigenous natural vegetation. ITTO GE20 explicitly identifies native tropical grasslands, savannas and wetlands. Pete adopted the broader no-conversion rule. Restoration of degraded native forest that retains existing indigenous vegetation can pass this safeguard. Unresolved habitat or conversion status remains unknown.] ITTO2020 guiding element GE20; normative international guidance, no separate empirical calibration asserted.",
     "locator_type": "page",
     "ruleset_version": "v1.9.2"
   },

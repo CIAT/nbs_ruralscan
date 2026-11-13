@@ -183,6 +183,42 @@ def apply_eligibility(suitability, gate):
     return np.where(g == 0, 0, np.where(g == 1, s, np.nan))
 
 
+def _assessed_exclusion(row, shape, masks, metadata, evidence, approved_only):
+    """Invert an assessed exclusion into a gate. Raw land cover cannot supply it."""
+    contract = row["relationship_params"]["input_contract"]
+    name = contract["input_name"]
+    ids = _object(row["evidence_ids"])
+    values = np.full(shape, np.nan)
+    status = np.full(shape, "missing_assessment", dtype=object)
+    result = CategoricalResult(values, status, (row["mapping_id"],))
+    if not ids or any(
+        eid not in evidence
+        or evidence[eid].get("review_state") == "dropped"
+        or (approved_only and str(evidence[eid].get("reviewer_ok")).lower() != "true")
+        for eid in ids
+    ):
+        status[...] = "unavailable_evidence"
+        return result
+    if name not in masks:
+        return result
+    meta = metadata.get(name, {})
+    if not all(meta.get(key) for key in contract["required_provenance"]):
+        status[...] = "missing_mask_provenance"
+        return result
+    if meta.get("scope") != row["suitability_family_id"]:
+        status[...] = "incompatible_assessment"
+        return result
+    excluded = np.ma.asarray(masks[name], dtype=float).filled(np.nan)
+    if excluded.shape != shape or not np.all(
+        np.isnan(excluded) | np.isin(excluded, [0, 1])
+    ):
+        raise ValueError("Assessed exclusion must be an aligned 0/1/NaN mask")
+    values[...] = 1 - excluded
+    status[excluded == 1] = "excluded"
+    status[excluded == 0] = "assessed_clear"
+    return result
+
+
 def evaluate_family(
     schema_root,
     nbs_id,
@@ -196,14 +232,17 @@ def evaluate_family(
 ) -> CategoricalResult:
     """Execute configured family gates from generated T4 JSON; never borrow a family.
 
-    A dataset array is required to define output shape even when a gate is absent.
+    An aligned dataset or assessment mask supplies the output shape.
     Missing evidence/configuration returns explicit unknown; qualitative families
     cannot yield an area mask. Caller retains spatial_product_type for reporting.
     """
     root = Path(schema_root)
-    if not datasets:
-        raise ValueError("Supply at least one aligned dataset array for output shape")
-    shape = np.asarray(next(iter(datasets.values()))).shape
+    grid_inputs = datasets or masks
+    if not grid_inputs:
+        raise ValueError(
+            "Supply an aligned dataset or assessment mask for output shape"
+        )
+    shape = np.asarray(next(iter(grid_inputs.values()))).shape
     if any(np.asarray(a).shape != shape for a in datasets.values()):
         raise ValueError("All datasets must be aligned with identical shapes")
     fams = json.loads(
@@ -235,8 +274,18 @@ def evaluate_family(
         r
         for r in rows
         if r.get("suitability_family_id") == family
-        and r.get("relationship_type") == "ranked_classes"
-        and r.get("relationship_params", {}).get("mapping_role") == "eligibility_gate"
+        and (
+            (
+                r.get("relationship_type") == "ranked_classes"
+                and r["relationship_params"].get("mapping_role") == "eligibility_gate"
+            )
+            or (
+                r["relationship_params"].get("mapping_role") == "hard_exclusion"
+                and "input_contract" in r["relationship_params"]
+                and r["relationship_params"].get("input_kind")
+                == "assessed_boolean_mask"
+            )
+        )
     ]
     if crop is not None:
         configured_crops = {r["relationship_params"].get("host_crop") for r in gates}
@@ -258,7 +307,11 @@ def evaluate_family(
     parts = []
     for row in gates:
         ds = row["dataset_id"]
-        if ds not in datasets:
+        if row["relationship_params"].get("mapping_role") == "hard_exclusion":
+            part = _assessed_exclusion(
+                row, shape, masks or {}, mask_metadata or {}, evidence, approved_only
+            )
+        elif ds not in datasets:
             part = CategoricalResult(
                 np.full(shape, np.nan),
                 np.full(shape, "missing_dataset", dtype=object),

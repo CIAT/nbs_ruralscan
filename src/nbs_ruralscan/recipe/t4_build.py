@@ -610,20 +610,28 @@ def write_recipe(
         watched.assert_unchanged()
     recipe_dir.mkdir(parents=True, exist_ok=True)
     results = _preserve_mapping_review_holds(results, holds)
-    # A legacy recipe can carry an explicitly reviewed hold with a fixed weight.
+    # A non-compensatory exclusion may coexist with a score for the same variable.
+    assessed_exclusions = [
+        r
+        for r in authored
+        if (params := mapping_json(r, "relationship_params") or {}).get("mapping_role")
+        == "hard_exclusion"
+        and "input_contract" in params
+    ]
+    scoring_settings = [r for r in existing if r not in assessed_exclusions]
     adjustable_by_var = {
         (r["suitability_family_id"], r["variable"]): r.get("weight_adjustable", "true")
-        for r in existing
+        for r in scoring_settings
         if inputs.definition_index is not None
         or row_binding_requirement(r)
         or calibration_requirement(r)
     }
     weights_by_var = {
         (r["suitability_family_id"], r["variable"]): r.get("weight_default", "")
-        for r in existing
+        for r in scoring_settings
     }
     design_by_var: dict[tuple[str, str], dict[str, str]] = {}
-    for r in existing:
+    for r in scoring_settings:
         if any((r.get(k) or "") not in ("", "false") for k in DESIGN_FIELDS):
             design_by_var.setdefault((r["suitability_family_id"], r["variable"]), r)
     ds_by_var = {
@@ -642,7 +650,7 @@ def write_recipe(
     ]
     gates = {(r["suitability_family_id"], r["variable"]) for r in gate_rows}
     evidence = {r["evidence_id"]: r for r in _rd(inputs.evidence)}
-    for gate in gate_rows:
+    for gate in gate_rows + assessed_exclusions:
         ids = json.loads(gate.get("evidence_ids") or "[]")
         if not ids:
             raise ValueError(f"Categorical gate lacks evidence: {gate['mapping_id']}")
@@ -704,7 +712,8 @@ def write_recipe(
     kept = [
         r
         for r in authored
-        if (r.get("suitability_family_id", ""), r["variable"]) not in produced
+        if r in assessed_exclusions
+        or (r.get("suitability_family_id", ""), r["variable"]) not in produced
     ]
     for row in kept:
         preserved: dict[str, object] = {k: row.get(k, "") for k in T4_FIELDS}
