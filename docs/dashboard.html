@@ -82,6 +82,15 @@
     flex-direction: column;
   }
 
+  #public-dashboard-notice {
+    margin-bottom: 16px;
+    padding: 10px 16px;
+    background: var(--bg-secondary);
+    border-left: 3px solid var(--accent-emerald);
+  }
+  #public-dashboard-notice a { color: inherit; text-decoration: underline; }
+  @media print { #public-dashboard-notice { display: none; } }
+
   .brand-title {
     font-family: var(--font-outfit);
     font-size: 22px;
@@ -1078,6 +1087,17 @@
   </div>
 </header>
 <main class="main-container">
+  <aside id="public-dashboard-notice" aria-label="RuralScan dashboard update" hidden>
+    <strong>RuralScan has a new dashboard.</strong>
+    <a href="https://ruralscan.github.io/method/#review-queue">Open the RuralScan review queue</a>
+    to browse evidence and find your decisions under <b>My reviewed</b>.
+    Continue using CIAT to record or submit reviews.
+  </aside>
+  <script>
+    if (location.origin === 'https://ciat.github.io' && location.pathname === '/nbs_ruralscan/dashboard.html') {
+      document.getElementById('public-dashboard-notice').hidden = false;
+    }
+  </script>
   
   <nav class="tab-nav" aria-label="Dashboard sections">
     <button class="tab-btn active" data-tab="tab-overview" id="btn-overview">1. Overview</button>
