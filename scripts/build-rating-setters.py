@@ -48,7 +48,13 @@ def _load_synth():
     return mod
 
 
-def _headline(out: dict, table: str) -> dict[str, tuple[str, str]]:
+def _label(r: dict) -> str:
+    if r.get("hazard_type"):
+        return f"{r['hazard_type']} | {r.get('risk_role', '')}"
+    return str(r.get("variable_id") or r.get("record_id"))
+
+
+def _headline(out: dict, table: str) -> dict[str, tuple[str, str, str]]:
     rows = {}
     for r in out.get(table, []):
         if r.get("scope_type") or r.get("suitability_family_id"):
@@ -62,7 +68,7 @@ def _headline(out: dict, table: str) -> dict[str, tuple[str, str]]:
             or ""
         )
         conf = r.get("confidence") or r.get("effect_confidence") or ""
-        rows[r["record_id"]] = (cls, conf)
+        rows[r["record_id"]] = (cls, conf, _label(r))
     return rows
 
 
@@ -95,11 +101,25 @@ def build(nbs_list: list[str], share: float) -> dict:
         pools = {t: _ids(base, t) for t in ("T3", "T6")}
         candidates = sorted(pools["T3"] | pools["T6"])
         setters: dict[str, set[str]] = {"T3": set(), "T6": set()}
+        effects: dict[str, list[dict]] = {}
         for eid in candidates:
             out = run(eid)
             for t in ("T3", "T6"):
-                if eid in pools[t] and _headline(out, t) != heads[t]:
+                after = _headline(out, t)
+                if eid in pools[t] and after != heads[t]:
                     setters[t].add(eid)
+                    for rid in sorted(set(after) | set(heads[t])):
+                        b, a = heads[t].get(rid), after.get(rid)
+                        ref = b or a
+                        if b != a and ref is not None:
+                            effects.setdefault(eid, []).append(
+                                {
+                                    "table": t,
+                                    "row": ref[2],
+                                    "before": list(b[:2]) if b else None,
+                                    "after": list(a[:2]) if a else None,
+                                }
+                            )
         for t in ("T3", "T6"):
             rest = sorted(pools[t] - setters[t])
             k = min(len(rest), max(10, min(25, round(share * len(rest)))))
@@ -110,6 +130,7 @@ def build(nbs_list: list[str], share: float) -> dict:
                 "targets": sorted(setters[t] | set(sample)),
                 "n_pool": len(pools[t]),
             }
+        cells[nbs]["effects"] = {k: effects[k] for k in sorted(effects)}
         print(
             nbs,
             {t: (len(setters[t]), len(cells[nbs][t]["sample"])) for t in ("T3", "T6")},
