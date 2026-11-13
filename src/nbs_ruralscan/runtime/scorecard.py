@@ -140,7 +140,11 @@ def theme_chip(
 ) -> dict[str, Any]:
     """D4: TTL-weighted median of the theme's rows at medium confidence or better."""
     scale = sc["scale"]
-    assessed = [(c, w) for c, w in zip(chips, weights) if c["class"] != "not_assessed"]
+    assessed = [
+        (c, w)
+        for c, w in zip(chips, weights)
+        if c["class"] not in ("not_assessed", "searched_no_evidence")
+    ]
     setting = [
         (c, w)
         for c, w in assessed
@@ -304,6 +308,34 @@ def load_rows(schema_root: Path) -> list[dict[str, str]]:
     return sorted(rows, key=lambda r: int(r.get("order") or 0))
 
 
+def load_searched(schema_root: Path) -> dict[str, set[str]]:
+    """`{nbs_id: {"T6:<key>", "T3:<key>"}}` rows a targeted search found empty (Pete 2026-11-13).
+
+    Only livelihood T3 rows feed the scorecard; asset-threat entries are recorded in the
+    lookup for the tables and progress page but never reach a chip.
+    """
+    p = schema_root / "lookups" / "searched_no_evidence.csv"
+    out: dict[str, set[str]] = {}
+    if not p.exists():
+        return out
+    for r in _rd(p):
+        if r.get("table") == "T3" and r.get("risk_role") == "asset_threat":
+            continue
+        out.setdefault(r["nbs_id"], set()).add(f"{r['table']}:{r['row_key']}")
+    return out
+
+
+def _searched_chip(sc: dict) -> dict[str, Any]:
+    return {
+        **_special(sc["scale"], "searched_no_evidence"),
+        "class": "searched_no_evidence",
+        "confidence": "",
+        "badge": "",
+        "caution": False,
+        "record_id": "",
+    }
+
+
 def _source_chip(src: str, t6: dict, t3: dict, sc: dict) -> dict[str, Any]:
     table, key = src.split(":", 1)
     if table == "T3":
@@ -331,10 +363,20 @@ def build_nbs(
         and (r.get("farming_system") or "all") == "all"
     }
     display_rows = display_rows if display_rows is not None else load_rows(schema_root)
+    searched = load_searched(schema_root).get(nbs_id, set())
     rows_out = []
     for d in display_rows:
         srcs = [x for x in (d.get("sources") or "").split("|") if x]
         parts = [(x, _source_chip(x, t6, t3, sc)) for x in srcs]
+        parts = [
+            (
+                x,
+                _searched_chip(sc)
+                if p["class"] == "not_assessed" and x in searched
+                else p,
+            )
+            for x, p in parts
+        ]
         src_rows = [
             (x, (t3 if x.startswith("T3:") else t6).get(x.split(":", 1)[1]))
             for x in srcs
@@ -354,13 +396,13 @@ def build_nbs(
                 "label": d["label"],
                 **(
                     locus_for(nbs_id, d["row_id"], lc)
-                    if c["class"] != "not_assessed"
+                    if c["class"] not in ("not_assessed", "searched_no_evidence")
                     else {"locus": "", "locus_label": "", "locus_basis": ""}
                 ),
                 **row_tag(nbs_id, d["row_id"], lc),
                 **(
                     directness(src_rows, rt)
-                    if c["class"] != "not_assessed"
+                    if c["class"] not in ("not_assessed", "searched_no_evidence")
                     else {"directness": "", "direct_units": 0, "n_units": 0}
                 ),
                 "sources": [
