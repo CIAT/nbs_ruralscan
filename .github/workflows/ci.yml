@@ -9,15 +9,24 @@ on:
   workflow_dispatch:
 
 jobs:
+  retired-registers:
+    name: Evidence register watermark
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check the final tree against the migration baseline
+        run: |
+          git fetch --no-tags --depth=1 origin e43c42bd581dba791ce1f1697b6b41952ab0cfe3
+          python3 scripts/check-retired-evidence.py
+
   checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Verify retired evidence paths
-        run: |
-          git fetch --no-tags --depth=1 origin e43c42bd581dba791ce1f1697b6b41952ab0cfe3
-          python3 scripts/check-retired-evidence.py
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
