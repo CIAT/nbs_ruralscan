@@ -1,0 +1,31 @@
+{
+  "input_revision": "baa927762b63e0ad26de15a259cdf0fe007c8247",
+  "decision": "ok approve both Bera profiles for regional surface storage. keep the published weights and the recharge guidance, match land-cover classes before averaging, and leave shared scores open. next",
+  "reviewer": "peetmate",
+  "date": "2026-11-12",
+  "agent": "Codex /root",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "turn_id": "01a1cfb3-3c53-7873-925b-e4100433ce0e",
+  "source_id": "wh_stocktake_bera_2023",
+  "source_sha256": "538586026aada8303244b7b728402e6e091606e89dcfde0aa12b6a12e568c33c",
+  "approved_evidence": {
+    "ev_wh5_bera_2023_soil_texture": "dddb3d30432430d961f1c05245007f78830bba5f724aa48304bfd41c59ac1418",
+    "ev_wh5_bera_2023_land_cover": "204c1175a0efa16b0f9651b4793259aab59512649a31593562301509465b294b"
+  },
+  "ruleset_sha256": {
+    ".agents/skills/source-command-t4-synthesise/SKILL.md": "a87b41ea4a9ef9c25c21b8260f3d15f62d016c514ff6b170453676dc9fd694ff",
+    ".agents/skills/extraction_contracts/T4_review_contract.md": "da830a151ad4caa163c13f399948b9bd84224f86788e8746ac1b44f9a0df74ff",
+    "methodology/T4_generation_method.md": "a08142578a4255a1f08a393c321918a71729a30a8a317fa9b77f555a2f782fe7",
+    "scripts/synthesise-recipe.py": "4bc5edee6b2681e7a807c49708776f16d24984ae4eccdb76ff21fbe2bd2cbf59",
+    "src/nbs_ruralscan/recipe/t4_build.py": "a2bd8375b612e060de11ee07be6118e1335a28415216c00670aa74ad4914c4af"
+  },
+  "replay": "PYTHONPATH=src python scripts/synthesise-recipe.py water_harvesting_conservation --output-dir <empty-directory>",
+  "previous_decisions": [
+    "methodology/audits/t4_alene_slopes_20261111/land_soil_and_structures.md"
+  ],
+  "decision_scope": {
+    "soil_texture": "Retain the four class weights and the 0.090 soil criterion weight for regional surface storage in the Kumari basin. The authors identify loamy skeletal soils as favourable for recharge because water infiltrates readily. Recharge guidance is qualitative. Shared scores remain open.",
+    "land_cover": "Retain the five class weights and the 0.186 land-cover criterion weight for regional surface storage in the Kumari basin. Fallow includes grassland, shrub, barren land and pasture. Match these classes to other studies and the spatial layer before averaging. Shared scores remain open."
+  }
+}
