@@ -6,7 +6,8 @@ import time
 from nbs_ruralscan.schema_tools import review_server as server
 
 
-def test_post_serializes_read_modify_write(monkeypatch):
+def test_post_serializes_read_modify_write(monkeypatch, tmp_path):
+    monkeypatch.setattr(server, "ROOT", tmp_path)
     state = {"count": 0}
 
     def handle(self):
