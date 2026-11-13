@@ -616,6 +616,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--root", type=Path, help="Use an independent snapshot")
     args = parser.parse_args(argv)
+    if args.action == "apply":
+        from nbs_ruralscan.schema_tools.evidence_authority import require_writable
+
+        require_writable(args.root or ROOT)
     files = ReviewFiles.from_root(args.root) if args.root else None
     worklist = (
         args.root.resolve() / "pipeline/review/flag_worklist.csv" if args.root else None

@@ -1,5 +1,8 @@
 # NbS Rural Scan
 
+Finding reviews and extraction proposals for T4, T3 and T6 now go to RuralScan/evidence. This repository preserves historical records and source links. [Open the review queue](https://ruralscan.github.io/method/#review-queue) · [Submit an extraction or CSV](https://github.com/RuralScan/evidence/tree/main/workflows/submissions)
+
+
 Methodology and demonstrator for spatial prioritisation of Nature-based
 Solutions in rural, agricultural, and forestry landscapes. Funded by the World
 Bank (D591). Implemented by Alliance Bioversity International & CIAT.

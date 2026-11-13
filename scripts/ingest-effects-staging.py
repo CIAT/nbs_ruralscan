@@ -24,6 +24,7 @@ import json
 from pathlib import Path
 
 from nbs_ruralscan.schema_tools import evidence_intake as intake
+from nbs_ruralscan.schema_tools.evidence_authority import require_writable
 
 ROOT = Path(__file__).resolve().parents[1]
 REG = ROOT / "schema/registers"
@@ -100,6 +101,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     ap.add_argument("--extractor", default="claude (gated pipeline)")
     args = ap.parse_args(argv)
+    if not args.dry_run:
+        require_writable(args.root or ROOT)
     if not args.dry_run and not (args.run_id or "").strip():
         ap.error("--run-id is required to write (it marks the touched sources swept)")
     if args.fix_family and not (args.family_decision or "").strip():

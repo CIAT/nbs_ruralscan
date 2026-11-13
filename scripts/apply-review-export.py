@@ -36,6 +36,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--root", type=Path, help="Apply to an independent snapshot")
     a = ap.parse_args(argv)
+    from nbs_ruralscan.schema_tools.evidence_authority import require_writable
+
+    if not a.dry_run:
+        require_writable(a.root or ROOT)
     with Path(a.csv).open(encoding="utf-8") as stream:
         rows = list(csv.DictReader(stream))
     by_reviewer: dict[str, dict] = {}
