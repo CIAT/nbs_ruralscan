@@ -140,7 +140,11 @@ def theme_chip(
 ) -> dict[str, Any]:
     """D4: TTL-weighted median of the theme's rows at medium confidence or better."""
     scale = sc["scale"]
-    assessed = [(c, w) for c, w in zip(chips, weights) if c["class"] not in ("not_assessed", "searched_no_evidence")]
+    assessed = [
+        (c, w)
+        for c, w in zip(chips, weights)
+        if c["class"] not in ("not_assessed", "searched_no_evidence")
+    ]
     setting = [
         (c, w)
         for c, w in assessed
@@ -365,7 +369,12 @@ def build_nbs(
         srcs = [x for x in (d.get("sources") or "").split("|") if x]
         parts = [(x, _source_chip(x, t6, t3, sc)) for x in srcs]
         parts = [
-            (x, _searched_chip(sc) if p["class"] == "not_assessed" and x in searched else p)
+            (
+                x,
+                _searched_chip(sc)
+                if p["class"] == "not_assessed" and x in searched
+                else p,
+            )
             for x, p in parts
         ]
         src_rows = [
