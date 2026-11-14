@@ -34,6 +34,8 @@ from nbs_ruralscan.schema_tools.publication import PublicationRecoveryError
 
 from . import clarifications, review_local
 
+from nbs_ruralscan.schema_tools import evidence_authority
+
 _COMPILER_ROOT = Path(__file__).resolve().parents[3]
 ROOT = _COMPILER_ROOT
 DOCS = ROOT / "docs"
@@ -682,6 +684,11 @@ class Handler(SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self):  # noqa: N802
+        if evidence_authority.retired(ROOT):
+            return self._json(
+                410,
+                {"error": evidence_authority.NOTICE, "queue": evidence_authority.QUEUE},
+            )
         # Serialize whole read-modify-write transactions, not only final file writes.
         try:
             if self.path in {

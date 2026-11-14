@@ -131,6 +131,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--log", type=Path)
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args(argv)
+    from nbs_ruralscan.schema_tools.evidence_authority import require_writable
+
+    if not a.dry_run:
+        require_writable(a.root or ROOT)
     log = a.log or (a.root / "pipeline/metrics/row_review_log.csv" if a.root else LOG)
     out = apply_export(Path(a.csv), log, a.dry_run)
     print(

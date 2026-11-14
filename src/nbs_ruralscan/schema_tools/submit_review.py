@@ -31,6 +31,7 @@ import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
+from nbs_ruralscan.schema_tools.evidence_authority import require_writable
 from nbs_ruralscan.schema_tools.review_local import read_decisions, review_pair_lock
 from nbs_ruralscan.schema_tools.build_paths import SchemaBuildPaths
 from nbs_ruralscan.schema_tools.generate import generate
@@ -255,6 +256,7 @@ def ship(
         raise ValueError(
             "Reviewer must be a GitHub handle (letters, digits, dot, dash or underscore)."
         )
+    require_writable(root)
     if not (root / ".cache" / "corpus").is_dir():
         raise ValueError(
             "Source cache missing. Run uv run python scripts/hydrate-corpus.py before submitting"
@@ -420,6 +422,8 @@ def cli() -> int:
         help="Replay and rebuild a local snapshot (not with --ship).",
     )
     args = parser.parse_args()
+    if not args.ship:
+        require_writable(args.root or ROOT)
     if args.ship and args.root is not None:
         parser.error("--root is for local replay only; it cannot be used with --ship.")
     try:

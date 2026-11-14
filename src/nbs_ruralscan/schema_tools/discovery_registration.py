@@ -680,6 +680,10 @@ def main(argv: list[str] | None = None, *, paths: DiscoveryRegistrationPaths) ->
     args = ap.parse_args(argv)
     if args.root is not None:
         paths = DiscoveryRegistrationPaths.from_root(args.root)
+    if not args.dry_run:
+        from nbs_ruralscan.schema_tools.evidence_authority import require_writable
+
+        require_writable(paths.queue.parent.parent)
     logs = _kv(ap, args.log_names)
     for name in logs.values():
         if Path(name).name != name or not name.endswith(".md"):
