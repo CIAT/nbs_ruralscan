@@ -1,3 +1,9 @@
+> **Historical specification — retired 2026-11-20.** This document explains archived
+> outputs only. New T3/T6 science is AI-led; code validates, packages and reads accepted
+> values. Use [current method](https://github.com/RuralScan/method/blob/main/methodology-reference/content/effect-synthesis.md)
+> and [current workflow](https://github.com/RuralScan/evidence/blob/main/workflows/synthesis/README.md).
+> Do not execute the scoring commands below. T6E remains historical.
+
 # T3 / T6 Generation Method — cell-level synthesis of NbS effects from pooled evidence
 
 **Status:** v0.1 draft for team ratification · 2026-09-29 · **no build before sign-off** (green-light rule)

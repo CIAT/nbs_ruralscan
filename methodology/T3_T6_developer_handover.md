@@ -1,3 +1,9 @@
+> **Historical specification — retired 2026-11-20.** This document explains archived
+> outputs only. New T3/T6 science is AI-led; code validates, packages and reads accepted
+> values. Use [current method](https://github.com/RuralScan/method/blob/main/methodology-reference/content/effect-synthesis.md)
+> and [current workflow](https://github.com/RuralScan/evidence/blob/main/workflows/synthesis/README.md).
+> Do not execute the scoring commands below. T6E remains historical.
+
 # T3/T6 developer handover: how to read and use the effect tables
 
 For the development and design teams building the TTL tool and pilot notebooks. It covers what the T3, T6 and T6E tables contain, how their rows were aggregated from evidence, how each row turns into what a TTL sees, and how to pick the rows that apply to a study area.
