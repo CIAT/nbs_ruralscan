@@ -160,49 +160,13 @@ def test_prose_from_input_not_destination_and_repeat_publication(selected, tmp_p
     )
 
 
-def test_cli_preview_and_refused_staging_write_never_mutate(
-    selected, tmp_path, monkeypatch
-):
-    cli = runpy.run_path(str(ROOT / "scripts/synthesise-t3t6.py"))
-    monkeypatch.chdir(tmp_path)
-    poison_script = selected / "scripts/synthesise-t3t6.py"
-    poison_script.parent.mkdir()
-    poison_script.write_text(
-        'raise AssertionError("Input snapshot must not select compiler")'
-    )
-    before = fingerprints(selected)
+@pytest.mark.parametrize("script", ["synthesise-t3t6.py", "row-fragility.py"])
+def test_retired_cli_refuses_without_mutating(tmp_path, capsys, script):
+    cli = runpy.run_path(str(ROOT / "scripts" / script))
     output = tmp_path / "candidate"
-    staging = tmp_path / "staged.json"
-    staging.write_text("[]")
-    args = [NBS, "--source-root", str(selected), "--output-dir", str(output)]
-    assert cli["main"](args + ["--dry-run", "--staging", str(staging)]) == 0
+    assert cli["main"]([NBS, "--output-dir", str(output)]) == 2
     assert not output.exists()
-    assert cli["main"](args + ["--staging", str(staging)]) == 2
-    assert not output.exists() and fingerprints(selected) == before
-    with pytest.raises(SystemExit):
-        cli["main"]([NBS, "--source-root", str(selected)])
-    for invalid in ("../escape", "/escape", "name/child"):
-        with pytest.raises(ValueError, match="identifier"):
-            cli["main"]([invalid, "--source-root", str(selected), "--dry-run"])
-    with pytest.raises(SystemExit):
-        cli["main"](
-            [
-                NBS,
-                "--source-root",
-                str(selected),
-                "--output-dir",
-                str(selected / "trial"),
-            ]
-        )
-    assert fingerprints(selected) == before
-    assert cli["main"](args) == 0
-    assert sorted(p.name for p in output.iterdir()) == [
-        "T3T6_synthesis_report.json",
-        "T3_nbs_hazard_farming.csv",
-        "T6E_economic_profile.csv",
-        "T6_nbs_scorecard.csv",
-    ]
-    assert fingerprints(selected) == before
+    assert "Automatic T3/T6 scoring is retired" in capsys.readouterr().err
 
 
 @pytest.mark.parametrize(
@@ -299,68 +263,3 @@ Path.open = guard_path
 runpy.run_path("scripts/synthesise-t3t6.py")
 """
     subprocess.run([sys.executable, "-c", script], cwd=ROOT, check=True)
-
-
-def test_fragility_uses_selected_records_policies_and_preserves_inputs(
-    selected, tmp_path, monkeypatch
-):
-    cli = runpy.run_path(str(ROOT / "scripts/row-fragility.py"))
-    inputs = build.T3T6BuildInputs.from_root(selected, NBS)
-    loaded = build.load_inputs(NBS, [], inputs=inputs)
-    compiled = build.synthesise(NBS, loaded)
-    recipe = selected / "schema/recipes" / NBS
-    # Keep one real global row, so this exercises actual leave-one-out synthesis.
-    compiled["T3"] = []
-    compiled["T6E"] = []
-    compiled["T6"] = [
-        next(
-            row
-            for row in compiled["T6"]
-            if not row.get("suitability_family_id") and not row.get("scope_type")
-        )
-    ]
-    build.write_recipe(NBS, compiled, inputs=inputs, output_dir=recipe, dry_run=False)
-    before = fingerprints(selected)
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(cs, "_default_bands", poison)
-    monkeypatch.setattr(cs, "_default_design_weights", poison)
-    output = tmp_path / "fragility.csv"
-    assert cli["main"]([NBS, "--source-root", str(selected), "--out", str(output)]) == 0
-    with output.open() as stream:
-        rows = list(csv.DictReader(stream))
-    assert [row["record_id"] for row in rows] == [compiled["T6"][0]["record_id"]]
-    assert fingerprints(selected) == before
-    # A captured policy set must also reach the independent cell runner unchanged.
-    run = cli["_cell_runner"](NBS, loaded)
-    monkeypatch.setattr(Path, "open", poison)
-    assert isinstance(
-        run(loaded["units"], "T6", compiled["T6"][0]["variable_id"], None, None), list
-    )
-
-
-@pytest.mark.parametrize("link", ["hard", "symbolic"])
-def test_fragility_refuses_redirected_output(selected, tmp_path, link):
-    cli = runpy.run_path(str(ROOT / "scripts/row-fragility.py"))
-    inputs = build.T3T6BuildInputs.from_root(selected, NBS)
-    output = tmp_path / "fragility.csv"
-    if link == "hard":
-        output.hardlink_to(inputs.sources)
-    else:
-        output.symlink_to(inputs.sources)
-    before = fingerprints(selected)
-    with pytest.raises((ValueError, SystemExit)):
-        cli["main"]([NBS, "--source-root", str(selected), "--out", str(output)])
-    assert fingerprints(selected) == before
-
-
-def test_fragility_empty_tables_publish_header_only(selected, tmp_path):
-    cli = runpy.run_path(str(ROOT / "scripts/row-fragility.py"))
-    recipe = selected / "schema/recipes" / NBS
-    recipe.mkdir(parents=True, exist_ok=True)
-    for name in ("T3_nbs_hazard_farming", "T6_nbs_scorecard", "T6E_economic_profile"):
-        (recipe / (name + ".csv")).write_text("record_id\n")
-    output = tmp_path / "empty.csv"
-    before = fingerprints(selected)
-    assert cli["main"]([NBS, "--source-root", str(selected), "--out", str(output)]) == 0
-    assert output.read_text() == "record_id,class,n_units,n_pivotal,pivotal_units\n"
-    assert fingerprints(selected) == before
