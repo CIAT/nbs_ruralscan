@@ -4,6 +4,7 @@ One row per request, who made it, and what we did. Stakeholder requests (World B
 
 | Date | Source | Request | Response | Status |
 |---|---|---|---|---|
+| 2026-11-24 | Pete / World Bank | Separate climate livelihoods and soil erosion; connect Table 3.4 to C5; expand ESF and infrastructure scoping with version history | v2.2 review: C5-linked table/maps; ESF desk prompts; selectable asset exposure priority and rank explanation; previous v2.1 archived | done v2.2 (for review) |
 | 2026-10-06 | Laurent (WB) | Start from a challenge, not from an NbS; priority/descriptor variables up front | Setup leads with challenge + objectives; new Stage 02 Explore the practices | done v2 |
 | 2026-10-06 | Laurent (WB) | Explain climate scenario toggling | Climate control in the bar; 2050 plate variant with "envelope shifts, not a forecast" note | done v2 |
 | 2026-10-06 | Laurent (WB) | Theme groups expanded; pick 2–3 priorities at once | 5.2 groups expanded by default; objectives multi-select | done v2 |

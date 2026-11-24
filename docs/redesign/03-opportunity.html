@@ -57,9 +57,9 @@ body.classification-open{padding-right:440px}
   <div class="subtabs" role="tablist" aria-label="Stage 03 sections">
     <button type="button" role="tab" id="tab-1" aria-controls="tp-1" aria-selected="true"><span class="sec-n">3.1</span>Map and footprint</button>
     <button type="button" role="tab" id="tab-2" aria-controls="tp-2" aria-selected="false" tabindex="-1"><span class="sec-n">3.2</span>People and land maps</button>
-    <button type="button" role="tab" id="tab-3" aria-controls="tp-3" aria-selected="false" tabindex="-1"><span class="sec-n">3.3</span>Risk to rural livelihoods</button>
+    <button type="button" role="tab" id="tab-3" aria-controls="tp-3" aria-selected="false" tabindex="-1"><span class="sec-n">3.3</span>Climate risk to rural livelihoods</button>
     <button type="button" role="tab" id="tab-4" aria-controls="tp-4" aria-selected="false" tabindex="-1"><span class="sec-n">3.4</span>Problems and what the practice can do</button>
-    <button type="button" role="tab" id="tab-5" aria-controls="tp-5" aria-selected="false" tabindex="-1"><span class="sec-n">3.5</span>Rural services</button>
+    <button type="button" role="tab" id="tab-5" aria-controls="tp-5" aria-selected="false" tabindex="-1"><span class="sec-n">3.5</span>Infrastructure exposure</button>
   </div>
 
   <!-- 2.1 -->
@@ -145,7 +145,7 @@ body.classification-open{padding-right:440px}
   <!-- 2.3 -->
   <section class="tabpanel" role="tabpanel" id="tp-3" aria-labelledby="tab-3" hidden>
     <div class="tp-head">
-      <div><h2><span class="sec-n">3.3</span>Risk to rural livelihoods in the opportunity space</h2><p>Which climate hazards the people living in the opportunity space are exposed to, now and around 2050.</p></div>
+      <div><h2><span class="sec-n">3.3</span>Climate risk to rural livelihoods in the opportunity space</h2><p>Which climate hazards the people living in the opportunity space are exposed to, now and around 2050.</p></div>
       <div class="dl-pair"><span class="export-unavailable" aria-disabled="true" title="Not available in this mock-up">Download PNG · unavailable in mock-up</span><span class="export-unavailable" aria-disabled="true" title="Not available in this mock-up">Download CSV · unavailable in mock-up</span></div>
     </div>
     <div class="multiples" id="mult"></div>
@@ -167,12 +167,12 @@ body.classification-open{padding-right:440px}
     </div>
     <div class="ctlrow"><label class="fld"><span>Filter problems</span><input id="problem-filter" type="search" placeholder="Problem, strength or confidence"></label><label class="fld"><span>Sort by</span><select id="problem-sort"><option value="name">Problem name</option><option value="worst">Most affected share, highest first</option><option value="strength">Benefit strength, highest first</option><option value="confidence">Confidence, highest first</option></select></label></div>
     <p id="problem-count" role="status"></p><div class="tabwrap"><table class="qt pb" id="t34"></table></div>
-    <p class="m2-note" style="max-width:1000px"><b>How to read Table 3.4.</b> The country is split into fifths for every problem, from least to most affected. If the opportunity space looked like the country, each fifth would hold 20 % of it (the dashed line). Bars above the line in the dark end mean the problem is more concentrated here. Select a map to show that problem on Figure 3.1. The practice columns are pooled evidence from elsewhere, not local measurement; the full table with sources is in <a href="02-practices.html?tab=3">Stage 02, Section 2.3</a>.</p>
+    <p class="m2-note" style="max-width:1000px"><b>How to read Table 3.4.</b> Classes and direction come from C.5. The summary compares the share in the worst class (worst two for five classes) with the country using identical cut points. Edit variable classes beside each problem to update this table and its maps. Select a map to show that problem on Figure 3.1. The practice columns are pooled evidence from elsewhere, not local measurement; the full table with sources is in <a href="02-practices.html?tab=3">Stage 02, Section 2.3</a>.</p>
   </section>
 
   <section class="tabpanel" role="tabpanel" id="tp-5" aria-labelledby="tab-5" hidden>
-    <h2><span class="sec-n">3.5</span>Which rural services are exposed?</h2>
-    <p>Haiti design example · fixed illustrative footprint across two fictional departments. Overlay existing road and facility inventories with an available hazard map. All figures here are illustrative.</p>
+    <h2><span class="sec-n">3.5</span>Which infrastructure and populated areas are exposed?</h2>
+    <p>Haiti design example · fixed illustrative footprint across two fictional departments. Overlay existing road and facility inventories with an available hazard map. All figures here are illustrative. Exposure means overlap with a hazard footprint; it does not estimate damage, disruption or protection by a practice. This fixed Haiti example is separate from the Sierra Leone controls above.</p>
     <label>Hazard <select id="service-hazard"><option value="flood">River flood</option><option value="landslide">Landslide</option><option value="fire">Wildfire</option></select></label>
     <p id="service-layer"></p>
     <div class="tabwrap"><table class="qt"><caption>Illustrative assets within the suitable footprint</caption>
@@ -182,7 +182,7 @@ body.classification-open{padding-right:440px}
     <h3 id="road-trace">Which mapped road sections overlap the hazard?</h3>
     <p id="road-result" aria-live="polite"></p>
     <div class="tabwrap"><table class="qt"><caption>Road sections screened for the selected hazard</caption><thead><tr><th>Example section</th><th>Department</th><th>Exposed km</th></tr></thead><tbody id="road-sections"></tbody></table></div>
-    <a class="btn" href="05-hotspots.html?tab=2#service-priority">Use these road sections in 5.2</a>
+    <a class="btn" href="05-hotspots.html?tab=2#service-priority">Use exposure priorities in 5.2</a>
     <details class="acc"><summary>Candidate sources and interpretation</summary><div class="a-body"><p>Check road coverage against the Geofabrik OpenStreetMap extract, health facilities against Haiti’s MSPP Carte Sanitaire, and schools against the CNIGS inventory. Record each release date during pilot preparation. Hazard candidates include JRC GloFAS river flooding, NASA LHASA rainfall-triggered landslides, and MODIS MCD64A1 historical burns. Fire weather is a separate measure.</p><p>If protecting an exposed road becomes a project objective, carry that question into <a href="07-next.html#road-feasibility">feasibility and design</a>.</p></div></details>
   </section>
   <div class="nextstage">
@@ -270,15 +270,11 @@ body.classification-open{padding-right:440px}
         '</div><div class="ramp-lbl">' + b.edges.map(function (e, i) { return '<span>' + e + (i === 5 ? ' %' : '') + '</span>'; }).join('') + '</div>';
     } else if (variant === 'ind' && indView) {
       svg.style.setProperty('--hz', 'var(' + indView.hue + ')');
-      M.paintCells(svg, F.cells, function (c) { return R.sel(c) ? 'lhq' + c.indQ[indView.k] : null; });
-      M.setLabels(svg, {});
-      t = indView.name + ' across the opportunity space';
-      s = 'Each opportunity cell by its national fifth for ' + indView.unit + ', from least to most affected.';
-      cap = indView.name + ' within the opportunity space, national fifths, 5 km cells';
-      lg = '<div class="lg-h">' + indView.name + ', national fifths</div><div class="ramp" style="--hz:var(' + indView.hue + ')">' +
-        [0, 1, 2, 3, 4].map(function (i) { return '<i style="background:color-mix(in srgb, var(' + indView.hue + ') ' + [18, 34, 52, 74, 100][i] + '%, var(--paper))"></i>'; }).join('') +
-        '</div><div class="ramp-lbl" style="width:178px"><span>least</span><span>most affected</span></div><div class="lg-row">' + sw('sw-out', 'Outside the opportunity space') + '</div>' +
-        '<div class="lg-row"><button type="button" class="rv-link-btn" id="back-suit">Back to suitability</button></div>';
+      var model=CL.build(indView.k,ST);
+      M.paintCells(svg,F.cells,function(c){return !model.error&&R.sel(c)?model.mapKey(c,ST.climate):null;},{outline:function(c){return R.sel(c);}});
+      M.setLabels(svg,{});t=indView.name+' across the opportunity space';
+      s='Classes and direction from C.5.';cap=indView.name+' within the opportunity space, 5 km cells';
+      lg=classLegend(indView,model)+'<button type="button" class="rv-link-btn" id="back-suit">Back to suitability</button>';
     } else if (variant === 'change') {
       M.paintCells(svg, F.cells, function (c) { if (c.excluded) return 'excluded'; if (c.unknown) return 'unknown'; var before = !!ST.classes[c.suitClass], after = !!ST.classes[c.suitClass2050]; return before && after ? 'stay' : after ? 'gain' : before ? 'loss' : 'below'; });
       M.setLabels(svg, {});
@@ -367,7 +363,7 @@ body.classification-open{padding-right:440px}
   });
 
   /* ---- 2.3 livelihood risk ---- */
-  var HZ = [['drought', 'Drought', '--lh-drought'], ['flood', 'Flood', '--flood'], ['erosion', 'Soil erosion', '--lh-erosion'], ['heat', 'Heat', '--lh-heat']];
+  var HZ = [['drought', 'Drought', '--lh-drought'], ['flood', 'Flood', '--flood'], ['heat', 'Heat', '--lh-heat']];
   var mult = document.getElementById('mult');
   mult.innerHTML = HZ.map(function (h) { return '<figure><svg id="m-' + h[0] + '" aria-label="' + h[1] + ' exposure map, example data"></svg><figcaption>' + h[1] + '</figcaption></figure>'; }).join('');
   var msvgs = HZ.map(function (h) {
@@ -415,7 +411,6 @@ body.classification-open{padding-right:440px}
     { k: 'flood', name: 'Flooding', unit: 'land flooded in a 1-in-100-year event', nat: '9 %', hue: '--flood', resp: [1, 'weak benefit', 'low confidence', 4, 'surface runoff'] },
     { k: 'erosion', name: 'Soil erosion', unit: 'modelled soil loss', nat: '14 t per ha per year', hue: '--lh-erosion', resp: [3, 'strong benefit', 'high confidence', 14, 'soil loss'] },
     { k: 'heat', name: 'Heat stress', unit: 'days above 35 °C', nat: '41 days a year', hue: '--lh-heat', resp: [1, 'weak benefit', 'low confidence', 3, 'crop canopy temperature'] },
-    { k: 'soil', name: 'Soil degradation', unit: 'soil organic carbon (lower is worse)', nat: '1.3 %', hue: '--lh-erosion', resp: [3, 'strong benefit', 'medium confidence', 10, 'soil organic carbon'] },
     { k: 'poverty', name: 'Rural poverty', unit: 'rural poverty headcount', nat: '56 %', hue: '--n3', resp: [2, 'moderate benefit', 'low confidence', 7, 'household income'] },
     { k: 'food', name: 'Food insecurity', unit: 'people in crisis phase or worse', nat: '22 %', hue: '--n3', resp: [1, 'weak benefit', 'low confidence', 3, 'months of food shortage'] },
     { k: 'biod', name: 'Biodiversity loss', unit: 'habitat intactness lost since 2000', nat: '11 %', hue: '--s4', resp: [2, 'moderate benefit', 'medium confidence', 6, 'on-farm species richness'] },
@@ -424,31 +419,27 @@ body.classification-open{padding-right:440px}
   ];
   function g3(n) { var s = ''; for (var i = 0; i < 3; i++) s += '<i class="' + (i < n ? 'on' : '') + '"></i>'; return '<span class="g3" aria-hidden="true">' + s + '</span>'; }
   var indThumbs = {}, indView = null;
-  function hist(h, hue) {
-    var W = 150, Hh = 44, bw = 26, gap = 4, mx = Math.max(0.4, Math.max.apply(null, h)), y20 = Hh - 4 - (Hh - 8) * 0.2 / mx, out = '';
-    h.forEach(function (v, i) {
-      var bh = (Hh - 8) * v / mx, x = i * (bw + gap);
-      out += '<rect x="' + x + '" y="' + (Hh - 4 - bh).toFixed(1) + '" width="' + bw + '" height="' + bh.toFixed(1) + '" style="fill:color-mix(in srgb, var(' + hue + ') ' + [18, 34, 52, 74, 100][i] + '%, var(--paper))"/>';
-    });
-    out += '<line x1="0" x2="' + (5 * (bw + gap) - gap) + '" y1="' + y20.toFixed(1) + '" y2="' + y20.toFixed(1) + '" class="h20"/><line x1="0" x2="' + (5 * (bw + gap) - gap) + '" y1="' + (Hh - 4) + '" y2="' + (Hh - 4) + '" class="hax"/>';
-    return '<svg class="hist" viewBox="0 0 ' + W + ' ' + Hh + '" role="img" aria-label="Distribution across five national fifths">' + out + '</svg><span class="hist-l"><span>least</span><span>most affected</span></span>';
-  }
   function problems() {
     var sel = F.cells.filter(function (c) { return R.sel(c); }), n = Math.max(1, sel.length);
-    var html = '<caption class="tabcap"><b>Table 3.4</b> · Problems in the opportunity space and what planted silvoarable agroforestry can do about them<small>Problem values are national fifths of the example surface; national references and the practice columns are example values; source counts are fictional.</small></caption>' +
+    var html = '<caption class="tabcap"><b>Table 3.4</b> · Problems in the opportunity space and what planted silvoarable agroforestry can do about them<small>Problem classes follow C.5; national references and the practice columns are example values; source counts are fictional.</small></caption>' +
       '<thead><tr class="grp-h"><th colspan="4">Problem in the opportunity space</th><th colspan="3" class="pr-h">What the practice can do</th></tr>' +
-      '<tr><th>Problem</th><th>Distribution across the space</th><th class="r">In the two worst fifths</th><th>Reading</th><th class="pr-h">Strength</th><th>Confidence</th><th>Evidence</th></tr></thead><tbody>';
+      '<tr><th>Problem</th><th>Distribution across the space</th><th class="r">In worse classes</th><th>Reading</th><th class="pr-h">Strength</th><th>Confidence</th><th>Evidence</th></tr></thead><tbody>';
     var search = document.getElementById('problem-filter').value.toLowerCase(), sort = document.getElementById('problem-sort').value;
     var shown = PROB.filter(function(p) { return (p.name + ' ' + p.resp[1] + ' ' + p.resp[2]).toLowerCase().includes(search); });
-    function worstShare(p) { return sel.filter(function(c) { return c.indQ[p.k] >= 3; }).length / n; }
+    function worstShare(p) { var m=CL.build(p.k,ST); return m.error?0:sel.filter(function(c){return m.high(c,ST.climate);}).length/n; }
     shown.sort(function(a,b) { return sort === 'worst' ? worstShare(b) - worstShare(a) : sort === 'strength' ? b.resp[0] - a.resp[0] : sort === 'confidence' ? ['low confidence','medium confidence','high confidence'].indexOf(b.resp[2]) - ['low confidence','medium confidence','high confidence'].indexOf(a.resp[2]) : a.name.localeCompare(b.name); });
     document.getElementById('problem-count').textContent = shown.length + ' of ' + PROB.length + ' mapped problems';
     shown.forEach(function (p) {
       var i = PROB.indexOf(p);
-      var h = [0, 0, 0, 0, 0]; sel.forEach(function (c) { h[c.indQ[p.k]]++; }); h = h.map(function (v) { return v / n; });
-      var worst = h[3] + h[4], verdict = worst >= 0.5 ? 'More concentrated here than in the country' : worst <= 0.3 ? 'Less acute here than in the country' : 'Similar to the country as a whole';
-      html += '<tr><td class="pb-name"><button type="button" class="pb-map" data-ind="' + i + '" title="Show ' + p.name.toLowerCase() + ' on Figure 3.1"><svg id="pbm-' + p.k + '" aria-hidden="true"></svg></button><b>' + p.name + '</b></td>' +
-        '<td>' + hist(h, p.hue) + '</td><td class="r pb-share">' + pct(worst) + '<span class="sub" style="display:block">country: 40 %</span></td>' +
+      var model=CL.build(p.k,ST);
+      if(model.error){html+='<tr><td>'+p.name+'</td><td colspan="6">'+M.esc(model.error)+'</td></tr>';return;}
+      var h=Array(model.count).fill(0);sel.forEach(function(c){h[model.classify(c,ST.climate)]++;});
+      var eligible=F.cells.filter(function(c){return !c.excluded&&!c.unknown;});
+      var country=eligible.filter(function(c){return model.high(c,ST.climate);}).length/eligible.length;
+      var worst=worstShare(p),verdict=worst>country+0.05?'More concentrated here than in the country':worst<country-0.05?'Less acute here than in the country':'Similar to the country as a whole';
+      var distribution=model.order.map(function(j){return '<div>'+model.names[j]+': '+pct(h[j]/n)+'<div style="height:8px;background:'+model.colors[j]+';width:'+100*h[j]/n+'%"></div></div>';}).join('');
+      html += '<tr><td class="pb-name"><button type="button" class="pb-map" data-ind="' + i + '" title="Show ' + p.name.toLowerCase() + ' on Figure 3.1"><svg id="pbm-' + p.k + '" aria-hidden="true"></svg></button><b>' + p.name + '</b><br><a href="00-config.html?tab=5&variable=' + p.k + '">Edit variable classes</a></td>' +
+        '<td>' + distribution + '</td><td class="r pb-share">' + pct(worst) + '<span class="sub" style="display:block">country: ' + pct(country) + '</span></td>' +
         '<td class="pb-read">' + verdict + '. <span class="sub">National: ' + p.unit + ' ' + p.nat + ' (example).</span></td>' +
         '<td class="pr-h">' + g3(p.resp[0]) + p.resp[1] + '</td><td>' + p.resp[2] + '<span class="sub" style="display:block">' + p.resp[3] + ' sources</span></td>' +
         '<td><button type="button" class="ev-link" data-ev="' + i + '">View evidence</button></td></tr>';
@@ -458,7 +449,7 @@ body.classification-open{padding-right:440px}
     shown.forEach(function (p) {
       var s = M.plate(document.getElementById('pbm-' + p.k), { uid: 'pb' + p.k, labels: false, scale: false, cities: false, context: false, viewBox: '366 22 568 592' });
       s.style.setProperty('--hz', 'var(' + p.hue + ')');
-      M.paintCells(s, F.cells, function (c) { return R.sel(c) ? 'lhq' + c.indQ[p.k] : null; });
+      var model=CL.build(p.k,ST); M.paintCells(s,F.cells,function(c){return !model.error&&R.sel(c)?model.mapKey(c,ST.climate):null;},{outline:function(c){return R.sel(c);}});
     });
   }
   document.getElementById('problem-filter').addEventListener('input', problems);
@@ -473,7 +464,7 @@ body.classification-open{padding-right:440px}
       '<div class="ev-rule"><b>Band rule (example).</b> The pooled change in ' + r[4] + ' falls in the band the evidence register sets for “' + r[1] + '”.</div><p style="margin-top:12px">Full evidence table: <a href="02-practices.html?tab=3">Stage 02, Section 2.3</a>.</p>');
   });
 
-  var contextOptions = PROB.slice(4);
+  var contextOptions = PROB.filter(function(p){return !['drought','flood','heat'].includes(p.k);});
   document.getElementById('context-mult').innerHTML=contextOptions.map(function(p){return '<figure><svg id="context-'+p.k+'" role="img" aria-label="'+p.name+' map, example data"></svg><figcaption></figcaption></figure>';}).join('');
   var contextSvgs=contextOptions.map(function(p){var map=M.plate(document.getElementById('context-'+p.k),{uid:'context-'+p.k,labels:false,scale:false,cities:false,context:false,viewBox:'366 22 568 592'});map.style.setProperty('--hz','var('+p.hue+')');return map;});
   function contextMap() {
@@ -495,8 +486,8 @@ body.classification-open{padding-right:440px}
   }
   document.getElementById('context-classes').addEventListener('change',contextMap);
   V1BUI.segmented(document.getElementById('context-view'),function(view){document.getElementById('context-table-wrap').hidden=view!=='table';document.getElementById('context-plot').hidden=view!=='plot';});
-  window.addEventListener('pageshow',function(e){if(e.persisted){CL.refresh();livelihoods();contextMap();}});
-  window.addEventListener('storage',function(e){if(e.key==='v2-variable-classification' || e.key===null){CL.refresh();livelihoods();contextMap();}});
+  window.addEventListener('pageshow',function(e){if(e.persisted){CL.refresh();livelihoods();contextMap();problems();paintPlate();}});
+  window.addEventListener('storage',function(e){if(e.key==='v2-variable-classification' || e.key===null){CL.refresh();livelihoods();contextMap();problems();paintPlate();}});
 
   /* ---- tabs ---- */
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.subtabs [role=tab]'));

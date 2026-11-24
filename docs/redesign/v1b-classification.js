@@ -3,10 +3,10 @@
   'use strict';
   var variables = [
     {key:'poverty',label:'Rural poverty'}, {key:'food',label:'Food insecurity'},
-    {key:'soil',label:'Soil degradation'}, {key:'biod',label:'Biodiversity loss'},
+    {key:'biod',label:'Biodiversity loss'},
     {key:'carbon',label:'Carbon loss'}, {key:'water',label:'Water stress'},
     {key:'drought',label:'Drought hazard',hazard:true}, {key:'flood',label:'Flood hazard',hazard:true},
-    {key:'erosion',label:'Soil erosion',hazard:true}, {key:'heat',label:'Heat stress',hazard:true}
+    {key:'erosion',label:'Soil erosion'}, {key:'heat',label:'Heat stress',hazard:true}
   ];
   var storageKey = 'v2-variable-classification', settings = {};
   function valid(key, config) {
