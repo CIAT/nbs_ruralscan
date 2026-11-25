@@ -179,6 +179,7 @@ body.classification-open{padding-right:440px}
     <thead><tr><th>Mapped infrastructure</th><th>Exposed</th><th>Assessed</th><th>Missing hazard coverage</th></tr></thead>
     <tbody id="service-assets"></tbody></table></div>
     <p>Exposed assets are part of the assessed total. Rural inventory completeness is unknown. Source vintage is unverified for this illustration. Unmapped facilities are outside all three counts.</p>
+    <aside id="infra-mechanism" class="infra-evidence" data-infrastructure-evidence="opportunity"></aside>
     <h3 id="road-trace">Which mapped road sections overlap the hazard?</h3>
     <p id="road-result" aria-live="polite"></p>
     <div class="tabwrap"><table class="qt"><caption>Road sections screened for the selected hazard</caption><thead><tr><th>Example section</th><th>Department</th><th>Exposed km</th></tr></thead><tbody id="road-sections"></tbody></table></div>
@@ -544,6 +545,7 @@ body.classification-open{padding-right:440px}
   V1BUI.onControls(function(state){if(panel.hidden)return;var url=new URL(frame.src);url.searchParams.set('climate',state.climate);url.searchParams.set('classes',Object.keys(state.classes).filter(function(k){return state.classes[k];}).join(','));frame.src=url.href;});
 })();
 </script>
+<script src="v1b-infrastructure-evidence.js"></script>
 <script src="review-mode.js"></script>
 </body>
 </html>

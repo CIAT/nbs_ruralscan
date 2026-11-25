@@ -43,6 +43,7 @@
   const byId = id => document.getElementById(id);
   const sum = rows => rows.reduce((total, road) => total + road.km, 0);
   function render() {
+    window.dispatchEvent(new CustomEvent("infrastructure-exposure-change"));
     const hazard = hazards[state.hazard];
     const exposed = roads.filter(road => road.hazards.includes(state.hazard));
     if (byId('service-assets')) {
