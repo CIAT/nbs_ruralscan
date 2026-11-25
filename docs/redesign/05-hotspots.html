@@ -99,13 +99,14 @@
           <button type="button" data-v="climate" aria-pressed="false">Climate adaptation</button><button type="button" data-v="livelihood" aria-pressed="false">Livelihood</button><button type="button" data-v="biodiversity" aria-pressed="false">Biodiversity</button><button type="button" data-v="balanced" aria-pressed="true">Balanced</button><button type="button" data-v="custom" aria-pressed="false">Custom</button>
         </div></div>
     </div>
-    <fieldset id="service-priority"><legend>Haiti worked example · rural services</legend>
-      <label><input id="use-services" type="checkbox"> Prioritise areas with exposed rural roads</label>
-      <p id="service-context"></p><p id="road-input"></p>
-      <p><a href="03-opportunity.html?tab=5#road-trace">Inspect road sections and change the hazard in 3.5</a></p>
+    <fieldset id="service-priority"><legend>Haiti worked example · infrastructure exposure</legend>
+      <label><input id="use-services" type="checkbox"> Prioritise areas with exposed infrastructure or people</label>
+      <label>Exposure indicator <select id="service-asset"><option value="roads">Rural roads</option><option value="schools">Schools</option><option value="health">Health facilities</option><option value="population">People in populated areas</option></select></label><p class="sub">Choose one indicator for this review example. Population exposure should replace overlapping population or livelihood exposure inputs, not be added twice. Final indicator selection requires method ratification.</p><p id="service-context"></p><p id="road-input"></p>
+      <p><a href="03-opportunity.html?tab=5#road-trace">Inspect exposure and change the hazard in 3.5</a></p>
       <label id="service-weight-control" hidden>Priority weight <input id="service-weight" type="range" min="0" max="50" step="5" value="20"> <output id="service-percent" for="service-weight">20%</output></label>
       <button type="button" class="btn" id="see-service-ranks">Compare example ranks in 5.4</button>
     </fieldset>
+    <details class="infra-evidence"><summary>Could the selected practices address this hazard? Read T3/T6 evidence</summary><div data-infrastructure-evidence="priority"></div></details>
     <p class="wstat" id="wstat" aria-live="polite"></p>
     <div class="tabwrap"><table class="qt wt" id="t51"></table></div>
   </section>
@@ -129,10 +130,11 @@
   <section class="tabpanel" role="tabpanel" id="tp-4" hidden>
     <div class="tp-head"><div><h2><span class="sec-n">5.4</span>District ranking</h2><p>Which districts hold the most hotspot area, and why. Select a row to read its narrative.</p></div>
       <div class="dl-pair"><span class="export-unavailable" aria-disabled="true" title="Not available in this mock-up">Download CSV · unavailable in mock-up</span></div></div>
-    <div class="tabwrap" id="road-comparison"><table class="qt"><caption>Haiti example · road exposure and department ranks</caption>
-      <thead><tr><th>Department</th><th>Exposed sections</th><th>Exposed / assessed km</th><th>Base score</th><th>Selected score</th><th>Base → selected rank</th></tr></thead>
+    <div class="tabwrap" id="road-comparison"><table class="qt"><caption>Haiti example · infrastructure exposure and department ranks</caption>
+      <thead><tr><th>Department</th><th>Indicator / road sections</th><th>Exposed / assessed</th><th>Base score</th><th>Selected score</th><th>Base → selected rank</th></tr></thead>
       <tbody id="road-ranks"></tbody></table></div>
-    <p id="rank-reason" aria-live="polite"></p><p id="rank-formula"></p><a href="03-opportunity.html?tab=5#road-trace">Trace the exposed sections in 3.5</a>
+    <p><b>Exposure ranking, not predicted NbS protection.</b> Check <a href="03-opportunity.html?tab=5#infra-mechanism">mechanisms, confidence and missing evidence in 3.5</a> before shortlisting a practice for further investigation.</p>
+    <p id="rank-reason" aria-live="polite"></p><p id="rank-formula"></p><a href="03-opportunity.html?tab=5#road-trace">Trace exposure inputs in 3.5</a>
     <p class="sub">Illustrative scores for two departments. The Sierra Leone district results below use the main walkthrough.</p>
     <div class="rank-grid">
       <div class="tabwrap"><table class="qt rk" id="t52"></table></div>
@@ -393,6 +395,7 @@
   narrow.addEventListener && narrow.addEventListener('change', fitView);
 })();
 </script>
+<script src="v1b-infrastructure-evidence.js"></script>
 <script src="review-mode.js"></script>
 </body>
 </html>
