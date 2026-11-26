@@ -1,4 +1,5 @@
 """Scoping companion must not confuse family, hazard and asset-threat evidence."""
+
 import json
 import shutil
 import subprocess
@@ -10,21 +11,21 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_snapshot_provenance_and_roles():
-    data = json.loads((ROOT / 'docs/redesign/infrastructure-evidence.json').read_text())
-    for row in data['records']:
-        if row['table'] == 'T3':
-            assert row['risk_role'] in {'livelihood_mitigation', 'both'}
-        for eid in row['evidence_ids']:
-            evidence = data['evidence'][eid]
-            assert evidence['source_id'] in data['sources']
-    assert data['input_sha256']
+    data = json.loads((ROOT / "docs/redesign/infrastructure-evidence.json").read_text())
+    for row in data["records"]:
+        if row["table"] == "T3":
+            assert row["risk_role"] in {"livelihood_mitigation", "both"}
+        for eid in row["evidence_ids"]:
+            evidence = data["evidence"][eid]
+            assert evidence["source_id"] in data["sources"]
+    assert data["input_sha256"]
 
 
 def test_family_selection_and_missing_hazard():
-    node = shutil.which('node')
+    node = shutil.which("node")
     if not node:
-        pytest.skip('Node.js unavailable')
-    script = r'''
+        pytest.skip("Node.js unavailable")
+    script = r"""
 const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
 const data=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
 const mount={dataset:{infrastructureEvidence:'opportunity'},innerHTML:''};
@@ -50,7 +51,14 @@ setImmediate(()=>{
  assert(!mount.innerHTML.includes('Selected family evidence.'));
  assert(mount.innerHTML.includes('Mitigation ratings are not multipliers'));
 });
-'''
-    subprocess.run([node, '-e', script,
-                    str(ROOT / 'docs/redesign/v1b-infrastructure-evidence.js'),
-                    str(ROOT / 'docs/redesign/infrastructure-evidence.json')], check=True)
+"""
+    subprocess.run(
+        [
+            node,
+            "-e",
+            script,
+            str(ROOT / "docs/redesign/v1b-infrastructure-evidence.js"),
+            str(ROOT / "docs/redesign/infrastructure-evidence.json"),
+        ],
+        check=True,
+    )

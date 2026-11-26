@@ -1,9 +1,8 @@
-"""Shared C.5 classification remains consistent across display consumers."""
+"""Concern classes and weighting preview follow the adopted method, without spatial runtime writes."""
 
 import shutil
 import subprocess
 from pathlib import Path
-
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,81 +13,75 @@ def test_shared_classification():
     if not node:
         pytest.skip("Node.js unavailable")
     script = r"""
-const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
-let stored = {};
-const cells = Array.from({length:10}, (_,i)=>({
-  ind:{poverty:i,drought:i}, drought2050:i+3, residents:i+1,
-  suitClass:i<5?'vh':'h', suitClass2050:i<3?'vh':'h'
-}));
-cells.push({ind:{poverty:100,drought:100}, excluded:true});
-function boot() {
-  const w = {FIXTURE:{cells, rollup:st=>({sel:c=>!!st.classes[st.climate==='ssp'?c.suitClass2050:c.suitClass]})}};
-  const ctx = {window:w, localStorage:{getItem:k=>stored[k],setItem:(k,v)=>stored[k]=v}};
-  vm.runInNewContext(fs.readFileSync(process.argv[1],'utf8'),ctx);
-  return w.V1BClassification;
-}
-const st={classes:{vh:1,h:1},climate:'base'}, C=boot();
-assert(C.set('poverty',{count:2,method:'threshold',cuts:[60]}));
-assert(C.set('drought',{count:5,method:'quantile',cuts:[]}));
-const P=C.build('poverty',st), D=C.build('drought',st);
-assert.deepEqual(Array.from(P.counts),[6,4]);
-assert.equal(P.mapKey(cells[5],'base'),'lhq0');
-assert.equal(P.mapKey(cells[6],'base'),'lhq4');
-assert.equal(P.high(cells[6],'base'),true);
-assert.equal(D.counts.reduce((a,b)=>a+b),10);
-assert.equal(D.high(cells[4],'base'),false);
-assert.equal(D.high(cells[4],'ssp'),true);
-assert.deepEqual(Array.from(C.build('drought',{...st,climate:'ssp'}).cuts),Array.from(D.cuts));
-// Per-variable settings survive navigation; invalid edits cannot overwrite valid cuts.
-assert.equal(boot().get('poverty').count,2);
-assert.equal(boot().get('drought').count,5);
-assert(!C.set('poverty',{count:3,method:'threshold',cuts:[80,20]}));
-assert(!C.set('poverty',{count:2,method:'threshold',cuts:[NaN]}));
-assert.equal(C.get('poverty').count,2);
-assert(C.build('poverty',st,{count:3,method:'threshold',cuts:[80,20]}).error);
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+let stored={};
+const cells=Array.from({length:10},(_,i)=>({ind:{poverty:i,drought:i},drought2050:i+3,residents:i+1,suitClass:i<5?'vh':'h',suitClass2050:i<3?'vh':'h'}));
+cells.push({ind:{poverty:100,drought:100},excluded:true});
+function boot(){const w={FIXTURE:{cells,rollup:st=>({sel:c=>!!st.classes[st.climate==='ssp'?c.suitClass2050:c.suitClass]})}};const ctx={window:w,localStorage:{getItem:k=>stored[k],setItem:(k,v)=>stored[k]=v}};vm.runInNewContext(fs.readFileSync(process.argv[1],'utf8'),ctx);return w.V1BClassification;}
+const st={classes:{vh:1,h:1},climate:'base'},C=boot();
+const threshold={count:4,method:'threshold',cuts:[0,100/3,200/3],direction:'higher_worse'};
+assert(C.set('poverty',threshold));
+const P=C.build('poverty',st);
+assert.deepEqual(Array.from(P.counts),[1,3,3,3]);
+assert.deepEqual(Array.from(P.names),['None','Low','Medium','High']);
+assert.equal(P.score(cells[0],'base'),0);
+assert.equal(P.score(cells[3],'base'),0.33); // upper bound belongs to lower interval
+assert.equal(P.score(cells[6],'base'),0.66);
+assert.equal(P.score(cells[9],'base'),1);
+assert.equal(P.score({ind:{poverty:null}},'base'),null);
+assert.equal(P.mapKey({ind:{poverty:NaN}},'base'),'unknown');
+assert(!P.high({ind:{}},'base'));
+const reverse=C.build('poverty',st,{...threshold,direction:'higher_better'});
+assert.equal(reverse.score(cells[0],'base'),1);assert.equal(reverse.score(cells[9],'base'),0);
+assert.deepEqual(Array.from(reverse.cuts),Array.from(P.cuts));
+assert(!C.set('poverty',{count:5,method:'quantile',cuts:[]}));
+assert(!C.set('poverty',{...threshold,cuts:[70,20,80]}));
+assert(!C.set('poverty',{...threshold,cuts:[0,NaN,80]}));
+assert.equal(boot().get('poverty').count,4);
+const relative={count:3,method:'quantile',cuts:[],direction:'higher_worse'};
+const D=C.build('drought',st,relative);
+assert.deepEqual(Array.from(D.cuts),[100/3,200/3]); // linear (n-1) interpolation
+assert.deepEqual(Array.from(D.names),['Low','Medium','High']);
+assert.equal(D.score(cells[0],'base'),0.33); // lowest tercile is never none
+assert.equal(D.score(cells[3],'ssp'),0.66);
+assert(C.set('drought',{...relative,reference:D.reference}));
+const future=C.build('drought',{classes:{vh:1},climate:'ssp'});
+assert.deepEqual(Array.from(future.cuts),Array.from(D.cuts));
+assert.equal(future.reference.values.length,10); // original full reference stays fixed
+assert.equal(future.sample.length,3);
 assert(C.build('poverty',{classes:{},climate:'base'}).error);
-const snap=C.snapshot();assert.equal(C.restore({poverty:{count:2,method:'threshold',cuts:[200]}}),false);assert.equal(C.get('poverty').count,2);C.restore({});assert.equal(C.get('poverty').count,3);
-C.restore(snap);assert.equal(C.get('poverty').count,2);
-// Cross-tab refresh uses storage without resetting other page state.
-const other=boot();other.set('poverty',{count:2,method:'threshold',cuts:[80]});
-C.refresh();assert.equal(C.get('poverty').cuts[0],80);
-// Stale writers preserve independent settings from another tab.
-const stale=boot();other.set('poverty',{count:2,method:'threshold',cuts:[70]});
-stale.set('drought',{count:2,method:'threshold',cuts:[60]});
-assert.equal(boot().get('poverty').cuts[0],70);
-const baseSubset=C.build('drought',{classes:{vh:1},climate:'base'},{count:3,method:'quantile',cuts:[]});
-const futureSubset=C.build('drought',{classes:{vh:1},climate:'ssp'},{count:3,method:'quantile',cuts:[]});
-assert.notEqual(baseSubset.sample.length,futureSubset.sample.length);
-assert.deepEqual(Array.from(baseSubset.cuts),Array.from(futureSubset.cuts));
-// Direction flips severity, not numeric bin membership or cut points.
-const forward=C.build('poverty',st,{count:5,method:'threshold',cuts:[20,40,60,80],direction:'higher_worse'});
-const reverse=C.build('poverty',st,{count:5,method:'threshold',cuts:[20,40,60,80],direction:'higher_better'});
-assert.equal(forward.names[0],'Best');assert.equal(reverse.names[0],'Worst');
-assert.equal(forward.mapKey(cells[0],'base'),'lhq0');assert.equal(reverse.mapKey(cells[0],'base'),'lhq4');
-assert.equal(reverse.classify(cells[0],'base'),forward.classify(cells[0],'base'));
-assert.equal(reverse.high(cells[0],'base'),true);assert.equal(forward.high(cells[0],'base'),false);
-assert.equal(reverse.high(cells[9],'base'),false);
-assert.deepEqual(Array.from(reverse.order),[4,3,2,1,0]);
-assert(C.set('poverty',{count:2,method:'threshold',cuts:[60],direction:'higher_better'}));
-assert.equal(boot().get('poverty').direction,'higher_better');
-const directionSnapshot=C.snapshot();C.restore({});C.restore(directionSnapshot);
-assert.equal(C.get('poverty').direction,'higher_better');
-assert(!C.set('poverty',{count:2,method:'threshold',cuts:[60],direction:'sideways'}));
-// Reset only selected variable, including its direction; preserve other tabs' settings.
-const resetter=boot();other.set('drought',{count:5,method:'threshold',cuts:[10,30,50,70]});
-assert(resetter.reset('poverty'));assert.equal(boot().get('poverty').count,3);
-assert.equal(boot().get('poverty').method,'quantile');
-assert.equal(boot().get('poverty').direction,'higher_worse');
-assert.equal(boot().get('drought').cuts[0],10);
-assert(!resetter.reset('unknown'));
-// Exact boundaries enter higher class, with no gaps in map class labels.
-const E=C.build('poverty',st,{count:2,method:'threshold',cuts:[100/3]});
-assert.equal(E.classify(cells[3],'base'),1);
-assert.equal(E.counts.reduce((a,b)=>a+b),E.sample.length);
+const bad=JSON.parse(JSON.stringify(D.reference));bad.cuts=[10,90];
+assert(!C.set('drought',{...relative,reference:bad}));
+const snap=C.snapshot();C.restore({});assert.equal(C.get('poverty').method,'threshold');assert(C.restore(snap));
+const stale=boot(),other=boot();other.set('poverty',{...threshold,cuts:[0,40,80]});
+stale.set('drought',{...relative,reference:D.reference});assert.equal(boot().get('poverty').cuts[1],40);
+assert(C.reset('poverty'));assert.equal(boot().get('poverty').count,4);assert.equal(boot().get('drought').method,'quantile');
+// Old five-class preferences are preserved in the old storage key, never reused as new concern rules.
+stored['v2-variable-classification']=JSON.stringify({poverty:{count:5,method:'quantile',cuts:[]}});
+assert.equal(boot().get('poverty').count,4);assert(stored['v2-variable-classification']);
+// Ties cannot be arbitrarily split into three classes.
+cells.forEach(c=>{if(!c.excluded)c.ind.poverty=1;});assert(C.build('poverty',st,relative).error);
+const context={window:{}};vm.runInNewContext(fs.readFileSync(process.argv[2],'utf8'),context);
+const S=context.window.V1BPriorityPreview.score;
+let out=S([1,0.33],[2,1],'included');assert.equal(out.status,'scored');assert(Math.abs(out.score-2.33/3)<1e-12);
+assert.equal(out.score,out.contributions.reduce((a,b)=>a+b,0));assert.equal(out.denominator,3);
+assert.equal(S([null,0.33],[0,1],'included').score,0.33);
+assert.equal(S([null,0.33],[1,1],'included').status,'unknown');
+assert.equal(S([1,1],[0,0],'included').status,'invalid');
+assert.equal(S([1,1],[-1,2],'included').status,'invalid');
+assert.equal(S([1,1],[Infinity,2],'included').status,'invalid');
+assert.equal(S([1,1],[1,1],'excluded').status,'excluded');
+assert.equal(S([1,1],[1,1],'unknown').status,'unknown');
+assert.equal(S([1,0],[1,0],'included').score,1);
+console.log('Classification and priority preview acceptance checks passed');
 """
     subprocess.run(
-        [node, "-e", script, str(ROOT / "docs/redesign/v1b-classification.js")],
+        [
+            node,
+            "-e",
+            script,
+            str(ROOT / "docs/redesign/v1b-classification.js"),
+            str(ROOT / "docs/redesign/v1b-priority-preview.js"),
+        ],
         check=True,
-        capture_output=True,
-        text=True,
     )

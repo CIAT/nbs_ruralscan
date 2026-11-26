@@ -44,6 +44,7 @@
   <p class="figcap" id="cap"></p>
   <p class="plate-src">Boundaries: geoBoundaries gbOpen v6 (CC-BY 4.0). Need cells: synthetic example surface (seed 20261031) — not drought, poverty or food-security data.</p>
 
+  <p class="m2-note"><b>Map illustration, not a current model run.</b> Geographic maps and district ranks retain an earlier authored fixture. Changing preferences does not recompute them. Section 5.3 shows the current method and a separate arithmetic example.</p>
   <div class="subtabs" role="tablist" aria-label="Stage 05 sections">
     <button type="button" role="tab" aria-controls="tp-1" aria-selected="true"><span class="sec-n">5.1</span>Hotspot map</button>
     <button type="button" role="tab" aria-controls="tp-2" aria-selected="false" tabindex="-1"><span class="sec-n">5.2</span>Priorities and weights</button>
@@ -113,17 +114,29 @@
 
   <!-- 5.3 -->
   <section class="tabpanel" role="tabpanel" id="tp-3" hidden>
-    <div class="tp-head"><div><h2><span class="sec-n">5.3</span>How the score is built</h2><p>Four steps from the opportunity space to hotspot classes.</p></div>
+    <div class="tp-head"><div><h2><span class="sec-n">5.3</span>How the score is built</h2><p>Six steps from the opportunity mask to a user-weighted score.</p></div>
       <div class="dl-pair"><span class="export-unavailable" aria-disabled="true" title="Not available in this mock-up">Download PNG · unavailable in mock-up</span></div></div>
-    <svg id="flow" viewBox="0 0 1200 210" role="img" aria-label="Flow from suitability to hotspot classes"></svg>
+    <svg id="flow" viewBox="0 0 1200 420" role="img" aria-label="Opportunity mask, classify concerns, check overlap, choose representatives, user weights, normalised sum"></svg>
     <ol class="flow-notes">
-      <li><b>Opportunity space.</b> Only cells in the suitability classes chosen in the control bar take part; everything else stays out.</li>
-      <li><b>Need layers, one per cluster.</b> Each objective brings a group of layers; correlated layers are clustered and one represents each cluster.</li>
-      <li><b>Weighted combination.</b> The representatives are standardised and combined with weights — here the example preset from Section 5.2.</li>
-      <li><b>Hotspot classes.</b> The combined score is cut into classes; the hotspot score in the control bar decides which classes count.</li>
+      <li><b>Opportunity mask.</b> Exclude cells outside the selected opportunity space; an unknown mask remains unknown.</li>
+      <li><b>Classify concerns.</b> Use evidence-justified thresholds or explicitly referenced terciles. Scores are None 0, Low 0.33, Medium 0.66 and High 1.</li>
+      <li><b>Check overlap.</b> Inspect raw and classified variables within the declared area. T2 and T5 aliases of the same concern enter once.</li>
+      <li><b>Select representatives.</b> Record one representative per shared concern and explain retained correlated concerns. Correlation alone does not merge distinct policy concerns.</li>
+      <li><b>Choose user weights.</b> Set explicit nonnegative weights. Zero omits a concern; all-zero weights are invalid.</li>
+      <li><b>Normalised sum.</b> H(x) = Σ uⱼ pⱼ(x) / Σ uⱼ. Use the same denominator across the stack. Missing positive-weight input gives unknown; missing zero-weight input does not block scoring. No second min–max stretch or quintile reclassification.</li>
     </ol>
-    <p class="figcap"><b>Figure 5.2</b> · How the hotspot score is built from the opportunity space and the need layers</p>
-    <p class="m2-note" style="max-width:900px">Weights shown on this page are an example preset. The method combines expert weights with data-driven ones — a hybrid of AHP, CRITIC and entropy weighting — so no single judgement sets the result. No scoring runs in this prototype.</p>
+    <p class="figcap"><b>Figure 5.2</b> · Current classification and weighting method. The maps above remain authored example results.</p>
+    <p class="m2-note"><b>CRITIC is diagnostic only.</b> Compare its suggestions and sensitivity; it does not replace user priorities or automatically combine with AHP or entropy weights. Class scores, user weights and evidence influence in AI synthesis have different meanings. M2b investment risk remains a separate screen, never a term in this sum. <a href="https://ruralscan.github.io/method/reference/ch-m3-characterisation.html">Current method and diagram</a>.</p>
+    <fieldset id="priority-example"><legend>Try the arithmetic · two illustrative concerns, not a map calculation</legend>
+      <p>Change one input to see its contribution. These two scores are examples, not accepted country classifications.</p>
+      <div class="wctl">
+        <label>Concern A score <select id="example-a"><option value="0">None · 0</option><option value="0.33">Low · 0.33</option><option value="0.66">Medium · 0.66</option><option value="1" selected>High · 1</option><option value="unknown">Unknown</option></select></label>
+        <label>A weight <input id="example-wa" type="number" min="0" step="0.1" value="2"></label>
+        <label>Concern B score <select id="example-b"><option value="0">None · 0</option><option value="0.33" selected>Low · 0.33</option><option value="0.66">Medium · 0.66</option><option value="1">High · 1</option><option value="unknown">Unknown</option></select></label>
+        <label>B weight <input id="example-wb" type="number" min="0" step="0.1" value="1"></label>
+        <label>Opportunity mask <select id="example-mask"><option value="included">Included</option><option value="excluded">Excluded</option><option value="unknown">Unknown</option></select></label>
+      </div><p id="priority-example-result" role="status" aria-live="polite"></p>
+    </fieldset>
   </section>
 
   <!-- 5.4 -->
@@ -158,9 +171,10 @@
 </main>
 
 <script src="../sle_geo.js"></script>
-<script src="v1b-versions.js?v=20261106-brand"></script>
-<script src="v1b-map.js?v=20261106-nav"></script>
+<script src="v1b-versions.js?v=20261126-alignment"></script>
+<script src="v1b-map.js?v=20261126-alignment"></script>
 <script src="v1b-fixture.js"></script>
+<script src="v1b-priority-preview.js"></script>
 <script src="v1b-road-example.js"></script>
 <script>
 (function () {
@@ -265,18 +279,20 @@
     biodiversity: { drought: 'L', flood: 'L', heat: 'L', water: 'M', erosion: 'M', carbon: 'H', biod: 'H', poverty: 'M', food: 'L', gap: 'L', dep: 'L' },
     balanced: { drought: 'M', flood: 'M', heat: 'M', water: 'M', erosion: 'M', carbon: 'M', biod: 'M', poverty: 'M', food: 'M', gap: 'M', dep: 'M' }
   };
+  Object.keys(PRESETS).forEach(function(p){Object.keys(PRESETS[p]).forEach(function(k){PRESETS[p][k]={L:1,M:2,H:3}[PRESETS[p][k]];});});
   var W = Object.assign({}, PRESETS.balanced);
   var PNAME = { climate: 'Climate adaptation', livelihood: 'Livelihood', biodiversity: 'Biodiversity', balanced: 'Balanced', custom: 'Custom' };
   var CARD = { drought: 'precip', erosion: 'slope' };
   function t51() {
-    var html = '<caption class="tabcap"><b>Table 5.1</b> · Need layers, weights and representatives<small>Weights are an example preset (L low · M medium · H high). Equity layers are flags and context layers are descriptors: neither enters the score.</small></caption>' +
+    var weightTotal=Object.values(W).reduce(function(sum,w){return sum+w;},0);
+    var html = '<caption class="tabcap"><b>Table 5.1</b> · Need layers, weights and representatives<small>Weights are illustrative user preferences, not evidence-derived defaults. Inputs are normalised once across the selected stack. Maps do not recompute. Equity layers are flags and context layers are descriptors: neither enters the score.</small></caption>' +
       '<thead><tr><th>Layer</th><th>Weight</th><th>Represents</th><th>Data sensitivity</th><th></th></tr></thead>';
     GROUPS.forEach(function (g, gi) {
       var note = g[1] === 'weighted' ? g[2].length + ' layers · weighted' : g[1] === 'flag' ? 'flag · shown, not weighted' : 'descriptor only · cannot rank';
       html += '<tbody class="grp" data-g="' + gi + '"><tr class="gh"><th colspan="5"><button type="button" class="gtog" aria-expanded="true" data-g="' + gi + '"><span class="sec-n">5.2.' + (gi + 1) + '</span>' + g[0] + ' <span class="gnote">' + note + '</span></button></th></tr>';
       g[2].forEach(function (v) {
         var wcell = g[1] === 'weighted'
-          ? '<div class="seg seg-sm wseg" data-k="' + v[0] + '">' + ['—', 'L', 'M', 'H'].map(function (x) { return '<button type="button" data-v="' + x + '" aria-pressed="' + ((W[v[0]] || '—') === x) + '">' + x + '</button>'; }).join('') + '</div>'
+          ? '<input type="number" min="0" step="0.1" class="user-weight" data-k="'+v[0]+'" aria-label="Weight for '+v[1]+'" value="'+W[v[0]]+'" style="width:90px"><span class="sub"> '+(weightTotal ? (100*W[v[0]]/weightTotal).toFixed(1)+'%' : 'No score')+'</span>'
           : '<span class="sub">' + (g[1] === 'flag' ? 'Overlay only' : 'Filter only') + '</span>';
         html += '<tr><td><b>' + v[1] + '</b><span class="sub" style="display:block">' + v[2] + '</span></td><td>' + wcell + '</td><td>' + (v[3] ? '<span class="rep-b">represents: ' + v[3] + '</span>' : '<span class="sub">—</span>') + '</td><td>' +
           (v[4] === 'high' ? '<span class="sens sens-high">High — country-endorsed source recommended</span>' : v[4] === 'medium' ? '<span class="sens">Medium</span>' : '<span class="sens sub">Low</span>') + '</td><td><a class="ilink" href="00-config.html' + (CARD[v[0]] ? '#card-' + CARD[v[0]] : '#c3') + '" title="Open the variable card" aria-label="Variable card for ' + v[1] + '">i</a></td></tr>';
@@ -284,19 +300,20 @@
       html += '</tbody>';
     });
     document.getElementById('t51').innerHTML = html;
-    document.getElementById('wstat').innerHTML = custom
-      ? '<b>Weights edited.</b> Results on this page show the unchanged example — no scoring runs in this prototype.'
-      : 'Preset: <b>' + PNAME[preset] + '</b>. Maps and tables show the example result for this preset.';
+    document.getElementById('wstat').textContent = weightTotal ? 'Illustrative user weights total '+weightTotal+'. Percentages normalise once across this stack. Maps and district ranks remain unchanged authored examples.' : 'All weights are zero: no priority score can be calculated. Maps remain unchanged authored examples.';
     document.getElementById('preset-name').textContent = PNAME[preset] + (custom ? ' (edited)' : '');
   }
   document.getElementById('t51').addEventListener('click', function (e) {
     var tog = e.target.closest('.gtog');
     if (tog) { var tb = tog.closest('tbody'), ex = tog.getAttribute('aria-expanded') === 'true'; tog.setAttribute('aria-expanded', !ex); tb.classList.toggle('collapsed', ex); return; }
-    var b = e.target.closest('.wseg button'); if (!b) return;
-    W[b.parentNode.getAttribute('data-k')] = b.getAttribute('data-v') === '—' ? '' : b.getAttribute('data-v');
-    custom = true; preset = 'custom';
-    document.querySelectorAll('#seg-preset button').forEach(function (x) { x.setAttribute('aria-pressed', x.getAttribute('data-v') === 'custom'); });
-    t51(); why();
+  });
+  document.getElementById('t51').addEventListener('change', function(e){
+    var input=e.target.closest('.user-weight');if(!input)return;
+    var value=input.value.trim()===''?NaN:Number(input.value);
+    if(!Number.isFinite(value)||value<0){input.setCustomValidity('Enter a finite nonnegative weight.');input.reportValidity();return;}
+    input.setCustomValidity('');W[input.dataset.k]=value;custom=true;preset='custom';
+    document.querySelectorAll('#seg-preset button').forEach(function(x){x.setAttribute('aria-pressed',x.getAttribute('data-v')==='custom');});
+    t51();why();
   });
   V1BUI.segmented(document.getElementById('seg-preset'), function (v) {
     preset = v; custom = v === 'custom'; if (PRESETS[v]) W = Object.assign({}, PRESETS[v]); t51(); why();
@@ -311,16 +328,25 @@
 
   /* ---- 5.3 flow ---- */
   (function () {
-    var boxes = [['Opportunity space', 'selected suitability classes'], ['Need layers', 'one per correlation cluster'], ['Weighted combination', 'example preset weights'], ['Hotspot classes', 'cut by the hotspot score']];
-    var html = '<defs><marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" class="fl-arrow"/></marker></defs>', bw = 230, gap = 72, x = 20;
+    var boxes = [['Opportunity mask', 'excluded / unknown retained'], ['Classify concerns', '0 · 0.33 · 0.66 · 1'], ['Check overlap', 'raw and classified signals'], ['Select representatives', 'one per shared concern'], ['User weights', 'explicit; zero omits'], ['Normalised sum', 'Σ uⱼ pⱼ / Σ uⱼ']];
+    var html = '', bw = 360;
     boxes.forEach(function (b, i) {
-      html += '<rect x="' + x + '" y="40" width="' + bw + '" height="110" rx="3" class="fl-box' + (i === 3 ? ' fl-end' : '') + '"/>' +
-        '<text x="' + (x + 18) + '" y="72" class="fl-n">' + (i + 1) + '</text><text x="' + (x + 18) + '" y="104" class="fl-t">' + b[0] + '</text><text x="' + (x + 18) + '" y="128" class="fl-s">' + b[1] + '</text>';
-      if (i < 3) html += '<line x1="' + (x + bw + 8) + '" y1="95" x2="' + (x + bw + gap - 8) + '" y2="95" class="fl-line" marker-end="url(#arw)"/>';
-      x += bw + gap;
+      var x=10+(i%3)*400, y=10+Math.floor(i/3)*200;
+      html += '<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="140" rx="3" class="fl-box"/>'+
+        '<text x="'+(x+18)+'" y="'+(y+30)+'" class="fl-n">'+(i+1)+'</text><text x="'+(x+18)+'" y="'+(y+66)+'" class="fl-t">'+b[0]+'</text><text x="'+(x+18)+'" y="'+(y+102)+'" class="fl-s">'+b[1]+'</text>';
+      if(i%3<2)html+='<text x="'+(x+372)+'" y="'+(y+80)+'" aria-hidden="true">→</text>';
     });
+    html+='<path d="M990 150V180H190V205" fill="none" stroke="currentColor"/><path d="M185 199L190 207L195 199" fill="none" stroke="currentColor"/>';
     document.getElementById('flow').innerHTML = html;
   })();
+
+
+  function priorityExample(){
+    function value(id){var raw=document.getElementById(id).value;return raw==='unknown'?null:raw.trim()===''?NaN:Number(raw);}
+    var out=V1BPriorityPreview.score([value('example-a'),value('example-b')],[value('example-wa'),value('example-wb')],document.getElementById('example-mask').value);
+    document.getElementById('priority-example-result').textContent=out.status==='scored'?'Contributions: '+out.contributions.map(function(v){return v.toFixed(3);}).join(' + ')+' = '+out.score.toFixed(3)+'. Fixed weight total: '+out.denominator+'.':out.message;
+  }
+  document.getElementById('priority-example').addEventListener('input',priorityExample);priorityExample();
 
   /* ---- 5.4 district ranking ---- */
   var DRIVERS = { 'Kailahun': ['Rural poverty', 'Drought hazard'], 'Koinadugu': ['Food insecurity', 'Drought hazard'], 'Kono': ['Rural poverty', 'Heat stress'], 'Kenema': ['Rural poverty', 'Production gap'],
@@ -342,7 +368,7 @@
     var d = R.districts[selD]; if (!d) { document.getElementById('why').innerHTML = ''; return; }
     var rank = rk.map(function (x) { return x.name; }).indexOf(selD) + 1, top = rank === 1, dr = DRIVERS[selD];
     var lines = top ? [
-      'Rural poverty is in the top fifth nationally (example value 54 %), and poverty is weighted ' + ({ H: 'high', M: 'medium', L: 'low', '': 'off' })[W.poverty || ''] + ' in the ' + PNAME[preset].toLowerCase() + ' preset.',
+      'Rural poverty is an illustrative concern (example value 54 %), with user weight ' + W.poverty + ' in the ' + PNAME[preset].toLowerCase() + ' preset.',
       pct(d.share) + ' of the district is in the opportunity space, mostly at Very high suitability.',
       'Drought hazard is moderate to high under baseline climate and rises by 2050 (Stage 03, Table 3.3).',
       fmt(d.overlap * HA) + ' ha of hotspot cells, with about ' + fmt(r3(d.hotspotResidents)) + ' residents (fictional) — reach is meaningful.',
@@ -352,7 +378,7 @@
       'Main need drivers: ' + dr.join(' and ').toLowerCase() + '.',
       fmt(d.overlap * HA) + ' ha of hotspot cells; ' + pct(d.shareAny) + ' of its opportunity space is flagged in Stage 04.'
     ];
-    document.getElementById('why').innerHTML = '<h3>Why ' + selD + (top ? ' is first' : '') + '</h3><p class="sub">' + (top ? 'Example narrative, written for the top district and tied to the ' + PNAME[preset].toLowerCase() + ' preset.' : 'Figures only — narratives are written for the top district in this prototype.') + '</p>' +
+    document.getElementById('why').innerHTML = '<h3>Why ' + selD + (top ? ' is first' : '') + '</h3><p class="sub">' + (top ? 'Authored example narrative; edited weights do not recompute this district ranking.' : 'Figures only — narratives are written for the top district in this prototype.') + '</p>' +
       '<ol class="notes">' + lines.map(function (l) { return '<li>' + l + '</li>'; }).join('') + '</ol>' +
       (top ? '<p class="sub">No variable is counted twice: hazards to the planting are used only in Stage 04, not in this score.</p>' : '');
   }
