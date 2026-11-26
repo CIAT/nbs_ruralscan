@@ -431,6 +431,7 @@
     var pw = practiceWords(st);
     parts.push(pw[0].charAt(0).toUpperCase() + pw[0].slice(1) + (pw.length > 1 ? ' (map shows this practice; ' + (pw.length - 1) + ' more selected)' : ''));
     if (!o.noClasses) parts.push(classWords(st));
+    if(st.practices[0]==='riparian')parts.push('host / placement-zone area, not planted hectares; linear footprint needs length and width');
     parts.push('Sierra Leone');
     parts.push(st.view === 'cells' ? '5 km cells' : st.view === 'adm2' ? 'districts (Admin 2)' : 'Admin 3 not in this example — districts shown');
     parts.push(st.climate === 'ssp' ? 'SSP2-4.5, about 2050' : 'baseline 1995–2014');

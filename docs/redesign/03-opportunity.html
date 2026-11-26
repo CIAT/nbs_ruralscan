@@ -132,10 +132,7 @@ body.classification-open{padding-right:440px}
     <div class="mult-lg" id="context-lg"></div>
     <p id="context-caption" class="figcap"></p>
     <p class="m2-note"><b>People and land conditions, not climate projections.</b> Each map uses the class count and cut points set for its variable in <a href="00-config.html?tab=5">C.5</a>, from least to most affected. These values describe needs within the opportunity space; they do not measure the practice’s effect.</p>
-    <fieldset id="context-classes" style="margin-top:28px"><legend>Classes to summarise</legend>
-      <div style="display:flex;gap:18px;flex-wrap:wrap"><label><input type="checkbox" value="Best"> Best</label><label><input type="checkbox" value="Better"> Better</label><label><input type="checkbox" value="Intermediate"> Intermediate</label><label><input type="checkbox" value="Worse" checked> Worse</label><label><input type="checkbox" value="Worst" checked> Worst</label></div>
-      <p class="sub">Uses each variable’s C.5 labels and direction. Best and Worst exist only with five classes; Intermediate exists with three or five. Classes absent from a variable are not counted.</p>
-    </fieldset>
+    <fieldset id="context-classes" style="margin-top:28px"><legend>Concern classes to summarise</legend><div style="display:flex;gap:18px;flex-wrap:wrap"><label><input type="checkbox" value="None"> None</label><label><input type="checkbox" value="Low"> Low</label><label><input type="checkbox" value="Medium"> Medium</label><label><input type="checkbox" value="High" checked> High</label></div><p class="sub">Shared scores: None 0, Low 0.33, Medium 0.66, High 1. Relative terciles have no None class without a separate justified condition. These scores are not probabilities.</p></fieldset>
     <div class="seg seg-sm" id="context-view" role="group" aria-label="Area summary view" style="margin:16px 0"><button type="button" data-v="table" aria-pressed="true">Table</button><button type="button" data-v="plot" aria-pressed="false">Plot</button></div>
     <p id="context-summary-status" role="status"></p>
     <div class="tabwrap" id="context-table-wrap"><table class="qt" id="context-table" style="max-width:760px"></table></div>
@@ -151,8 +148,8 @@ body.classification-open{padding-right:440px}
     <div class="multiples" id="mult"></div>
     <div class="mult-lg" id="mult-lg"></div>
     <p class="figcap" id="cap-22"></p>
-    <p class="m2-note"><b>This is need, not project risk.</b> It shows hazards to people’s livelihoods (a need layer that feeds the hotspots in Stage 05). Hazards to the planting itself are screened separately in Stage 04; the two are never added together.</p>
-    <fieldset id="risk-classes" style="margin-top:28px"><legend>Risk classes to summarise</legend><div style="display:flex;gap:18px;flex-wrap:wrap"><label><input type="checkbox" value="Very low risk"> Very low</label><label><input type="checkbox" value="Low risk"> Low</label><label><input type="checkbox" value="Moderate risk"> Moderate</label><label><input type="checkbox" value="High risk" checked> High</label><label><input type="checkbox" value="Very high risk" checked> Very high</label></div><p class="sub">C.5 defines classes and direction per hazard. Very low and Very high exist only with five classes; Moderate exists with three or five. Each row names classes included.</p></fieldset>
+    <p class="m2-note"><b>T2 registers climate variables; it does not calculate a combined Climate Risk Index.</b> Each concern enters the T2/T5 priority stack once. <b>This is need, not project risk.</b> It shows hazards to people’s livelihoods (a need layer that feeds the hotspots in Stage 05). Hazards to the planting itself are screened separately in Stage 04; the two are never added together.</p>
+    <fieldset id="risk-classes" style="margin-top:28px"><legend>Concern classes to summarise</legend><div style="display:flex;gap:18px;flex-wrap:wrap"><label><input type="checkbox" value="None"> None</label><label><input type="checkbox" value="Low"> Low</label><label><input type="checkbox" value="Medium"> Medium</label><label><input type="checkbox" value="High" checked> High</label></div><p class="sub">Shared scores: None 0, Low 0.33, Medium 0.66, High 1. Relative terciles have no None class without a separate justified condition. These scores are not probabilities.</p></fieldset>
     <div class="seg seg-sm" id="risk-view" role="group" aria-label="Risk summary view" style="margin:16px 0"><button type="button" data-v="table" aria-pressed="true">Table</button><button type="button" data-v="plot" aria-pressed="false">Plot</button></div>
     <p id="risk-summary-status" role="status"></p>
     <div class="tabwrap" id="risk-table-wrap"><table class="qt" id="t23" style="max-width:760px"></table></div>
@@ -167,7 +164,7 @@ body.classification-open{padding-right:440px}
     </div>
     <div class="ctlrow"><label class="fld"><span>Filter problems</span><input id="problem-filter" type="search" placeholder="Problem, strength or confidence"></label><label class="fld"><span>Sort by</span><select id="problem-sort"><option value="name">Problem name</option><option value="worst">Most affected share, highest first</option><option value="strength">Benefit strength, highest first</option><option value="confidence">Confidence, highest first</option></select></label></div>
     <p id="problem-count" role="status"></p><div class="tabwrap"><table class="qt pb" id="t34"></table></div>
-    <p class="m2-note" style="max-width:1000px"><b>How to read Table 3.4.</b> Classes and direction come from C.5. The summary compares the share in the worst class (worst two for five classes) with the country using identical cut points. Edit variable classes beside each problem to update this table and its maps. Select a map to show that problem on Figure 3.1. The practice columns are pooled evidence from elsewhere, not local measurement; the full table with sources is in <a href="02-practices.html?tab=3">Stage 02, Section 2.3</a>.</p>
+    <p class="m2-note" style="max-width:1000px"><b>How to read Table 3.4.</b> Classes and direction come from C.5. The summary compares the share in the High concern class with the country using identical cut points. Edit variable classes beside each problem to update this table and its maps. Select a map to show that problem on Figure 3.1. The practice columns are pooled evidence from elsewhere, not local measurement; the full table with sources is in <a href="02-practices.html?tab=3">Stage 02, Section 2.3</a>.</p>
   </section>
 
   <section class="tabpanel" role="tabpanel" id="tp-5" aria-labelledby="tab-5" hidden>
@@ -193,11 +190,11 @@ body.classification-open{padding-right:440px}
 </main>
 
 <script src="../sle_geo.js"></script>
-<script src="v1b-versions.js?v=20261106-brand"></script>
-<script src="v1b-map.js?v=20261106-nav"></script>
+<script src="v1b-versions.js?v=20261126-alignment"></script>
+<script src="v1b-map.js?v=20261126-alignment"></script>
 <script src="v1b-fixture.js"></script>
 <script src="v1b-road-example.js"></script>
-<script src="v1b-classification.js?v=20261105-risk"></script>
+<script src="v1b-classification.js?v=20261126-concern"></script>
 <script>
 (function () {
   'use strict';
@@ -378,7 +375,7 @@ body.classification-open{padding-right:440px}
     return '<b>' + p.name + '</b><div class="mult-lg">' + model.order.map(function(i) { var label=model.names[i];
       var shade=[18,34,52,74,100][Math.round(model.severity(i)*4/(model.count-1))];
       return '<span class="sw"><i style="background:color-mix(in srgb,var(' + p.hue + ') ' + shade + '%,var(--paper))"></i>' + label + ' (' + M.esc(model.range(i)) + ')</span>';
-    }).join('') + '</div><a href="00-config.html?tab=5&variable=' + p.k + '">C.5 · ' + model.count + ' classes · ' + (model.method==='quantile'?'quantiles':'thresholds') + '</a><div class="sub">' + (p.risk?(model.direction==='higher_better'?'Higher values = lower risk':'Higher values = higher risk'):(model.direction==='higher_better'?'Higher values = better':'Higher values = worse')) + '</div>';
+    }).join('') + '</div><a href="00-config.html?tab=5&variable=' + p.k + '">C.5 · ' + model.count + ' classes · ' + (model.method==='quantile'?'fixed baseline terciles':'thresholds') + '</a><div class="sub">' + (p.risk?(model.direction==='higher_better'?'Higher values = less concern':'Higher values = more concern'):(model.direction==='higher_better'?'Higher values = better':'Higher values = worse')) + '</div>';
   }
   function livelihoods() {
     var models=HZ.map(function(h){return CL.build(h[0],ST);});
@@ -387,18 +384,18 @@ body.classification-open{padding-right:440px}
       M.paintCells(msvgs[i],F.cells,function(c){return !model.error && R.sel(c) ? model.mapKey(c,ST.climate) : null;},{outline:function(c){return R.sel(c);}});
       msvgs[i].parentNode.querySelector('figcaption').innerHTML=classLegend({k:h[0],name:h[1],hue:h[2],risk:true},model);
     });
-    document.getElementById('mult-lg').textContent='Dark outline = selected opportunity-space boundary, as in Figure 3.1. Classes, direction and cut points come from C.5. Darker = higher risk. Blank = outside selected opportunity space (' + V1BUI.classWords(ST) + '). Values use a synthetic baseline-normalised index, not probabilities.';
-    document.getElementById('cap-22').innerHTML='<b>Figure 3.2</b> · Relative livelihood risk from hazard exposure, 5 km cells, ' + (ST.climate==='ssp'?'SSP2-4.5 about 2050':'baseline 1995–2014');
+    document.getElementById('mult-lg').textContent='Dark outline = selected opportunity-space boundary, as in Figure 3.1. Classes, direction and cut points come from C.5. Darker = more concern. Blank = outside selected opportunity space (' + V1BUI.classWords(ST) + '). Values use a synthetic baseline-normalised index, not probabilities.';
+    document.getElementById('cap-22').innerHTML='<b>Figure 3.2</b> · Separate climate-hazard concerns within the opportunity space, 5 km cells, ' + (ST.climate==='ssp'?'SSP2-4.5 about 2050':'baseline 1995–2014');
     var selected=Array.from(document.querySelectorAll('#risk-classes input:checked')).map(function(input){return input.value;});
     var title='Share of people in '+(selected.length?selected.join(' / '):'selected risk classes');
     var note='Relative risk screening based on hazard exposure, not loss probabilities. Both periods use the same selected extent, resident population and baseline C.5 cut points. Residents and hazards are fictional.';
     document.getElementById('risk-summary-status').textContent=selected.length?'':'Select at least one risk class to summarise.';
     var rows=HZ.map(function(h,i){var model=models[i],tot=model.error?0:model.sample.reduce(function(sum,c){return sum+c.residents;},0);
-      function share(period){return !tot||!selected.length?null:100*model.sample.reduce(function(sum,c){return sum+(selected.includes(model.names[model.classify(c,period)])?c.residents:0);},0)/tot;}
+      function share(period){if(model.error)return null;var available=model.sample.filter(function(c){return model.classify(c,period)!==null;}), population=available.reduce(function(sum,c){return sum+c.residents;},0);return !population||!selected.length?null:100*available.reduce(function(sum,c){return sum+(selected.includes(model.names[model.classify(c,period)])?c.residents:0);},0)/population;}
       return {name:h[1],classes:model.error?'No data':model.order.map(function(j){return model.names[j];}).filter(function(name){return selected.includes(name);}).join(', ')||'None of these classes',now:share('base'),future:share('ssp')};
     });
     function display(value){return value===null?'No data':value.toFixed(1)+' %';}
-    document.getElementById('t23').innerHTML='<caption class="tabcap"><b>Table 3.3</b> · '+title+'<small>'+note+'</small></caption><thead><tr><th>Hazard / risk classes included</th><th class="r">Baseline 1995–2014</th><th class="r">SSP2-4.5, about 2050</th></tr></thead><tbody>'+rows.map(function(row){return '<tr><td>'+row.name+'<span class="sub" style="display:block">'+row.classes+'</span></td><td class="r">'+display(row.now)+'</td><td class="r">'+display(row.future)+'</td></tr>';}).join('')+'</tbody>';
+    document.getElementById('t23').innerHTML='<caption class="tabcap"><b>Table 3.3</b> · '+title+'<small>'+note+'</small></caption><thead><tr><th>Hazard / concern classes included</th><th class="r">Baseline 1995–2014</th><th class="r">SSP2-4.5, about 2050</th></tr></thead><tbody>'+rows.map(function(row){return '<tr><td>'+row.name+'<span class="sub" style="display:block">'+row.classes+'</span></td><td class="r">'+display(row.now)+'</td><td class="r">'+display(row.future)+'</td></tr>';}).join('')+'</tbody>';
     document.querySelector('#risk-plot figcaption').textContent=title+'. '+note+' All bars use a 0–100% scale.';
     document.getElementById('risk-bars').innerHTML=rows.map(function(row){return '<div style="margin:20px 0"><b>'+row.name+'</b><span class="sub"> · '+row.classes+'</span>'+[['Baseline 1995–2014',row.now,'var(--ink-3,#788780)'],['SSP2-4.5, about 2050',row.future,'var(--s4,#205b41)']].map(function(series){return '<div style="margin-top:8px">'+series[0]+': <b>'+display(series[1])+'</b><div style="height:14px;background:var(--line);max-width:760px" aria-hidden="true"><div style="height:100%;width:'+(series[1]===null?0:series[1])+'%;background:'+series[2]+'"></div></div></div>';}).join('')+'</div>';}).join('');
   }
@@ -421,24 +418,23 @@ body.classification-open{padding-right:440px}
   function g3(n) { var s = ''; for (var i = 0; i < 3; i++) s += '<i class="' + (i < n ? 'on' : '') + '"></i>'; return '<span class="g3" aria-hidden="true">' + s + '</span>'; }
   var indThumbs = {}, indView = null;
   function problems() {
-    var sel = F.cells.filter(function (c) { return R.sel(c); }), n = Math.max(1, sel.length);
     var html = '<caption class="tabcap"><b>Table 3.4</b> · Problems in the opportunity space and what planted silvoarable agroforestry can do about them<small>Problem classes follow C.5; national references and the practice columns are example values; source counts are fictional.</small></caption>' +
       '<thead><tr class="grp-h"><th colspan="4">Problem in the opportunity space</th><th colspan="3" class="pr-h">What the practice can do</th></tr>' +
       '<tr><th>Problem</th><th>Distribution across the space</th><th class="r">In worse classes</th><th>Reading</th><th class="pr-h">Strength</th><th>Confidence</th><th>Evidence</th></tr></thead><tbody>';
     var search = document.getElementById('problem-filter').value.toLowerCase(), sort = document.getElementById('problem-sort').value;
     var shown = PROB.filter(function(p) { return (p.name + ' ' + p.resp[1] + ' ' + p.resp[2]).toLowerCase().includes(search); });
-    function worstShare(p) { var m=CL.build(p.k,ST); return m.error?0:sel.filter(function(c){return m.high(c,ST.climate);}).length/n; }
+    function worstShare(p) { var m=CL.build(p.k,ST); return m.error?0:m.sample.filter(function(c){return m.high(c,ST.climate);}).length/m.sample.length; }
     shown.sort(function(a,b) { return sort === 'worst' ? worstShare(b) - worstShare(a) : sort === 'strength' ? b.resp[0] - a.resp[0] : sort === 'confidence' ? ['low confidence','medium confidence','high confidence'].indexOf(b.resp[2]) - ['low confidence','medium confidence','high confidence'].indexOf(a.resp[2]) : a.name.localeCompare(b.name); });
     document.getElementById('problem-count').textContent = shown.length + ' of ' + PROB.length + ' mapped problems';
     shown.forEach(function (p) {
       var i = PROB.indexOf(p);
       var model=CL.build(p.k,ST);
       if(model.error){html+='<tr><td>'+p.name+'</td><td colspan="6">'+M.esc(model.error)+'</td></tr>';return;}
-      var h=Array(model.count).fill(0);sel.forEach(function(c){h[model.classify(c,ST.climate)]++;});
-      var eligible=F.cells.filter(function(c){return !c.excluded&&!c.unknown;});
+      var h=Array(model.count).fill(0);model.sample.forEach(function(c){h[model.classify(c,ST.climate)]++;});
+      var eligible=F.cells.filter(function(c){return !c.excluded&&!c.unknown&&model.classify(c,ST.climate)!==null;});
       var country=eligible.filter(function(c){return model.high(c,ST.climate);}).length/eligible.length;
       var worst=worstShare(p),verdict=worst>country+0.05?'More concentrated here than in the country':worst<country-0.05?'Less acute here than in the country':'Similar to the country as a whole';
-      var distribution=model.order.map(function(j){return '<div>'+model.names[j]+': '+pct(h[j]/n)+'<div style="height:8px;background:'+model.colors[j]+';width:'+100*h[j]/n+'%"></div></div>';}).join('');
+      var distribution=model.order.map(function(j){return '<div>'+model.names[j]+': '+pct(h[j]/model.sample.length)+'<div style="height:8px;background:'+model.colors[j]+';width:'+100*h[j]/model.sample.length+'%"></div></div>';}).join('');
       html += '<tr><td class="pb-name"><button type="button" class="pb-map" data-ind="' + i + '" title="Show ' + p.name.toLowerCase() + ' on Figure 3.1"><svg id="pbm-' + p.k + '" aria-hidden="true"></svg></button><b>' + p.name + '</b><br><a href="00-config.html?tab=5&variable=' + p.k + '">Edit variable classes</a></td>' +
         '<td>' + distribution + '</td><td class="r pb-share">' + pct(worst) + '<span class="sub" style="display:block">country: ' + pct(country) + '</span></td>' +
         '<td class="pb-read">' + verdict + '. <span class="sub">National: ' + p.unit + ' ' + p.nat + ' (example).</span></td>' +
@@ -462,7 +458,7 @@ body.classification-open{padding-right:440px}
     var p = PROB[+b.getAttribute('data-ev')], r = p.resp;
     V1BUI.openPanel('Evidence · ' + p.name, '<p>' + r[1].charAt(0).toUpperCase() + r[1].slice(1) + ', ' + r[2] + ', from ' + r[3] + ' sources (fictional). Three example source lines:</p>' +
       '<ol class="ev-list"><li>Example study A (2019) · meta-analysis · mixed income countries · transfer: direct</li><li>Example study B (2016) · field trial · lower-middle income · transfer: comparable</li><li>Example study C (2021) · practitioner survey · low income · transfer: indicative</li></ol>' +
-      '<div class="ev-rule"><b>Band rule (example).</b> The pooled change in ' + r[4] + ' falls in the band the evidence register sets for “' + r[1] + '”.</div><p style="margin-top:12px">Full evidence table: <a href="02-practices.html?tab=3">Stage 02, Section 2.3</a>.</p>');
+      '<div class="ev-rule"><b>Historical example, not an accepted AI synthesis.</b> The reported example change in ' + r[4] + ' was illustrated with the label “' + r[1] + '”.</div><p style="margin-top:12px">Full evidence table: <a href="02-practices.html?tab=3">Stage 02, Section 2.3</a>.</p>');
   });
 
   var contextOptions = PROB.filter(function(p){return !['drought','flood','heat'].includes(p.k);});
@@ -478,7 +474,7 @@ body.classification-open{padding-right:440px}
     var title='Share of area in '+(selected.length?selected.join(' / ')+' classes':'selected classes');
     var note='Percent of eligible area in each extent, using identical C.5 cut points. Country reference includes the opportunity space. Synthetic example values; climate changes suitability extent, not these indicators.';
     document.getElementById('context-summary-status').textContent=selected.length?'':'Select at least one class to summarise.';
-    function share(cells,model){return cells.length?100*cells.filter(function(c){return selected.includes(model.names[model.classify(c,ST.climate)]);}).length/cells.length:null;}
+    function share(cells,model){cells=cells.filter(function(c){return model.classify(c,ST.climate)!==null;});return cells.length?100*cells.filter(function(c){return selected.includes(model.names[model.classify(c,ST.climate)]);}).length/cells.length:null;}
     var rows=contextOptions.map(function(p,i){var model=models[i],country=eligible.filter(function(c){return Number.isFinite(c.ind[p.k]);});return {name:p.name,classes:model.error?'No data':model.order.map(function(j){return model.names[j];}).filter(function(name){return selected.includes(name);}).join(', ') || 'None of these classes',opportunity:model.error||!selected.length?null:share(model.sample,model),country:model.error||!selected.length?null:share(country,model)};});
     function display(value){return value===null?'No data':value.toFixed(1)+' %';}
     document.getElementById('context-table').innerHTML='<caption class="tabcap"><b>Table 3.5</b> · '+title+'<small>'+note+'</small></caption><thead><tr><th>Problem / classes included</th><th class="r">Opportunity space</th><th class="r">Country reference</th></tr></thead><tbody>'+rows.map(function(row){return '<tr><td>'+row.name+'<span class="sub" style="display:block">'+row.classes+'</span></td><td class="r">'+display(row.opportunity)+'</td><td class="r">'+display(row.country)+'</td></tr>';}).join('')+'</tbody>';
@@ -488,7 +484,7 @@ body.classification-open{padding-right:440px}
   document.getElementById('context-classes').addEventListener('change',contextMap);
   V1BUI.segmented(document.getElementById('context-view'),function(view){document.getElementById('context-table-wrap').hidden=view!=='table';document.getElementById('context-plot').hidden=view!=='plot';});
   window.addEventListener('pageshow',function(e){if(e.persisted){CL.refresh();livelihoods();contextMap();problems();paintPlate();}});
-  window.addEventListener('storage',function(e){if(e.key==='v2-variable-classification' || e.key===null){CL.refresh();livelihoods();contextMap();problems();paintPlate();}});
+  window.addEventListener('storage',function(e){if(e.key==='v2-concern-classification-v1' || e.key===null){CL.refresh();livelihoods();contextMap();problems();paintPlate();}});
 
   /* ---- tabs ---- */
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.subtabs [role=tab]'));

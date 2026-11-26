@@ -113,11 +113,12 @@
   <!-- C.5 -->
   <section class="cfg tabpanel" role="tabpanel" id="tp-5" hidden>
     <div class="tp-head"><div><h2><span class="sec-n">C.5</span>Opportunity-space variable classes</h2><p class="need">How do low and high values become map classes?</p></div></div>
-    <p class="job-note">Choose a variable, check whether higher values mean better or worse conditions, then split its distribution into 2, 3 or 5 classes. People and land indicators use Better/Worse labels; climate hazards use Low/Moderate/High risk (plus Very low/Very high with five classes). These describe relative conditions under the cut points, not loss probabilities. Quantiles divide baseline example cells into roughly equal groups (three groups are terciles); thresholds use explicit cut points. High poverty means a higher poverty indicator; high drought means a higher drought-hazard indicator, not a combined risk score.</p>
-    <div class="cfg-controls"><label class="fld"><span>Variable</span><select id="class-variable"><option value="poverty">Rural poverty</option><option value="drought">Drought hazard</option><option value="food">Food insecurity</option><option value="water">Water stress</option></select></label><label class="fld"><span>Number of classes</span><select id="class-number"><option>2</option><option selected>3</option><option>5</option></select></label><label class="fld"><span>Direction: what does a higher value mean?</span><select id="class-direction"><option value="higher_worse">Worse conditions</option><option value="higher_better">Better conditions</option></select></label><label class="fld"><span>Split method</span><select id="class-method"><option value="quantile">Quantiles</option><option value="threshold">Thresholds</option></select></label><label class="fld" id="class-cuts-field" hidden><span>Cut points (comma-separated, 0–100)</span><input id="class-cuts" value="33.33, 66.67"></label></div>
-    <div class="cfg-controls"><button type="button" class="btn" id="class-defaults">Apply default values</button><span class="sub">Selected variable only: 3 quantile classes; higher values mean worse. Cut points recalculate from the baseline opportunity extent.</span></div>
+    <p class="job-note">Classify each concern as <b>None 0 · Low 0.33 · Medium 0.66 · High 1</b>. Higher scores mean more concern, not more benefit or a probability. Thresholds are the default: three cutoffs, each included in the lower raw-value interval. Real rules need native units, context and evidence; the values below are synthetic examples only.</p>
+    <div class="cfg-controls"><label class="fld"><span>Variable</span><select id="class-variable"></select></label><label class="fld"><span>Direction: what does a higher value mean?</span><select id="class-direction"><option value="higher_worse">More concern</option><option value="higher_better">Less concern</option></select></label><label class="fld"><span>Classification method</span><select id="class-method"><option value="threshold">Thresholds · four concern classes</option><option value="quantile">Relative terciles · no “None” class</option></select></label><label class="fld" id="class-cuts-field"><span>Three upper-inclusive cutoffs (synthetic 0–100 index)</span><input id="class-cuts" value="0, 33.33, 66.67"></label></div>
+    <div class="cfg-controls"><button type="button" class="btn" id="class-defaults">Reset illustrative thresholds</button><span class="sub">Reset selected variable only. These are not approved country defaults. Earlier 2/3/5-class settings are kept separately and are not imported as current rules.</span></div>
+    <button type="button" class="btn-ghost" id="class-reference" hidden>Use current baseline selection as reference</button>
     <p id="class-default-status" role="status" aria-live="polite"></p>
-    <p class="cfg-note">Synthetic indicator values rescaled to 0–100 over eligible example cells; not poverty percentages or hazard probabilities. Preview is restricted to the current opportunity-space selection. Quantile breaks use baseline values within the baseline opportunity extent for the selected classes; the same breaks classify baseline and future values. Future indicator values may exceed 100. Valid edits are saved per variable and applied to the maps and distributions in <a href="03-opportunity.html?tab=2">Section 3.2 · People and land</a> and <a href="03-opportunity.html?tab=3">Section 3.3 · Climate hazards</a>. Scientific recipes and evidence remain unchanged.</p>
+    <p class="cfg-note">Synthetic values are rescaled to 0–100, not poverty percentages or hazard probabilities. Terciles use the selected baseline opportunity cells as an explicit reference, with linear interpolation at (n − 1) × q. The reference values, selected practice/classes and realised cutoffs are saved; the project download adds a SHA-256 sample hash. They are reused for future comparisons and other selections. There is no justified no-problem condition for this relative example: its lowest tercile is Low, never None. Missing values remain unknown; tied values stay together. Changes update <a href="03-opportunity.html?tab=2">People and land</a> and <a href="03-opportunity.html?tab=3">Climate hazards</a>, not evidence or scientific recipes. <a href="https://ruralscan.github.io/method/reference/ch-m3-characterisation.html">Read the current classification method</a>.</p>
     <p id="class-direction-note" class="cfg-note"></p>
     <p id="class-error" class="cfg-error" role="status"></p>
     <div class="tp-grid cfg-preview"><figure><svg id="class-map" role="img" aria-label="Classified opportunity-space variable"></svg><figcaption id="class-map-caption"></figcaption></figure><figure><svg id="class-hist" viewBox="0 0 560 250" role="img" aria-label="Variable distribution with class cut points"></svg><figcaption>Distribution of eligible selected cells · vertical lines mark class boundaries</figcaption></figure></div>
@@ -141,10 +142,10 @@
 </main>
 
 <script src="../sle_geo.js"></script>
-<script src="v1b-versions.js?v=20261106-brand"></script>
-<script src="v1b-map.js?v=20261106-nav"></script>
+<script src="v1b-versions.js?v=20261126-alignment"></script>
+<script src="v1b-map.js?v=20261126-alignment"></script>
 <script src="v1b-fixture.js"></script>
-<script src="v1b-classification.js?v=20261105-risk"></script>
+<script src="v1b-classification.js?v=20261126-concern"></script>
 <script>
 (function () {
   'use strict';
@@ -400,22 +401,24 @@
   var Classification = window.V1BClassification;
   var variableSelect = document.getElementById('class-variable');
   variableSelect.innerHTML = Classification.variables.map(function(v){return '<option value="' + v.key + '">' + v.label + '</option>';}).join('');
-  function defaultCuts() {var n = Number(document.getElementById('class-number').value);document.getElementById('class-cuts').value = Array.from({length:n-1}, function(_,i){return (100*(i+1)/n).toFixed(2);}).join(', ');}
+  function defaultCuts() {document.getElementById('class-cuts').value='0, 33.33, 66.67';}
   function classificationInputs() {
-    return {direction:document.getElementById('class-direction').value,count:Number(document.getElementById('class-number').value), method:document.getElementById('class-method').value,
+    var config = {direction:document.getElementById('class-direction').value,count:document.getElementById('class-method').value==='threshold'?4:3, method:document.getElementById('class-method').value,
       cuts:document.getElementById('class-cuts').value.split(',').map(function(x){return x.trim() === '' ? NaN : Number(x);})};
+    var saved=Classification.get(variableSelect.value);if(config.method==='quantile'&&saved.method==='quantile'&&saved.reference)config.reference=saved.reference;
+    return config;
   }
   function syncClassificationInputs() {
     var config = Classification.get(variableSelect.value);
-    document.getElementById('class-number').value = String(config.count);
     document.getElementById('class-method').value = config.method;
     document.getElementById('class-direction').value = config.direction;
     if(config.cuts && config.cuts.length) document.getElementById('class-cuts').value = config.cuts.join(', '); else defaultCuts();
   }
   function drawClasses(persist) {
-    var variable = variableSelect.value, label = variableSelect.options[variableSelect.selectedIndex].text, config = classificationInputs();
+    var variable = variableSelect.value, label = variableSelect.options[variableSelect.selectedIndex].text, config = persist === true ? classificationInputs() : Classification.get(variable);
     document.getElementById('class-cuts-field').hidden = config.method !== 'threshold';
-    document.getElementById('class-direction-note').textContent = 'Fixture direction checked: all ten supplied indicators encode increasing pressure, loss or hazard, so higher means worse by default. Soil degradation is already a degradation index, not raw soil organic carbon; biodiversity and carbon are loss indices, not intactness or stocks. For a replacement indicator such as soil carbon or habitat intactness, check its meaning and choose higher = better. This choice reverses better/worse labels, map shading and affected-share summaries without moving numeric cut points.';
+    document.getElementById('class-reference').hidden = config.method !== 'quantile';
+    document.getElementById('class-direction-note').textContent = 'Fixture direction checked: all nine supplied indicators encode increasing pressure, loss or hazard, so higher means worse by default. Biodiversity and carbon are loss indices, not intactness or stocks. For a replacement indicator such as soil carbon or habitat intactness, check its meaning and choose higher = better. This choice reverses concern labels, map shading and affected-share summaries without moving numeric cut points.';
     var result = Classification.build(variable, V1BUI.state, config), error = result.error;
     document.getElementById('class-error').textContent = error || '';
     if(error) {
@@ -424,7 +427,8 @@
       document.getElementById('class-summary').textContent = 'Sections 3.2 and 3.3 retain the last valid saved classification.';
       document.getElementById('class-map-caption').textContent = 'Classification preview unavailable';return;
     }
-    if(persist === true && !Classification.set(variable, config)) {document.getElementById('class-error').textContent = 'Invalid classification; the last valid settings remain saved.';return;}
+    if(config.method==='quantile')config.reference=result.reference;
+    if(!Classification.set(variable, config)) {document.getElementById('class-error').textContent = 'Invalid classification; the last valid settings remain saved.';return;}
     var period = V1BUI.state.climate === 'ssp' ? 'ssp' : 'base', sample = new Set(result.sample);
     M.paintCells(classMap,F.cells,function(c){if(c.excluded)return 'excluded';if(c.unknown)return 'unknown';return sample.has(c) ? result.mapKey(c,period) : null;});
     // Color classes by the shared result so maps, histograms and legends agree.
@@ -439,10 +443,10 @@
     [0,.25,.5,.75,1].forEach(function(fraction){var value=lo+span*fraction;html+='<text x="'+(40+fraction*480)+'" y="202" text-anchor="middle">'+value.toFixed(0)+'</text>';});
     result.cuts.forEach(function(c,i){var x=40+(c-lo)/span*480;html+='<path d="M'+x+' 25V180" stroke="currentColor" stroke-dasharray="4 3"/><text x="'+x+'" y="'+(224+(i%2)*18)+'" text-anchor="middle">'+c.toFixed(1)+'</text>';});
     document.getElementById('class-hist').innerHTML=html;
-    document.getElementById('class-map-caption').textContent=label+' · '+result.count+' classes · '+(result.method==='quantile'?'baseline quantile cut points':'explicit thresholds')+' · '+(period==='ssp'?'around 2050':'baseline');
+    document.getElementById('class-map-caption').textContent=label+' · '+result.count+' classes · '+(result.method==='quantile'?'fixed baseline terciles':'explicit thresholds')+' · '+(period==='ssp'?'around 2050':'baseline');
     var legend=document.getElementById('class-legend');legend.replaceChildren();
     result.order.forEach(function(i){var name=result.names[i];var item=document.createElement('span');item.style.borderColor=result.colors[i];item.textContent=name+': '+result.range(i)+' · '+result.counts[i]+' cells';legend.appendChild(item);});
-    document.getElementById('class-summary').textContent=result.sample.length+' selected cells. Darker green = worse conditions; '+(result.direction==='higher_better'?'higher values mean better':'higher values mean worse')+'. Blank = outside selected opportunity space; hatched = excluded; dotted = no data. Baseline cut points also classify future values, including values above 100. Valid settings are saved for Sections 3.2 and 3.3.';
+    document.getElementById('class-summary').textContent=result.sample.length+' selected cells. '+(result.method==='quantile'?'Reference: '+result.reference.values.length+' saved baseline values; cutoffs '+result.cuts.map(function(x){return x.toFixed(2);}).join(', ')+'. ':'')+' Darker green = worse conditions; '+(result.direction==='higher_better'?'higher values mean better':'higher values mean worse')+'. Blank = outside selected opportunity space; hatched = excluded; dotted = no data. Baseline cut points also classify future values, including values above 100. Valid settings are saved for Sections 3.2 and 3.3.';
   }
   variableSelect.value = 'poverty';
   var requestedVariable = new URLSearchParams(location.search).get('variable');
@@ -450,16 +454,23 @@
   syncClassificationInputs();
   document.getElementById('class-defaults').addEventListener('click',function(){
     Classification.reset(variableSelect.value);syncClassificationInputs();drawClasses();
-    document.getElementById('class-default-status').textContent='Default values applied to '+variableSelect.options[variableSelect.selectedIndex].text+'. Sections 3.2 and 3.3 use these settings.';
+    document.getElementById('class-default-status').textContent='Illustrative thresholds reset for '+variableSelect.options[variableSelect.selectedIndex].text+'. Sections 3.2 and 3.3 use these settings.';
+  });
+  document.getElementById('class-reference').addEventListener('click',function(){
+    var config=classificationInputs();delete config.reference;
+    var result=Classification.build(variableSelect.value,V1BUI.state,config);
+    if(result.error){document.getElementById('class-error').textContent=result.error;return;}
+    config.reference=result.reference;Classification.set(variableSelect.value,config);drawClasses();
+    document.getElementById('class-default-status').textContent='Reference replaced with the current baseline selection. These fixed cutoffs now apply to comparison periods.';
   });
   variableSelect.addEventListener('change',function(){document.getElementById('class-default-status').textContent='';syncClassificationInputs();drawClasses();});
-  ['class-number','class-method','class-cuts','class-direction'].forEach(function(id){document.getElementById(id).addEventListener('change',function(){document.getElementById('class-default-status').textContent='';if(id==='class-number')defaultCuts();drawClasses(true);});});
+  ['class-method','class-cuts','class-direction'].forEach(function(id){document.getElementById(id).addEventListener('change',function(){document.getElementById('class-default-status').textContent='';drawClasses(true);});});
   V1BUI.onControls(function(){drawClasses();});
   function refreshClassificationInputs() {
     document.getElementById('class-default-status').textContent='';Classification.refresh();syncClassificationInputs();drawClasses();
   }
   window.addEventListener('storage',function(event){
-    if(event.key === 'v2-variable-classification' || event.key === null) refreshClassificationInputs();
+    if(event.key === 'v2-concern-classification-v1' || event.key === null) refreshClassificationInputs();
   });
   window.addEventListener('pageshow',function(event){if(event.persisted) refreshClassificationInputs();});
 
@@ -469,9 +480,18 @@
     var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
     document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 0);
   }
-  document.getElementById('save-proj').addEventListener('click', function () {
+  document.getElementById('save-proj').addEventListener('click', async function () {
+    var snapshot=Classification.snapshot();
+    try {
+      for(var key of Object.keys(snapshot)) {
+        var ref=snapshot[key].reference;if(!ref)continue;
+        var digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(ref.values)));
+        ref.sample_sha256=Array.from(new Uint8Array(digest)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+      }
+    } catch(error){document.getElementById('loadmsg').textContent='Could not hash reference samples. Project not downloaded; retry on HTTPS or localhost.';return;}
+
     download('rural-nbs-scan-project.json', { kind: 'project-settings', saved: new Date().toISOString(), controls: V1BUI.state,
-      classifications: Classification.snapshot(), datasetProposals: Object.keys(proposals), previewRoles: roles, clusterThreshold: document.getElementById('cluster-threshold').value, clusterSelection: clusterSelection, maskThreshold: document.getElementById('mask-limit').value, variableClasses: ['class-variable','class-number','class-method','class-cuts','class-direction'].map(function(id){return {id:id,value:document.getElementById(id).value};}), ruleEdits: VARS.filter(function (v) { return edits[v.id]; }).map(function (v) { return { variable: v.id, fn: v.fn, a: v.a, b: v.b, classes: v.classes }; }) });
+      classifications: snapshot, datasetProposals: Object.keys(proposals), previewRoles: roles, clusterThreshold: document.getElementById('cluster-threshold').value, clusterSelection: clusterSelection, maskThreshold: document.getElementById('mask-limit').value, variableClasses: ['class-variable','class-method','class-cuts','class-direction'].map(function(id){return {id:id,value:document.getElementById(id).value};}), ruleEdits: VARS.filter(function (v) { return edits[v.id]; }).map(function (v) { return { variable: v.id, fn: v.fn, a: v.a, b: v.b, classes: v.classes }; }) });
   });
   document.getElementById('save-res').addEventListener('click', function () {
     var R = F.rollup(V1BUI.state);
@@ -497,7 +517,7 @@
         });
         ['slope','precip','landcover'].forEach(function(id){roles[id]='score';tb.querySelector('[data-role="'+id+'"]').value='score';});
         document.getElementById('cluster-threshold').value=0.7;document.getElementById('mask-limit').value=25;
-        document.getElementById('class-direction').value='higher_worse';document.getElementById('class-variable').value='poverty';document.getElementById('class-number').value='3';document.getElementById('class-method').value='quantile';defaultCuts();
+        document.getElementById('class-direction').value='higher_worse';document.getElementById('class-variable').value='poverty';document.getElementById('class-method').value='threshold';defaultCuts();
         tb.querySelectorAll('.prop').forEach(function(row){row.remove();});tb.querySelectorAll('[data-rep]').forEach(function(button){button.textContent='Replace';});
         (o.datasetProposals || []).forEach(function(id){if(DS.some(function(d){return d[0]===id;}))tb.querySelector('[data-rep="'+id+'"]').click();});
         (o.ruleEdits || []).forEach(function(edit){
@@ -509,8 +529,9 @@
         if(Number(o.clusterThreshold)>=0.5 && Number(o.clusterThreshold)<=1) document.getElementById('cluster-threshold').value=o.clusterThreshold;
         clusterSelection=o.clusterSelection && typeof o.clusterSelection==='object' ? o.clusterSelection : {};
         if(Number(o.maskThreshold)>=0 && Number(o.maskThreshold)<=40)document.getElementById('mask-limit').value=o.maskThreshold;
-        (o.variableClasses || []).forEach(function(saved){if(['class-variable','class-number','class-method','class-cuts','class-direction'].indexOf(saved.id)<0)return;var el=document.getElementById(saved.id);if(el.tagName==='SELECT' && !Array.from(el.options).some(function(opt){return opt.value===String(saved.value);}))return;el.value=saved.value;});
+        (o.variableClasses || []).forEach(function(saved){if(['class-variable','class-method','class-cuts','class-direction'].indexOf(saved.id)<0)return;var el=document.getElementById(saved.id);if(el.tagName==='SELECT' && !Array.from(el.options).some(function(opt){return opt.value===String(saved.value);}))return;el.value=saved.value;});
         var classificationMessage = '';
+        Classification.restore({});
         if(o.classifications && typeof o.classifications === 'object') {
           if(Classification.restore(o.classifications) === false) classificationMessage = ' Invalid classification settings were not applied.';
         } else {
