@@ -4,6 +4,7 @@ One row per request, who made it, and what we did. Stakeholder requests (World B
 
 | Date | Source | Request | Response | Status |
 |---|---|---|---|---|
+| 2026-11-26 | Pete (relayed correction) | Allow strongly demonstrated secondary water harvesting; exclude weak or incidental secondary benefits | Updated methodology notes: source-supported component and use pathway required; ambiguity held, ecological fit and safeguards separate. Supersedes primary-purpose-only wording. | done (for review) |
 | 2026-11-26 | Pete | Keep 2.1 descriptive and remove the undefined challenge framing | Renamed heading Explore the practices; retained a short NbS explanation and moved inclusion procedures into linked methodology notes. | done v2.2 (for review) |
 | 2026-11-26 | Pete | Explain NbS definitions and inclusion checks in Section 2 | Section 2.1 separates practice/family fit, ecological fit and claim relevance; six-practice prompts, project water-harvesting boundary and scoping outcomes. Public definitions linked; no automatic scientific decisions. | done v2.2 (for review) |
 | 2026-11-25 | Pete | Link infrastructure exposure to existing NbS hazard-mitigation mechanisms at scoping level | 3.5 evidence panel reads generated T3/T6 snapshot with mechanisms, confidence, caveats and source quotes; follows practice/hazard selection. 5.2 companion and 5.4 link distinguish exposure ranks from unestablished protection. | done v2.2 (for review) |
